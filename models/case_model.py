@@ -2,6 +2,119 @@
 # Purpose: Data models for the lawsuit
 # Encoding: UTF-8
 
+import datetime
+import re
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+
+
+class CalculationError(ValueError):
+    """Raised when an input cannot be parsed or a calculation is not applicable.
+
+    Callers must treat this as "the value shown to the user is not authoritative"
+    and fall back to an explicit, editable placeholder rather than inventing a
+    number or silently returning zero.
+    """
+
+
+def _to_decimal(value, field_name):
+    """Parse *value* into a finite :class:`~decimal.Decimal` or return ``None``.
+
+    Empty input yields ``None``. Invalid input raises :class:`CalculationError`.
+    """
+    text = "" if value is None else str(value).strip()
+    if not text:
+        return None
+    try:
+        result = Decimal(text)
+    except (InvalidOperation, ValueError):
+        raise CalculationError(f"{field_name}不是有效数字：{text!r}")
+    if not result.is_finite():
+        raise CalculationError(f"{field_name}不是有限数字：{text!r}")
+    return result
+
+
+def _format_money(value):
+    """Quantize a Decimal to two places and render it deterministically."""
+    return f"{value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)}"
+
+
+_MONTH_TOKEN = re.compile(r"(\d{4})?\s*[年/\-.]?\s*(\d{1,2})")
+_RANGE_SEPARATOR = re.compile(r"[至到~—–～]|\s-\s")
+
+
+def parse_month_range(text):
+    """Parse a month range into an inclusive month count.
+
+    Returns a ``(months, is_partial)`` tuple. Supported inputs include::
+
+        2023年12月至2024年2月   -> (3, False)
+        2023-12 至 2024-02      -> (3, False)
+        2023年12月              -> (1, False)
+        2023年12月至2月         -> (3, True)   # end year inferred
+
+    ``is_partial`` is ``True`` when the range depends on an inferred year or
+    contains explicit day components, i.e. it may not be a whole number of
+    fully specified monthly periods.
+
+    Invalid or reversed ranges raise :class:`CalculationError`. Empty input also
+    raises so that callers never treat "unknown" as zero.
+    """
+    raw = "" if text is None else str(text).strip()
+    if not raw:
+        raise CalculationError("未填写欠薪月份或时间段")
+
+    # Detect explicit day components (three numeric groups in one segment).
+    has_day = bool(re.search(r"\d{4}\s*[年/\-.]\s*\d{1,2}\s*[月/\-.]\s*\d{1,2}", raw))
+
+    normalised = raw
+    for ch in "年月日":
+        normalised = normalised.replace(ch, "-")
+    segments = [s for s in _RANGE_SEPARATOR.split(normalised) if s.strip()]
+    if not segments:
+        raise CalculationError(f"无法解析欠薪月份：{raw!r}")
+
+    def parse_segment(seg):
+        match = re.search(r"(\d{4})\D*(\d{1,2})", seg)
+        if match:
+            return int(match.group(1)), int(match.group(2))
+        match = re.search(r"(\d{1,2})", seg)
+        if match:
+            return None, int(match.group(1))
+        return None, None
+
+    start_year, start_month = parse_segment(segments[0])
+    if start_month is None or not (1 <= start_month <= 12):
+        raise CalculationError(f"无法解析起始月份：{raw!r}")
+
+    if len(segments) == 1:
+        if has_day:
+            return 1, True
+        return 1, False
+
+    end_year, end_month = parse_segment(segments[1])
+    if end_month is None or not (1 <= end_month <= 12):
+        raise CalculationError(f"无法解析结束月份：{raw!r}")
+
+    partial = has_day
+    if end_year is None:
+        # The end month omits its year; assume the same year, rolling over when
+        # the end month precedes the start month. This is flagged as partial.
+        partial = True
+        end_year = start_year
+        if end_month < start_month:
+            end_year += 1
+
+    if start_year is None or not (1900 <= start_year <= 2100) or not (1900 <= end_year <= 2100):
+        raise CalculationError(f"年份超出合理范围：{raw!r}")
+
+    start_index = start_year * 12 + start_month
+    end_index = end_year * 12 + end_month
+    if end_index < start_index:
+        raise CalculationError(f"结束月份早于起始月份：{raw!r}")
+
+    return end_index - start_index + 1, partial
+
+
 class PartyInfo:
     def __init__(self, name="", id_number="", address="", phone="", is_company=False, legal_representative="", credit_code=""):
         self.name = name
@@ -73,38 +186,44 @@ class LoanCaseModel(CaseTemplate):
         self.demand_date = ""
         self.demand_method = ""
 
+    def _interest_cutoff_date(self):
+        """Cutoff used when temporarily estimating interest until filing."""
+        return datetime.date.today()
+
     def render_claims(self):
         claims = []
         claims.append(f"判令被告向原告偿还借款本金人民币 {self.principal_amount} 元；")
         if self.interest_rate and self.interest_start_date:
             try:
-                import datetime
-                import re
-
-                # Try to parse start date
-                start_str = re.sub(r'[^\d]', '-', self.interest_start_date).strip('-')
-                parts = start_str.split('-')
-                if len(parts) >= 3:
-                    d1 = datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-                else:
-                    d1 = None
-
-                if d1:
-                    d2 = datetime.date.today()
-                    days = (d2 - d1).days
-                    if days > 0:
-                        p = float(self.principal_amount)
-                        r = float(self.interest_rate) / 100.0
-                        interest = p * r * (days / 365.0)
-                        interest_str = f"{interest:.2f}"
-                        claims.append(f"判令被告向原告支付逾期利息（以 {self.principal_amount} 元为基数，自 {self.interest_start_date} 起按年利率 {self.interest_rate}%（但最高不超过合同成立时一年期 LPR 的 4 倍）计算至实际清偿之日止，暂计至起诉之日为 {interest_str} 元）；")
-                    else:
-                        raise ValueError("Days <= 0")
-                else:
-                    raise ValueError("Invalid date format")
-            except Exception:
-                # Fallback to normal text if calculation fails
-                claims.append(f"判令被告向原告支付利息（以 {self.principal_amount} 元为基数，自 {self.interest_start_date} 起至实际清偿之日止，按年利率 {self.interest_rate}%（但最高不超过合同成立时一年期 LPR 的 4 倍）计算）；")
+                start = self._parse_date(self.interest_start_date)
+                if start is None:
+                    raise CalculationError("利息起算日格式无法识别")
+                cutoff = self._interest_cutoff_date()
+                days = (cutoff - start).days
+                if days <= 0:
+                    raise CalculationError("利息起算日晚于或等于暂计截止日")
+                principal = _to_decimal(self.principal_amount, "借款本金")
+                rate = _to_decimal(self.interest_rate, "年利率")
+                if principal is None or rate is None:
+                    raise CalculationError("借款本金或年利率为空")
+                if principal < 0 or rate < 0:
+                    raise CalculationError("借款本金或年利率为负数")
+                interest = principal * (rate / Decimal("100")) * (Decimal(days) / Decimal("365"))
+                interest_str = _format_money(interest)
+                claims.append(
+                    f"判令被告向原告支付利息（以 {self.principal_amount} 元为基数，"
+                    f"自 {self.interest_start_date} 起至实际清偿之日止，按年利率 {self.interest_rate}% 计算，"
+                    f"暂计至 {cutoff.isoformat()} 为 {interest_str} 元；上述金额为按前述方式测算的参考值，"
+                    f"实际金额以清偿日结算为准，利率适用性请人工核对）；"
+                )
+            except (CalculationError, InvalidOperation, ValueError):
+                # Keep the claim neutral and editable instead of asserting a
+                # legal ceiling or inventing an amount.
+                claims.append(
+                    f"判令被告向原告支付利息（以 {self.principal_amount} 元为基数，"
+                    f"自 {self.interest_start_date} 起至实际清偿之日止，按年利率 {self.interest_rate}% 计算，"
+                    f"具体金额以实际清偿日结算为准，利率适用性请人工核对）；"
+                )
         claims.append("本案诉讼费由被告承担。")
         return claims
 
@@ -124,6 +243,20 @@ class LoanCaseModel(CaseTemplate):
             f"被告至今未能偿还借款。为维护原告合法权益，特诉至贵院，请依法支持原告的诉讼请求。"
         )
         return fact_str
+
+    @staticmethod
+    def _parse_date(text):
+        s = (text or "").strip()
+        if not s:
+            return None
+        s2 = re.sub(r"[^\d]", "-", s).strip("-")
+        parts = s2.split("-")
+        if len(parts) < 3:
+            return None
+        try:
+            return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+        except ValueError:
+            return None
 
 class ContractCaseModel(CaseTemplate):
     def __init__(self):
@@ -148,7 +281,12 @@ class ContractCaseModel(CaseTemplate):
         claims.append(f"判令被告向原告支付货款本金人民币 {self.unpaid_amount} 元；")
         if self.penalty_amount:
             if self.penalty_start_date and self.penalty_calc_standard:
-                claims.append(f"判令被告向原告支付逾期付款违约金（以 {self.unpaid_amount} 元为基数，自 {self.penalty_start_date} 起按 {self.penalty_calc_standard} 计算至实际清偿之日止，暂计至起诉之日为 {self.penalty_amount} 元）；")
+                claims.append(
+                    f"判令被告向原告支付逾期付款违约金（以 {self.unpaid_amount} 元为基数，"
+                    f"自 {self.penalty_start_date} 起按 {self.penalty_calc_standard} 计算至实际清偿之日止，"
+                    f"暂计至起诉之日为 {self.penalty_amount} 元；上述计算标准由当事人填写，"
+                    f"具体适用请结合合同约定与法律规定人工核对）；"
+                )
             else:
                 claims.append(f"判令被告向原告支付违约金（或逾期付款利息）人民币 {self.penalty_amount} 元；")
         claims.append("本案诉讼费由被告承担。")
@@ -188,10 +326,9 @@ class PropertyCaseModel(CaseTemplate):
         self.demand_record = ""
         self.total_principal = ""
         self.months = 0
+        self.is_partial_billing = False
 
     def _parse_date(self, text):
-        import datetime
-        import re
         s = (text or "").strip()
         if not s:
             return None
@@ -199,35 +336,71 @@ class PropertyCaseModel(CaseTemplate):
         parts = s2.split("-")
         if len(parts) < 3:
             return None
-        return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+        try:
+            return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+        except ValueError:
+            return None
 
-    def _calc_months(self):
+    def _calc_months_detail(self):
+        """Return ``(months, is_partial)`` for the billing period.
+
+        ``is_partial`` is ``True`` when the period does not start on the first
+        day and end on the last day of a month, i.e. the whole-calendar-month
+        assumption may not hold. Reversed or unparseable periods return
+        ``(0, False)``.
+        """
         d1 = self._parse_date(self.period_start)
         d2 = self._parse_date(self.period_end)
         if not d1 or not d2:
-            return 0
+            return 0, False
         if d2 < d1:
-            return 0
-        return (d2.year - d1.year) * 12 + (d2.month - d1.month) + 1
+            return 0, False
+        months = (d2.year - d1.year) * 12 + (d2.month - d1.month) + 1
+        partial = not (d1.day == 1 and d2.day == self._last_day_of_month(d2))
+        return months, partial
+
+    @staticmethod
+    def _last_day_of_month(day):
+        if day.month == 12:
+            nxt = datetime.date(day.year + 1, 1, 1)
+        else:
+            nxt = datetime.date(day.year, day.month + 1, 1)
+        return (nxt - datetime.timedelta(days=1)).day
+
+    def _calc_months(self):
+        return self._calc_months_detail()[0]
 
     def _calc_total(self):
-        from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
         try:
-            area = Decimal(str(self.house_area).strip())
-            rate = Decimal(str(self.fee_rate).strip())
+            area = _to_decimal(self.house_area, "房屋面积")
+            rate = _to_decimal(self.fee_rate, "计费标准")
             months = Decimal(str(self.months))
+            if area is None or rate is None:
+                return None
+            if area < 0 or rate < 0 or months < 0:
+                return None
             total = (area * rate * months).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
             return total
-        except (InvalidOperation, ValueError):
+        except (CalculationError, InvalidOperation, ValueError):
             return None
 
+    def _resolved_principal(self):
+        """Return the principal string to print without discarding user input."""
+        months, partial = self._calc_months_detail()
+        self.months = months
+        self.is_partial_billing = partial
+        computed = self._calc_total() if months else None
+        user_total = (self.total_principal or "").strip()
+        if user_total:
+            # Never silently overwrite a user-entered total.
+            return user_total
+        if computed is not None:
+            self.total_principal = f"{computed}"
+            return self.total_principal
+        return self.total_principal
+
     def render_claims(self):
-        self.months = self._calc_months()
-        total = self._calc_total()
-        total_str = self.total_principal
-        if total is not None:
-            total_str = f"{total}"
-            self.total_principal = total_str
+        total_str = self._resolved_principal()
 
         claims = []
         claims.append(f"判令被告向原告支付自 {self.period_start} 起至 {self.period_end} 止的物业费共计 {total_str} 元；")
@@ -237,12 +410,7 @@ class PropertyCaseModel(CaseTemplate):
         return claims
 
     def render_facts(self):
-        self.months = self._calc_months()
-        total = self._calc_total()
-        total_str = self.total_principal
-        if total is not None:
-            total_str = f"{total}"
-            self.total_principal = total_str
+        total_str = self._resolved_principal()
 
         plaintiff_name = self.party_manager.plaintiffs[0].name if self.party_manager.plaintiffs else ""
         defendant_name = self.party_manager.defendants[0].name if self.party_manager.defendants else ""
@@ -253,6 +421,9 @@ class PropertyCaseModel(CaseTemplate):
             f"根据合同约定，被告应按{self.fee_rate}元/平方米/月的标准向原告缴纳物业管理费。"
             f"自{self.period_start}起至{self.period_end}止，被告已连续{self.months}个月未缴纳物业管理费，共计欠费{total_str}元。"
         )
+
+        if self.is_partial_billing:
+            fact_str += "（上述金额按整月计费估算，欠费期间存在不足整月或分段计费的情形，具体金额以双方核对及缴费记录为准。）"
 
         if self.demand_record:
             fact_str += f"原告曾通过{self.demand_record}多次向被告履行催告义务，但被告至今仍无故拖欠，其行为已构成违约。"
@@ -273,41 +444,66 @@ class DivorceCaseModel(CaseTemplate):
         self.custody_preference = ""
         self.support_monthly = ""
         self.divorce_reason = ""
+        self.separation_start_date = ""
         self.asset_description = ""
+
+    def _custody_phrase(self):
+        preference = (self.custody_preference or "").strip()
+        if not preference:
+            return ""
+        return preference[1:] if preference.startswith("由") else preference
 
     def render_claims(self):
         claims = []
 
-        if self.custody_preference:
-            claims.append(f"判令婚生子/女{self.child_name}由原告{self.custody_preference}抚养；")
+        # The core divorce request must always be present in an actual
+        # divorce complaint.
+        claims.append("判令原告与被告离婚；")
 
-        if self.support_monthly:
+        if self.child_name.strip() and self.custody_preference.strip():
+            claims.append(f"判令婚生子女{self.child_name}由{self._custody_phrase()}抚养；")
+
+        if self.support_monthly.strip():
             claims.append(f"判令被告按月支付抚养费人民币{self.support_monthly}元，至子女年满18周岁止；")
 
-        if self.asset_description:
+        if self.asset_description.strip():
             claims.append(f"判令依法分割夫妻共同财产：{self.asset_description}；")
 
         claims.append("本案诉讼费由被告承担。")
         return claims
 
     def render_facts(self):
-        plaintiff_name = self.party_manager.plaintiffs[0].name if self.party_manager.plaintiffs else ""
-        defendant_name = self.party_manager.defendants[0].name if self.party_manager.defendants else ""
+        fact_str = f"原告与被告于{self.marriage_date}登记结婚。"
 
-        fact_str = (
-            f"原告与被告于{self.marriage_date}在[登记机关]登记结婚。"
-            f"婚后于{self.child_birthday}生育一子/女，取名{self.child_name}。"
-            f"婚后初期双方感情尚可，但由于{self.divorce_reason}，导致夫妻感情日益淡漠。"
-            f"原告认为，双方感情确已破裂，已无和好可能。"
-        )
+        if self.child_name.strip():
+            birthday = f"于{self.child_birthday}" if self.child_birthday.strip() else ""
+            fact_str += f"婚后{birthday}生育子女，取名{self.child_name}。"
 
-        if self.custody_preference:
-            fact_str += f"关于子女抚养：原告认为由{self.custody_preference}抚养更有利于子女健康成长，被告应按月支付抚养费{self.support_monthly}元。"
+        if self.separation_start_date.strip():
+            fact_str += f"双方自{self.separation_start_date}起分居至今。"
 
-        if self.support_monthly:
-            fact_str += f"关于财产分割：双方共有财产包括{self.asset_description}。"
+        if self.divorce_reason.strip():
+            fact_str += f"婚后因{self.divorce_reason}，导致夫妻感情日益淡漠。"
+        else:
+            fact_str += "婚后双方因生活琐事产生矛盾，导致夫妻感情日益淡漠。"
 
-        fact_str += "综上，为维护原告及子女合法权益，特提起诉讼。"
+        fact_str += "原告认为，双方感情确已破裂，已无和好可能。"
+
+        if self.child_name.strip() and self.custody_preference.strip():
+            fact_str += f"关于子女抚养：原告认为由{self._custody_phrase()}抚养更有利于子女健康成长。"
+            if self.support_monthly.strip():
+                fact_str += f"被告应按月支付抚养费{self.support_monthly}元。"
+        elif self.support_monthly.strip():
+            fact_str += f"关于子女抚养：被告应按月支付抚养费{self.support_monthly}元。"
+
+        # Property-division facts depend on the property input, not on support.
+        if self.asset_description.strip():
+            fact_str += f"关于夫妻共同财产：双方共有财产包括{self.asset_description}，请求依法分割。"
+
+        if self.child_name.strip():
+            fact_str += "综上，为维护原告及子女合法权益，特提起诉讼。"
+        else:
+            fact_str += "综上，为维护原告合法权益，特提起诉讼。"
         return fact_str
 
 class LaborCaseModel(CaseTemplate):
@@ -327,8 +523,6 @@ class LaborCaseModel(CaseTemplate):
         self.overtime_hours = ""
 
     def _parse_date(self, text):
-        import datetime
-        import re
         s = (text or "").strip()
         if not s:
             return None
@@ -336,37 +530,51 @@ class LaborCaseModel(CaseTemplate):
         parts = s2.split("-")
         if len(parts) < 3:
             return None
-        return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-
-    def _calc_unpaid_amount(self):
-        from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
         try:
-            salary = Decimal(str(self.monthly_salary).strip())
-            months = Decimal(str(self._calc_unpaid_months()))
-            total = (salary * months).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-            return total
-        except (InvalidOperation, ValueError):
+            return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+        except ValueError:
             return None
 
-    def _calc_unpaid_months(self):
+    def resolve_unpaid_month_count(self):
+        """Return ``(months, is_partial)`` for the unpaid-salary period.
+
+        Raises :class:`CalculationError` for empty, malformed or reversed input
+        instead of returning a misleading zero.
+        """
+        return parse_month_range(self.unpaid_months)
+
+    def _calc_unpaid_amount(self):
+        """Return the unpaid total as a Decimal, or raise ``CalculationError``."""
+        salary = _to_decimal(self.monthly_salary, "月工资标准")
+        if salary is None:
+            raise CalculationError("未填写月工资标准")
+        if salary < 0:
+            raise CalculationError("月工资标准为负数")
+        months, is_partial = self.resolve_unpaid_month_count()
+        total = (salary * Decimal(months)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        return total, months, is_partial
+
+    def _ensure_unpaid_total(self):
+        """Populate ``total_unpaid_amount`` when the inputs are fully specified."""
         try:
-            import re
-            s = (self.unpaid_months or "").strip()
-            if not s:
-                return 0
-            parts = re.findall(r'\d+', s)
-            return len(parts)
-        except Exception:
-            return 0
+            total, months, is_partial = self._calc_unpaid_amount()
+        except CalculationError:
+            return None
+        self.total_unpaid_amount = f"{total}"
+        return months, is_partial
 
     def render_claims(self):
         claims = []
-        total_unpaid = self._calc_unpaid_amount()
-        if total_unpaid is not None:
-            self.total_unpaid_amount = f"{total_unpaid}"
-            claims.append(f"判令被告向原告支付欠付工资共计人民币 {self.total_unpaid_amount} 元；")
+        summary = self._ensure_unpaid_total()
+        if summary is not None:
+            months, is_partial = summary
+            suffix = "（该区间含不完整或推断月份，具体金额请人工核对）" if is_partial else ""
+            claims.append(
+                f"判令被告向原告支付欠付工资共计人民币 {self.total_unpaid_amount} 元{suffix}；"
+            )
         else:
-            claims.append(f"判令被告向原告支付欠付工资共计人民币 {self.monthly_salary} 元；")
+            # Do not guess an entitlement amount; keep an explicit placeholder.
+            claims.append("判令被告向原告支付欠付工资（具体欠薪月份及金额请依据工资条、银行流水等证据人工确认后填写）；")
 
         if self.overtime_pay:
             claims.append(f"判令被告向原告支付加班费人民币 {self.overtime_pay} 元；")
@@ -378,18 +586,18 @@ class LaborCaseModel(CaseTemplate):
         return claims
 
     def render_facts(self):
-        total_unpaid = self._calc_unpaid_amount()
-        if total_unpaid is not None:
-            self.total_unpaid_amount = f"{total_unpaid}"
-
-        plaintiff_name = self.party_manager.plaintiffs[0].name if self.party_manager.plaintiffs else ""
-        defendant_name = self.party_manager.defendants[0].name if self.party_manager.defendants else ""
+        summary = self._ensure_unpaid_total()
+        if summary is not None:
+            months, _is_partial = summary
+            amount_text = f"共计欠付原告基本工资{self.total_unpaid_amount}元"
+        else:
+            amount_text = "存在欠付工资情形，具体金额以工资条、银行流水等证据为准"
 
         fact_str = (
             f"原告于{self.emp_join_date}入职被告单位，岗位为{self.job_title}，"
             f"双方约定月工资标准为{self.monthly_salary}元。原告在职期间兢兢业业，履行了岗位职责。"
             f"然而，被告自{self.unpaid_months}起，开始出现拖欠工资的行为。"
-            f"截止{self.emp_term_date}，被告共计欠付原告基本工资{self.total_unpaid_amount}元。"
+            f"截止{self.emp_term_date}，被告{amount_text}。"
         )
 
         if self.overtime_pay and self.overtime_hours:

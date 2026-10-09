@@ -1,0 +1,5 @@
+# Runtime dependencies required to run and test the project.
+-r requirements.txt
+
+# Test-only dependencies.
+pytest>=7.0

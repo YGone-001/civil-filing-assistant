@@ -158,20 +158,25 @@ class DocumentGenerator:
         self.add_title("送 达 地 址 确 认 书")
         self.doc.add_paragraph()
 
-        self.add_body("为便于人民法院依法送达诉讼文书，当事人现确认以下送达地址信息真实、准确。", align=WD_PARAGRAPH_ALIGNMENT.JUSTIFY, first_line_indent=32)
+        self.add_body(
+            "为便于人民法院依法送达诉讼文书，当事人现确认以下送达地址信息真实、准确。"
+            "下列表格逐一列示向导中已填写的当事人；如有多名当事人，请分别确认各自的送达地址，"
+            "不能以其中一名当事人的地址代表其他当事人。",
+            align=WD_PARAGRAPH_ALIGNMENT.JUSTIFY, first_line_indent=32,
+        )
         self.doc.add_paragraph()
 
-        p = model.party_manager.plaintiffs[0] if model.party_manager.plaintiffs else None
-        name = p.name if p else ""
-        id_number = p.id_number if p else ""
-        phone = p.phone if p else ""
-        addr = p.address if p else ""
-
-        table = self.doc.add_table(rows=6, cols=2)
-        table.style = "Table Grid"
+        entries = []
+        for role, members in (
+            ("原告", model.party_manager.plaintiffs),
+            ("被告", model.party_manager.defendants),
+        ):
+            for idx, party in enumerate(members, 1):
+                label = role if len(members) == 1 else f"{role}{idx}"
+                entries.append((label, party))
 
         labels = [
-            "当事人（原告/被告）",
+            "当事人",
             "姓名/名称",
             "证件号码/统一社会信用代码",
             "联系电话",
@@ -179,20 +184,40 @@ class DocumentGenerator:
             "备注",
         ]
 
-        values = [
-            "原告",
-            name,
-            id_number,
-            phone,
-            addr,
-            "如地址、电话变更，应及时书面告知人民法院。",
-        ]
+        if not entries:
+            entries = [("（未填写当事人）", None)]
 
-        for i in range(6):
-            self._set_cell_text(table.rows[i].cells[0], labels[i], "SimHei", 16, True)
-            self._set_cell_text(table.rows[i].cells[1], values[i], "FangSong_GB2312", 16, False)
+        for label, party in entries:
+            if party is None:
+                name = id_number = phone = addr = ""
+                role_text = label
+            else:
+                name = getattr(party, "name", "") or ""
+                if getattr(party, "is_company", False):
+                    id_number = getattr(party, "credit_code", "") or ""
+                else:
+                    id_number = getattr(party, "id_number", "") or ""
+                phone = getattr(party, "phone", "") or ""
+                addr = getattr(party, "address", "") or ""
+                role_text = label
 
-        self.doc.add_paragraph()
+            table = self.doc.add_table(rows=6, cols=2)
+            table.style = "Table Grid"
+
+            values = [
+                role_text,
+                name,
+                id_number,
+                phone,
+                addr,
+                "如地址、电话变更，应及时书面告知人民法院。",
+            ]
+
+            for i in range(6):
+                self._set_cell_text(table.rows[i].cells[0], labels[i], "SimHei", 16, True)
+                self._set_cell_text(table.rows[i].cells[1], values[i], "FangSong_GB2312", 16, False)
+            self.doc.add_paragraph()
+
         self._add_text("确认人：", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
         self._add_text("年   月   日", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
 

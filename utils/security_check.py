@@ -1,51 +1,94 @@
 # File: utils/security_check.py
-# Purpose: Ensure absolute offline environment and data wiping
+# Purpose: Advisory offline status check and best-effort in-process cleanup
 # Encoding: UTF-8
 
-import subprocess
 import platform
+import subprocess
+
+
+class NetworkStatus:
+    """Advisory network-route detection results.
+
+    This is a lightweight hint, not a system-level isolation mechanism.
+    """
+
+    ONLINE = "online"
+    OFFLINE = "offline"
+    UNKNOWN = "unknown"
+
 
 class SecurityGuard:
     def __init__(self):
-        self.is_offline = True
+        self.status = NetworkStatus.UNKNOWN
+        self.is_offline = False
+
+    def _set(self, status):
+        self.status = status
+        self.is_offline = (status == NetworkStatus.OFFLINE)
+        return status
+
+    @staticmethod
+    def _has_default_route_windows(output):
+        for line in output.splitlines():
+            parts = line.split()
+            if len(parts) >= 2 and parts[0] == "0.0.0.0" and parts[1] == "0.0.0.0":
+                return True
+        return False
+
+    @staticmethod
+    def _has_default_route_unix(output):
+        for line in output.splitlines():
+            stripped = line.strip()
+            if not stripped:
+                continue
+            if stripped.startswith("default") or stripped.startswith("0.0.0.0"):
+                return True
+        return False
 
     def check_network_status(self):
-        """
-        Check if any network interface is active without using socket.
-        Uses system ping to localhost/gateway or checks arp table/ipconfig.
-        Returns True if offline, False if potentially online.
+        """Return an advisory :class:`NetworkStatus` for the default route.
+
+        Only three honest outcomes are reported:
+
+        * ``ONLINE``  - a default network route was detected.
+        * ``OFFLINE`` - no default route was detected.
+        * ``UNKNOWN`` - the check could not be completed (command missing,
+          non-zero exit, or unexpected output).
+
+        A failed check is reported as ``UNKNOWN`` and is never presented as a
+        verified offline state.
         """
         try:
-            # We use ping to a known non-existent IP or check routing table
-            # without triggering firewall alerts.
-            # A safer cross-platform way without socket is checking if default gateway exists.
             if platform.system().lower() == "windows":
-                # Check for default route
-                output = subprocess.check_output("route print", shell=True, text=True)
-                # If 0.0.0.0 is in the routing table, it means there is an active gateway
-                if "0.0.0.0          0.0.0.0" in output:
-                    self.is_offline = False
-                    return False
-            else:
-                # For Unix-like (Mac/Linux)
-                output = subprocess.check_output("netstat -rn", shell=True, text=True)
-                if "0.0.0.0" in output or "default" in output:
-                    self.is_offline = False
-                    return False
+                output = subprocess.check_output(
+                    ["route", "print", "0.0.0.0"],
+                    text=True,
+                    stderr=subprocess.DEVNULL,
+                )
+                if self._has_default_route_windows(output):
+                    return self._set(NetworkStatus.ONLINE)
+                return self._set(NetworkStatus.OFFLINE)
 
-            self.is_offline = True
-            return True
+            output = subprocess.check_output(
+                ["netstat", "-rn"],
+                text=True,
+                stderr=subprocess.DEVNULL,
+            )
+            if self._has_default_route_unix(output):
+                return self._set(NetworkStatus.ONLINE)
+            return self._set(NetworkStatus.OFFLINE)
         except Exception:
-            # If command fails, we assume it's offline to not block the user,
-            # but log it or handle it safely.
-            self.is_offline = True
-            return True
+            return self._set(NetworkStatus.UNKNOWN)
 
     @staticmethod
     def wipe_memory(model):
-        """
-        Explicitly clear sensitive data strings from memory
-        before application exits.
+        """Best-effort overwrite of sensitive model strings in this process.
+
+        Python strings are immutable and may be interned or copied, so this
+        does NOT guarantee that the original values are irreversibly erased
+        from memory. It only shortens the time the current model object keeps
+        the original strings, and it does not touch files already written to
+        disk.
         """
         if not model:
             return

@@ -2,8 +2,17 @@
 # Purpose: Wizard UI pages for the lawsuit application
 # Encoding: UTF-8
 
+import re
+
+from PySide6.QtCore import QRegularExpression
 from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QRadioButton, QButtonGroup, QTextEdit, QGroupBox, QHBoxLayout, QPushButton, QScrollArea, QWidget, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtGui import QRegularExpressionValidator
+
+# Phone input accepts only digits and the common grouping/prefix characters so
+# that obviously invalid text (letters, brackets, etc.) cannot be entered. The
+# precise digit-count check happens in PartyPage.validate_parties() so that a
+# legitimate landline or extension is not rejected outright.
+_PHONE_INPUT_PATTERN = QRegularExpression(r"^[0-9+\-() ]{0,20}$")
 
 class WelcomePage(QWizardPage):
     def __init__(self):
@@ -12,13 +21,13 @@ class WelcomePage(QWizardPage):
 
         layout = QVBoxLayout()
         desc = ("本工具将引导您生成规范的民事起诉状。\n\n"
-                "【安全合规声明】\n"
-                "版本号：v1.0.0 (物理隔离版)\n"
-                "法律库日期：2026年3月\n\n"
+                "【本地离线说明】\n"
+                "版本号：v1.0.0（离线版）\n"
+                "内置参考信息日期：2026年3月\n\n"
                 "软件特点：\n"
-                "- 完全物理隔离：不含任何网络代码，彻底切断数据外泄可能\n"
-                "- 内存即焚机制：数据仅存RAM，关闭即销毁\n"
-                "- 零外部依赖：纯本地运行渲染Word文档\n\n"
+                "- 本地运行：案件信息仅在本机处理，生成 Word 文书时不联网上传\n"
+                "- 启动时检测默认网络路由并给出提示，该提示只是辅助提醒，不等同于系统级网络隔离\n"
+                "- 生成完成后对内存中的敏感字段执行尽力清理（Python 无法保证彻底、不可恢复地销毁）\n\n"
                 "点击“下一步”开始填写。")
         label = QLabel(desc)
         label.setWordWrap(True)
@@ -86,6 +95,12 @@ class PartyPage(QWizardPage):
         self.setTitle("第一步：填写当事人信息")
 
         main_layout = QVBoxLayout()
+
+        # Live validation / guidance message for the party list.
+        self.msg_label = QLabel("")
+        self.msg_label.setStyleSheet("color: #B00020;")
+        self.msg_label.setWordWrap(True)
+        main_layout.addWidget(self.msg_label)
 
         # Setup Scroll Area for dynamic lists
         self.scroll_area = QScrollArea()
@@ -163,21 +178,19 @@ class PartyPage(QWizardPage):
         is_company_check = QCheckBox("是企业法人（物业公司/公司等）")
         is_company_check.setChecked(False)
 
-        # Only create company fields for property cases
+        # Company-specific widgets are always created so that a corporate party
+        # works for every case type and the extraction code never touches a
+        # ``None`` widget. They stay hidden until the checkbox is ticked.
         case_type = self.field("case_type")
         is_property_case = (case_type == "property")
 
-        if is_property_case:
-            credit_code_edit = QLineEdit()
-            credit_code_edit.setPlaceholderText("统一社会信用代码")
-            credit_code_edit.setVisible(False)
+        credit_code_edit = QLineEdit()
+        credit_code_edit.setPlaceholderText("统一社会信用代码")
+        credit_code_edit.setVisible(False)
 
-            legal_rep_edit = QLineEdit()
-            legal_rep_edit.setPlaceholderText("法定代表人姓名")
-            legal_rep_edit.setVisible(False)
-        else:
-            credit_code_edit = None
-            legal_rep_edit = None
+        legal_rep_edit = QLineEdit()
+        legal_rep_edit.setPlaceholderText("法定代表人姓名")
+        legal_rep_edit.setVisible(False)
 
         is_company_check.toggled.connect(lambda checked: self._toggle_company_fields(checked, credit_code_edit, legal_rep_edit))
 
@@ -186,8 +199,13 @@ class PartyPage(QWizardPage):
         layout.addRow("住址/住所地:", addr_edit)
         layout.addRow("电话:", phone_edit)
 
-        phone_validator = QRegularExpressionValidator(r"^\d{11}$")
+        phone_validator = QRegularExpressionValidator(_PHONE_INPUT_PATTERN)
         phone_edit.setValidator(phone_validator)
+
+        # Keep the live guidance and the wizard "Next" button state in sync.
+        name_edit.textChanged.connect(lambda _text: self._refresh_validation_message())
+        phone_edit.textChanged.connect(lambda _text: self._refresh_validation_message())
+        credit_code_edit.textChanged.connect(lambda _text: self._refresh_validation_message())
 
         # Only create addr_hint for property cases
         if is_property_case and not is_plaintiff:
@@ -236,39 +254,104 @@ class PartyPage(QWizardPage):
                 "legal_rep": legal_rep_edit
             })
 
+        self._refresh_validation_message()
+
     def _toggle_company_fields(self, checked, credit_code_edit, legal_rep_edit):
         if credit_code_edit is not None:
             credit_code_edit.setVisible(checked)
         if legal_rep_edit is not None:
             legal_rep_edit.setVisible(checked)
+        self._refresh_validation_message()
+
+    @staticmethod
+    def _widget_text(widget):
+        """Safely read a widget's text, returning ``""`` for missing widgets."""
+        return widget.text() if widget is not None else ""
+
+    def _iter_parties(self):
+        """Yield ``(kind, index, widgets)`` for every plaintiff and defendant."""
+        for idx, w in enumerate(self.plaintiff_widgets, 1):
+            yield "原告", idx, w
+        for idx, w in enumerate(self.defendant_widgets, 1):
+            yield "被告", idx, w
+
+    def _has_named_party(self, widgets):
+        return any(self._widget_text(w["name"]).strip() for w in widgets)
+
+    def isComplete(self):
+        """Require at least one named plaintiff and one named defendant.
+
+        This prevents the export flow from silently dropping incomplete parties
+        and producing a document that only reflects part of the case.
+        """
+        return (
+            self._has_named_party(self.plaintiff_widgets)
+            and self._has_named_party(self.defendant_widgets)
+        )
+
+    def validate_parties(self):
+        """Return a list of human-readable party-input issues.
+
+        Missing required parties come first; softer format warnings (phone or
+        unified social credit code) follow. The intention is to warn, not to
+        reject legitimately optional or unavailable information.
+        """
+        issues = []
+
+        if not self._has_named_party(self.plaintiff_widgets):
+            issues.append("请至少填写一名原告的姓名/名称。")
+        if not self._has_named_party(self.defendant_widgets):
+            issues.append("请至少填写一名被告的姓名/名称。")
+
+        for kind, idx, w in self._iter_parties():
+            name = self._widget_text(w["name"]).strip()
+            if not name:
+                issues.append(f"{kind}{idx}的姓名/名称不能为空。")
+                continue
+
+            phone = self._widget_text(w["phone"]).strip()
+            if phone:
+                digits = re.sub(r"\D", "", phone)
+                if not 7 <= len(digits) <= 15:
+                    issues.append(f"{kind}{idx}“{name}”的电话号码位数可能不正确，建议核对（仅提示，不阻止生成）。")
+
+            if w["is_company"].isChecked():
+                code = self._widget_text(w["credit_code"]).strip()
+                if code and not re.fullmatch(r"[0-9A-HJ-NPQRTUWXY]{18}", code):
+                    issues.append(f"{kind}{idx}“{name}”的统一社会信用代码格式可能不正确，建议核对（仅提示，不阻止生成）。")
+
+        return issues
+
+    def _refresh_validation_message(self):
+        issues = self.validate_parties()
+        self.msg_label.setText("\n".join(issues))
+        # Notify the wizard so the "Next" button reflects the current state.
+        self.completeChanged.emit()
 
     def get_party_data(self):
-        """Extract all party data to pass to presenter"""
-        data = {
-            "plaintiffs": [],
-            "defendants": []
+        """Extract all party data to pass to presenter.
+
+        Company-specific widgets are always present, but extraction is written
+        defensively so that an absent widget can never raise.
+        """
+        def build(widgets):
+            result = []
+            for w in widgets:
+                result.append({
+                    "name": self._widget_text(w["name"]),
+                    "id_number": self._widget_text(w["id"]),
+                    "address": self._widget_text(w["addr"]),
+                    "phone": self._widget_text(w["phone"]),
+                    "is_company": w["is_company"].isChecked(),
+                    "credit_code": self._widget_text(w["credit_code"]),
+                    "legal_representative": self._widget_text(w["legal_rep"]),
+                })
+            return result
+
+        return {
+            "plaintiffs": build(self.plaintiff_widgets),
+            "defendants": build(self.defendant_widgets),
         }
-        for p in self.plaintiff_widgets:
-            data["plaintiffs"].append({
-                "name": p["name"].text(),
-                "id_number": p["id"].text(),
-                "address": p["addr"].text(),
-                "phone": p["phone"].text(),
-                "is_company": p["is_company"].isChecked(),
-                "credit_code": p["credit_code"].text(),
-                "legal_representative": p["legal_rep"].text()
-            })
-        for d in self.defendant_widgets:
-            data["defendants"].append({
-                "name": d["name"].text(),
-                "id_number": d["id"].text(),
-                "address": d["addr"].text(),
-                "phone": d["phone"].text(),
-                "is_company": d["is_company"].isChecked(),
-                "credit_code": d["credit_code"].text(),
-                "legal_representative": d["legal_rep"].text()
-            })
-        return data
 
 class ContractClaimPage(QWizardPage):
     def __init__(self):
@@ -388,15 +471,22 @@ class ContractClaimPage(QWizardPage):
         }
 
     def update_penalty_warning(self):
-        try:
-            unpaid = float(self.unpaid_amount.text().strip() or "0")
-            penalty = float(self.penalty_amount.text().strip() or "0")
-            if unpaid > 0 and penalty > unpaid * 0.3:
-                self.penalty_warning.setText("提示：违约金可能超过实际损失的 30%，法院可能酌情调减。")
-            else:
-                self.penalty_warning.setText("")
-        except Exception:
+        text = self.penalty_amount.text().strip()
+        if not text:
             self.penalty_warning.setText("")
+            return
+        try:
+            float(text)
+        except ValueError:
+            self.penalty_warning.setText("违约金/逾期利息应为数字，请核对。")
+            return
+        # No fixed ratio is asserted as a legal ceiling; whether a penalty is
+        # excessive is decided by the court in light of the contract and actual
+        # loss, so only a neutral manual-review reminder is shown.
+        self.penalty_warning.setText(
+            "提示：违约金（或逾期付款利息）是否过高、可否调整，由法院结合合同约定与实际损失判断，"
+            "本工具不作绝对判断，请在提交前人工核对。"
+        )
 
     def _parse_date(self, text):
         import datetime
@@ -523,19 +613,25 @@ class LoanClaimPage(QWizardPage):
         self.registerField("court_name*", self.court_name)
 
     def validate_rate(self):
-        text = self.rate.text()
+        text = self.rate.text().strip()
         if not text:
             self.rate_warning.setText("")
             return
         try:
             val = float(text)
-            # Assuming recent LPR is around 3.45%, 4x is 13.8%
-            if val > 13.8:
-                self.rate_warning.setText("法律提示：约定的利率超过受保护上限(4倍LPR)，超出部分可能无法获得法院支持。")
-            else:
-                self.rate_warning.setText("")
         except ValueError:
             self.rate_warning.setText("请输入有效的数字")
+            return
+        if val < 0:
+            self.rate_warning.setText("年利率不应为负数，请核对。")
+        else:
+            # No fixed universal ceiling is asserted here: the applicable limit
+            # depends on the latest judicial guidance and the specific case, so
+            # the tool only reminds the user to verify it manually.
+            self.rate_warning.setText(
+                "温馨提示：借款利率的可支持上限与适用规则会随最新司法口径、时间和地区变化，"
+                "本工具不代为判断是否超限，请在提交前人工核对。"
+            )
 
     def get_has_iou(self):
         return self.has_iou_group.checkedId() == 1
@@ -674,6 +770,7 @@ class PropertyClaimPage(QWizardPage):
         self.total_input.setText("")
         self.court_name.setText("上海市徐汇区人民法院")
         self.update_calc()
+        from PySide6.QtWidgets import QMessageBox
         QMessageBox.information(self, "提示", "物业纠纷测试数据已填入。")
 
 class EvidencePage(QWizardPage):
@@ -891,7 +988,7 @@ class ExportPage(QWizardPage):
         label.setWordWrap(True)
         layout.addWidget(label)
 
-        self.secure_exit_btn = QPushButton("安全退出 (销毁内存数据)")
+        self.secure_exit_btn = QPushButton("退出程序（不删除已生成文件）")
         self.secure_exit_btn.setStyleSheet("background-color: #f44336; color: white;")
         self.secure_exit_btn.clicked.connect(self.secure_exit)
         layout.addWidget(self.secure_exit_btn)
@@ -899,41 +996,50 @@ class ExportPage(QWizardPage):
         self.setLayout(layout)
 
     def show_preview(self):
-        case_type = self.wizard().field("case_type")
-        if case_type == "contract":
-            contract_date = self.field("c_contract_date")
-            contract_name = self.field("c_contract_name")
-            product_name = self.field("c_product_name")
-            total_amount = self.field("c_total_amount")
-            unpaid_amount = self.field("c_unpaid_amount")
-            preview_text = (
-                f"原告与被告于{contract_date}签订《{contract_name}》，"
-                f"约定采购{product_name}，总金额 {total_amount} 元。"
-                f"被告至今尚欠货款 {unpaid_amount} 元未付..."
-            )
-        elif case_type == "property":
-            property_addr = self.field("p_property_addr")
-            house_area = self.field("p_house_area")
-            fee_rate = self.field("p_fee_rate")
-            period_start = self.field("p_period_start")
-            period_end = self.field("p_period_end")
-            preview_text = (
-                f"被告系{property_addr}业主，面积{house_area}平方米，"
-                f"按{fee_rate}元/平方米/月计费，自{period_start}起至{period_end}止拖欠物业费..."
-            )
-        else:
-            loan_date = self.field("loan_date")
-            reason = self.field("loan_reason")
-            amount = self.field("principal")
-            method = self.field("payment_method")
-            preview_text = (
-                f"原告与被告系朋友关系。{loan_date}，被告因{reason}需要向原告借款，"
-                f"原告通过{method}向被告交付借款本金 {amount} 元..."
-            )
-
+        """Show a case-specific preview built from the same model as the export."""
         from PySide6.QtWidgets import QMessageBox
-        QMessageBox.information(self, "事实与理由预览 (部分文本)", f"预览功能展示了您填写的事实拼装结果：\n\n{preview_text}\n\n(完整逻辑将在生成的Word文档中体现)")
+
+        wizard = self.wizard()
+        case_type = wizard.field("case_type")
+
+        case_labels = {
+            "loan": "民间借贷纠纷",
+            "contract": "买卖合同纠纷",
+            "property": "物业服务合同纠纷",
+            "labor": "劳动报酬/工资追索",
+            "divorce": "离婚纠纷",
+        }
+        label = case_labels.get(case_type, "未知案由")
+
+        try:
+            from presenters.model_builder import build_case_model
+            model = build_case_model(wizard)
+            claims = model.render_claims()
+            facts = model.render_facts()
+        except Exception as exc:  # a preview failure must never crash the wizard
+            QMessageBox.warning(self, "预览不可用", f"暂时无法生成“{label}”预览：\n{exc}")
+            return
+
+        claims_text = "\n".join(f"{i}. {c}" for i, c in enumerate(claims, 1))
+        preview_text = (
+            f"案由：{label}\n\n"
+            f"【诉讼请求（预览）】\n{claims_text}\n\n"
+            f"【事实与理由（预览）】\n{facts}"
+        )
+        QMessageBox.information(
+            self,
+            "起诉状预览（部分文本）",
+            "以下预览由与最终文书相同的案件模型生成，仅展示诉讼请求与事实理由的文本，"
+            "不含当事人排版、表格与页眉页脚：\n\n" + preview_text,
+        )
 
     def secure_exit(self):
-        import sys
-        sys.exit(0)
+        """Close the wizard without claiming that files or memory were destroyed."""
+        from PySide6.QtWidgets import QMessageBox
+        QMessageBox.information(
+            self,
+            "退出",
+            "程序将关闭。案件信息存在于本机内存与已生成的 Word 文件中；"
+            "关闭程序不会自动删除已生成的文件，请按需自行妥善保存或销毁。",
+        )
+        self.wizard().close()
