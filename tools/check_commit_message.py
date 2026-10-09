@@ -12,8 +12,9 @@ Rules enforced (see AGENTS.md "6. Git 与远端约定"):
    implementation reports, detailed test results, or extra trailers.
 2. The whole commit message (subject and any body/trailer) must not contain
    development lifecycle or stage identifiers such as ``phase1``, ``Phase 2``,
-   ``phase-3``, ``PHASE_4``, ``P1``, ``p 1``, ``P2-1``, ``stage1`` etc., in any
-   combination of case, whitespace, underscore and hyphen.
+   ``phase-3``, ``PHASE_4``, ``phasexxx``, ``phaseAlpha``, ``P1``, ``p 1``,
+   ``P2-1``, ``stage1`` etc., in any combination of case, whitespace, underscore
+   and hyphen. Ordinary words such as ``phases`` and ``staged`` are not markers.
 
 The validator is intentionally dependency free so it can run in a bare CI
 checkout. It can validate a literal message, a single revision, or a range of
@@ -34,11 +35,26 @@ from typing import Iterable, List, Optional
 # shorter; this bound only rejects obviously non-concise summaries.
 MAX_SUBJECT_LENGTH = 100
 
-# Development lifecycle keywords that must never appear as lifecycle markers.
-# The keyword may be followed by a digit, separator, whitespace or end of text
-# (``phase1``, ``Phase 2``, ``phase-3``, ``PHASE_4``, ``stage1``) but ordinary
-# words such as ``staged`` or ``phases`` are not treated as markers.
-_LIFECYCLE_KEYWORD = re.compile(r"(?i)\b(?:phase|stage)(?![a-z])")
+# Ordinary English words containing the "phase"/"stage" root that are *not*
+# lifecycle markers. A keyword elongated with lower-case letters forming one of
+# these words is acceptable; any other elongation (e.g. ``phasexxx``) is a
+# marker.
+_ORDINARY_LIFECYCLE_WORDS = frozenset(
+    {
+        "phase",
+        "phases",
+        "phased",
+        "phasing",
+        "stage",
+        "stages",
+        "staged",
+        "staging",
+    }
+)
+
+# Finds the "phase"/"stage" keyword at a word boundary (case-insensitive).
+_LIFECYCLE_PREFIX = re.compile(r"(?i)\b(?:phase|stage)")
+
 
 # Milestone markers such as P1, p 1, P2-1, p 2 - 1. A word boundary is
 # required before the "p" and a digit must follow (optionally after a single
@@ -49,6 +65,35 @@ _MILESTONE_MARKER = re.compile(r"(?i)(?<![a-z0-9])p\s*[-_.]?\s*\d")
 # only counted when followed by end-of-string or whitespace, so internal dots
 # such as ".gitignore" are not treated as sentence breaks.
 _SENTENCE_TERMINATOR = re.compile(r"[.!?\u3002\uff01\uff1f](?:\s|$)")
+
+
+def _contains_lifecycle_marker(text: str) -> bool:
+    """Return True when *text* contains a development lifecycle/stage marker.
+
+    ``phase``/``stage`` is treated as a marker when immediately followed by a
+    digit (``phase1``), a separator such as whitespace/underscore/hyphen
+    (``Phase 2``, ``phase-3``, ``phase_4``), an uppercase letter
+    (``phaseAlpha``), or by further lower-case letters that do not form one of
+    the ordinary English words in :data:`_ORDINARY_LIFECYCLE_WORDS`
+    (``phasexxx``). Ordinary words such as ``phases`` and ``staged`` are not
+    reported.
+    """
+    for match in _LIFECYCLE_PREFIX.finditer(text):
+        rest = text[match.end():]
+        if not rest:
+            continue  # "phase"/"stage" used alone as an ordinary word
+        next_char = rest[0]
+        if next_char.isdigit():
+            return True  # phase1
+        if next_char in " \t-_.":
+            return True  # Phase 2 / phase-3 / phase_4
+        if next_char.isupper():
+            return True  # phaseAlpha
+        suffix_match = re.match(r"[a-z]+", rest)
+        suffix = suffix_match.group(0) if suffix_match else ""
+        if (match.group(0) + suffix).lower() not in _ORDINARY_LIFECYCLE_WORDS:
+            return True  # phasexxx
+    return False
 
 
 def find_policy_violations(message: str) -> List[str]:
@@ -85,7 +130,7 @@ def find_policy_violations(message: str) -> List[str]:
             f"{MAX_SUBJECT_LENGTH} characters)"
         )
 
-    if _LIFECYCLE_KEYWORD.search(stripped):
+    if _contains_lifecycle_marker(stripped):
         violations.append(
             "commit message contains a development lifecycle/stage identifier"
         )
@@ -139,11 +184,14 @@ def read_revision_message(rev: str) -> str:
 
 
 def read_range_messages(base: str, head: str = "HEAD") -> List[tuple]:
-    """Return ``(sha, subject, body)`` triples for commits in ``base..head``."""
-    # ``--no-merges`` keeps the check focused on authored change commits.
+    """Return ``(sha, subject, body)`` triples for commits in ``base..head``.
+
+    Merge commits are included and validated like any other commit rather than
+    being silently skipped with ``--no-merges``; a merge whose subject violates
+    the single-sentence or lifecycle rules is therefore still reported.
+    """
     output = _git(
         "log",
-        "--no-merges",
         "--format=%H%x00%an%x00%B%x1e",
         f"{base}..{head}",
     )
@@ -213,7 +261,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.rev_range is not None:
         base, _, head = args.rev_range.partition("..")
         head = head or "HEAD"
-        entries = read_range_messages(base, head)
+        try:
+            entries = read_range_messages(base, head)
+        except subprocess.CalledProcessError as exc:
+            print(
+                f"FAIL could not resolve commit range {args.rev_range!r}\n"
+                f"       (git log failed with exit code {exc.returncode}); "
+                "no commits were validated"
+            )
+            return 1
         if not entries:
             print(f"OK   no new commits in range {args.rev_range}")
         for sha, message in entries:

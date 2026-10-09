@@ -159,6 +159,25 @@ def prepare_case(wizard, case_type, plaintiffs=None, defendants=None, with_evide
     return wizard
 
 
+def navigate_to_export(wizard):
+    """Navigate a prepared wizard to the export page and return its Finish button.
+
+    The wizard is restarted and advanced with real ``next()`` navigation so the
+    test exercises the same page transitions the user triggers by clicking
+    "Next".
+    """
+    from PySide6.QtWidgets import QWizard
+
+    wizard.restart()
+    wizard.next()  # welcome -> case selection
+    wizard.next()  # case selection -> party
+    wizard.next()  # party -> claim
+    wizard.next()  # claim -> evidence
+    wizard.next()  # evidence -> export
+    assert wizard.currentId() == wizard.PAGE_EXPORT
+    return wizard.button(QWizard.FinishButton)
+
+
 def docx_all_text(path):
     """Return every paragraph and table cell of a .docx as one string."""
     from docx import Document

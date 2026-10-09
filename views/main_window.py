@@ -50,8 +50,9 @@ class LawsuitWizard(QWizard):
         # Set start page
         self.setStartId(self.PAGE_WELCOME)
 
-        # Override the accept method to ensure it prints and emits
-        self.accepted.connect(self.debug_accept)
+        # The presenter registers a Finish handler that performs the export
+        # before the wizard commits to its accepted (closed) state.
+        self.finish_handler = None
 
         # Connect template fill button
         self.welcome_page.fill_btn.clicked.connect(self.fill_template_data)
@@ -89,8 +90,20 @@ class LawsuitWizard(QWizard):
 
         return super().nextId()
 
-    def debug_accept(self):
-        print("DEBUG: QWizard 'accepted' signal fired from main_window.")
+    def set_finish_handler(self, handler):
+        """Register the pre-accept export step supplied by the presenter."""
+        self.finish_handler = handler
+
+    def accept(self):
+        """Run the export before accepting, so a failure keeps the wizard open.
+
+        The real QWizard "Finish" button routes through this method. Only a
+        successful export advances to Qt's normal accepted (closed) state.
+        """
+        handler = getattr(self, "finish_handler", None)
+        if callable(handler) and not handler():
+            return  # keep the wizard open so the user can correct and retry
+        super().accept()
 
     def fill_template_data(self):
         """Auto-fill data for testing purposes"""

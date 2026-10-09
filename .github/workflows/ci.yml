@@ -39,7 +39,20 @@ jobs:
         run: python -m compileall -q main.py models presenters utils views test_generator.py
 
       - name: Commit message policy
-        run: python tools/check_commit_message.py --rev HEAD
+        shell: pwsh
+        run: |
+          $base = ""
+          if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
+            $base = "${{ github.event.pull_request.base.sha }}"
+          } else {
+            $base = "${{ github.event.before }}"
+          }
+          if ([string]::IsNullOrWhiteSpace($base) -or $base -eq "0000000000000000000000000000000000000000") {
+            # Initial commit or no prior commit: validate HEAD only.
+            python tools/check_commit_message.py --rev HEAD
+          } else {
+            python tools/check_commit_message.py --range "$base..HEAD"
+          }
 
       - name: Pytest suite
         run: python -m pytest -q

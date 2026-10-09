@@ -29,6 +29,44 @@ CASE_CONTENT = {
     "divorce": ["离婚", "抚养费", "3000"],
 }
 
+# C3: every phrase below was previously invented by the template without any
+# corresponding user input. Each must now be absent from the generated complaint.
+FORBIDDEN_FABRICATIONS = {
+    "loan": ["朋友关系", "多次催讨"],
+    "contract": ["无理拒绝", "多次催告"],
+    "property": ["无故拖欠", "已构成违约", "多次向被告履行"],
+    "labor": ["兢兢业业"],
+    "divorce": ["生活琐事"],
+}
+
+# What the corrected template actually emits for each filled, fictional case.
+CORRECTED_PHRASES = {
+    "loan": ["被告未偿还借款"],
+    "contract": ["被告已签收"],
+    "property": ["向被告催缴"],
+    "labor": ["未按时足额支付"],
+    "divorce": ["双方感情确已破裂"],
+}
+
+# C3: every phrase below was previously invented by the template without any
+# corresponding user input. Each must now be absent from the generated complaint.
+FORBIDDEN_FABRICATIONS = {
+    "loan": ["朋友关系", "多次催讨"],
+    "contract": ["无理拒绝", "多次催告"],
+    "property": ["无故拖欠", "已构成违约", "多次向被告履行"],
+    "labor": ["兢兢业业"],
+    "divorce": ["生活琐事"],
+}
+
+# What the corrected template actually emits for each filled, fictional case.
+CORRECTED_PHRASES = {
+    "loan": ["被告未偿还借款"],
+    "contract": ["被告已签收"],
+    "property": ["向被告催缴"],
+    "labor": ["未按时足额支付"],
+    "divorce": ["双方感情确已破裂"],
+}
+
 
 def _export(tmp_path, monkeypatch, case_type, plaintiffs=None, defendants=None, mutate=None):
     home = tmp_path / "home"
@@ -179,3 +217,29 @@ def test_optional_fields_omitted_does_not_fabricate(qapp, monkeypatch, tmp_path)
     assert len(docs) == 3
     complaint = docx_all_text(_find(docs, "民事起诉状"))
     assert "违约金" not in complaint
+
+
+@pytest.mark.parametrize("case_type", CASE_TYPES)
+def test_no_fabricated_case_facts(qapp, monkeypatch, tmp_path, case_type):
+    """The complaint must not contain phrases the template once invented on its own."""
+    docs = _export(tmp_path, monkeypatch, case_type)
+    complaint = docx_all_text(_find(docs, "民事起诉状"))
+
+    for phrase in FORBIDDEN_FABRICATIONS[case_type]:
+        assert phrase not in complaint, f"{case_type}: fabricated phrase {phrase!r} still present"
+
+    for phrase in CORRECTED_PHRASES[case_type]:
+        assert phrase in complaint, f"{case_type}: expected phrase {phrase!r} missing"
+
+
+@pytest.mark.parametrize("case_type", CASE_TYPES)
+def test_no_fabricated_case_facts(qapp, monkeypatch, tmp_path, case_type):
+    """The complaint must not contain phrases the template once invented on its own."""
+    docs = _export(tmp_path, monkeypatch, case_type)
+    complaint = docx_all_text(_find(docs, "民事起诉状"))
+
+    for phrase in FORBIDDEN_FABRICATIONS[case_type]:
+        assert phrase not in complaint, f"{case_type}: fabricated phrase {phrase!r} still present"
+
+    for phrase in CORRECTED_PHRASES[case_type]:
+        assert phrase in complaint, f"{case_type}: expected phrase {phrase!r} missing"

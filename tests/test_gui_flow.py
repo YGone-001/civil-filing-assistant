@@ -9,6 +9,7 @@ import pytest
 from helpers import (
     CASE_TYPES,
     make_wizard,
+    navigate_to_export,
     prepare_case,
     select_case,
     set_parties,
@@ -172,3 +173,261 @@ def test_evidence_add_edit_remove(qapp):
 
     page.add_row("", "")  # blank row must not become evidence
     assert len(page.get_evidence_items()) == base
+
+
+# --- Real QWizard "Finish" button lifecycle (C1) ---------------------------
+# These tests click the actual Finish button (not presenter.on_wizard_accepted)
+# and assert the export happens before the wizard reaches its accepted state.
+
+
+def test_finish_button_success_exports_and_accepts(qapp, monkeypatch, tmp_path, dialog_recorder):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+
+    finish = navigate_to_export(wizard)
+    accepted = []
+    wizard.accepted.connect(lambda: accepted.append(True))
+
+    wizard.show()
+    qapp.processEvents()
+    finish.click()
+    qapp.processEvents()
+
+    assert accepted, "Finish button did not reach the accepted state"
+    assert wizard.result() != 0
+    docs = sorted(desktop.rglob("*.docx"))
+    assert len(docs) == 3, [d.name for d in docs]
+    assert any(entry["kind"] == "information" for entry in dialog_recorder)
+
+
+def test_finish_button_failure_keeps_wizard_open(qapp, monkeypatch, tmp_path, dialog_recorder):
+    """A failed export must keep the wizard open and preserve the user's input."""
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    principal_before = wizard.loan_claim_page.principal.text()
+
+    finish = navigate_to_export(wizard)
+
+    def boom(self, model, file_path):
+        raise RuntimeError("模拟生成失败")
+
+    monkeypatch.setattr(DocumentGenerator, "export_complaint", boom)
+
+    accepted = []
+    wizard.accepted.connect(lambda: accepted.append(True))
+    wizard.show()
+    qapp.processEvents()
+    finish.click()
+    qapp.processEvents()
+
+    assert not accepted
+    assert wizard.result() == 0
+    assert wizard.isVisible(), "wizard should remain open after a failure"
+    assert wizard.loan_claim_page.principal.text() == principal_before, "input must be preserved"
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+    assert any(entry["kind"] == "critical" for entry in dialog_recorder)
+
+
+def test_finish_button_retry_after_failure(qapp, monkeypatch, tmp_path, dialog_recorder):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    calls = {"n": 0}
+    original = DocumentGenerator.export_complaint
+
+    def flaky(self, model, file_path):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("首次失败")
+        return original(self, model, file_path)
+
+    monkeypatch.setattr(DocumentGenerator, "export_complaint", flaky)
+
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    finish = navigate_to_export(wizard)
+    wizard.show()
+    qapp.processEvents()
+
+    finish.click()
+    qapp.processEvents()
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+
+    finish.click()
+    qapp.processEvents()
+    assert len(list(desktop.rglob("*.docx"))) == 3
+
+
+def test_finish_button_blocks_on_incomplete_parties(qapp, monkeypatch, tmp_path, dialog_recorder):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    finish = navigate_to_export(wizard)
+
+    # Make the party page incomplete after navigation, before accepting.
+    wizard.party_page.plaintiff_widgets[0]["name"].setText("")
+
+    accepted = []
+    wizard.accepted.connect(lambda: accepted.append(True))
+    wizard.show()
+    qapp.processEvents()
+    finish.click()
+    qapp.processEvents()
+
+    assert not accepted
+    assert wizard.result() == 0
+    assert any(entry["kind"] == "warning" for entry in dialog_recorder)
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+
+
+def test_reentrant_finish_does_not_duplicate_export(qapp, monkeypatch, tmp_path, dialog_recorder):
+    """A reentrant Finish request while an export is active must be ignored."""
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+
+    state = {"exports": 0}
+    original = DocumentGenerator.export_complaint
+
+    def reentrant(self, model, file_path):
+        state["exports"] += 1
+        if state["exports"] == 1:
+            result = presenter.attempt_finish()
+            assert result == presenter.FINISH_EXPORT_FAILED
+        return original(self, model, file_path)
+
+    monkeypatch.setattr(DocumentGenerator, "export_complaint", reentrant)
+
+    result = presenter.attempt_finish()
+    assert result == presenter.FINISH_SUCCESS
+    assert state["exports"] == 1, "reentrant Finish must not run a second export"
+    assert len(list(desktop.rglob("*.docx"))) == 3
+
+
+# --- Real QWizard "Finish" button lifecycle (C1) ---------------------------
+# These tests click the actual Finish button (not presenter.on_wizard_accepted)
+# and assert the export happens before the wizard reaches its accepted state.
+
+
+def test_finish_button_success_exports_and_accepts(qapp, monkeypatch, tmp_path, dialog_recorder):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+
+    finish = navigate_to_export(wizard)
+    accepted = []
+    wizard.accepted.connect(lambda: accepted.append(True))
+
+    wizard.show()
+    qapp.processEvents()
+    finish.click()
+    qapp.processEvents()
+
+    assert accepted, "Finish button did not reach the accepted state"
+    assert wizard.result() != 0
+    docs = sorted(desktop.rglob("*.docx"))
+    assert len(docs) == 3, [d.name for d in docs]
+    assert any(entry["kind"] == "information" for entry in dialog_recorder)
+
+
+def test_finish_button_failure_keeps_wizard_open(qapp, monkeypatch, tmp_path, dialog_recorder):
+    """A failed export must keep the wizard open and preserve the user's input."""
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    principal_before = wizard.loan_claim_page.principal.text()
+
+    finish = navigate_to_export(wizard)
+
+    def boom(self, model, file_path):
+        raise RuntimeError("模拟生成失败")
+
+    monkeypatch.setattr(DocumentGenerator, "export_complaint", boom)
+
+    accepted = []
+    wizard.accepted.connect(lambda: accepted.append(True))
+    wizard.show()
+    qapp.processEvents()
+    finish.click()
+    qapp.processEvents()
+
+    assert not accepted
+    assert wizard.result() == 0
+    assert wizard.isVisible(), "wizard should remain open after a failure"
+    assert wizard.loan_claim_page.principal.text() == principal_before, "input must be preserved"
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+    assert any(entry["kind"] == "critical" for entry in dialog_recorder)
+
+
+def test_finish_button_retry_after_failure(qapp, monkeypatch, tmp_path, dialog_recorder):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    calls = {"n": 0}
+    original = DocumentGenerator.export_complaint
+
+    def flaky(self, model, file_path):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("首次失败")
+        return original(self, model, file_path)
+
+    monkeypatch.setattr(DocumentGenerator, "export_complaint", flaky)
+
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    finish = navigate_to_export(wizard)
+    wizard.show()
+    qapp.processEvents()
+
+    finish.click()
+    qapp.processEvents()
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+
+    finish.click()
+    qapp.processEvents()
+    assert len(list(desktop.rglob("*.docx"))) == 3
+
+
+def test_finish_button_blocks_on_incomplete_parties(qapp, monkeypatch, tmp_path, dialog_recorder):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    finish = navigate_to_export(wizard)
+
+    # Make the party page incomplete after navigation, before accepting.
+    wizard.party_page.plaintiff_widgets[0]["name"].setText("")
+
+    accepted = []
+    wizard.accepted.connect(lambda: accepted.append(True))
+    wizard.show()
+    qapp.processEvents()
+    finish.click()
+    qapp.processEvents()
+
+    assert not accepted
+    assert wizard.result() == 0
+    assert any(entry["kind"] == "warning" for entry in dialog_recorder)
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+
+
+def test_reentrant_finish_does_not_duplicate_export(qapp, monkeypatch, tmp_path, dialog_recorder):
+    """A reentrant Finish request while an export is active must be ignored."""
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+
+    state = {"exports": 0}
+    original = DocumentGenerator.export_complaint
+
+    def reentrant(self, model, file_path):
+        state["exports"] += 1
+        if state["exports"] == 1:
+            result = presenter.attempt_finish()
+            assert result == presenter.FINISH_EXPORT_FAILED
+        return original(self, model, file_path)
+
+    monkeypatch.setattr(DocumentGenerator, "export_complaint", reentrant)
+
+    result = presenter.attempt_finish()
+    assert result == presenter.FINISH_SUCCESS
+    assert state["exports"] == 1, "reentrant Finish must not run a second export"
+    assert len(list(desktop.rglob("*.docx"))) == 3

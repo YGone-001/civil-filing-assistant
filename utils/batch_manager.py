@@ -4,7 +4,15 @@
 
 import datetime
 import os
+import shutil
+import tempfile
+import uuid
 import zipfile
+
+
+def _rename_dir(src, dst):
+    """Publish a fully built export directory with a single same-filesystem rename."""
+    os.rename(src, dst)
 
 
 class BatchExportManager:
@@ -53,10 +61,12 @@ class BatchExportManager:
     def run_batch_export(self, model, base_path):
         """Generate the three documents and return ``(target_dir, files)``.
 
-        Documents are written to temporary ``*.part`` files and only published
-        with their final names once every file has been generated and verified,
-        so a failure never leaves a misleading partial set. Existing files are
-        never overwritten; instead a numeric suffix is added.
+        The whole set is built inside a private temporary directory located on
+        the *target* filesystem, and only published with a single same-filesystem
+        directory rename once every file has been generated and verified. A
+        failure therefore can never leave a partial or abandoned ``.part``
+        file, and existing completed exports are never overwritten: the final
+        case directory receives a numeric suffix when a collision would occur.
         """
         p_name = "Plaintiff"
         d_name = "Defendant"
@@ -74,8 +84,11 @@ class BatchExportManager:
         stamp = now.strftime("%Y%m%d_%H%M%S")
 
         folder_name = f"{p_safe}_vs_{d_safe}_{date_str}"
-        target_dir = os.path.join(base_path, folder_name)
-        os.makedirs(target_dir, exist_ok=True)
+        os.makedirs(base_path, exist_ok=True)
+
+        # Resolve a unique final directory up front; a numeric suffix is used
+        # only when a previous export already occupies the name.
+        target_dir = self._unique_path(base_path, folder_name)
 
         prefix = f"{p_safe}_vs_{d_safe}_{stamp}"
         specs = [
@@ -83,28 +96,23 @@ class BatchExportManager:
             (self.generator.export_evidence_list, f"{prefix}_证据清单.docx"),
             (self.generator.export_address_form, f"{prefix}_送达地址确认书.docx"),
         ]
+        filenames = [filename for _export_fn, filename in specs]
 
-        staged = []  # (temp_path, final_path)
+        # Stage in a private directory on the destination filesystem so the
+        # final publish is a single atomic rename, not three separate ones.
+        staging_dir = tempfile.mkdtemp(
+            prefix=".cfa_staging_", suffix=f"_{uuid.uuid4().hex[:8]}", dir=base_path
+        )
         try:
             for export_fn, filename in specs:
-                final_path = self._unique_path(target_dir, filename)
-                temp_path = final_path + ".part"
-                export_fn(model, temp_path)
-                self._verify_docx(temp_path)
-                staged.append((temp_path, final_path))
-
-            published = []
-            for temp_path, final_path in staged:
-                os.replace(temp_path, final_path)
-                published.append(final_path)
+                path = os.path.join(staging_dir, filename)
+                export_fn(model, path)
+                self._verify_docx(path)
+            _rename_dir(staging_dir, target_dir)
         except Exception:
-            # Remove any half-written temp files so no partial set survives.
-            for temp_path, _final_path in staged:
-                if os.path.exists(temp_path):
-                    try:
-                        os.remove(temp_path)
-                    except OSError:
-                        pass
+            # Discard every partially built file; no incomplete set survives.
+            shutil.rmtree(staging_dir, ignore_errors=True)
             raise
 
-        return target_dir, published
+        files = [os.path.join(target_dir, name) for name in filenames]
+        return target_dir, files

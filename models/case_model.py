@@ -230,18 +230,24 @@ class LoanCaseModel(CaseTemplate):
     def render_facts(self):
         iou_text = "出具了借条" if self.has_iou else "未出具借条"
 
+        # The opening is drawn only from supplied facts; no party relationship
+        # (such as "friends") is asserted.
         fact_str = (
-            f"原告与被告系朋友关系。{self.loan_date}，被告因{self.loan_reason}需要向原告借款，"
-            f"原告通过{self.payment_method}向被告交付借款本金 {self.principal_amount} 元，被告{iou_text}。"
+            f"{self.loan_date}，被告因{self.loan_reason}向原告借款，"
+            f"原告通过{self.payment_method}向被告支付借款本金 {self.principal_amount} 元，被告{iou_text}。"
         )
 
         if self.interest_rate:
             fact_str += f"双方约定借款年利率为 {self.interest_rate}%。"
 
-        fact_str += (
-            f"此后，原告于{self.demand_date}通过{self.demand_method}多次催讨，"
-            f"被告至今未能偿还借款。为维护原告合法权益，特诉至贵院，请依法支持原告的诉讼请求。"
-        )
+        # Only assert a demand when the demand fields are supplied; no demand
+        # frequency ("多次") or repayment deadline is fabricated.
+        if self.demand_date and self.demand_method:
+            fact_str += f"原告于{self.demand_date}通过{self.demand_method}向被告催讨，被告未偿还借款。"
+        else:
+            fact_str += "被告未偿还借款。"
+
+        fact_str += "为维护原告合法权益，特诉至贵院，请依法支持原告的诉讼请求。"
         return fact_str
 
     @staticmethod
@@ -303,12 +309,14 @@ class ContractCaseModel(CaseTemplate):
             if self.is_signed:
                 fact_str += "被告已签收。"
             else:
-                fact_str += "但被告无理拒绝签收。"
+                # Failure to sign is stated without asserting a reason for it.
+                fact_str += "被告尚未签收。"
         else:
             fact_str += "目前尚未完成交货。"
 
         fact_str += (
-            f"经原告多次催告，被告至今尚欠货款 {self.unpaid_amount} 元未付。为维护原告合法权益，特诉至贵院。"
+            f"原告已向被告催告，被告至今尚欠货款 {self.unpaid_amount} 元未付。"
+            f"为维护原告合法权益，特诉至贵院。"
         )
         return fact_str
 
@@ -426,9 +434,10 @@ class PropertyCaseModel(CaseTemplate):
             fact_str += "（上述金额按整月计费估算，欠费期间存在不足整月或分段计费的情形，具体金额以双方核对及缴费记录为准。）"
 
         if self.demand_record:
-            fact_str += f"原告曾通过{self.demand_record}多次向被告履行催告义务，但被告至今仍无故拖欠，其行为已构成违约。"
-        else:
-            fact_str += "原告曾多次向被告履行催告义务，但被告至今仍无故拖欠，其行为已构成违约。"
+            fact_str += f"原告曾通过{self.demand_record}向被告催缴，但被告至今未缴纳。"
+        # When no demand record is supplied, no demand frequency ("多次"),
+        # bad-faith ("无故") or legal-conclusion ("已构成违约") assertion is
+        # fabricated; the demand statement is simply omitted.
 
         fact_str += "综上，为维护原告合法权益，特提起诉讼，请依法支持原告的诉讼请求。"
         return fact_str
@@ -484,8 +493,10 @@ class DivorceCaseModel(CaseTemplate):
 
         if self.divorce_reason.strip():
             fact_str += f"婚后因{self.divorce_reason}，导致夫妻感情日益淡漠。"
-        else:
-            fact_str += "婚后双方因生活琐事产生矛盾，导致夫妻感情日益淡漠。"
+
+        # When no divorce reason is supplied, no marital-dissension fact (such
+        # as "生活琐事产生矛盾") is invented; the reason is simply omitted and
+        # the appellant's legal conclusion is stated separately below.
 
         fact_str += "原告认为，双方感情确已破裂，已无和好可能。"
 
@@ -595,8 +606,8 @@ class LaborCaseModel(CaseTemplate):
 
         fact_str = (
             f"原告于{self.emp_join_date}入职被告单位，岗位为{self.job_title}，"
-            f"双方约定月工资标准为{self.monthly_salary}元。原告在职期间兢兢业业，履行了岗位职责。"
-            f"然而，被告自{self.unpaid_months}起，开始出现拖欠工资的行为。"
+            f"双方约定月工资标准为{self.monthly_salary}元。"
+            f"被告未按时足额支付原告{self.unpaid_months}期间的工资。"
             f"截止{self.emp_term_date}，被告{amount_text}。"
         )
 
