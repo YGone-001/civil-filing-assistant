@@ -1,0 +1,40 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging and PyInstaller outputs
+build/
+dist/
+*.egg-info/
+*.spec
+
+# IDE and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local configuration, credentials, and logs
+.env
+.env.*
+!.env.example
+*.log
+
+# Generated legal documents and local test artifacts
+/test_samples/
+/*.docx
+/*_vs_*/
