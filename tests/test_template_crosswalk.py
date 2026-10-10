@@ -741,3 +741,385 @@ def test_corrected_records_validate_end_to_end():
     assert ctc.validate_analysis(ANALYSIS_DIR, SOURCE_REGISTRY) == []
     assert ctc.main(["--analysis-dir", str(ANALYSIS_DIR),
                      "--source-registry", str(SOURCE_REGISTRY)]) == 0
+
+
+# ===========================================================================
+# Phase 1-B-D — defensive validation
+#
+# Two remaining defect classes are covered here:
+#   D1  a static DIRECT_MATCH could cite a syntactically plausible but
+#       nonexistent / unrelated renderer, because only a regex was applied;
+#   D2/D3 malformed but syntactically valid JSON metadata could reach set
+#       membership, dictionary lookup, tuple construction or nested access and
+#       raise an uncaught TypeError/AttributeError.
+# ===========================================================================
+
+STATIC_RENDER_CROSSWALKS = (
+    "cw-0019-loan", "cw-0020-loan",
+    "cw-0059-contract", "cw-0060-contract",
+    "cw-0100-property", "cw-0101-property",
+    "cw-0134-labor", "cw-0135-labor",
+    "cw-0167-divorce", "cw-0168-divorce",
+)
+FOOTER_EVIDENCE = "utils/doc_generator.py :: DocumentGenerator.add_footer()"
+
+
+def _mutated_safe(tmp_path, mutate):
+    """Run the validator on a mutated fixture, failing if it raises."""
+    records = _records()
+    mutate(records)
+    target = _write(tmp_path, records)
+    try:
+        return ctc.validate_analysis(target, SOURCE_REGISTRY)
+    except Exception as exc:  # noqa: BLE001 - the point of the test is no raise
+        pytest.fail(f"validator raised {type(exc).__name__}: {exc}")
+
+
+def _target(records, spec):
+    """Resolve a (kind, identifier) target inside the record set."""
+    kind, ident = spec
+    if kind == "ledger":
+        return records["ledger"]
+    if kind == "element":
+        return records["elements"]["elements"][ident]
+    if kind == "field":
+        return records["fields"]["fields"][ident]
+    if kind == "crosswalk":
+        return _find_crosswalk(records, ident)
+    if kind == "gap":
+        return _find_gap(records, ident)
+    if kind == "route":
+        return _find_route(records, ident)
+    raise KeyError(spec)
+
+
+# --- S: static rendering evidence authenticity -----------------------------
+
+def test_s01_verified_footer_renderer_is_accepted():
+    issues = []
+    accepted = ctc._check_static_rendering_evidence(
+        "test", "loan.closing.signature", "civil_complaint", FOOTER_EVIDENCE, issues
+    )
+    assert accepted is True
+    assert issues == []
+
+
+@pytest.mark.parametrize("crosswalk_id", STATIC_RENDER_CROSSWALKS)
+def test_s02_all_frozen_static_matches_are_accepted(tmp_path, crosswalk_id):
+    records = _records()
+    c = _find_crosswalk(records, crosswalk_id)
+    assert c["coverage_status"] == "DIRECT_MATCH"
+    assert c["match_mechanism"] == "STATIC_RENDERING"
+    assert c["application_field_ids"] == []
+    assert c["rendering_evidence"] == FOOTER_EVIDENCE
+
+    def mutate(recs):
+        _find_crosswalk(recs, crosswalk_id)["rendering_evidence"] = FOOTER_EVIDENCE
+    assert _mutated_safe(tmp_path, mutate) == []
+
+
+@pytest.mark.parametrize("evidence,reason", [
+    pytest.param("nonexistent/renderer.py :: ImaginaryRenderer.render()",
+                 "does not exist in the repository", id="s03-nonexistent-file"),
+    pytest.param("utils/doc_generator.py :: ImaginaryRenderer.render()",
+                 "is not defined in", id="s04-nonexistent-class"),
+    pytest.param("utils/doc_generator.py :: DocumentGenerator.imaginary_method()",
+                 "is not defined in", id="s05-nonexistent-method"),
+    pytest.param("/etc/passwd.py :: DocumentGenerator.add_footer()",
+                 "must stay inside the repository", id="s07-absolute-path"),
+    pytest.param("../external.py :: DocumentGenerator.add_footer()",
+                 "must stay inside the repository", id="s08-parent-traversal"),
+    pytest.param("utils/../../outside.py :: DocumentGenerator.add_footer()",
+                 "must stay inside the repository", id="s08b-deep-traversal"),
+    pytest.param("utils/doc_generator.py :: add_footer()",
+                 "must be '<Class>.<method>'", id="s11b-missing-class-qualifier"),
+    pytest.param("not a clause at all",
+                 "must be '<repo-relative .py path> :: <symbol>'", id="s11-invalid-syntax"),
+    pytest.param("",
+                 "requires rendering_evidence", id="s10-missing-evidence"),
+])
+def test_s03_s11_fabricated_static_rendering_evidence_is_rejected(tmp_path, evidence, reason):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0019-loan")["rendering_evidence"] = evidence
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any(reason in issue for issue in issues), issues
+
+
+@pytest.mark.parametrize("crosswalk_id,evidence", [
+    pytest.param("cw-0019-loan", "utils/doc_generator.py :: DocumentGenerator.export_address_form()",
+                 id="s06-signature-via-address-form"),
+    pytest.param("cw-0019-loan", "utils/doc_generator.py :: DocumentGenerator.export_evidence_list()",
+                 id="s06b-signature-via-evidence-list"),
+    pytest.param("cw-0020-loan", "utils/doc_generator.py :: DocumentGenerator.export_evidence_list()",
+                 id="s09-date-via-evidence-list"),
+])
+def test_s06_s09_unrelated_static_renderer_is_rejected(tmp_path, crosswalk_id, evidence):
+    def mutate(records):
+        _find_crosswalk(records, crosswalk_id)["rendering_evidence"] = evidence
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("does not emit the" in issue for issue in issues), issues
+
+
+def test_s09b_static_rendering_requires_a_contract_for_the_element(tmp_path):
+    def mutate(records):
+        c = _find_crosswalk(records, "cw-0004-loan")
+        c["application_field_ids"] = []
+        c["match_mechanism"] = "STATIC_RENDERING"
+        c["rendering_evidence"] = FOOTER_EVIDENCE
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("no static-rendering contract is defined" in issue for issue in issues), issues
+
+
+def test_s12_non_static_direct_match_without_a_field_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0019-loan")["match_mechanism"] = "USER_INPUT_FIELD"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("requires match_mechanism STATIC_RENDERING" in issue for issue in issues)
+
+
+def test_s12b_static_rendering_must_not_link_application_fields(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0019-loan")["application_field_ids"] = \
+            ["shared.party.plaintiff.name"]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("must not link application fields" in issue for issue in issues)
+
+
+def test_s_rendering_evidence_cannot_escape_the_repository(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0019-loan")["code_evidence"] = \
+            "revision " + FROZEN_REVISION + "; ../outside.py :: DocumentGenerator.add_footer()"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("must stay inside the repository" in issue for issue in issues)
+
+
+# --- E: enumeration type safety -------------------------------------------
+
+ENUM_TARGETS = [
+    pytest.param(("element", 0), "case_type", id="element.case_type"),
+    pytest.param(("field", 0), "case_type_or_shared", id="field.case_type_or_shared"),
+    pytest.param(("crosswalk", "cw-0001-loan"), "case_type", id="crosswalk.case_type"),
+    pytest.param(("crosswalk", "cw-0001-loan"), "coverage_status", id="crosswalk.coverage_status"),
+    pytest.param(("crosswalk", "cw-0001-loan"), "match_mechanism", id="crosswalk.match_mechanism"),
+    pytest.param(("gap", "GAP-ID-TYPE"), "case_type", id="gap.case_type"),
+    pytest.param(("route", "route-loan-civil-complaint"), "case_type", id="route.case_type"),
+    pytest.param(("route", "route-loan-civil-complaint"), "document_type", id="route.document_type"),
+]
+
+BAD_ENUM_VALUES = [
+    pytest.param([], "empty-array", id="empty-array"),
+    pytest.param({}, "empty-object", id="empty-object"),
+    pytest.param(["loan"], "array-of-string", id="array-of-string"),
+    pytest.param({"value": "loan"}, "object-of-string", id="object-of-string"),
+    pytest.param(123, "number", id="number"),
+    pytest.param(True, "true", id="true"),
+    pytest.param(False, "false", id="false"),
+    pytest.param(None, "null", id="null"),
+    pytest.param("", "empty-string", id="empty-string"),
+    pytest.param("UNKNOWN_ENUM_VALUE", "unknown-string", id="unknown-string"),
+]
+
+
+@pytest.mark.parametrize("spec,field", ENUM_TARGETS)
+@pytest.mark.parametrize("value,label", BAD_ENUM_VALUES)
+def test_e_enumeration_metadata_rejects_malformed_values(tmp_path, spec, field, value, label):
+    """E01–E19: every malformed enum value yields an issue, never a traceback."""
+    def mutate(records):
+        _target(records, spec)[field] = value
+    issues = _mutated_safe(tmp_path, mutate)
+    assert issues, (spec, field, value)
+    assert any(field in issue for issue in issues), (spec, field, value, issues)
+
+
+@pytest.mark.parametrize("spec,field", ENUM_TARGETS)
+def test_e20_valid_enumeration_strings_remain_accepted(spec, field):
+    """E20: the real dataset keeps its valid enumeration strings."""
+    records = _records()
+    value = _target(records, spec)[field]
+    assert isinstance(value, str) and value
+    assert ctc.validate_analysis(ANALYSIS_DIR, SOURCE_REGISTRY) == []
+
+
+def test_e_optional_null_enum_semantics_are_preserved():
+    """A null enum is rejected unless the caller marks the field optional."""
+    issues = []
+    assert ctc._check_enum("t", "case_type", None, ctc.CASE_TYPES, issues) is None
+    assert issues and "null" in issues[0]
+
+    optional_issues = []
+    assert ctc._check_enum("t", "case_type", None, ctc.CASE_TYPES, optional_issues,
+                           optional=True) is None
+    assert optional_issues == []
+
+
+@pytest.mark.parametrize("value,label", [
+    pytest.param([["civil_complaint"]], "nested-array", id="nested-array"),
+    pytest.param([{"a": 1}], "nested-object", id="nested-object"),
+    pytest.param({"a": 1}, "object", id="object"),
+    pytest.param("civil_complaint", "string", id="string"),
+    pytest.param(5, "number", id="number"),
+    pytest.param(True, "boolean", id="boolean"),
+    pytest.param(None, "null", id="null"),
+])
+def test_e_output_document_types_rejects_malformed_values(tmp_path, value, label):
+    """E05/E06: a nested container inside output_document_types must not crash."""
+    def mutate(records):
+        records["fields"]["fields"][0]["output_document_types"] = value
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("output_document_types" in issue for issue in issues), issues
+
+
+def test_e_valid_output_document_types_remain_accepted(tmp_path):
+    def mutate(records):
+        records["fields"]["fields"][0]["output_document_types"] = ["civil_complaint"]
+    assert _mutated_safe(tmp_path, mutate) == []
+
+
+# --- R: nested metadata and relationship safety ---------------------------
+
+@pytest.mark.parametrize("value,label", [
+    pytest.param([], "empty-array", id="empty-array"),
+    pytest.param([1], "nonempty-array", id="nonempty-array"),
+    pytest.param("PASS", "string", id="string"),
+    pytest.param(5, "number", id="number"),
+    pytest.param(True, "boolean", id="boolean"),
+])
+def test_r01_r02_nested_ledger_hash_comparison_is_rejected_safely(tmp_path, value, label):
+    def mutate(records):
+        records["ledger"]["registry_hash_comparison"] = value
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("registry_hash_comparison" in issue for issue in issues), issues
+
+
+@pytest.mark.parametrize("value,label", [
+    pytest.param([], "array", id="array"),
+    pytest.param("x", "string", id="string"),
+    pytest.param(5, "number", id="number"),
+])
+def test_r01b_nested_ledger_retrieval_is_rejected_safely(tmp_path, value, label):
+    def mutate(records):
+        records["ledger"]["retrieval"] = value
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("retrieval" in issue for issue in issues), issues
+
+
+RELATIONSHIP_CASES = [
+    pytest.param(("crosswalk", "cw-0001-loan"), "application_field_ids", {"a": 1},
+                 "must be a list", id="r03-crosswalk-application_field_ids-object"),
+    pytest.param(("crosswalk", "cw-0001-loan"), "application_field_ids",
+                 "shared.party.plaintiff.name", "must be a list",
+                 id="r03b-crosswalk-application_field_ids-string"),
+    pytest.param(("crosswalk", "cw-0001-loan"), "gap_ids", {"a": 1},
+                 "must be a list", id="r05-crosswalk-gap_ids-object"),
+    pytest.param(("gap", "GAP-ID-TYPE"), "official_element_ids", {"a": 1},
+                 "must be a list", id="r04-gap-official_element_ids-object"),
+    pytest.param(("gap", "GAP-ID-TYPE"), "official_element_ids",
+                 "loan.party.plaintiff.id_document", "must be a list",
+                 id="r04b-gap-official_element_ids-string"),
+    pytest.param(("gap", "GAP-ID-TYPE"), "application_field_ids", {"a": 1},
+                 "must be a list", id="r04c-gap-application_field_ids-object"),
+    pytest.param(("route", "route-loan-civil-complaint"), "official_source_ids", {"a": 1},
+                 "must be a list", id="r06-route-official_source_ids-object"),
+    pytest.param(("route", "route-loan-civil-complaint"), "official_source_ids", 7,
+                 "must be a list", id="r06b-route-official_source_ids-number"),
+    pytest.param(("route", "route-loan-civil-complaint"), "official_source_ids",
+                 "spc-2025-notice-pdf", "must be a list",
+                 id="r06c-route-official_source_ids-string"),
+    pytest.param(("route", "route-loan-civil-complaint"), "official_source_ids",
+                 [["spc-2025-notice-pdf"]], "entries must be strings",
+                 id="r07-route-official_source_ids-nested-array"),
+    pytest.param(("route", "route-loan-civil-complaint"), "gap_ids", {"a": 1},
+                 "must be a list", id="r05b-route-gap_ids-object"),
+    pytest.param(("field", 0), "output_document_types", [["civil_complaint"]],
+                 "entries must be strings", id="r07b-field-output_document_types-nested"),
+]
+
+
+@pytest.mark.parametrize("spec,field,value,reason", RELATIONSHIP_CASES)
+def test_r03_r07_relationship_metadata_is_rejected_safely(tmp_path, spec, field, value, reason):
+    def mutate(records):
+        _target(records, spec)[field] = value
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any(field in issue and reason in issue for issue in issues), issues
+
+
+@pytest.mark.parametrize("key,field_name,value,label", [
+    pytest.param("crosswalk", "crosswalks", 5, "number", id="crosswalk-number"),
+    pytest.param("crosswalk", "crosswalks", {"a": 1}, "object", id="crosswalk-object"),
+    pytest.param("gaps", "gaps", 5, "number", id="gaps-number"),
+    pytest.param("gaps", "gaps", {"a": 1}, "object", id="gaps-object"),
+    pytest.param("routes", "routes", 5, "number", id="routes-number"),
+    pytest.param("elements", "elements", 5, "number", id="elements-number"),
+    pytest.param("fields", "fields", 5, "number", id="fields-number"),
+])
+def test_record_block_type_is_rejected_safely(tmp_path, key, field_name, value, label):
+    """A non-list record block must not reach iteration or the approval loop."""
+    def mutate(records):
+        records[key][field_name] = value
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any(field_name in issue for issue in issues), issues
+
+
+@pytest.mark.parametrize("value,label", [
+    pytest.param(["loan"], "array", id="array"),
+    pytest.param({"loan": True}, "object", id="object"),
+])
+def test_r08_unhashable_gap_key_never_reaches_route_lookup(tmp_path, value, label):
+    def mutate(records):
+        _find_gap(records, "GAP-ID-TYPE")["case_type"] = value
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("case_type must be a string" in issue for issue in issues), issues
+
+
+def test_r09_unhashable_route_key_never_reaches_combination_lookup(tmp_path):
+    def mutate(records):
+        _find_route(records, "route-loan-civil-complaint")["case_type"] = ["loan"]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("case_type must be a string" in issue for issue in issues), issues
+    # the malformed route is dropped, so its gaps are reported as unreachable
+    assert any("no route assessment exists" in issue for issue in issues), issues
+
+
+def test_r10_malformed_metadata_diagnostics_are_deterministic(tmp_path):
+    def mutate(records):
+        records["elements"]["elements"][0]["case_type"] = ["loan"]
+        _find_gap(records, "GAP-ID-TYPE")["case_type"] = ["loan"]
+        _find_route(records, "route-loan-civil-complaint")["document_type"] = {"x": 1}
+    first = _mutated_safe(tmp_path, mutate)
+    second = _mutated_safe(tmp_path, mutate)
+    assert first
+    assert first == second
+
+
+def test_r11_r12_cli_rejects_malformed_metadata_without_traceback(tmp_path):
+    records = _records()
+    records["elements"]["elements"][0]["case_type"] = ["loan"]
+    records["ledger"]["registry_hash_comparison"] = [1]
+    target = _write(tmp_path, records)
+    result = subprocess.run(
+        [sys.executable, "tools/check_template_crosswalk.py",
+         "--analysis-dir", str(target), "--source-registry", str(SOURCE_REGISTRY)],
+        cwd=str(REPO_ROOT), capture_output=True, text=True,
+    )
+    assert result.returncode != 0
+    assert "FAIL" in result.stdout
+    assert "case_type" in result.stdout
+    assert "Traceback" not in result.stdout
+    assert "Traceback" not in result.stderr
+
+
+def test_r13_approved_state_is_still_rejected(tmp_path):
+    def mutate(records):
+        _find_gap(records, "GAP-ID-TYPE")["approval_status"] = "APPROVED"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("APPROVED" in issue for issue in issues), issues
+
+
+def test_r14_real_analytical_records_are_unchanged():
+    records = _records()
+    assert len(records["elements"]["elements"]) == 185
+    assert len(records["fields"]["fields"]) == 52
+    assert len(records["crosswalk"]["crosswalks"]) == 199
+    assert len(records["gaps"]["gaps"]) == 131
+    assert len(records["routes"]["routes"]) == 15
+    assert ctc.validate_analysis(ANALYSIS_DIR, SOURCE_REGISTRY) == []

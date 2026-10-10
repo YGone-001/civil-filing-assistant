@@ -19,15 +19,24 @@ The validator is standard-library only, runs offline, reads repository metadata
 only, has no side effects and returns a nonzero exit code when the records are
 inconsistent.
 
-**Scope of what it proves.** It proves *internal consistency* and *relational
-ownership* — that identifiers resolve, that a referenced application field
-belongs to the crosswalk's case (or is legitimately shared), that a linked gap
-belongs to the crosswalk's case and document type, that every material mismatch
-carries an applicable gap, that every gap is reachable from the route for its
-case-document pair, and that the cited source/code evidence is well formed and
-points at real files. It does **not** re-verify the official PDF (it never
-fetches it) and it cannot establish source authenticity, legal correctness or
-whether a legal review occurred.
+**Scope of what it proves.** It proves *internal consistency*, *relational
+ownership* and *evidence well-formedness* — that identifiers resolve, that a
+referenced application field belongs to the crosswalk's case (or is legitimately
+shared), that a linked gap belongs to the crosswalk's case and document type,
+that every material mismatch carries an applicable gap, that every gap is
+reachable from the route for its case-document pair, that cited code paths exist
+inside the repository, and that a claimed static rendering resolves to a real
+class/method whose body actually emits the claimed placeholder and is reachable
+from the document's export path. It does **not** re-verify the official PDF (it
+never fetches it) and it cannot establish source authenticity, legal correctness
+or whether a legal review occurred.
+
+**Malformed input.** Every enumeration, relationship list, nested metadata
+object and tuple/dictionary key is type-checked before use, so a syntactically
+valid but wrongly typed JSON value produces a deterministic diagnostic instead
+of an uncaught exception. No analytical metadata is ever executed or imported;
+static-rendering verification uses :mod:`ast` inspection of repository source
+only.
 
 Usage::
 
@@ -38,11 +47,12 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ANALYSIS_DIR = REPO_ROOT / "docs" / "legal-template-governance" / "official-gap-analysis"
@@ -135,6 +145,7 @@ _ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._\-]*$")
 _HASH_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 _BARE_HASH_RE = re.compile(r"^[0-9a-f]{64}$")
 _REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
+_WINDOWS_DRIVE_RE = re.compile(r"^[A-Za-z]:")
 
 # Evidence grammars ---------------------------------------------------------
 # Positive source claim:  "<source_id> p134 sha256:<hash>" or "<source_id> p134-p139 sha256:<hash>"
@@ -163,6 +174,25 @@ MODEL_CLASS_BY_CASE = {
     "divorce": "DivorceCaseModel",
 }
 
+# --- static-rendering contract ---------------------------------------------
+# A static DIRECT_MATCH claims that an official form placeholder is emitted as
+# fixed document text rather than from a user-input field. Such a claim is only
+# accepted when the cited renderer really exists and really emits the claimed
+# placeholder, and when it is reached from the export path of the crosswalk's
+# own document type. The contract is keyed by the *official element identity*
+# (not by crosswalk id) and by the *document type*, so it applies to any future
+# analytical record of the same shape.
+STATIC_RENDER_MARKERS = {
+    # official element suffix -> literal markers the renderer must emit
+    "closing.signature": ("具状人",),
+    "closing.date": ("年", "月", "日"),
+}
+DOCUMENT_ENTRY_METHOD = {
+    "civil_complaint": "export_complaint",
+    "evidence_list": "export_evidence_list",
+    "service_address_confirmation": "export_address_form",
+}
+
 ANALYSIS_FILES = {
     "ledger": "source-extraction-ledger.json",
     "elements": "official-element-inventory.json",
@@ -175,6 +205,11 @@ ANALYSIS_FILES = {
 
 def _nonempty_str(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _is_int(value: Any) -> bool:
+    """True for a JSON integer. JSON booleans are not integers here."""
+    return isinstance(value, int) and not isinstance(value, bool)
 
 
 def _load(path: Path, issues: List[str]) -> Optional[Dict[str, Any]]:
@@ -196,28 +231,127 @@ def _load(path: Path, issues: List[str]) -> Optional[Dict[str, Any]]:
     return data
 
 
-def _check_enum(label, field, value, allowed, issues, *, optional=False) -> bool:
+def _check_enum(label, field, value, allowed, issues, *, optional=False,
+                unknown="invalid") -> Optional[str]:
+    """Validate an enumeration value and return it when it is a valid member.
+
+    The primitive type is established **before** the membership test, so a
+    malformed JSON array/object/number/boolean can never reach a ``set``
+    membership check (which would raise ``TypeError: unhashable type``).
+    """
     if value is None:
         if optional:
-            return True
+            return None
         issues.append(f"{label}: {field} must be a string, got null")
-        return False
+        return None
     if not isinstance(value, str):
         issues.append(f"{label}: {field} must be a string, got {type(value).__name__}")
-        return False
+        return None
     if value not in allowed:
-        issues.append(f"{label}: invalid {field} {value!r}")
-        return False
-    return True
+        issues.append(f"{label}: {unknown} {field} {value!r}")
+        return None
+    return value
+
+
+def _check_string_list(label, field, value, issues, *, optional=False) -> Optional[List[str]]:
+    """Validate a relationship list. Returns the list when every entry is a string."""
+    if value is None:
+        if optional:
+            return None
+        issues.append(f"{label}: {field} must be a list, got null")
+        return None
+    if not isinstance(value, list):
+        issues.append(f"{label}: {field} must be a list, got {type(value).__name__}")
+        return None
+    for item in value:
+        if not isinstance(item, str):
+            issues.append(
+                f"{label}: {field} entries must be strings, got {type(item).__name__}"
+            )
+            return None
+    return value
 
 
 def _string_list(value: Any) -> Optional[List[str]]:
-    """Return the list if every entry is a string, else ``None``."""
+    """Return the list if it is a list of strings, else ``None`` (no diagnostics)."""
     if not isinstance(value, list):
         return None
     if any(not isinstance(item, str) for item in value):
         return None
     return value
+
+
+# --- repository path + AST helpers -----------------------------------------
+
+def _resolve_repo_path(rel_path: Any) -> Optional[Path]:
+    """Resolve a repository-relative path, refusing escapes and symlink exits.
+
+    Returns ``None`` for absolute paths, Windows drive paths, parent-directory
+    traversal, or anything that resolves outside the repository root.
+    """
+    if not isinstance(rel_path, str):
+        return None
+    text = rel_path.strip()
+    if not text:
+        return None
+    if text.startswith(("/", "\\")) or _WINDOWS_DRIVE_RE.match(text):
+        return None
+    if ".." in Path(text).parts:
+        return None
+    try:
+        root = REPO_ROOT.resolve()
+        resolved = (REPO_ROOT / text).resolve()
+    except (OSError, RuntimeError, ValueError):
+        return None
+    try:
+        resolved.relative_to(root)
+    except ValueError:
+        return None
+    return resolved
+
+
+def _parse_ast(path: Path) -> Optional[ast.Module]:
+    try:
+        source = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+    try:
+        return ast.parse(source)
+    except (SyntaxError, ValueError):
+        return None
+
+
+def _find_class(tree: ast.Module, name: str) -> Optional[ast.ClassDef]:
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and node.name == name:
+            return node
+    return None
+
+
+def _find_method(class_node: ast.ClassDef, name: str) -> Optional[ast.AST]:
+    for node in class_node.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name:
+            return node
+    return None
+
+
+def _string_literals(node: ast.AST) -> List[str]:
+    return [
+        sub.value for sub in ast.walk(node)
+        if isinstance(sub, ast.Constant) and isinstance(sub.value, str)
+    ]
+
+
+def _calls_self_method(node: ast.AST, method_name: str) -> bool:
+    """True when the body performs ``self.<method_name>(...)``."""
+    for sub in ast.walk(node):
+        if isinstance(sub, ast.Call) and isinstance(sub.func, ast.Attribute):
+            if sub.func.attr != method_name:
+                continue
+            value = sub.func.value
+            if isinstance(value, ast.Name) and value.id == "self":
+                return True
+    return False
 
 
 def _check_source_evidence(label, text, registry_ids, expected_hash, expected_pages,
@@ -258,14 +392,11 @@ def _check_source_evidence(label, text, registry_ids, expected_hash, expected_pa
         issues.append(
             f"{label}: source_evidence page {end} exceeds the observed page count {expected_pages}"
         )
-    if not bounded and start != end:
-        # a positive citation spanning pages is allowed; nothing further to check
-        pass
     return True
 
 
 def _check_code_evidence(label, text, expected_revision, issues, expected_case=None) -> bool:
-    """Validate a code-evidence string: frozen revision, real .py path, symbol."""
+    """Validate a code-evidence string: frozen revision, real in-repo .py path, symbol."""
     if not _nonempty_str(text):
         issues.append(f"{label}: code_evidence is required")
         return False
@@ -283,7 +414,8 @@ def _check_code_evidence(label, text, expected_revision, issues, expected_case=N
     if not clauses:
         issues.append(f"{label}: code_evidence must cite at least one '<path>.py :: <symbol>'")
         return False
-    expected_model = MODEL_CLASS_BY_CASE.get(expected_case)
+    # A malformed (non-string) case value must never be used as a dict key.
+    expected_model = MODEL_CLASS_BY_CASE.get(expected_case) if isinstance(expected_case, str) else None
     ok = True
     for clause in clauses:
         clause_match = _CODE_CLAUSE_RE.match(clause)
@@ -295,7 +427,13 @@ def _check_code_evidence(label, text, expected_revision, issues, expected_case=N
             ok = False
             continue
         path = clause_match.group("path")
-        if not (REPO_ROOT / path).exists():
+        resolved = _resolve_repo_path(path)
+        if resolved is None:
+            issues.append(
+                f"{label}: code_evidence path {path!r} must stay inside the repository"
+            )
+            ok = False
+        elif not resolved.exists():
             issues.append(f"{label}: code_evidence path {path!r} does not exist in the repository")
             ok = False
         symbol = clause_match.group("symbol")
@@ -307,6 +445,133 @@ def _check_code_evidence(label, text, expected_revision, issues, expected_case=N
                 )
                 ok = False
     return ok
+
+
+def _check_static_rendering_evidence(label, element_id, document_type, rendering,
+                                     issues) -> bool:
+    """Verify a static DIRECT_MATCH against the real rendering implementation.
+
+    The claim is accepted only when:
+
+    1. the cited path is repository-relative and resolves inside the repository;
+    2. the cited file exists and parses as Python;
+    3. the cited class exists at module level in that file;
+    4. the cited method exists inside that class;
+    5. the method body actually emits the placeholder required by the official
+       element's identity (signature vs date);
+    6. the export method of the crosswalk's own document type calls that method.
+
+    Nothing is imported or executed; verification is pure :mod:`ast` inspection.
+    """
+    if not _nonempty_str(rendering):
+        issues.append(f"{label}: a STATIC_RENDERING match requires rendering_evidence")
+        return False
+
+    text = rendering.strip()
+    clause_match = _CODE_CLAUSE_RE.match(text)
+    if clause_match is None:
+        issues.append(
+            f"{label}: rendering_evidence must be '<repo-relative .py path> :: <symbol>'"
+        )
+        return False
+
+    path = clause_match.group("path")
+    symbol = clause_match.group("symbol").strip()
+
+    resolved = _resolve_repo_path(path)
+    if resolved is None:
+        issues.append(
+            f"{label}: rendering_evidence path {path!r} must stay inside the repository"
+        )
+        return False
+    if not resolved.is_file():
+        issues.append(
+            f"{label}: rendering_evidence path {path!r} does not exist in the repository"
+        )
+        return False
+
+    if not isinstance(element_id, str) or not isinstance(document_type, str):
+        issues.append(
+            f"{label}: a STATIC_RENDERING match requires a resolvable official element "
+            f"and document type"
+        )
+        return False
+
+    element_kind = next(
+        (kind for kind in STATIC_RENDER_MARKERS if element_id.endswith("." + kind)), None
+    )
+    if element_kind is None:
+        issues.append(
+            f"{label}: no static-rendering contract is defined for official element "
+            f"{element_id!r}; STATIC_RENDERING is not a valid mechanism for it"
+        )
+        return False
+
+    entry_name = DOCUMENT_ENTRY_METHOD.get(document_type)
+    if entry_name is None:
+        issues.append(
+            f"{label}: no document entry method is defined for document type {document_type!r}"
+        )
+        return False
+
+    if symbol.endswith("()"):
+        symbol = symbol[:-2]
+    if "." not in symbol:
+        issues.append(
+            f"{label}: rendering_evidence symbol {symbol!r} must be '<Class>.<method>'"
+        )
+        return False
+    class_name, _, method_name = symbol.rpartition(".")
+    if not class_name or not method_name:
+        issues.append(
+            f"{label}: rendering_evidence symbol {symbol!r} must be '<Class>.<method>'"
+        )
+        return False
+
+    tree = _parse_ast(resolved)
+    if tree is None:
+        issues.append(f"{label}: rendering_evidence path {path!r} could not be parsed as Python")
+        return False
+
+    class_node = _find_class(tree, class_name)
+    if class_node is None:
+        issues.append(
+            f"{label}: rendering_evidence class {class_name!r} is not defined in {path!r}"
+        )
+        return False
+
+    method_node = _find_method(class_node, method_name)
+    if method_node is None:
+        issues.append(
+            f"{label}: rendering_evidence method {method_name!r} is not defined in "
+            f"{class_name!r}"
+        )
+        return False
+
+    markers = STATIC_RENDER_MARKERS[element_kind]
+    emitted = "\n".join(_string_literals(method_node))
+    missing = [marker for marker in markers if marker not in emitted]
+    if missing:
+        issues.append(
+            f"{label}: rendering_evidence {class_name}.{method_name} does not emit the "
+            f"{element_kind} placeholder (missing {missing})"
+        )
+        return False
+
+    entry_node = _find_method(class_node, entry_name)
+    if entry_node is None:
+        issues.append(
+            f"{label}: rendering_evidence {class_name!r} has no {entry_name!r} export method"
+        )
+        return False
+    if not _calls_self_method(entry_node, method_name):
+        issues.append(
+            f"{label}: rendering_evidence {class_name}.{method_name} is not reached from "
+            f"{class_name}.{entry_name}"
+        )
+        return False
+
+    return True
 
 
 def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[str]:
@@ -323,19 +588,32 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
     registry_ids: Dict[str, str] = {}
     registry = _load(Path(source_registry_path), issues)
     if registry is not None:
-        for src in registry.get("sources", []) if isinstance(registry.get("sources"), list) else []:
-            if isinstance(src, dict) and _nonempty_str(src.get("source_id")):
-                registry_ids[src["source_id"]] = src.get("content_hash_if_verified") or ""
+        sources = registry.get("sources")
+        if not isinstance(sources, list):
+            issues.append(f"{source_registry_path}: 'sources' must be a list")
+            sources = []
+        for index, src in enumerate(sources):
+            if not isinstance(src, dict):
+                issues.append(f"source-registry sources[{index}]: record must be a JSON object")
+                continue
+            sid = src.get("source_id")
+            if _nonempty_str(sid):
+                digest = src.get("content_hash_if_verified")
+                registry_ids[sid] = digest if isinstance(digest, str) else ""
 
     ledger = data.get("ledger")
     expected_pages = None
     analyzed_hash = None
     analyzed_revision = None
     if ledger is not None:
-        retrieval = ledger.get("retrieval") if isinstance(ledger.get("retrieval"), dict) else {}
+        retrieval = ledger.get("retrieval")
+        if not isinstance(retrieval, dict):
+            if "retrieval" in ledger:
+                issues.append("ledger: retrieval must be a JSON object")
+            retrieval = {}
         expected_pages = retrieval.get("pdf_page_count")
         analyzed_hash = retrieval.get("sha256")
-        if not isinstance(expected_pages, int) or expected_pages <= 0:
+        if not _is_int(expected_pages) or expected_pages <= 0:
             issues.append("ledger: retrieval.pdf_page_count must be a positive integer")
             expected_pages = None
         if not _nonempty_str(analyzed_hash) or not _BARE_HASH_RE.match(analyzed_hash or ""):
@@ -344,7 +622,13 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
         ledger_revision = ledger.get("analyzed_revision")
         if _nonempty_str(ledger_revision) and _REVISION_RE.match(ledger_revision):
             analyzed_revision = ledger_revision
-        match = (ledger.get("registry_hash_comparison") or {}).get("SOURCE_HASH_MATCH")
+        comparison = ledger.get("registry_hash_comparison")
+        if comparison is None and "registry_hash_comparison" not in ledger:
+            comparison = {}
+        if not isinstance(comparison, dict):
+            issues.append("ledger: registry_hash_comparison must be a JSON object")
+            comparison = {}
+        match = comparison.get("SOURCE_HASH_MATCH")
         if match not in ("PASS", "FAIL"):
             issues.append("ledger: registry_hash_comparison.SOURCE_HASH_MATCH must be PASS or FAIL")
         if match == "FAIL":
@@ -381,11 +665,10 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
             elif eid is not None:
                 issues.append(f"{label}: element_id must be a string")
 
-            case = e.get("case_type")
-            if case in CASE_TYPES:
+            case = _check_enum(label, "case_type", e.get("case_type"), CASE_TYPES, issues,
+                               unknown="unknown")
+            if case is not None:
                 element_case_types.add(case)
-            else:
-                issues.append(f"{label}: unknown case_type {case!r}")
 
             _check_enum(label, "element_kind", e.get("element_kind"), ELEMENT_KINDS, issues)
             _check_enum(label, "requirement_classification", e.get("requirement_classification"),
@@ -410,7 +693,7 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                 issues.append(f"{label}: source_sha256 does not match the analyzed ledger hash")
 
             start, end = e.get("pdf_page_start"), e.get("pdf_page_end")
-            if not isinstance(start, int) or not isinstance(end, int):
+            if not _is_int(start) or not _is_int(end):
                 issues.append(f"{label}: pdf_page_start/pdf_page_end must be integers")
             else:
                 if start < 1 or end < 1 or start > end:
@@ -453,21 +736,16 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
             elif fid is not None:
                 issues.append(f"{label}: field_id must be a string")
 
-            case = f.get("case_type_or_shared")
-            if case == "shared":
-                pass
-            elif case in CASE_TYPES:
+            case = _check_enum(label, "case_type_or_shared", f.get("case_type_or_shared"),
+                               CASE_TYPES | {"shared"}, issues, unknown="unknown")
+            if case is not None and case != "shared":
                 field_case_types.add(case)
-            else:
-                issues.append(f"{label}: unknown case_type_or_shared {case!r}")
 
-            docs = f.get("output_document_types")
-            if not isinstance(docs, list):
-                issues.append(f"{label}: output_document_types must be a list")
-            else:
-                for d in docs:
-                    if d not in DOCUMENT_TYPES:
-                        issues.append(f"{label}: unknown document type {d!r}")
+            docs = _check_string_list(label, "output_document_types",
+                                      f.get("output_document_types"), issues)
+            for d in docs or []:
+                if d not in DOCUMENT_TYPES:
+                    issues.append(f"{label}: unknown document type {d!r}")
 
     if field_case_types and field_case_types != CASE_TYPES:
         issues.append(f"application-field-inventory: case types {sorted(field_case_types)} != all five")
@@ -504,19 +782,21 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                 issues.append(f"{label}: crosswalk_id must be a string")
 
             case = c.get("case_type")
-            if case in CASE_TYPES:
-                crosswalk_case_types.add(case)
-            else:
-                issues.append(f"{label}: unknown case_type {case!r}")
+            valid_case = _check_enum(label, "case_type", case, CASE_TYPES, issues,
+                                     unknown="unknown")
+            if valid_case is not None:
+                crosswalk_case_types.add(valid_case)
 
-            _check_enum(label, "document_type", c.get("document_type"), DOCUMENT_TYPES, issues)
-            _check_enum(label, "coverage_status", c.get("coverage_status"), COVERAGE_STATUSES, issues)
-            _check_enum(label, "match_mechanism", c.get("match_mechanism"), MATCH_MECHANISMS, issues)
+            document_type = c.get("document_type")
+            _check_enum(label, "document_type", document_type, DOCUMENT_TYPES, issues)
+            coverage_status = c.get("coverage_status")
+            _check_enum(label, "coverage_status", coverage_status, COVERAGE_STATUSES, issues)
+            mechanism = c.get("match_mechanism")
+            _check_enum(label, "match_mechanism", mechanism, MATCH_MECHANISMS, issues)
 
             eid = c.get("official_element_id")
-            element = None
             if eid is None:
-                if c.get("coverage_status") != "APPLICATION_ONLY_ELEMENT":
+                if coverage_status != "APPLICATION_ONLY_ELEMENT":
                     issues.append(f"{label}: a null official_element_id requires coverage_status APPLICATION_ONLY_ELEMENT")
             elif isinstance(eid, str):
                 if eid not in elements_by_id:
@@ -533,38 +813,28 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
             else:
                 issues.append(f"{label}: official_element_id must be a string or null")
 
-            fids = c.get("application_field_ids")
-            if not isinstance(fids, list):
-                issues.append(f"{label}: application_field_ids must be a list")
-                fids = []
-            else:
-                for fid in fids:
-                    if not isinstance(fid, str):
-                        issues.append(f"{label}: application_field_ids entries must be strings, got {type(fid).__name__}")
-                    elif fid not in fields_by_id:
-                        issues.append(f"{label}: application_field_ids {fid!r} does not resolve")
-                    else:
-                        reverse_covered_fields.add(fid)
-                        owner = fields_by_id[fid].get("case_type_or_shared")
-                        if owner != "shared" and owner != case:
-                            issues.append(
-                                f"{label}: application field {fid!r} belongs to case_type "
-                                f"{owner!r}, not {case!r} or 'shared'"
-                            )
+            fids = _check_string_list(label, "application_field_ids",
+                                      c.get("application_field_ids"), issues)
+            for fid in fids or []:
+                if fid not in fields_by_id:
+                    issues.append(f"{label}: application_field_ids {fid!r} does not resolve")
+                else:
+                    reverse_covered_fields.add(fid)
+                    owner = fields_by_id[fid].get("case_type_or_shared")
+                    if owner != "shared" and owner != case:
+                        issues.append(
+                            f"{label}: application field {fid!r} belongs to case_type "
+                            f"{owner!r}, not {case!r} or 'shared'"
+                        )
 
-            # DIRECT_MATCH must be justified by a real field or static rendering
-            if c.get("coverage_status") == "DIRECT_MATCH":
-                mechanism = c.get("match_mechanism")
+            # DIRECT_MATCH must be justified by a real field or verified static rendering
+            if coverage_status == "DIRECT_MATCH":
                 if mechanism == "STATIC_RENDERING":
                     if fids:
                         issues.append(f"{label}: a STATIC_RENDERING match must not link application fields")
-                    rendering = c.get("rendering_evidence")
-                    if not _nonempty_str(rendering):
-                        issues.append(f"{label}: a STATIC_RENDERING match requires rendering_evidence")
-                    elif _CODE_CLAUSE_RE.match(rendering.strip()) is None:
-                        issues.append(
-                            f"{label}: rendering_evidence must be '<repo-relative .py path> :: <symbol>'"
-                        )
+                    _check_static_rendering_evidence(
+                        label, eid, document_type, c.get("rendering_evidence"), issues
+                    )
                 elif mechanism in ("USER_INPUT_FIELD", "DERIVED_MODEL_VALUE"):
                     if not fids:
                         issues.append(
@@ -578,20 +848,14 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                     )
 
             # material mismatches must be traceable to a gap
-            if c.get("coverage_status") in MATERIAL_MISMATCH_STATUSES:
+            if isinstance(coverage_status, str) and coverage_status in MATERIAL_MISMATCH_STATUSES:
                 gids_check = c.get("gap_ids")
                 if not isinstance(gids_check, list) or not gids_check:
                     issues.append(
-                        f"{label}: coverage_status {c.get('coverage_status')!r} requires at least one gap"
+                        f"{label}: coverage_status {coverage_status!r} requires at least one gap"
                     )
 
-            gids = c.get("gap_ids")
-            if not isinstance(gids, list):
-                issues.append(f"{label}: gap_ids must be a list")
-            else:
-                for gid in gids:
-                    if not isinstance(gid, str):
-                        issues.append(f"{label}: gap_ids entries must be strings")
+            _check_string_list(label, "gap_ids", c.get("gap_ids"), issues, optional=True)
 
             if not isinstance(c.get("review_required"), bool):
                 issues.append(f"{label}: review_required must be a boolean")
@@ -639,10 +903,10 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                 issues.append(f"{label}: gap_id must be a string")
 
             case = g.get("case_type")
-            if case in CASE_TYPES:
-                gap_case_types.add(case)
-            else:
-                issues.append(f"{label}: unknown case_type {case!r}")
+            valid_case = _check_enum(label, "case_type", case, CASE_TYPES, issues,
+                                     unknown="unknown")
+            if valid_case is not None:
+                gap_case_types.add(valid_case)
 
             _check_enum(label, "document_type", g.get("document_type"), DOCUMENT_TYPES, issues)
             _check_enum(label, "gap_category", g.get("gap_category"), GAP_CATEGORIES, issues)
@@ -654,12 +918,10 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                 if not _nonempty_str(g.get(field)):
                     issues.append(f"{label}: {field} must be a non-empty string")
 
-            element_ids = g.get("official_element_ids")
-            if not isinstance(element_ids, list):
-                issues.append(f"{label}: official_element_ids must be a list")
-                element_ids = []
-            for eid in element_ids:
-                if not isinstance(eid, str) or eid not in elements_by_id:
+            element_ids = _check_string_list(label, "official_element_ids",
+                                             g.get("official_element_ids"), issues)
+            for eid in element_ids or []:
+                if eid not in elements_by_id:
                     issues.append(f"{label}: official_element_ids {eid!r} does not resolve")
                 elif elements_by_id[eid].get("case_type") != case:
                     issues.append(
@@ -667,12 +929,10 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                         f"{elements_by_id[eid].get('case_type')!r}, not {case!r}"
                     )
 
-            field_ids = g.get("application_field_ids")
-            if not isinstance(field_ids, list):
-                issues.append(f"{label}: application_field_ids must be a list")
-                field_ids = []
-            for fid in field_ids:
-                if not isinstance(fid, str) or fid not in fields_by_id:
+            field_ids = _check_string_list(label, "application_field_ids",
+                                           g.get("application_field_ids"), issues)
+            for fid in field_ids or []:
+                if fid not in fields_by_id:
                     issues.append(f"{label}: application_field_ids {fid!r} does not resolve")
                 else:
                     owner = fields_by_id[fid].get("case_type_or_shared")
@@ -697,7 +957,7 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
 
     # crosswalk gap references must resolve and be owned by the same case/document
     if crosswalks is not None:
-        for c in crosswalks.get("crosswalks", []) if isinstance(crosswalks.get("crosswalks"), list) else []:
+        for c in crosswalks.get("crosswalks") if isinstance(crosswalks.get("crosswalks"), list) else []:
             if not isinstance(c, dict):
                 continue
             cid = c.get("crosswalk_id")
@@ -716,7 +976,8 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                         f"not ({case!r}, {doc!r})"
                     )
                     continue
-                if element_id and element_id not in (g.get("official_element_ids") or []):
+                gap_elements = _string_list(g.get("official_element_ids")) or []
+                if isinstance(element_id, str) and element_id and element_id not in gap_elements:
                     issues.append(
                         f"crosswalk {cid!r}: linked gap {gid!r} does not cover official "
                         f"element {element_id!r}"
@@ -752,12 +1013,12 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
             elif rid is not None:
                 issues.append(f"{label}: route_id must be a string")
 
-            case, doc = r.get("case_type"), r.get("document_type")
-            if case not in CASE_TYPES:
-                issues.append(f"{label}: unknown case_type {case!r}")
-            if doc not in DOCUMENT_TYPES:
-                issues.append(f"{label}: unknown document_type {doc!r}")
-            if case in CASE_TYPES and doc in DOCUMENT_TYPES:
+            case = _check_enum(label, "case_type", r.get("case_type"), CASE_TYPES, issues,
+                               unknown="unknown")
+            doc = _check_enum(label, "document_type", r.get("document_type"), DOCUMENT_TYPES,
+                              issues, unknown="unknown")
+            # Only validated string enumerations may become a hashable route key.
+            if case is not None and doc is not None:
                 combo = (case, doc)
                 if combo in route_combos:
                     issues.append(f"{label}: duplicate case-document route {combo}")
@@ -767,17 +1028,21 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
 
             _check_enum(label, "official_counterpart_classification",
                         r.get("official_counterpart_classification"), ROUTE_CLASSES, issues)
-            _check_enum(label, "approval_status", r.get("approval_status"), APPROVAL_STATUSES, issues)
+            approval = r.get("approval_status")
+            _check_enum(label, "approval_status", approval, APPROVAL_STATUSES, issues)
 
-            if r.get("approval_status") == "APPROVED":
+            if approval == "APPROVED":
                 issues.append(f"{label}: an analytical route must never be APPROVED")
 
-            for sid in r.get("official_source_ids") or []:
-                if not isinstance(sid, str) or (registry_ids and sid not in registry_ids):
+            source_ids = _check_string_list(label, "official_source_ids",
+                                            r.get("official_source_ids"), issues)
+            for sid in source_ids or []:
+                if registry_ids and sid not in registry_ids:
                     issues.append(f"{label}: official_source_ids {sid!r} does not resolve in the source registry")
                 else:
                     source_ids_used.add(sid)
 
+            _check_string_list(label, "gap_ids", r.get("gap_ids"), issues, optional=True)
             for gid in _string_list(r.get("gap_ids")) or []:
                 g = gaps_by_id.get(gid)
                 if g is None:
@@ -803,7 +1068,11 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
 
     # every gap must be reachable from the route for its own case-document pair
     for gid, g in sorted(gaps_by_id.items()):
-        combo = (g.get("case_type"), g.get("document_type"))
+        case, doc = g.get("case_type"), g.get("document_type")
+        if not (isinstance(case, str) and isinstance(doc, str)):
+            # the malformed case/document pair was already reported above
+            continue
+        combo = (case, doc)
         route = route_by_combo.get(combo)
         if route is None:
             issues.append(f"gap {gid!r}: no route assessment exists for {combo}")
@@ -819,7 +1088,11 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
         block = data.get(key)
         if not isinstance(block, dict):
             continue
-        for rec in block.get(records_field) or []:
+        records = block.get(records_field)
+        if not isinstance(records, list):
+            # a non-list block was already reported by the record loops
+            continue
+        for rec in records:
             if isinstance(rec, dict) and rec.get("approval_status") == "APPROVED":
                 issues.append(f"{key}: record claims APPROVED, which is not permitted in the analysis")
 
