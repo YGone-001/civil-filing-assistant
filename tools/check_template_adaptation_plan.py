@@ -12,25 +12,31 @@ Reads (read-only):
 * ``docs/legal-template-governance/official-gap-analysis/`` (frozen analysis)
 * ``docs/legal-template-governance/official-adaptation-planning/`` (this plan)
 
-and checks that the plan is internally consistent **and** that it grants nothing:
+and checks that the plan is internally consistent, correctly scoped **and** that
+it grants nothing:
 
-* all fifteen routes are assessed exactly once and resolve to a frozen route;
-* every frozen gap is accounted for exactly once and no unknown gap is introduced;
-* every work-package reference (route, gap, crosswalk, source) resolves;
-* review dependencies are explicit and a HIGH-severity gap is never deferrable;
 * every route and every work package is ``NOT_AUTHORIZED``;
-* no planning record may claim an approval, a completed review, a cleared rights
-  gate or an approved source without recorded evidence for that stage;
-* missing or malformed authorization data fails closed.
+* the frozen planning phase admits **no** approval or completed-review state, and
+  a populated evidence string can never create one;
+* a route's source and mapping states must equal their authoritative registry
+  state, and its source references must be scoped to that route;
+* every work-package crosswalk reference belongs to the package's own
+  case-document pair;
+* gap/work-package relationships are reciprocal, uniquely linked and correctly
+  scoped, and the one-package-per-route model covers every applicable gap and
+  crosswalk;
+* ``priority_score`` and ``planning_priority`` are recomputed from the risk
+  dimensions and rejected when they disagree;
+* malformed or missing authorization data fails closed.
 
 The validator is standard-library only, runs offline, reads repository metadata
 only and has no side effects.
 
-**What it cannot do.** It proves planning consistency. It cannot establish legal
-correctness, rights ownership, the authenticity of a human reviewer, court
-acceptance, actual approval authority, or the suitability of any final document.
-A passing run is **not** a legal approval and **not** an implementation
-authorization.
+**What it cannot do.** It proves planning consistency and arithmetic. It cannot
+establish source authenticity, source currency, legal correctness, the
+authenticity of a human reviewer, copyright permissions, court acceptance, or
+actual approval authority. A passing run is **not** a legal approval and **not**
+an implementation authorization.
 
 Usage::
 
@@ -83,6 +89,11 @@ RIGHTS_REVIEW_STATES = frozenset({"NOT_REVIEWED", "REVIEWED", "NOT_APPLICABLE"})
 PROCEDURAL_STATES = frozenset({
     "NOT_APPLICABLE", "PROCEDURAL_REVIEW_REQUIRED", "PROCEDURAL_REVIEW_COMPLETED",
 })
+COUNTERPART_CLASSIFICATIONS = frozenset({
+    "CANDIDATE_OFFICIAL_COMPLAINT", "OFFICIAL_SECTION_ONLY",
+    "STANDALONE_EQUIVALENCE_UNVERIFIED", "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+    "ADDITIONAL_SOURCE_REQUIRED", "BLOCKED",
+})
 # The only implementation authorization value permitted anywhere in the plan.
 AUTHORIZATION_STATES = frozenset({"NOT_AUTHORIZED"})
 PLANNING_PRIORITIES = frozenset({"P0", "P1", "P2", "P3"})
@@ -102,6 +113,42 @@ RISK_DIMENSIONS = (
     "rights_redistribution_dependency", "engineering_implementation_complexity",
     "regression_risk", "reversibility", "cross_case_impact", "user_facing_consequence",
 )
+
+# --- frozen-phase contract --------------------------------------------------
+# The planning records describe a frozen, unreviewed phase. These are the only
+# admissible values; no evidence string may promote a record past them.
+CURRENT_PHASE_LEGAL_REVIEW_STATE = "NOT_REQUESTED"
+CURRENT_PHASE_RIGHTS_REVIEW_STATE = "NOT_REVIEWED"
+FORBIDDEN_SOURCE_STATES = frozenset({"APPROVED_FOR_ADAPTATION"})
+CURRENT_PHASE_PROCEDURAL_STATES = frozenset({"NOT_APPLICABLE", "PROCEDURAL_REVIEW_REQUIRED"})
+# Ordered verification ladder; a planning state may never exceed its registry state.
+VERIFICATION_LADDER = (
+    "DISCOVERED", "ANNOUNCEMENT_VERIFIED", "SOURCE_FILE_VERIFIED", "CONTENT_REVIEWED",
+    "MAPPING_REVIEWED", "APPROVED_FOR_ADAPTATION",
+)
+TERMINAL_SOURCE_STATES = frozenset({"REJECTED", "UNAVAILABLE"})
+
+# --- risk-scoring contract (documented in baseline-and-assumptions.md §3) ---
+SEVERITY_SCORES = {
+    "INFORMATIONAL": 0, "LOW": 1, "MEDIUM": 2, "HIGH": 3, "CRITICAL": 4,
+}
+SEVERITY_WEIGHT = 4
+SCORE_WEIGHTS = {
+    "factual_integrity_impact": 3,
+    "monetary_calculation_impact": 3,
+    "procedural_applicability": 2,
+    "source_verification_dependency": 2,
+    "legal_content_review_dependency": 3,
+    "rights_redistribution_dependency": 2,
+    "engineering_implementation_complexity": 2,
+    "regression_risk": 2,
+    "reversibility": 1,
+    "cross_case_impact": 1,
+    "user_facing_consequence": 1,
+}
+P0_SCORE_THRESHOLD = 54
+P1_SCORE_THRESHOLD = 47
+P2_SCORE_THRESHOLD = 36
 
 ROUTE_REQUIRED = (
     "route_id", "case_type", "document_type", "governance_mapping_id", "source_ids",
@@ -219,6 +266,22 @@ def _check_bool(label, field, value, issues) -> Optional[bool]:
     return value
 
 
+def _check_unique(label, field, items, issues) -> Optional[List[str]]:
+    """Reject duplicate entries where set semantics are required."""
+    if items is None:
+        return None
+    seen: set = set()
+    duplicates: List[str] = []
+    for item in items:
+        if item in seen and item not in duplicates:
+            duplicates.append(item)
+        seen.add(item)
+    if duplicates:
+        issues.append(f"{label}: {field} contains duplicate reference(s) {duplicates}")
+        return None
+    return items
+
+
 def _require_not_authorized(label, value, issues) -> bool:
     """Fail closed: anything other than the literal NOT_AUTHORIZED is an error."""
     if value is None:
@@ -234,6 +297,26 @@ def _require_not_authorized(label, value, issues) -> bool:
                       f"only 'NOT_AUTHORIZED' is valid in the planning phase")
         return False
     return True
+
+
+def _verification_rank(state: Any) -> int:
+    """Rank a verification state on the ordered ladder; -1 for terminal/unknown."""
+    if not isinstance(state, str):
+        return -1
+    if state in TERMINAL_SOURCE_STATES or state not in VERIFICATION_LADDER:
+        return -1
+    return VERIFICATION_LADDER.index(state)
+
+
+def _set_delta(actual: List[str], expected: set) -> str:
+    missing = sorted(expected - set(actual))
+    unexpected = sorted(set(actual) - expected)
+    parts = []
+    if missing:
+        parts.append(f"missing {missing}")
+    if unexpected:
+        parts.append(f"unexpected {unexpected}")
+    return "; ".join(parts) if parts else "no difference"
 
 
 def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: Path,
@@ -298,11 +381,11 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
             if isinstance(f, dict) and _nonempty_str(f.get("field_id")):
                 fields_by_id[f["field_id"]] = f
 
-    crosswalk_ids: set = set()
+    crosswalks_by_id: Dict[str, Dict[str, Any]] = {}
     if "crosswalk" in analysis:
         for c in analysis["crosswalk"].get("crosswalks") or []:
             if isinstance(c, dict) and _nonempty_str(c.get("crosswalk_id")):
-                crosswalk_ids.add(c["crosswalk_id"])
+                crosswalks_by_id[c["crosswalk_id"]] = c
 
     frozen_gaps: Dict[str, Dict[str, Any]] = {}
     if "gaps" in analysis:
@@ -360,6 +443,14 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                         f"{label}: case/document ({case!r}, {doc!r}) does not match the frozen "
                         f"route ({frozen.get('case_type')!r}, {frozen.get('document_type')!r})"
                     )
+                # C2.4 — the counterpart classification must equal the frozen route's.
+                classification = r.get("official_counterpart_classification")
+                if classification != frozen.get("official_counterpart_classification"):
+                    issues.append(
+                        f"{label}: official_counterpart_classification {classification!r} does not "
+                        f"match the frozen route classification "
+                        f"{frozen.get('official_counterpart_classification')!r}"
+                    )
                 expected_gaps = sorted(g for g in (frozen.get("gap_ids") or [])
                                        if isinstance(g, str))
                 listed = _check_string_list(label, "linked_gap_ids",
@@ -389,6 +480,8 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                 else:
                     readiness_combos.add(combo)
 
+            # C2.3 — the mapping must be the exact frozen case-document mapping, and
+            # the planning mapping state must equal the registry mapping_status.
             mid = r.get("governance_mapping_id")
             if not _nonempty_str(mid):
                 issues.append(f"{label}: governance_mapping_id must be a non-empty string")
@@ -398,12 +491,41 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                 m = mapping_ids[mid]
                 if m.get("case_type") != case or m.get("document_type") != doc:
                     issues.append(f"{label}: governance mapping {mid!r} covers a different case/document")
+                canonical = mapping_by_key.get((case, doc))
+                if canonical is not None and canonical.get("mapping_id") != mid:
+                    issues.append(
+                        f"{label}: governance_mapping_id {mid!r} is not the frozen mapping for "
+                        f"({case!r}, {doc!r}); expected {canonical.get('mapping_id')!r}"
+                    )
+                planning_mapping_state = r.get("mapping_review_state")
+                if isinstance(planning_mapping_state, str) and \
+                        planning_mapping_state != m.get("mapping_status"):
+                    issues.append(
+                        f"{label}: mapping_review_state {planning_mapping_state!r} does not match "
+                        f"the frozen governance mapping_status {m.get('mapping_status')!r}"
+                    )
 
-            for field in ("source_ids", "candidate_source_ids"):
-                ids = _check_string_list(label, field, r.get(field), issues, optional=True)
-                for sid in ids or []:
-                    if sid not in registry_ids:
-                        issues.append(f"{label}: {field} {sid!r} does not resolve in the source registry")
+            # C2.2 — source references must be scoped to this route.
+            candidates = _check_string_list(label, "candidate_source_ids",
+                                            r.get("candidate_source_ids"), issues, optional=True)
+            inspected: List[str] = []
+            if frozen is not None:
+                inspected = [s for s in (frozen.get("official_source_ids") or [])
+                             if isinstance(s, str)]
+            allowed_sources = set(inspected) | set(candidates or [])
+            source_ids = _check_string_list(label, "source_ids", r.get("source_ids"),
+                                            issues, optional=True)
+            for sid in source_ids or []:
+                if sid not in registry_ids:
+                    issues.append(f"{label}: source_ids {sid!r} does not resolve in the source registry")
+                elif sid not in allowed_sources:
+                    issues.append(
+                        f"{label}: source_ids {sid!r} is not scoped to this route "
+                        f"(expected one of {sorted(allowed_sources) or 'none'})"
+                    )
+            for sid in candidates or []:
+                if sid not in registry_ids:
+                    issues.append(f"{label}: candidate_source_ids {sid!r} does not resolve in the source registry")
 
             _check_enum(label, "readiness_classification", r.get("readiness_classification"),
                         READINESS_CLASSIFICATIONS, issues)
@@ -411,45 +533,82 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                         ENGINEERING_READINESS, issues)
             _check_enum(label, "official_counterpart_classification",
                         r.get("official_counterpart_classification"),
-                        frozenset({
-                            "CANDIDATE_OFFICIAL_COMPLAINT", "OFFICIAL_SECTION_ONLY",
-                            "STANDALONE_EQUIVALENCE_UNVERIFIED",
-                            "NO_COUNTERPART_IN_INSPECTED_SOURCE", "ADDITIONAL_SOURCE_REQUIRED",
-                            "BLOCKED",
-                        }), issues)
+                        COUNTERPART_CLASSIFICATIONS, issues)
 
+            # C2.1 — the planning source state must equal the authoritative registry
+            # state of the route's scoped candidate source(s).
             source_state = _check_enum(label, "source_verification_state",
                                        r.get("source_verification_state"),
                                        SOURCE_VERIFICATION_STATES, issues)
+            if isinstance(source_state, str):
+                if source_state in FORBIDDEN_SOURCE_STATES:
+                    issues.append(
+                        f"{label}: source_verification_state 'APPROVED_FOR_ADAPTATION' is not "
+                        f"permitted; no source approval exists and an evidence string cannot "
+                        f"create one"
+                    )
+                elif not candidates:
+                    if source_state != "NO_CANDIDATE_SOURCE_IDENTIFIED":
+                        issues.append(
+                            f"{label}: source_verification_state {source_state!r} does not match "
+                            f"the frozen source registry state 'NO_CANDIDATE_SOURCE_IDENTIFIED' "
+                            f"for a route with no candidate source"
+                        )
+                else:
+                    candidate_states = [registry_ids[sid].get("verification_status")
+                                        for sid in candidates if sid in registry_ids]
+                    expected_rank = min((_verification_rank(s) for s in candidate_states),
+                                        default=-1)
+                    if expected_rank < 0:
+                        issues.append(
+                            f"{label}: candidate source(s) {sorted(candidates)} have no usable "
+                            f"verification status in the frozen registry"
+                        )
+                    else:
+                        expected_state = VERIFICATION_LADDER[expected_rank]
+                        if source_state != expected_state:
+                            issues.append(
+                                f"{label}: source_verification_state {source_state!r} does not "
+                                f"match the frozen source registry state {expected_state!r} for "
+                                f"the scoped candidate source(s) {sorted(candidates)}"
+                            )
+
             _check_enum(label, "mapping_review_state", r.get("mapping_review_state"),
                         MAPPING_REVIEW_STATES, issues)
+
+            # C1 — the frozen phase admits no completed review state, with or
+            # without an evidence string.
             legal_state = _check_enum(label, "legal_content_review_state",
                                       r.get("legal_content_review_state"), REVIEW_STATES, issues)
+            if isinstance(legal_state, str) and legal_state != CURRENT_PHASE_LEGAL_REVIEW_STATE:
+                issues.append(
+                    f"{label}: legal_content_review_state {legal_state!r} is not permitted in the "
+                    f"frozen planning phase; only {CURRENT_PHASE_LEGAL_REVIEW_STATE!r} is valid and "
+                    f"an evidence string cannot authorize a review"
+                )
             rights_state = _check_enum(label, "rights_review_state",
                                        r.get("rights_review_state"), RIGHTS_REVIEW_STATES, issues)
-            _check_enum(label, "procedural_applicability_state",
-                        r.get("procedural_applicability_state"), PROCEDURAL_STATES, issues)
-
-            # No planning status may masquerade as legal approval.
-            if legal_state == "COMPLETED" and not _nonempty_str(r.get("legal_content_review_evidence")):
+            if isinstance(rights_state, str) and rights_state != CURRENT_PHASE_RIGHTS_REVIEW_STATE:
                 issues.append(
-                    f"{label}: legal_content_review_state 'COMPLETED' requires "
-                    f"legal_content_review_evidence"
+                    f"{label}: rights_review_state {rights_state!r} is not permitted in the frozen "
+                    f"planning phase; only {CURRENT_PHASE_RIGHTS_REVIEW_STATE!r} is valid and an "
+                    f"evidence string cannot clear a rights review"
                 )
-            if rights_state == "REVIEWED" and not _nonempty_str(r.get("rights_review_evidence")):
+            procedural = _check_enum(label, "procedural_applicability_state",
+                                     r.get("procedural_applicability_state"), PROCEDURAL_STATES,
+                                     issues)
+            if isinstance(procedural, str) and procedural not in CURRENT_PHASE_PROCEDURAL_STATES:
                 issues.append(
-                    f"{label}: rights_review_state 'REVIEWED' requires rights_review_evidence"
+                    f"{label}: procedural_applicability_state {procedural!r} is not permitted in "
+                    f"the frozen planning phase; only "
+                    f"{sorted(CURRENT_PHASE_PROCEDURAL_STATES)} are valid and no authoritative "
+                    f"procedural review is recorded"
                 )
-            if source_state == "APPROVED_FOR_ADAPTATION" and not _nonempty_str(
-                    r.get("source_approval_evidence")):
+            if procedural == "PROCEDURAL_REVIEW_REQUIRED" and \
+                    r.get("official_counterpart_classification") != "CANDIDATE_OFFICIAL_COMPLAINT":
                 issues.append(
-                    f"{label}: source_verification_state 'APPROVED_FOR_ADAPTATION' requires "
-                    f"source_approval_evidence"
-                )
-            # A verified file is not an approved source.
-            if source_state == "SOURCE_FILE_VERIFIED" and r.get("mapping_review_state") == "APPROVED":
-                issues.append(
-                    f"{label}: a SOURCE_FILE_VERIFIED source cannot back an APPROVED mapping"
+                    f"{label}: procedural_applicability_state 'PROCEDURAL_REVIEW_REQUIRED' is only "
+                    f"valid for a candidate official complaint route"
                 )
 
             _check_nonempty_string_list(label, "blocking_conditions",
@@ -471,6 +630,8 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
     # --- gap prioritization -------------------------------------------------
     prioritization_ids: set = set()
     prioritized_high: set = set()
+    gap_case_doc: Dict[str, Any] = {}
+    gap_package_links: Dict[str, List[str]] = {}
     prioritization = plan.get("prioritization")
     if prioritization is not None:
         records = prioritization.get("gaps")
@@ -511,23 +672,56 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                 _check_enum(label, "document_type", p.get("document_type"), DOCUMENT_TYPES, issues)
                 _check_enum(label, "frozen_severity", p.get("frozen_severity"), SEVERITIES, issues)
 
+            if isinstance(gid, str):
+                gap_case_doc[gid] = (p.get("case_type"), p.get("document_type"))
+
             priority = _check_enum(label, "planning_priority", p.get("planning_priority"),
                                    PLANNING_PRIORITIES, issues)
             score = p.get("priority_score")
-            if not isinstance(score, int) or isinstance(score, bool) or not (0 <= score <= 100):
+            score_ok = isinstance(score, int) and not isinstance(score, bool) and 0 <= score <= 100
+            if not score_ok:
                 issues.append(f"{label}: priority_score must be an integer between 0 and 100")
 
             dims = p.get("risk_dimensions")
+            dims_ok = True
             if not isinstance(dims, dict):
                 issues.append(f"{label}: risk_dimensions must be a JSON object")
+                dims_ok = False
             else:
                 for key in RISK_DIMENSIONS:
                     value = dims.get(key)
                     if not isinstance(value, int) or isinstance(value, bool) or not (0 <= value <= 3):
                         issues.append(f"{label}: risk_dimensions.{key} must be an integer 0-3")
+                        dims_ok = False
                 for key in dims:
                     if key not in RISK_DIMENSIONS:
                         issues.append(f"{label}: unknown risk dimension {key!r}")
+                        dims_ok = False
+
+            severity = p.get("frozen_severity")
+            if score_ok and dims_ok and severity in SEVERITY_SCORES:
+                expected_score = SEVERITY_WEIGHT * SEVERITY_SCORES[severity] + sum(
+                    SCORE_WEIGHTS[key] * dims[key] for key in RISK_DIMENSIONS)
+                if score != expected_score:
+                    issues.append(
+                        f"{label}: priority_score {score} does not match the computed score "
+                        f"{expected_score} (severity {severity!r} + risk dimensions)"
+                    )
+                if severity in ("HIGH", "CRITICAL"):
+                    expected_priority = "P0"
+                elif expected_score >= P0_SCORE_THRESHOLD:
+                    expected_priority = "P0"
+                elif expected_score >= P1_SCORE_THRESHOLD:
+                    expected_priority = "P1"
+                elif expected_score >= P2_SCORE_THRESHOLD:
+                    expected_priority = "P2"
+                else:
+                    expected_priority = "P3"
+                if priority is not None and priority != expected_priority:
+                    issues.append(
+                        f"{label}: planning_priority {priority!r} does not match the expected band "
+                        f"{expected_priority!r} for score {score} and severity {severity!r}"
+                    )
 
             deps = _check_nonempty_string_list(label, "review_dependencies",
                                                p.get("review_dependencies"), issues)
@@ -537,16 +731,9 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
 
             wps = _check_nonempty_string_list(label, "candidate_work_package_ids",
                                               p.get("candidate_work_package_ids"), issues)
-            if wps is None:
-                pass  # already reported
-            else:
-                for wid in wps:
-                    if wid not in {
-                        wp.get("work_package_id")
-                        for wp in (plan.get("packages", {}).get("work_packages") or [])
-                        if isinstance(wp, dict)
-                    }:
-                        issues.append(f"{label}: candidate work package {wid!r} does not resolve")
+            wps = _check_unique(label, "candidate_work_package_ids", wps, issues)
+            if wps is not None and isinstance(gid, str):
+                gap_package_links[gid] = list(wps)
 
             can_defer = _check_bool(label, "can_be_deferred", p.get("can_be_deferred"), issues)
             if not _nonempty_str(p.get("deferral_rationale")):
@@ -573,6 +760,9 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
 
     # --- work packages ------------------------------------------------------
     package_ids: set = set()
+    package_records: Dict[str, Dict[str, Any]] = {}
+    package_gap_links: Dict[str, List[str]] = {}
+    route_to_package: Dict[str, str] = {}
     packages = plan.get("packages")
     if packages is not None:
         records = packages.get("work_packages")
@@ -596,6 +786,7 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                     issues.append(f"{label}: duplicate work_package_id")
                 else:
                     package_ids.add(wid)
+                    package_records[wid] = wp
             elif wid is not None:
                 issues.append(f"{label}: work_package_id must be a string")
 
@@ -603,6 +794,7 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
             doc = _check_enum(label, "document_type", wp.get("document_type"),
                               DOCUMENT_TYPES, issues)
 
+            # C5.1 — exactly one work package per route.
             rid = wp.get("linked_route_id")
             if not _nonempty_str(rid):
                 issues.append(f"{label}: linked_route_id must be a non-empty string")
@@ -613,6 +805,13 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                 if frozen_route.get("case_type") != case or \
                         frozen_route.get("document_type") != doc:
                     issues.append(f"{label}: linked route covers a different case/document")
+                if rid in route_to_package:
+                    issues.append(
+                        f"{label}: route {rid!r} already has work package "
+                        f"{route_to_package[rid]!r}; the planning model allows exactly one"
+                    )
+                elif isinstance(wid, str):
+                    route_to_package[rid] = wid
 
             if case is not None and doc is not None:
                 expected_route = route_by_combo.get((case, doc))
@@ -621,20 +820,51 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                         f"{label}: linked_route_id {rid!r} is not the route for ({case!r}, {doc!r})"
                     )
 
+            # C5.2 — gap coverage must equal the frozen route gap set.
             gaps_list = _check_nonempty_string_list(label, "linked_gap_ids",
                                                     wp.get("linked_gap_ids"), issues)
+            gaps_list = _check_unique(label, "linked_gap_ids", gaps_list, issues)
             for gid in gaps_list or []:
                 if gid not in frozen_gaps:
                     issues.append(f"{label}: linked gap {gid!r} does not resolve")
                 elif frozen_gaps[gid].get("case_type") != case or \
                         frozen_gaps[gid].get("document_type") != doc:
                     issues.append(f"{label}: linked gap {gid!r} belongs to a different case/document")
+            if gaps_list is not None and isinstance(rid, str) and rid in frozen_routes:
+                expected_gaps = {g for g in (frozen_routes[rid].get("gap_ids") or [])
+                                 if isinstance(g, str)}
+                if set(gaps_list) != expected_gaps:
+                    issues.append(
+                        f"{label}: linked_gap_ids do not match the frozen route gap set "
+                        f"({_set_delta(gaps_list, expected_gaps)})"
+                    )
+            if isinstance(wid, str) and gaps_list is not None:
+                package_gap_links[wid] = list(gaps_list)
 
+            # C3 / C5.3 — crosswalk references must be owned and complete.
             cross_list = _check_string_list(label, "linked_crosswalk_ids",
                                             wp.get("linked_crosswalk_ids"), issues)
+            cross_list = _check_unique(label, "linked_crosswalk_ids", cross_list, issues)
             for cid in cross_list or []:
-                if cid not in crosswalk_ids:
+                record = crosswalks_by_id.get(cid)
+                if record is None:
                     issues.append(f"{label}: linked crosswalk {cid!r} does not resolve")
+                    continue
+                if record.get("case_type") != case or record.get("document_type") != doc:
+                    issues.append(
+                        f"{label}: linked crosswalk {cid!r} belongs to "
+                        f"({record.get('case_type')!r}, {record.get('document_type')!r}), "
+                        f"not ({case!r}, {doc!r})"
+                    )
+            if cross_list is not None and case is not None and doc is not None:
+                expected_cross = {cid for cid, rec in crosswalks_by_id.items()
+                                  if rec.get("case_type") == case
+                                  and rec.get("document_type") == doc}
+                if set(cross_list) != expected_cross:
+                    issues.append(
+                        f"{label}: linked_crosswalk_ids do not match the frozen crosswalk set for "
+                        f"({case!r}, {doc!r}) ({_set_delta(cross_list, expected_cross)})"
+                    )
 
             src_list = _check_string_list(label, "source_ids", wp.get("source_ids"), issues)
             for sid in src_list or []:
@@ -644,9 +874,8 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
             for field in ("objective", "calculation_effects"):
                 if not _nonempty_str(wp.get(field)):
                     issues.append(f"{label}: {field} must be a non-empty string")
-            for field in ("title",):
-                if not _nonempty_str(wp.get(field)):
-                    issues.append(f"{label}: {field} must be a non-empty string")
+            if not _nonempty_str(wp.get("title")):
+                issues.append(f"{label}: title must be a non-empty string")
 
             for field in ("proposed_ui_changes", "proposed_model_changes",
                           "proposed_presenter_changes", "proposed_docx_changes",
@@ -670,6 +899,53 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
 
     if packages is not None and len(package_ids) != 15:
         issues.append(f"adaptation-work-packages: expected exactly 15 work packages, found {len(package_ids)}")
+
+    # every frozen route must have exactly one work package
+    for rid in sorted(frozen_routes):
+        if rid not in route_to_package:
+            issues.append(f"route {rid!r}: has no work package")
+
+    # --- C4 reciprocal gap / work-package integrity -------------------------
+    for gid in sorted(gap_package_links):
+        case, doc = gap_case_doc.get(gid, (None, None))
+        for wid in gap_package_links[gid]:
+            wp = package_records.get(wid)
+            if wp is None:
+                issues.append(f"prioritization {gid!r}: candidate work package {wid!r} does not resolve")
+                continue
+            if wp.get("case_type") != case or wp.get("document_type") != doc:
+                issues.append(
+                    f"prioritization {gid!r}: candidate work package {wid!r} belongs to "
+                    f"({wp.get('case_type')!r}, {wp.get('document_type')!r}), "
+                    f"not ({case!r}, {doc!r})"
+                )
+            if gid not in package_gap_links.get(wid, []):
+                issues.append(
+                    f"prioritization {gid!r}: candidate work package {wid!r} does not link back "
+                    f"to the gap"
+                )
+
+    for wid in sorted(package_gap_links):
+        wp = package_records.get(wid, {})
+        case, doc = wp.get("case_type"), wp.get("document_type")
+        for gid in package_gap_links[wid]:
+            if gid not in gap_package_links:
+                issues.append(
+                    f"work_package {wid!r}: linked gap {gid!r} does not list this work package in "
+                    f"its candidate_work_package_ids"
+                )
+                continue
+            gcase, gdoc = gap_case_doc.get(gid, (None, None))
+            if gcase != case or gdoc != doc:
+                issues.append(
+                    f"work_package {wid!r}: linked gap {gid!r} belongs to ({gcase!r}, {gdoc!r}), "
+                    f"not ({case!r}, {doc!r})"
+                )
+            if wid not in gap_package_links[gid]:
+                issues.append(
+                    f"work_package {wid!r}: linked gap {gid!r} does not list this work package in "
+                    f"its candidate_work_package_ids"
+                )
 
     # every HIGH-severity gap must be analysed by the route that owns it
     for gid in sorted(prioritized_high):
