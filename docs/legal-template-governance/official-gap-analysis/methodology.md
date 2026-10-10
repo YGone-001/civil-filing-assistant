@@ -36,6 +36,40 @@ classify gaps, assess the 15 routes independently
 validate deterministically offline (tools/check_template_crosswalk.py)
 ```
 
+## 1b. Relationship invariants (enforced)
+
+A reference that resolves successfully is **not** necessarily a semantically valid reference.
+Identifier lookup never substitutes for ownership. Every record must satisfy:
+
+```text
+crosswalk.case_type           == official_element.case_type
+crosswalk.case_type           == application_field.case_type_or_shared   (or the field is shared)
+crosswalk.(case, document)    == linked_gap.(case, document)
+route.(case, document)        == linked_gap.(case, document)
+crosswalk.official_element_id in linked_gap.official_element_ids
+gap.official_element_ids      -> every element belongs to the gap's case
+gap.application_field_ids     -> every field is shared or belongs to the gap's case
+DIRECT_MATCH                  -> a real field, or verified static-rendering evidence
+every material mismatch       -> at least one applicable gap
+every gap                     -> reachable from the route for its (case, document)
+```
+
+### Gap scoping policy
+
+Gap records are **case-scoped**. A limitation that is shared at the application level (for example the
+single shared party page) is recorded once per case type against that case's own official form, rather
+than reusing another case's gap record. This is deliberate: an official element may only be linked to a
+gap that applies to the same case category, the same document type and (directly or through a
+documented aggregate) the same official element. It is why the gap count is larger than a
+one-gap-per-concept count would be — the increase reflects scope correctness, not padding, and no gap
+is created without a crosswalk or route that needs it.
+
+### Aggregate gaps
+
+An aggregate gap covers several official elements of the same case and document type. Every covered
+element is listed explicitly in `official_element_ids`; the record is not allowed to stand in for an
+unrelated element.
+
 ## 2. Evidence classes
 
 | Class | Meaning |
@@ -45,6 +79,25 @@ validate deterministically offline (tools/check_template_crosswalk.py)
 | `INFERRED_FROM_CODE` | Derived by reading the application source, not by executing it |
 | `SOURCE_UNAVAILABLE` | The claim could not be checked against the source |
 | `LEGAL_REVIEW_REQUIRED` | The legal meaning/applicability is unresolved |
+
+### Evidence grammar (machine-checked)
+
+```text
+source_evidence (positive)  : "<source_id> p<page> sha256:<64-hex>"
+                              "<source_id> p<start>-p<end> sha256:<64-hex>"
+source_evidence (bounded)   : '<source_id> pages <start>-<end> search:"<term>" sha256:<64-hex>'
+                              '<source_id> pages <start>-<end> method:"<method>" sha256:<64-hex>'
+code_evidence               : "revision <40-hex>; <repo-relative .py path> :: <symbol>; ..."
+```
+
+A positive finding cites the physical PDF page that carries the element. A negative finding
+(`NO_COUNTERPART_IN_INSPECTED_SOURCE`, `STANDALONE_EQUIVALENCE_UNVERIFIED`) cites a bounded inspected
+page range together with the search term or inspection method. A negative **text** search does not prove
+the absence of visually rendered content where text extraction is incomplete, and is never recorded as a
+visual inspection. Code evidence must cite the frozen revision, an existing repository-relative Python
+path and an explicit symbol; a Git SHA alone is not code evidence. Evidence that names another case's
+model class is a cross-case reference defect.
+
 
 ## 3. Coverage statuses (`field-crosswalk.json`)
 
@@ -88,7 +141,12 @@ The application distinguishes `UNKNOWN` / `CONFIRMED_TRUE` / `CONFIRMED_FALSE` f
 - No legal approval, court acceptance or compliance conclusion is made anywhere in this directory.
 - Every route record carries `approval_status: NOT_REQUESTED`.
 - The governance registries were not modified and no source or mapping was promoted.
-- Machine validation proves internal consistency only; it cannot re-verify the PDF, which the validator deliberately does not fetch.
+- Machine validation proves internal consistency and relational ownership only; it cannot re-verify the
+  PDF, which the validator deliberately does not fetch.
+- Automated validation **cannot** establish whether a legal interpretation is correct, whether an
+  official element is legally mandatory, whether every semantic statement is accurate, whether a court
+  will accept the document, or whether any legal review occurred. A fully linked crosswalk is not a
+  legal opinion.
 
 ## 9. Reproduction
 

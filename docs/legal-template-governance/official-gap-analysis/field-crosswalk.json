@@ -1,5 +1,5 @@
 {
-  "crosswalk_version": "1.0.0",
+  "crosswalk_version": "1.1.0",
   "analyzed_revision": "639179933c51f111ea43060157e897fa0a1e4d30",
   "crosswalks": [
     {
@@ -16,11 +16,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0002-loan",
@@ -34,7 +36,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PARTY-IDENTITY-DETAILS"
       ],
@@ -42,7 +44,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0003-loan",
@@ -58,11 +62,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0004-loan",
@@ -78,11 +84,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0005-loan",
@@ -96,7 +104,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PARTY-RESIDENCE"
       ],
@@ -104,7 +112,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0006-loan",
@@ -120,7 +130,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-ID-TYPE"
       ],
@@ -128,7 +138,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0007-loan",
@@ -142,7 +154,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方代理人栏。",
       "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-REPRESENTATIVE"
       ],
@@ -150,7 +162,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0008-loan",
@@ -169,7 +183,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PARTY-IDENTITY-DETAILS"
       ],
@@ -177,7 +191,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0009-loan",
@@ -195,7 +211,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏（法人版式）。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-ORG-REGISTRATION"
       ],
@@ -203,7 +219,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0010-loan",
@@ -217,7 +235,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方第三人栏。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/第三人",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-THIRD-PARTY"
       ],
@@ -225,7 +243,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0011-loan",
@@ -239,7 +259,7 @@
       "data_provenance_comparison": "应用仅有建议管辖法院。",
       "output_placement": "官方约定管辖栏。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-JURISDICTION-CLAUSE"
       ],
@@ -247,7 +267,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0012-loan",
@@ -261,7 +283,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉前保全栏。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PRESERVATION"
       ],
@@ -269,7 +291,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0013-loan",
@@ -283,7 +307,7 @@
       "data_provenance_comparison": "应用无对应字段。",
       "output_placement": "起诉状诉讼请求末项。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-COURT-FEE-CONDITIONAL"
       ],
@@ -291,7 +315,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0014-loan",
@@ -305,7 +331,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-OTHER-CLAIMS"
       ],
@@ -313,7 +339,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0015-loan",
@@ -327,7 +355,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-TOTAL-AMOUNT"
       ],
@@ -335,7 +363,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0016-loan",
@@ -351,7 +381,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "官方起诉状末段；应用为独立文书。",
       "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-EVIDENCE-STANDALONE"
       ],
@@ -359,7 +389,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0017-loan",
@@ -373,7 +405,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方事实与理由末项。",
       "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LEGAL-BASIS"
       ],
@@ -381,7 +413,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0018-loan",
@@ -395,7 +429,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方文末。",
       "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-MEDIATION-PREFERENCE"
       ],
@@ -403,7 +437,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0019-loan",
@@ -417,11 +453,13 @@
       "data_provenance_comparison": "均为留空手签。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0020-loan",
@@ -435,11 +473,13 @@
       "data_provenance_comparison": "均为留空手填。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0021-loan",
@@ -453,11 +493,13 @@
       "data_provenance_comparison": "不适用。",
       "output_placement": "官方表格说明区。",
       "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0022-loan",
@@ -473,7 +515,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-ASOF-DATE"
       ],
@@ -481,7 +523,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0023-loan",
@@ -498,7 +542,7 @@
       "data_provenance_comparison": "应用为计算值。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-ASOF-DATE",
         "GAP-LOAN-INTEREST-BASIS"
@@ -507,7 +551,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0024-loan",
@@ -516,18 +562,22 @@
       "official_element_id": "loan.claim.acceleration",
       "application_field_ids": [],
       "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
-      "semantic_comparison": "官方含加速到期/解除合同。",
-      "condition_comparison": "可选。",
+      "semantic_comparison": "应用不主张提前还款（加速到期）或解除合同。",
+      "condition_comparison": "官方为可选项。",
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-LOAN-ACCELERATION"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "加速到期请求是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0025-loan",
@@ -541,7 +591,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-SECURITY"
       ],
@@ -549,7 +599,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0026-loan",
@@ -563,7 +615,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-ENFORCEMENT-COST"
       ],
@@ -571,29 +623,33 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0027-loan",
       "case_type": "loan",
       "document_type": "civil_complaint",
       "official_element_id": "loan.fact.contract_formation",
-      "application_field_ids": [
-        "labor.is_no_contract"
-      ],
-      "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "应用以三态表示是否未签书面劳动合同。",
-      "condition_comparison": "均无条件。",
-      "data_provenance_comparison": "均为用户输入。",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "应用不采集借款合同的名称/编号/签订时间与地点。",
+      "condition_comparison": "官方为可选项。",
+      "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-LOAN-CONTRACT-FORMATION"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "借款合同签订要素是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0028-loan",
@@ -601,24 +657,25 @@
       "document_type": "civil_complaint",
       "official_element_id": "loan.fact.contracting_parties",
       "application_field_ids": [
-        "shared.party.plaintiff.name",
         "shared.party.plaintiff.name"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "官方区分业主/建设单位与物业服务人。",
+      "semantic_comparison": "官方区分出借人与借款人；应用以原告/被告角色表述。",
       "condition_comparison": "均无条件。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ROLE-LABELLING"
+        "GAP-LOAN-ROLE-LABELLING"
       ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "借贷方向角色表述是否需要补充，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0029-loan",
@@ -630,18 +687,22 @@
         "loan.payment_method"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "应用有本金与交付方式；官方区分约定与实际提供。",
+      "semantic_comparison": "应用有本金与交付方式；官方区分约定数额与实际提供数额。",
       "condition_comparison": "均无条件。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-LOAN-PRINCIPAL-AMOUNT"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "约定/实际数额口径是否需要分别采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0030-loan",
@@ -655,7 +716,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-TERM"
       ],
@@ -663,7 +724,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0031-loan",
@@ -679,7 +742,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-INTEREST-BASIS"
       ],
@@ -687,7 +750,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0032-loan",
@@ -698,18 +763,22 @@
         "loan.loan_date"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "应用借款日期近似对应借款提供时间。",
+      "semantic_comparison": "应用借款日期近似对应借款提供时间；提供金额未单独采集。",
       "condition_comparison": "均无条件。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-LOAN-PRINCIPAL-AMOUNT"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "提供时间与提供金额是否需要分别采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0033-loan",
@@ -723,7 +792,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-REPAYMENT-METHOD"
       ],
@@ -731,7 +800,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0034-loan",
@@ -745,7 +816,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-REPAYMENT-STATUS"
       ],
@@ -753,7 +824,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0035-loan",
@@ -767,7 +840,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-OVERDUE"
       ],
@@ -775,7 +848,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0036-loan",
@@ -789,7 +864,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-SECURITY"
       ],
@@ -797,7 +872,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0037-loan",
@@ -811,7 +888,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-SECURITY"
       ],
@@ -819,7 +896,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0038-loan",
@@ -833,7 +912,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-SECURITY"
       ],
@@ -841,7 +920,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0039-loan",
@@ -855,7 +936,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p138 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-SECURITY"
       ],
@@ -863,7 +944,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0040-loan",
@@ -877,7 +960,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p138 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LOAN-SECURITY"
       ],
@@ -885,7 +968,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0041-contract",
@@ -901,11 +986,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0042-contract",
@@ -919,15 +1006,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-IDENTITY-DETAILS"
+        "GAP-CONTRACT-PARTY-IDENTITY-DETAILS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0043-contract",
@@ -943,11 +1032,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0044-contract",
@@ -963,11 +1054,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0045-contract",
@@ -981,15 +1074,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-RESIDENCE"
+        "GAP-CONTRACT-PARTY-RESIDENCE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0046-contract",
@@ -1005,15 +1100,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ID-TYPE"
+        "GAP-CONTRACT-ID-TYPE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0047-contract",
@@ -1027,15 +1124,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方代理人栏。",
       "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-REPRESENTATIVE"
+        "GAP-CONTRACT-REPRESENTATIVE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0048-contract",
@@ -1054,15 +1153,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-IDENTITY-DETAILS"
+        "GAP-CONTRACT-PARTY-IDENTITY-DETAILS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0049-contract",
@@ -1080,15 +1181,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏（法人版式）。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ORG-REGISTRATION"
+        "GAP-CONTRACT-ORG-REGISTRATION"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0050-contract",
@@ -1102,15 +1205,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方第三人栏。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/第三人",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-THIRD-PARTY"
+        "GAP-CONTRACT-THIRD-PARTY"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0051-contract",
@@ -1124,15 +1229,17 @@
       "data_provenance_comparison": "应用仅有建议管辖法院。",
       "output_placement": "官方约定管辖栏。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-JURISDICTION-CLAUSE"
+        "GAP-CONTRACT-JURISDICTION-CLAUSE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0052-contract",
@@ -1146,15 +1253,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉前保全栏。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PRESERVATION"
+        "GAP-CONTRACT-PRESERVATION"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0053-contract",
@@ -1168,15 +1277,17 @@
       "data_provenance_comparison": "应用无对应字段。",
       "output_placement": "起诉状诉讼请求末项。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-COURT-FEE-CONDITIONAL"
+        "GAP-CONTRACT-COURT-FEE-CONDITIONAL"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0054-contract",
@@ -1190,15 +1301,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-OTHER-CLAIMS"
+        "GAP-CONTRACT-OTHER-CLAIMS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0055-contract",
@@ -1212,15 +1325,17 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-TOTAL-AMOUNT"
+        "GAP-CONTRACT-TOTAL-AMOUNT"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0056-contract",
@@ -1236,15 +1351,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "官方起诉状末段；应用为独立文书。",
       "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-EVIDENCE-STANDALONE"
+        "GAP-CONTRACT-EVIDENCE-STANDALONE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0057-contract",
@@ -1258,15 +1375,17 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方事实与理由末项。",
       "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-LEGAL-BASIS"
+        "GAP-CONTRACT-LEGAL-BASIS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0058-contract",
@@ -1280,15 +1399,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方文末。",
       "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-MEDIATION-PREFERENCE"
+        "GAP-CONTRACT-MEDIATION-PREFERENCE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0059-contract",
@@ -1302,11 +1423,13 @@
       "data_provenance_comparison": "均为留空手签。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0060-contract",
@@ -1320,11 +1443,13 @@
       "data_provenance_comparison": "均为留空手填。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0061-contract",
@@ -1338,11 +1463,13 @@
       "data_provenance_comparison": "不适用。",
       "output_placement": "官方表格说明区。",
       "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0062-contract",
@@ -1358,11 +1485,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0063-contract",
@@ -1380,15 +1509,17 @@
       "data_provenance_comparison": "应用部分为计算值。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-LOAN-ASOF-DATE"
+        "GAP-CONTRACT-AMOUNT-ASOF"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0064-contract",
@@ -1402,7 +1533,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-BUYER-CLAIMS"
       ],
@@ -1410,7 +1541,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0065-contract",
@@ -1424,7 +1557,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-BUYER-CLAIMS"
       ],
@@ -1432,7 +1565,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0066-contract",
@@ -1446,7 +1581,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-BUYER-CLAIMS"
       ],
@@ -1454,7 +1589,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0067-contract",
@@ -1468,15 +1605,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-LOAN-SECURITY"
+        "GAP-CONTRACT-SECURITY"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0068-contract",
@@ -1490,15 +1629,17 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ENFORCEMENT-COST"
+        "GAP-CONTRACT-ENFORCEMENT-COST"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0069-contract",
@@ -1506,21 +1647,26 @@
       "document_type": "civil_complaint",
       "official_element_id": "contract.fact.contract_formation",
       "application_field_ids": [
-        "labor.is_no_contract"
+        "contract.contract_name",
+        "contract.contract_date"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "应用以三态表示是否未签书面劳动合同。",
+      "semantic_comparison": "应用采集合同名称与签订日期；官方另要编号、地点与无书面合同情形。",
       "condition_comparison": "均无条件。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-CONTRACT-FORMATION"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "合同编号/地点/无书面合同情形是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0070-contract",
@@ -1528,7 +1674,6 @@
       "document_type": "civil_complaint",
       "official_element_id": "contract.fact.contracting_parties",
       "application_field_ids": [
-        "shared.party.plaintiff.name",
         "shared.party.plaintiff.name"
       ],
       "coverage_status": "PARTIAL_MATCH",
@@ -1537,7 +1682,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-ROLE-LABELLING"
       ],
@@ -1545,7 +1690,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0071-contract",
@@ -1561,7 +1708,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-SUBJECT"
       ],
@@ -1569,7 +1716,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0072-contract",
@@ -1585,7 +1734,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-PAYMENT-TERMS"
       ],
@@ -1593,7 +1742,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0073-contract",
@@ -1610,7 +1761,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-DELIVERY-TERMS"
       ],
@@ -1618,7 +1769,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0074-contract",
@@ -1632,7 +1785,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-QUALITY"
       ],
@@ -1640,7 +1793,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0075-contract",
@@ -1652,18 +1807,22 @@
         "contract.penalty_calc_standard"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "应用有违约金金额与计算标准；官方另要定金与日万分比。",
+      "semantic_comparison": "应用有违约金金额与计算标准；官方另要定金与迟延履行违约金标准。",
       "condition_comparison": "可选。",
       "data_provenance_comparison": "应用部分为计算值。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-CONTRACT-PENALTY-TERMS"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "违约金类型是否需要区分，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0076-contract",
@@ -1681,7 +1840,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-DELIVERY-TERMS"
       ],
@@ -1689,7 +1848,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0077-contract",
@@ -1700,38 +1861,46 @@
         "contract.penalty_start_date"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "应用以逾期起算日近似表示迟延。",
+      "semantic_comparison": "应用以逾期起算日近似表示迟延；不单独采集迟延履行事实状态。",
       "condition_comparison": "可选。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-CONTRACT-DELAY"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "迟延履行事实状态是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0078-contract",
       "case_type": "contract",
       "document_type": "civil_complaint",
       "official_element_id": "contract.fact.demand",
-      "application_field_ids": [
-        "property.demand_record"
-      ],
-      "coverage_status": "DIRECT_MATCH",
-      "semantic_comparison": "均为催缴情况。",
-      "condition_comparison": "填写后输出。",
-      "data_provenance_comparison": "均为用户输入。",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "应用不采集催告要素；render_facts() 明确不主张未经用户确认的催告。",
+      "condition_comparison": "官方为可选项，应用无对应输入。",
+      "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
-      "review_required": false,
-      "open_questions": [],
-      "notes": ""
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-CONTRACT-DEMAND"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "催告要素是否需要由用户确认后采集，须经法律/内容审查。"
+      ],
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0079-contract",
@@ -1745,7 +1914,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-QUALITY"
       ],
@@ -1753,7 +1922,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0080-contract",
@@ -1767,7 +1938,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-QUALITY"
       ],
@@ -1775,7 +1946,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0081-contract",
@@ -1789,7 +1962,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [
         "GAP-CONTRACT-QUALITY"
       ],
@@ -1797,7 +1970,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0082-property",
@@ -1813,11 +1988,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0083-property",
@@ -1831,15 +2008,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-IDENTITY-DETAILS"
+        "GAP-PROPERTY-PARTY-IDENTITY-DETAILS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0084-property",
@@ -1855,11 +2034,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0085-property",
@@ -1875,11 +2056,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0086-property",
@@ -1893,15 +2076,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-RESIDENCE"
+        "GAP-PROPERTY-PARTY-RESIDENCE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0087-property",
@@ -1917,15 +2102,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ID-TYPE"
+        "GAP-PROPERTY-ID-TYPE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0088-property",
@@ -1939,15 +2126,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方代理人栏。",
       "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-REPRESENTATIVE"
+        "GAP-PROPERTY-REPRESENTATIVE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0089-property",
@@ -1966,15 +2155,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-IDENTITY-DETAILS"
+        "GAP-PROPERTY-PARTY-IDENTITY-DETAILS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0090-property",
@@ -1992,15 +2183,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏（法人版式）。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ORG-REGISTRATION"
+        "GAP-PROPERTY-ORG-REGISTRATION"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0091-property",
@@ -2014,15 +2207,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方第三人栏。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/第三人",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-THIRD-PARTY"
+        "GAP-PROPERTY-THIRD-PARTY"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0092-property",
@@ -2036,15 +2231,17 @@
       "data_provenance_comparison": "应用仅有建议管辖法院。",
       "output_placement": "官方约定管辖栏。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-JURISDICTION-CLAUSE"
+        "GAP-PROPERTY-JURISDICTION-CLAUSE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0093-property",
@@ -2058,15 +2255,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉前保全栏。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PRESERVATION"
+        "GAP-PROPERTY-PRESERVATION"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0094-property",
@@ -2080,15 +2279,17 @@
       "data_provenance_comparison": "应用无对应字段。",
       "output_placement": "起诉状诉讼请求末项。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-COURT-FEE-CONDITIONAL"
+        "GAP-PROPERTY-COURT-FEE-CONDITIONAL"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0095-property",
@@ -2102,15 +2303,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-OTHER-CLAIMS"
+        "GAP-PROPERTY-OTHER-CLAIMS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0096-property",
@@ -2124,15 +2327,17 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-TOTAL-AMOUNT"
+        "GAP-PROPERTY-TOTAL-AMOUNT"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0097-property",
@@ -2148,15 +2353,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "官方起诉状末段；应用为独立文书。",
       "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-EVIDENCE-STANDALONE"
+        "GAP-PROPERTY-EVIDENCE-STANDALONE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0098-property",
@@ -2170,15 +2377,17 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方事实与理由末项。",
       "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-LEGAL-BASIS"
+        "GAP-PROPERTY-LEGAL-BASIS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0099-property",
@@ -2192,15 +2401,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方文末。",
       "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-MEDIATION-PREFERENCE"
+        "GAP-PROPERTY-MEDIATION-PREFERENCE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0100-property",
@@ -2214,11 +2425,13 @@
       "data_provenance_comparison": "均为留空手签。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0101-property",
@@ -2232,11 +2445,13 @@
       "data_provenance_comparison": "均为留空手填。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0102-property",
@@ -2250,11 +2465,13 @@
       "data_provenance_comparison": "不适用。",
       "output_placement": "官方表格说明区。",
       "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0103-property",
@@ -2272,13 +2489,15 @@
       "data_provenance_comparison": "应用为计算值或用户自填。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-LOAN-ASOF-DATE"
+        "GAP-PROPERTY-AMOUNT-ASOF"
       ],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0104-property",
@@ -2294,7 +2513,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PROPERTY-PENALTY-AMOUNT"
       ],
@@ -2302,29 +2521,33 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0105-property",
       "case_type": "property",
       "document_type": "civil_complaint",
       "official_element_id": "property.fact.contract_formation",
-      "application_field_ids": [
-        "labor.is_no_contract"
-      ],
-      "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "应用以三态表示是否未签书面劳动合同。",
-      "condition_comparison": "均无条件。",
-      "data_provenance_comparison": "均为用户输入。",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "应用不采集物业服务合同的名称/编号/签订时间与地点。",
+      "condition_comparison": "官方为可选项。",
+      "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-PROPERTY-CONTRACT-FORMATION"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "物业服务合同签订要素是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0106-property",
@@ -2332,7 +2555,6 @@
       "document_type": "civil_complaint",
       "official_element_id": "property.fact.contracting_parties",
       "application_field_ids": [
-        "shared.party.plaintiff.name",
         "shared.party.plaintiff.name"
       ],
       "coverage_status": "PARTIAL_MATCH",
@@ -2341,15 +2563,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ROLE-LABELLING"
+        "GAP-PROPERTY-ROLE-LABELLING"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0107-property",
@@ -2366,7 +2590,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PROPERTY-OWNER"
       ],
@@ -2374,7 +2598,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0108-property",
@@ -2390,11 +2616,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0109-property",
@@ -2411,7 +2639,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PROPERTY-TERM-SEMANTICS"
       ],
@@ -2419,7 +2647,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0110-property",
@@ -2433,7 +2663,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PROPERTY-PAYMENT-METHOD"
       ],
@@ -2441,7 +2671,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0111-property",
@@ -2457,7 +2689,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PROPERTY-PENALTY-AMOUNT"
       ],
@@ -2465,7 +2697,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0112-property",
@@ -2483,15 +2717,17 @@
       "data_provenance_comparison": "应用为计算值或用户自填。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-LOAN-ASOF-DATE"
+        "GAP-PROPERTY-AMOUNT-ASOF"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0113-property",
@@ -2505,7 +2741,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [
         "GAP-PROPERTY-PENALTY-AMOUNT"
       ],
@@ -2513,7 +2749,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0114-property",
@@ -2529,11 +2767,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0115-property",
@@ -2542,18 +2782,22 @@
       "official_element_id": "property.fact.other",
       "application_field_ids": [],
       "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
-      "semantic_comparison": "官方含其他。",
+      "semantic_comparison": "官方含“其他需要说明的内容”，应用无对应输入。",
       "condition_comparison": "可选。",
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-PROPERTY-SCOPE"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "“其他”内容是否需要采集，属产品范围决策。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0116-labor",
@@ -2569,11 +2813,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0117-labor",
@@ -2587,15 +2833,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-IDENTITY-DETAILS"
+        "GAP-LABOR-PARTY-IDENTITY-DETAILS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0118-labor",
@@ -2611,11 +2859,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0119-labor",
@@ -2631,11 +2881,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0120-labor",
@@ -2649,15 +2901,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-RESIDENCE"
+        "GAP-LABOR-PARTY-RESIDENCE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0121-labor",
@@ -2673,15 +2927,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ID-TYPE"
+        "GAP-LABOR-ID-TYPE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0122-labor",
@@ -2695,15 +2951,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方代理人栏。",
       "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-REPRESENTATIVE"
+        "GAP-LABOR-REPRESENTATIVE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0123-labor",
@@ -2722,15 +2980,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-IDENTITY-DETAILS"
+        "GAP-LABOR-PARTY-IDENTITY-DETAILS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0124-labor",
@@ -2748,15 +3008,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏（法人版式）。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ORG-REGISTRATION"
+        "GAP-LABOR-ORG-REGISTRATION"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0125-labor",
@@ -2770,15 +3032,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方第三人栏。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/第三人",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-THIRD-PARTY"
+        "GAP-LABOR-THIRD-PARTY"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0126-labor",
@@ -2792,15 +3056,17 @@
       "data_provenance_comparison": "应用仅有建议管辖法院。",
       "output_placement": "官方约定管辖栏。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-JURISDICTION-CLAUSE"
+        "GAP-LABOR-JURISDICTION-CLAUSE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0127-labor",
@@ -2814,15 +3080,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉前保全栏。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PRESERVATION"
+        "GAP-LABOR-PRESERVATION"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0128-labor",
@@ -2836,15 +3104,17 @@
       "data_provenance_comparison": "应用无对应字段。",
       "output_placement": "起诉状诉讼请求末项。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-COURT-FEE-CONDITIONAL"
+        "GAP-LABOR-COURT-FEE-CONDITIONAL"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0129-labor",
@@ -2858,15 +3128,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-OTHER-CLAIMS"
+        "GAP-LABOR-OTHER-CLAIMS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0130-labor",
@@ -2880,15 +3152,17 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-TOTAL-AMOUNT"
+        "GAP-LABOR-TOTAL-AMOUNT"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0131-labor",
@@ -2904,15 +3178,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "官方起诉状末段；应用为独立文书。",
       "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-EVIDENCE-STANDALONE"
+        "GAP-LABOR-EVIDENCE-STANDALONE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0132-labor",
@@ -2926,15 +3202,17 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方事实与理由末项。",
       "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-LEGAL-BASIS"
+        "GAP-LABOR-LEGAL-BASIS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0133-labor",
@@ -2948,15 +3226,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方文末。",
       "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-MEDIATION-PREFERENCE"
+        "GAP-LABOR-MEDIATION-PREFERENCE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0134-labor",
@@ -2970,11 +3250,13 @@
       "data_provenance_comparison": "均为留空手签。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0135-labor",
@@ -2988,11 +3270,13 @@
       "data_provenance_comparison": "均为留空手填。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0136-labor",
@@ -3006,11 +3290,13 @@
       "data_provenance_comparison": "不适用。",
       "output_placement": "官方表格说明区。",
       "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0137-labor",
@@ -3027,15 +3313,17 @@
       "data_provenance_comparison": "应用为计算值。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-LOAN-ASOF-DATE"
+        "GAP-LABOR-AMOUNT-ASOF"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0138-labor",
@@ -3046,18 +3334,22 @@
         "labor.is_no_contract"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "应用在未签劳动合同时主张二倍工资差额。",
+      "semantic_comparison": "应用在未签劳动合同时主张二倍工资差额；不采集期间与明细。",
       "condition_comparison": "默认不主张。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-LABOR-DOUBLE-WAGE"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "二倍工资期间与明细是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0139-labor",
@@ -3068,18 +3360,22 @@
         "labor.overtime"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "均为加班费主张。",
+      "semantic_comparison": "均为加班费主张；应用不采集计算基数与倍数明细。",
       "condition_comparison": "填写后适用。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-LABOR-OVERTIME"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "加班费计算明细是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0140-labor",
@@ -3093,7 +3389,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LABOR-CLAIM-SCOPE"
       ],
@@ -3101,7 +3397,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0141-labor",
@@ -3117,7 +3415,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求（未渲染）。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LABOR-CLAIM-SCOPE"
       ],
@@ -3125,7 +3423,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0142-labor",
@@ -3139,7 +3439,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LABOR-CLAIM-SCOPE"
       ],
@@ -3147,7 +3447,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0143-labor",
@@ -3161,7 +3463,7 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LABOR-CLAIM-SCOPE"
       ],
@@ -3169,7 +3471,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0144-labor",
@@ -3180,18 +3484,22 @@
         "labor.is_no_contract"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "应用以三态表示是否未签书面劳动合同。",
+      "semantic_comparison": "应用以三态表示是否未签书面劳动合同；官方另要主体/时间/地点/合同名称。",
       "condition_comparison": "均无条件。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-LABOR-CONTRACT-FORMATION"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "劳动合同签订要素是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0145-labor",
@@ -3209,7 +3517,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LABOR-PERFORMANCE-DETAIL"
       ],
@@ -3217,7 +3525,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0146-labor",
@@ -3233,7 +3543,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LABOR-TERMINATION"
       ],
@@ -3241,7 +3551,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0147-labor",
@@ -3255,7 +3567,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LABOR-WORK-INJURY"
       ],
@@ -3263,7 +3575,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0148-labor",
@@ -3277,7 +3591,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [
         "GAP-LABOR-ARBITRATION"
       ],
@@ -3285,7 +3599,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0149-labor",
@@ -3294,18 +3610,22 @@
       "official_element_id": "labor.fact.other",
       "application_field_ids": [],
       "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
-      "semantic_comparison": "官方含其他。",
+      "semantic_comparison": "官方含“其他相关情况”，应用无对应输入。",
       "condition_comparison": "可选。",
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-LABOR-OTHER-FACTS"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "“其他”内容是否需要采集，属产品范围决策。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0150-divorce",
@@ -3321,11 +3641,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0151-divorce",
@@ -3339,15 +3661,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-IDENTITY-DETAILS"
+        "GAP-DIVORCE-PARTY-IDENTITY-DETAILS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0152-divorce",
@@ -3363,11 +3687,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0153-divorce",
@@ -3383,11 +3709,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0154-divorce",
@@ -3401,15 +3729,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-RESIDENCE"
+        "GAP-DIVORCE-PARTY-RESIDENCE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0155-divorce",
@@ -3425,15 +3755,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ID-TYPE"
+        "GAP-DIVORCE-ID-TYPE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0156-divorce",
@@ -3447,15 +3779,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方代理人栏。",
       "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-REPRESENTATIVE"
+        "GAP-DIVORCE-REPRESENTATIVE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0157-divorce",
@@ -3474,15 +3808,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PARTY-IDENTITY-DETAILS"
+        "GAP-DIVORCE-PARTY-IDENTITY-DETAILS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0158-divorce",
@@ -3500,15 +3836,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "起诉状当事人栏（法人版式）。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-ORG-REGISTRATION"
+        "GAP-DIVORCE-ORG-REGISTRATION"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0159-divorce",
@@ -3522,15 +3860,17 @@
       "data_provenance_comparison": "应用仅有建议管辖法院。",
       "output_placement": "官方约定管辖栏。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-JURISDICTION-CLAUSE"
+        "GAP-DIVORCE-JURISDICTION-CLAUSE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0160-divorce",
@@ -3544,15 +3884,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉前保全栏。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PRESERVATION"
+        "GAP-DIVORCE-PRESERVATION"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0161-divorce",
@@ -3566,15 +3908,17 @@
       "data_provenance_comparison": "应用无对应字段。",
       "output_placement": "起诉状诉讼请求末项。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-COURT-FEE-CONDITIONAL"
+        "GAP-DIVORCE-COURT-FEE-CONDITIONAL"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0162-divorce",
@@ -3588,15 +3932,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-OTHER-CLAIMS"
+        "GAP-DIVORCE-OTHER-CLAIMS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0163-divorce",
@@ -3610,15 +3956,17 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方诉讼请求栏。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-TOTAL-AMOUNT"
+        "GAP-DIVORCE-TOTAL-AMOUNT"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0164-divorce",
@@ -3634,15 +3982,17 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "官方起诉状末段；应用为独立文书。",
       "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-EVIDENCE-STANDALONE"
+        "GAP-DIVORCE-EVIDENCE-STANDALONE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0165-divorce",
@@ -3656,15 +4006,17 @@
       "data_provenance_comparison": "应用无对应输出。",
       "output_placement": "官方事实与理由末项。",
       "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-LEGAL-BASIS"
+        "GAP-DIVORCE-LEGAL-BASIS"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0166-divorce",
@@ -3678,15 +4030,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "官方文末。",
       "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-MEDIATION-PREFERENCE"
+        "GAP-DIVORCE-MEDIATION-PREFERENCE"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0167-divorce",
@@ -3700,11 +4054,13 @@
       "data_provenance_comparison": "均为留空手签。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0168-divorce",
@@ -3718,11 +4074,13 @@
       "data_provenance_comparison": "均为留空手填。",
       "output_placement": "起诉状落款。",
       "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "STATIC_RENDERING",
+      "rendering_evidence": "utils/doc_generator.py :: DocumentGenerator.add_footer()"
     },
     {
       "crosswalk_id": "cw-0169-divorce",
@@ -3736,11 +4094,13 @@
       "data_provenance_comparison": "不适用。",
       "output_placement": "官方表格说明区。",
       "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0170-divorce",
@@ -3756,11 +4116,13 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": false,
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0171-divorce",
@@ -3776,7 +4138,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
         "GAP-DIVORCE-PROPERTY-STRUCTURE"
       ],
@@ -3784,7 +4146,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0172-divorce",
@@ -3798,7 +4162,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
         "GAP-DIVORCE-DEBT"
       ],
@@ -3806,7 +4170,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0173-divorce",
@@ -3818,18 +4184,22 @@
         "divorce.custody_preference"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "均为子女直接抚养请求。",
+      "semantic_comparison": "均为子女直接抚养请求；应用缺少探望权等分项。",
       "condition_comparison": "需子女姓名。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-DIVORCE-COMBINED-SCOPE"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "离婚请求分项范围是否需要扩展，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0174-divorce",
@@ -3841,18 +4211,22 @@
         "divorce.child_name"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "均为抚养费请求。",
+      "semantic_comparison": "均为抚养费请求；应用缺少支付方式与事由。",
       "condition_comparison": "需子女姓名。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-DIVORCE-COMBINED-SCOPE"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "抚养费支付方式是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0175-divorce",
@@ -3866,7 +4240,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
         "GAP-DIVORCE-VISITATION"
       ],
@@ -3874,7 +4248,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0176-divorce",
@@ -3888,7 +4264,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
         "GAP-DIVORCE-DAMAGES"
       ],
@@ -3896,7 +4272,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0177-divorce",
@@ -3910,15 +4288,17 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "诉讼请求。",
       "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
-        "GAP-PRESERVATION"
+        "GAP-DIVORCE-PRESERVATION"
       ],
       "review_required": true,
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0178-divorce",
@@ -3936,7 +4316,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
         "GAP-DIVORCE-MARRIAGE-FACTS"
       ],
@@ -3944,7 +4324,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0179-divorce",
@@ -3960,7 +4342,7 @@
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
         "GAP-DIVORCE-PROPERTY-STRUCTURE"
       ],
@@ -3968,7 +4350,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0180-divorce",
@@ -3982,7 +4366,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
         "GAP-DIVORCE-DEBT"
       ],
@@ -3990,7 +4374,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0181-divorce",
@@ -4001,18 +4387,22 @@
         "divorce.custody_preference"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "均为抚养权事由。",
+      "semantic_comparison": "应用采集抚养意愿；不采集抚养归属事由。",
       "condition_comparison": "需子女姓名。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-DIVORCE-CUSTODY-SUPPORT-DETAIL"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "抚养事由是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0182-divorce",
@@ -4023,18 +4413,22 @@
         "divorce.support_monthly"
       ],
       "coverage_status": "PARTIAL_MATCH",
-      "semantic_comparison": "均为抚养费事由。",
+      "semantic_comparison": "应用采集抚养费金额；不采集支付方式与事由。",
       "condition_comparison": "需子女姓名。",
       "data_provenance_comparison": "均为用户输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-DIVORCE-CUSTODY-SUPPORT-DETAIL"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "抚养费支付方式与事由是否需要采集，须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "USER_INPUT_FIELD",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0183-divorce",
@@ -4048,7 +4442,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
         "GAP-DIVORCE-VISITATION"
       ],
@@ -4056,7 +4450,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0184-divorce",
@@ -4070,7 +4466,7 @@
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [
         "GAP-DIVORCE-DAMAGES"
       ],
@@ -4078,7 +4474,9 @@
       "open_questions": [
         "对应关系与适用性须经法律/内容审查。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0185-divorce",
@@ -4087,18 +4485,22 @@
       "official_element_id": "divorce.fact.other",
       "application_field_ids": [],
       "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
-      "semantic_comparison": "官方含其他。",
+      "semantic_comparison": "官方含“其他”，应用无对应输入。",
       "condition_comparison": "可选。",
       "data_provenance_comparison": "应用无对应输入。",
       "output_placement": "事实与理由。",
       "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
-      "gap_ids": [],
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "gap_ids": [
+        "GAP-DIVORCE-OTHER-FACTS"
+      ],
       "review_required": true,
       "open_questions": [
-        "对应关系与适用性须经法律/内容审查。"
+        "“其他”内容是否需要采集，属产品范围决策。"
       ],
-      "notes": ""
+      "notes": "",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0186-loan",
@@ -4113,14 +4515,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 134-139 search:\"法院名称\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0187-contract",
@@ -4135,14 +4539,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 71-76 search:\"法院名称\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0188-property",
@@ -4157,14 +4563,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 233-236 search:\"法院名称\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0189-labor",
@@ -4179,14 +4587,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 248-251 search:\"法院名称\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0190-divorce",
@@ -4201,14 +4611,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 57-60 search:\"法院名称\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); utils/doc_generator.py :: DocumentGenerator.add_footer(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0191-loan",
@@ -4223,14 +4635,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 134-139 search:\"借款理由\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0192-loan",
@@ -4245,14 +4659,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 134-139 search:\"借条\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0193-loan",
@@ -4267,14 +4683,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 134-139 search:\"催款时间\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0194-loan",
@@ -4289,14 +4707,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 134-139 search:\"催款方式\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0195-contract",
@@ -4311,14 +4731,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 71-76 search:\"交货状态\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0196-contract",
@@ -4333,14 +4755,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 71-76 search:\"签收\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0197-property",
@@ -4355,14 +4779,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 233-236 search:\"标的总额\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0198-labor",
@@ -4377,14 +4803,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 248-251 search:\"社会保险\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     },
     {
       "crosswalk_id": "cw-0199-divorce",
@@ -4399,14 +4827,16 @@
       "condition_comparison": "",
       "data_provenance_comparison": "应用为用户输入或计算值。",
       "output_placement": "起诉状相应段落。",
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 57-60 search:\"分居\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "gap_ids": [],
       "review_required": true,
       "open_questions": [
         "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
       ],
-      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。",
+      "match_mechanism": "UNMAPPED",
+      "rendering_evidence": ""
     }
   ]
 }

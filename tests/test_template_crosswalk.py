@@ -319,3 +319,425 @@ def test_validator_does_not_modify_the_records(tmp_path):
     ctc.validate_analysis(target, SOURCE_REGISTRY)
     after = {name: (target / name).read_bytes() for name in FILES.values()}
     assert before == after
+
+
+# ===========================================================================
+# C1 — cross-case application-field integrity
+# ===========================================================================
+
+FROZEN_REVISION = "639179933c51f111ea43060157e897fa0a1e4d30"
+SOURCE_HASH = "07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88"
+
+
+def _find_crosswalk(records, crosswalk_id):
+    for c in records["crosswalk"]["crosswalks"]:
+        if c["crosswalk_id"] == crosswalk_id:
+            return c
+    raise KeyError(crosswalk_id)
+
+
+def _find_gap(records, gap_id):
+    for g in records["gaps"]["gaps"]:
+        if g["gap_id"] == gap_id:
+            return g
+    raise KeyError(gap_id)
+
+
+def _find_route(records, route_id):
+    for r in records["routes"]["routes"]:
+        if r["route_id"] == route_id:
+            return r
+    raise KeyError(route_id)
+
+
+def _crosswalk_code_evidence(*clauses):
+    return "revision " + FROZEN_REVISION + "; " + "; ".join(clauses)
+
+
+def _source_evidence(page):
+    return f"spc-2025-notice-pdf p{page} sha256:{SOURCE_HASH}"
+
+
+@pytest.mark.parametrize("crosswalk_id, foreign_field", [
+    ("cw-0027-loan", "labor.is_no_contract"),        # N01 / C1-T01
+    ("cw-0069-contract", "labor.is_no_contract"),    # N02 / C1-T02
+    ("cw-0105-property", "labor.is_no_contract"),    # N03 / C1-T03
+    ("cw-0078-contract", "property.demand_record"),  # N04 / C1-T04
+])
+def test_cross_case_application_field_reference_is_rejected(tmp_path, crosswalk_id, foreign_field):
+    def mutate(records):
+        _find_crosswalk(records, crosswalk_id)["application_field_ids"] = [foreign_field]
+    issues = _mutated(tmp_path, mutate)
+    assert any("belongs to case_type" in issue and foreign_field in issue for issue in issues)
+
+
+def test_official_element_from_another_case_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["official_element_id"] = \
+            "contract.party.plaintiff.name"
+    issues = _mutated(tmp_path, mutate)
+    assert any("belongs to case_type 'contract'" in issue for issue in issues)
+
+
+def test_legitimate_shared_field_reference_is_accepted(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["application_field_ids"] = \
+            ["shared.party.plaintiff.name"]
+    assert _mutated(tmp_path, mutate) == []
+
+
+def test_legitimate_same_case_field_reference_is_accepted(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0022-loan")["application_field_ids"] = \
+            ["loan.principal", "loan.loan_date"]
+    assert _mutated(tmp_path, mutate) == []
+
+
+def test_unknown_application_field_in_a_gap_is_rejected(tmp_path):
+    def mutate(records):
+        _find_gap(records, "GAP-ID-TYPE")["application_field_ids"] = ["ghost.field"]
+    issues = _mutated(tmp_path, mutate)
+    assert any("ghost.field" in issue and "does not resolve" in issue for issue in issues)
+
+
+def test_every_crosswalk_record_passes_ownership_validation():
+    records = _records()
+    field_owner = {f["field_id"]: f["case_type_or_shared"] for f in records["fields"]["fields"]}
+    element_case = {e["element_id"]: e["case_type"] for e in records["elements"]["elements"]}
+    crosswalks = records["crosswalk"]["crosswalks"]
+    assert len(crosswalks) == 199
+    for c in crosswalks:
+        if c["official_element_id"]:
+            assert element_case[c["official_element_id"]] == c["case_type"]
+        for fid in c["application_field_ids"]:
+            assert field_owner[fid] in ("shared", c["case_type"])
+
+
+# ===========================================================================
+# C2 — semantic match reassessment
+# ===========================================================================
+
+def test_contract_demand_cannot_be_a_property_direct_match(tmp_path):
+    def mutate(records):
+        c = _find_crosswalk(records, "cw-0078-contract")
+        c["coverage_status"] = "DIRECT_MATCH"
+        c["application_field_ids"] = ["property.demand_record"]
+        c["match_mechanism"] = "USER_INPUT_FIELD"
+    issues = _mutated(tmp_path, mutate)
+    assert any("belongs to case_type 'property'" in issue for issue in issues)
+
+
+def test_valid_same_case_direct_match_remains_valid(tmp_path):
+    def mutate(records):
+        c = _find_crosswalk(records, "cw-0004-loan")
+        assert c["coverage_status"] == "DIRECT_MATCH"
+        c["application_field_ids"] = ["shared.party.plaintiff.address"]
+    assert _mutated(tmp_path, mutate) == []
+
+
+def test_empty_field_direct_match_without_static_evidence_is_rejected(tmp_path):
+    def mutate(records):
+        c = _find_crosswalk(records, "cw-0019-loan")
+        c["match_mechanism"] = "USER_INPUT_FIELD"
+    issues = _mutated(tmp_path, mutate)
+    assert any("requires match_mechanism STATIC_RENDERING" in issue for issue in issues)
+
+
+def test_static_direct_match_without_rendering_evidence_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0020-loan")["rendering_evidence"] = ""
+    issues = _mutated(tmp_path, mutate)
+    assert any("requires rendering_evidence" in issue for issue in issues)
+
+
+def test_verified_static_signature_and_date_placeholders_are_accepted():
+    records = _records()
+    for cid in ("cw-0019-loan", "cw-0020-loan", "cw-0059-contract",
+                "cw-0100-property", "cw-0134-labor", "cw-0167-divorce"):
+        c = _find_crosswalk(records, cid)
+        assert c["coverage_status"] == "DIRECT_MATCH"
+        assert c["match_mechanism"] == "STATIC_RENDERING"
+        assert c["application_field_ids"] == []
+        assert "add_footer()" in c["rendering_evidence"]
+
+
+def test_invalid_match_mechanism_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["match_mechanism"] = "PROBABLY_FINE"
+    issues = _mutated(tmp_path, mutate)
+    assert any("invalid match_mechanism" in issue for issue in issues)
+
+
+@pytest.mark.parametrize("crosswalk_id", [
+    "cw-0027-loan", "cw-0069-contract", "cw-0078-contract", "cw-0105-property",
+])
+def test_corrected_cross_case_defects_are_resolved(crosswalk_id):
+    records = _records()
+    field_owner = {f["field_id"]: f["case_type_or_shared"] for f in records["fields"]["fields"]}
+    c = _find_crosswalk(records, crosswalk_id)
+    for fid in c["application_field_ids"]:
+        assert field_owner[fid] in ("shared", c["case_type"])
+    assert c["gap_ids"], "a corrected mismatch must remain traceable to a gap"
+
+
+# ===========================================================================
+# C3 — crosswalk-to-gap traceability
+# ===========================================================================
+
+@pytest.mark.parametrize("crosswalk_id, status", [
+    ("cw-0022-loan", "PARTIAL_MATCH"),
+    ("cw-0109-property", "SEMANTIC_MISMATCH"),
+    ("cw-0013-loan", "CONDITIONAL_MISMATCH"),
+    ("cw-0002-loan", "NO_CURRENT_APPLICATION_FIELD"),
+])
+def test_material_mismatch_without_a_gap_is_rejected(tmp_path, crosswalk_id, status):
+    def mutate(records):
+        c = _find_crosswalk(records, crosswalk_id)
+        assert c["coverage_status"] == status
+        c["gap_ids"] = []
+    issues = _mutated(tmp_path, mutate)
+    assert any("requires at least one gap" in issue for issue in issues)
+
+
+def test_crosswalk_linking_a_different_case_gap_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["gap_ids"] = ["GAP-CONTRACT-FORMATION"]
+    issues = _mutated(tmp_path, mutate)
+    assert any("belongs to" in issue and "GAP-CONTRACT-FORMATION" in issue for issue in issues)
+
+
+def test_crosswalk_linking_a_different_document_gap_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["gap_ids"] = ["GAP-ROUTE-EVIDENCE-STANDALONE"]
+    issues = _mutated(tmp_path, mutate)
+    assert any("GAP-ROUTE-EVIDENCE-STANDALONE" in issue and "belongs to" in issue for issue in issues)
+
+
+def test_gap_not_covering_the_linked_official_element_is_rejected(tmp_path):
+    def mutate(records):
+        g = _find_gap(records, "GAP-PARTY-IDENTITY-DETAILS")
+        g["official_element_ids"] = [e for e in g["official_element_ids"]
+                                     if e != "loan.party.plaintiff.identity_details"]
+    issues = _mutated(tmp_path, mutate)
+    assert any("does not cover official element" in issue for issue in issues)
+
+
+def test_valid_aggregate_gap_remains_usable():
+    records = _records()
+    c = _find_crosswalk(records, "cw-0173-divorce")
+    assert "GAP-DIVORCE-COMBINED-SCOPE" in c["gap_ids"]
+    g = _find_gap(records, "GAP-DIVORCE-COMBINED-SCOPE")
+    assert c["official_element_id"] in g["official_element_ids"]
+    assert len(g["official_element_ids"]) > 1
+
+
+def test_previously_missing_gap_links_are_resolved():
+    records = _records()
+    previously_missing = [
+        "cw-0024-loan", "cw-0027-loan", "cw-0029-loan", "cw-0032-loan",
+        "cw-0069-contract", "cw-0075-contract", "cw-0077-contract",
+        "cw-0105-property", "cw-0115-property",
+        "cw-0138-labor", "cw-0139-labor", "cw-0144-labor", "cw-0149-labor",
+        "cw-0173-divorce", "cw-0174-divorce", "cw-0181-divorce", "cw-0182-divorce",
+        "cw-0185-divorce",
+    ]
+    for cid in previously_missing:
+        assert _find_crosswalk(records, cid)["gap_ids"], cid
+
+
+# ===========================================================================
+# C4 — gap-to-route integrity
+# ===========================================================================
+
+def test_complaint_route_without_applicable_gaps_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, "route-loan-civil-complaint")["gap_ids"] = []
+    issues = _mutated(tmp_path, mutate)
+    assert any("is not linked from" in issue for issue in issues)
+
+
+def test_route_linking_another_case_gap_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, "route-loan-civil-complaint")["gap_ids"] = ["GAP-LABOR-ARBITRATION"]
+    issues = _mutated(tmp_path, mutate)
+    assert any("GAP-LABOR-ARBITRATION" in issue and "belongs to" in issue for issue in issues)
+
+
+def test_contract_evidence_route_referencing_loan_gap_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, "route-contract-evidence-list")["gap_ids"] = \
+            ["GAP-ROUTE-EVIDENCE-STANDALONE"]
+    issues = _mutated(tmp_path, mutate)
+    assert any("GAP-ROUTE-EVIDENCE-STANDALONE" in issue and "belongs to" in issue for issue in issues)
+
+
+def test_property_address_route_referencing_loan_gap_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, "route-property-service-address-confirmation")["gap_ids"] = \
+            ["GAP-ROUTE-ADDRESS-NO-COUNTERPART"]
+    issues = _mutated(tmp_path, mutate)
+    assert any("GAP-ROUTE-ADDRESS-NO-COUNTERPART" in issue and "belongs to" in issue
+               for issue in issues)
+
+
+def test_route_linking_a_gap_of_another_document_type_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, "route-loan-evidence-list")["gap_ids"] = ["GAP-PARTY-IDENTITY-DETAILS"]
+    issues = _mutated(tmp_path, mutate)
+    assert any("GAP-PARTY-IDENTITY-DETAILS" in issue and "belongs to" in issue for issue in issues)
+
+
+def test_every_route_has_case_scoped_gaps():
+    records = _records()
+    gap_owner = {g["gap_id"]: (g["case_type"], g["document_type"])
+                 for g in records["gaps"]["gaps"]}
+    routes = records["routes"]["routes"]
+    assert len(routes) == 15
+    for r in routes:
+        assert r["gap_ids"], r["route_id"]
+        for gid in r["gap_ids"]:
+            assert gap_owner[gid] == (r["case_type"], r["document_type"])
+
+
+def test_every_gap_is_reachable_from_its_route():
+    records = _records()
+    route_by_combo = {(r["case_type"], r["document_type"]): r
+                      for r in records["routes"]["routes"]}
+    for g in records["gaps"]["gaps"]:
+        combo = (g["case_type"], g["document_type"])
+        assert combo in route_by_combo
+        assert g["gap_id"] in route_by_combo[combo]["gap_ids"]
+
+
+# ===========================================================================
+# C5 — evidence provenance
+# ===========================================================================
+
+def test_positive_source_claim_without_page_evidence_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["source_evidence"] = \
+            f"spc-2025-notice-pdf sha256:{SOURCE_HASH}"
+    issues = _mutated(tmp_path, mutate)
+    assert any("source_evidence must cite" in issue for issue in issues)
+
+
+def test_source_page_outside_verified_bounds_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["source_evidence"] = _source_evidence(99999)
+    issues = _mutated(tmp_path, mutate)
+    assert any("exceeds the observed page count" in issue for issue in issues)
+
+
+def test_source_hash_mismatch_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["source_evidence"] = \
+            f"spc-2025-notice-pdf p134 sha256:{'0' * 64}"
+    issues = _mutated(tmp_path, mutate)
+    assert any("does not match the analyzed ledger hash" in issue for issue in issues)
+
+
+def test_crosswalk_code_evidence_without_a_file_path_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["code_evidence"] = \
+            "revision " + FROZEN_REVISION + "; 当事人信息/原告"
+    issues = _mutated(tmp_path, mutate)
+    assert any("code_evidence clause" in issue for issue in issues)
+
+
+def test_gap_code_evidence_without_a_file_path_is_rejected(tmp_path):
+    def mutate(records):
+        _find_gap(records, "GAP-ID-TYPE")["code_evidence"] = "revision " + FROZEN_REVISION
+    issues = _mutated(tmp_path, mutate)
+    assert any("code_evidence must start with" in issue or "code_evidence clause" in issue
+               for issue in issues)
+
+
+def test_code_evidence_without_a_symbol_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["code_evidence"] = \
+            "revision " + FROZEN_REVISION + "; models/case_model.py"
+    issues = _mutated(tmp_path, mutate)
+    assert any("code_evidence clause" in issue for issue in issues)
+
+
+def test_code_evidence_path_that_does_not_exist_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["code_evidence"] = \
+            _crosswalk_code_evidence("models/ghost.py :: GhostModel.render()")
+    issues = _mutated(tmp_path, mutate)
+    assert any("does not exist in the repository" in issue for issue in issues)
+
+
+def test_code_evidence_citing_another_case_model_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["code_evidence"] = \
+            _crosswalk_code_evidence("models/case_model.py :: ContractCaseModel.render_facts()")
+    issues = _mutated(tmp_path, mutate)
+    assert any("ContractCaseModel" in issue and "not 'loan'" in issue for issue in issues)
+
+
+def test_unsupported_visual_verification_claim_is_rejected(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["source_evidence"] = \
+            f"spc-2025-notice-pdf p134 sha256:{SOURCE_HASH} VISUAL_VERIFIED"
+    issues = _mutated(tmp_path, mutate)
+    assert any("must not claim visual verification" in issue for issue in issues)
+
+
+def test_bounded_negative_search_evidence_is_accepted(tmp_path):
+    def mutate(records):
+        _find_gap(records, "GAP-PARTY-IDENTITY-DETAILS")["source_evidence"] = (
+            f'spc-2025-notice-pdf pages 134-136 search:"身份信息" sha256:{SOURCE_HASH}'
+        )
+    assert _mutated(tmp_path, mutate) == []
+
+
+def test_current_source_and_code_evidence_is_accepted():
+    records = _records()
+    assert ctc.validate_analysis(ANALYSIS_DIR, SOURCE_REGISTRY) == []
+    for c in records["crosswalk"]["crosswalks"]:
+        assert c["source_evidence"].startswith("spc-2025-notice-pdf")
+        assert c["code_evidence"].startswith("revision " + FROZEN_REVISION)
+    for g in records["gaps"]["gaps"]:
+        assert g["source_evidence"].startswith("spc-2025-notice-pdf")
+        assert g["code_evidence"].startswith("revision " + FROZEN_REVISION)
+
+
+# ===========================================================================
+# N25–N28 — defensive validation and determinism
+# ===========================================================================
+
+def test_malformed_relationship_metadata_is_rejected_without_exception(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["gap_ids"] = [["nested"]]
+    issues = _mutated(tmp_path, mutate)
+    assert any("gap_ids entries must be strings" in issue for issue in issues)
+
+
+def test_malformed_gap_reference_list_is_rejected_without_exception(tmp_path):
+    def mutate(records):
+        _find_gap(records, "GAP-ID-TYPE")["official_element_ids"] = {"not": "a list"}
+    issues = _mutated(tmp_path, mutate)
+    assert any("official_element_ids must be a list" in issue for issue in issues)
+
+
+def test_unsupported_approved_state_on_a_gap_is_rejected(tmp_path):
+    def mutate(records):
+        _find_gap(records, "GAP-ID-TYPE")["approval_status"] = "APPROVED"
+    issues = _mutated(tmp_path, mutate)
+    assert any("APPROVED" in issue for issue in issues)
+
+
+def test_invalid_records_produce_deterministic_issues(tmp_path):
+    def mutate(records):
+        _find_crosswalk(records, "cw-0001-loan")["application_field_ids"] = ["labor.is_no_contract"]
+    first = _mutated(tmp_path, mutate)
+    second = _mutated(tmp_path, mutate)
+    assert first == second
+    assert first
+
+
+def test_corrected_records_validate_end_to_end():
+    assert ctc.validate_analysis(ANALYSIS_DIR, SOURCE_REGISTRY) == []
+    assert ctc.main(["--analysis-dir", str(ANALYSIS_DIR),
+                     "--source-registry", str(SOURCE_REGISTRY)]) == 0

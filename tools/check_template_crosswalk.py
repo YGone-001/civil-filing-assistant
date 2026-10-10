@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # File: tools/check_template_crosswalk.py
-# Purpose: Deterministic, offline validation of the Phase 1-B official-template
+# Purpose: Deterministic, offline validation of the official-template
 #          crosswalk and gap-analysis records.
 # Encoding: UTF-8
 """Validate the official-template gap-analysis records.
@@ -19,10 +19,15 @@ The validator is standard-library only, runs offline, reads repository metadata
 only, has no side effects and returns a nonzero exit code when the records are
 inconsistent.
 
-**Scope of what it proves.** It proves *internal consistency* — that identifiers
-resolve, that the fifteen routes exist, that no record claims an approval that
-did not happen. It does **not** re-verify the official PDF (it never fetches it)
-and it cannot establish source authenticity or legal correctness.
+**Scope of what it proves.** It proves *internal consistency* and *relational
+ownership* — that identifiers resolve, that a referenced application field
+belongs to the crosswalk's case (or is legitimately shared), that a linked gap
+belongs to the crosswalk's case and document type, that every material mismatch
+carries an applicable gap, that every gap is reachable from the route for its
+case-document pair, and that the cited source/code evidence is well formed and
+points at real files. It does **not** re-verify the official PDF (it never
+fetches it) and it cannot establish source authenticity, legal correctness or
+whether a legal review occurred.
 
 Usage::
 
@@ -37,7 +42,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ANALYSIS_DIR = REPO_ROOT / "docs" / "legal-template-governance" / "official-gap-analysis"
@@ -69,6 +74,15 @@ COVERAGE_STATUSES = frozenset({
     "CALCULATION_REVIEW_REQUIRED", "NO_CURRENT_APPLICATION_FIELD",
     "APPLICATION_ONLY_ELEMENT", "NOT_APPLICABLE", "SOURCE_UNVERIFIED",
 })
+# Coverage statuses that describe a substantive unresolved mismatch and must be
+# traceable to at least one applicable gap record.
+MATERIAL_MISMATCH_STATUSES = frozenset({
+    "PARTIAL_MATCH", "SEMANTIC_MISMATCH", "CONDITIONAL_MISMATCH",
+    "CALCULATION_REVIEW_REQUIRED", "NO_CURRENT_APPLICATION_FIELD",
+})
+MATCH_MECHANISMS = frozenset({
+    "USER_INPUT_FIELD", "DERIVED_MODEL_VALUE", "STATIC_RENDERING", "UNMAPPED",
+})
 GAP_CATEGORIES = frozenset({
     "MISSING_INPUT", "MISSING_OUTPUT", "PARTIAL_FIELD_COVERAGE", "SEMANTIC_DIFFERENCE",
     "CONDITIONALITY_DIFFERENCE", "FACT_INTEGRITY_RISK", "CALCULATION_RISK",
@@ -98,9 +112,9 @@ FIELD_REQUIRED = (
 )
 CROSSWALK_REQUIRED = (
     "crosswalk_id", "case_type", "document_type", "official_element_id",
-    "application_field_ids", "coverage_status", "semantic_comparison",
-    "condition_comparison", "data_provenance_comparison", "output_placement",
-    "source_evidence", "code_evidence", "gap_ids", "review_required",
+    "application_field_ids", "coverage_status", "match_mechanism", "rendering_evidence",
+    "semantic_comparison", "condition_comparison", "data_provenance_comparison",
+    "output_placement", "source_evidence", "code_evidence", "gap_ids", "review_required",
     "open_questions", "notes",
 )
 GAP_REQUIRED = (
@@ -120,6 +134,34 @@ ROUTE_REQUIRED = (
 _ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._\-]*$")
 _HASH_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 _BARE_HASH_RE = re.compile(r"^[0-9a-f]{64}$")
+_REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
+
+# Evidence grammars ---------------------------------------------------------
+# Positive source claim:  "<source_id> p134 sha256:<hash>" or "<source_id> p134-p139 sha256:<hash>"
+_SRC_POSITIVE_RE = re.compile(
+    r"^(?P<sid>[A-Za-z0-9._\-]+)\s+p(?P<start>\d+)(?:-p?(?P<end>\d+))?\s+sha256:(?P<hash>[0-9a-f]{64})$"
+)
+# Bounded negative / scope claim:
+#   '<source_id> pages 1-975 search:"送达地址" sha256:<hash>'
+#   '<source_id> pages 1-975 method:"full-text inventory" sha256:<hash>'
+_SRC_BOUNDED_RE = re.compile(
+    r'^(?P<sid>[A-Za-z0-9._\-]+)\s+pages\s+(?P<start>\d+)-(?P<end>\d+)\s+'
+    r'(?:search|method):"(?P<term>[^"]+)"\s+sha256:(?P<hash>[0-9a-f]{64})$'
+)
+# Code evidence: "revision <40-hex>; <path>.py :: <symbol>; ..."
+_CODE_RE = re.compile(r"^revision\s+(?P<rev>[0-9a-f]{40});\s*(?P<clauses>.+)$")
+_CODE_CLAUSE_RE = re.compile(r"^(?P<path>[A-Za-z0-9_./\-]+\.py)\s*::\s*(?P<symbol>\S.*)$")
+_FORBIDDEN_VISUAL_TOKENS = ("VISUAL_VERIFIED", "视觉核验", "visual verification", "目视核验")
+
+# The case model class that owns each case type's rendering behaviour. Evidence
+# that names a different case's model class is a cross-case reference defect.
+MODEL_CLASS_BY_CASE = {
+    "loan": "LoanCaseModel",
+    "contract": "ContractCaseModel",
+    "property": "PropertyCaseModel",
+    "labor": "LaborCaseModel",
+    "divorce": "DivorceCaseModel",
+}
 
 ANALYSIS_FILES = {
     "ledger": "source-extraction-ledger.json",
@@ -169,6 +211,104 @@ def _check_enum(label, field, value, allowed, issues, *, optional=False) -> bool
     return True
 
 
+def _string_list(value: Any) -> Optional[List[str]]:
+    """Return the list if every entry is a string, else ``None``."""
+    if not isinstance(value, list):
+        return None
+    if any(not isinstance(item, str) for item in value):
+        return None
+    return value
+
+
+def _check_source_evidence(label, text, registry_ids, expected_hash, expected_pages,
+                           issues) -> bool:
+    """Validate a source-evidence string: identifier, page scope and hash."""
+    if not _nonempty_str(text):
+        issues.append(f"{label}: source_evidence is required")
+        return False
+    for token in _FORBIDDEN_VISUAL_TOKENS:
+        if token in text:
+            issues.append(
+                f"{label}: source_evidence must not claim visual verification "
+                f"(found {token!r})"
+            )
+            return False
+    match = _SRC_POSITIVE_RE.match(text)
+    bounded = False
+    if match is None:
+        match = _SRC_BOUNDED_RE.match(text)
+        bounded = match is not None
+    if match is None:
+        issues.append(
+            f"{label}: source_evidence must cite '<source_id> p<page> sha256:<hash>' "
+            f"or a bounded '<source_id> pages <a>-<b> search:\"<term>\" sha256:<hash>'"
+        )
+        return False
+    sid = match.group("sid")
+    start = int(match.group("start"))
+    end = int(match.group("end") or match.group("start"))
+    digest = match.group("hash")
+    if registry_ids and sid not in registry_ids:
+        issues.append(f"{label}: source_evidence source_id {sid!r} does not resolve in the source registry")
+    if expected_hash and digest != expected_hash:
+        issues.append(f"{label}: source_evidence hash does not match the analyzed ledger hash")
+    if start < 1 or end < start:
+        issues.append(f"{label}: source_evidence page range {start}-{end} is invalid")
+    elif expected_pages is not None and end > expected_pages:
+        issues.append(
+            f"{label}: source_evidence page {end} exceeds the observed page count {expected_pages}"
+        )
+    if not bounded and start != end:
+        # a positive citation spanning pages is allowed; nothing further to check
+        pass
+    return True
+
+
+def _check_code_evidence(label, text, expected_revision, issues, expected_case=None) -> bool:
+    """Validate a code-evidence string: frozen revision, real .py path, symbol."""
+    if not _nonempty_str(text):
+        issues.append(f"{label}: code_evidence is required")
+        return False
+    match = _CODE_RE.match(text)
+    if match is None:
+        issues.append(f"{label}: code_evidence must start with 'revision <40-hex>;'")
+        return False
+    revision = match.group("rev")
+    if expected_revision and revision != expected_revision:
+        issues.append(
+            f"{label}: code_evidence revision {revision} is not the frozen analyzed revision"
+        )
+        return False
+    clauses = [clause.strip() for clause in match.group("clauses").split(";") if clause.strip()]
+    if not clauses:
+        issues.append(f"{label}: code_evidence must cite at least one '<path>.py :: <symbol>'")
+        return False
+    expected_model = MODEL_CLASS_BY_CASE.get(expected_case)
+    ok = True
+    for clause in clauses:
+        clause_match = _CODE_CLAUSE_RE.match(clause)
+        if clause_match is None:
+            issues.append(
+                f"{label}: code_evidence clause {clause!r} must be "
+                f"'<repo-relative .py path> :: <symbol>'"
+            )
+            ok = False
+            continue
+        path = clause_match.group("path")
+        if not (REPO_ROOT / path).exists():
+            issues.append(f"{label}: code_evidence path {path!r} does not exist in the repository")
+            ok = False
+        symbol = clause_match.group("symbol")
+        for case, model_class in MODEL_CLASS_BY_CASE.items():
+            if model_class in symbol and model_class != expected_model:
+                issues.append(
+                    f"{label}: code_evidence references {model_class}, which belongs to "
+                    f"case_type {case!r}, not {expected_case!r}"
+                )
+                ok = False
+    return ok
+
+
 def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[str]:
     """Return a list of human-readable issues (empty list == consistent)."""
     issues: List[str] = []
@@ -190,6 +330,7 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
     ledger = data.get("ledger")
     expected_pages = None
     analyzed_hash = None
+    analyzed_revision = None
     if ledger is not None:
         retrieval = ledger.get("retrieval") if isinstance(ledger.get("retrieval"), dict) else {}
         expected_pages = retrieval.get("pdf_page_count")
@@ -200,6 +341,9 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
         if not _nonempty_str(analyzed_hash) or not _BARE_HASH_RE.match(analyzed_hash or ""):
             issues.append("ledger: retrieval.sha256 must be a 64-character lowercase hex digest")
             analyzed_hash = None
+        ledger_revision = ledger.get("analyzed_revision")
+        if _nonempty_str(ledger_revision) and _REVISION_RE.match(ledger_revision):
+            analyzed_revision = ledger_revision
         match = (ledger.get("registry_hash_comparison") or {}).get("SOURCE_HASH_MATCH")
         if match not in ("PASS", "FAIL"):
             issues.append("ledger: registry_hash_comparison.SOURCE_HASH_MATCH must be PASS or FAIL")
@@ -367,8 +511,10 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
 
             _check_enum(label, "document_type", c.get("document_type"), DOCUMENT_TYPES, issues)
             _check_enum(label, "coverage_status", c.get("coverage_status"), COVERAGE_STATUSES, issues)
+            _check_enum(label, "match_mechanism", c.get("match_mechanism"), MATCH_MECHANISMS, issues)
 
             eid = c.get("official_element_id")
+            element = None
             if eid is None:
                 if c.get("coverage_status") != "APPLICATION_ONLY_ELEMENT":
                     issues.append(f"{label}: a null official_element_id requires coverage_status APPLICATION_ONLY_ELEMENT")
@@ -376,13 +522,21 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                 if eid not in elements_by_id:
                     issues.append(f"{label}: official_element_id {eid!r} does not resolve")
                 else:
+                    element = elements_by_id[eid]
                     covered_elements.add(eid)
+                    # ownership: the official element must belong to the crosswalk case
+                    if element.get("case_type") != case:
+                        issues.append(
+                            f"{label}: official element {eid!r} belongs to case_type "
+                            f"{element.get('case_type')!r}, not {case!r}"
+                        )
             else:
                 issues.append(f"{label}: official_element_id must be a string or null")
 
             fids = c.get("application_field_ids")
             if not isinstance(fids, list):
                 issues.append(f"{label}: application_field_ids must be a list")
+                fids = []
             else:
                 for fid in fids:
                     if not isinstance(fid, str):
@@ -391,6 +545,45 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                         issues.append(f"{label}: application_field_ids {fid!r} does not resolve")
                     else:
                         reverse_covered_fields.add(fid)
+                        owner = fields_by_id[fid].get("case_type_or_shared")
+                        if owner != "shared" and owner != case:
+                            issues.append(
+                                f"{label}: application field {fid!r} belongs to case_type "
+                                f"{owner!r}, not {case!r} or 'shared'"
+                            )
+
+            # DIRECT_MATCH must be justified by a real field or static rendering
+            if c.get("coverage_status") == "DIRECT_MATCH":
+                mechanism = c.get("match_mechanism")
+                if mechanism == "STATIC_RENDERING":
+                    if fids:
+                        issues.append(f"{label}: a STATIC_RENDERING match must not link application fields")
+                    rendering = c.get("rendering_evidence")
+                    if not _nonempty_str(rendering):
+                        issues.append(f"{label}: a STATIC_RENDERING match requires rendering_evidence")
+                    elif _CODE_CLAUSE_RE.match(rendering.strip()) is None:
+                        issues.append(
+                            f"{label}: rendering_evidence must be '<repo-relative .py path> :: <symbol>'"
+                        )
+                elif mechanism in ("USER_INPUT_FIELD", "DERIVED_MODEL_VALUE"):
+                    if not fids:
+                        issues.append(
+                            f"{label}: a DIRECT_MATCH with no application fields requires "
+                            f"match_mechanism STATIC_RENDERING"
+                        )
+                else:
+                    issues.append(
+                        f"{label}: a DIRECT_MATCH requires match_mechanism USER_INPUT_FIELD, "
+                        f"DERIVED_MODEL_VALUE or STATIC_RENDERING"
+                    )
+
+            # material mismatches must be traceable to a gap
+            if c.get("coverage_status") in MATERIAL_MISMATCH_STATUSES:
+                gids_check = c.get("gap_ids")
+                if not isinstance(gids_check, list) or not gids_check:
+                    issues.append(
+                        f"{label}: coverage_status {c.get('coverage_status')!r} requires at least one gap"
+                    )
 
             gids = c.get("gap_ids")
             if not isinstance(gids, list):
@@ -402,8 +595,11 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
 
             if not isinstance(c.get("review_required"), bool):
                 issues.append(f"{label}: review_required must be a boolean")
-            if not _nonempty_str(c.get("source_evidence")):
-                issues.append(f"{label}: source_evidence is required")
+
+            _check_source_evidence(label, c.get("source_evidence"), registry_ids,
+                                   analyzed_hash, expected_pages, issues)
+            _check_code_evidence(label, c.get("code_evidence"), analyzed_revision, issues,
+                                 expected_case=case)
 
     if crosswalk_case_types and crosswalk_case_types != CASE_TYPES:
         issues.append(f"field-crosswalk: case types {sorted(crosswalk_case_types)} != all five")
@@ -458,28 +654,78 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                 if not _nonempty_str(g.get(field)):
                     issues.append(f"{label}: {field} must be a non-empty string")
 
-            for eid in g.get("official_element_ids") or []:
+            element_ids = g.get("official_element_ids")
+            if not isinstance(element_ids, list):
+                issues.append(f"{label}: official_element_ids must be a list")
+                element_ids = []
+            for eid in element_ids:
                 if not isinstance(eid, str) or eid not in elements_by_id:
                     issues.append(f"{label}: official_element_ids {eid!r} does not resolve")
-            for fid in g.get("application_field_ids") or []:
+                elif elements_by_id[eid].get("case_type") != case:
+                    issues.append(
+                        f"{label}: official element {eid!r} belongs to case_type "
+                        f"{elements_by_id[eid].get('case_type')!r}, not {case!r}"
+                    )
+
+            field_ids = g.get("application_field_ids")
+            if not isinstance(field_ids, list):
+                issues.append(f"{label}: application_field_ids must be a list")
+                field_ids = []
+            for fid in field_ids:
                 if not isinstance(fid, str) or fid not in fields_by_id:
                     issues.append(f"{label}: application_field_ids {fid!r} does not resolve")
+                else:
+                    owner = fields_by_id[fid].get("case_type_or_shared")
+                    if owner != "shared" and owner != case:
+                        issues.append(
+                            f"{label}: application field {fid!r} belongs to case_type "
+                            f"{owner!r}, not {case!r} or 'shared'"
+                        )
+
+            if not isinstance(g.get("legal_review_required"), bool):
+                issues.append(f"{label}: legal_review_required must be a boolean")
+            if not isinstance(g.get("engineering_review_required"), bool):
+                issues.append(f"{label}: engineering_review_required must be a boolean")
+
+            _check_source_evidence(label, g.get("source_evidence"), registry_ids,
+                                   analyzed_hash, expected_pages, issues)
+            _check_code_evidence(label, g.get("code_evidence"), analyzed_revision, issues,
+                                 expected_case=case)
 
     if gap_case_types and gap_case_types != CASE_TYPES:
         issues.append(f"gap-register: case types {sorted(gap_case_types)} != all five")
 
-    # crosswalk gap references must resolve
+    # crosswalk gap references must resolve and be owned by the same case/document
     if crosswalks is not None:
         for c in crosswalks.get("crosswalks", []) if isinstance(crosswalks.get("crosswalks"), list) else []:
             if not isinstance(c, dict):
                 continue
-            for gid in c.get("gap_ids") or []:
-                if isinstance(gid, str) and gid not in gaps_by_id:
-                    issues.append(f"crosswalk {c.get('crosswalk_id')!r}: gap_ids {gid!r} does not resolve")
+            cid = c.get("crosswalk_id")
+            case = c.get("case_type")
+            doc = c.get("document_type")
+            element_id = c.get("official_element_id")
+            for gid in _string_list(c.get("gap_ids")) or []:
+                g = gaps_by_id.get(gid)
+                if g is None:
+                    issues.append(f"crosswalk {cid!r}: gap_ids {gid!r} does not resolve")
+                    continue
+                if g.get("case_type") != case or g.get("document_type") != doc:
+                    issues.append(
+                        f"crosswalk {cid!r}: linked gap {gid!r} belongs to "
+                        f"({g.get('case_type')!r}, {g.get('document_type')!r}), "
+                        f"not ({case!r}, {doc!r})"
+                    )
+                    continue
+                if element_id and element_id not in (g.get("official_element_ids") or []):
+                    issues.append(
+                        f"crosswalk {cid!r}: linked gap {gid!r} does not cover official "
+                        f"element {element_id!r}"
+                    )
 
     # --- routes -------------------------------------------------------------
     route_ids: set = set()
     route_combos: set = set()
+    route_by_combo: Dict[Any, Dict[str, Any]] = {}
     routes = data.get("routes")
     if routes is not None:
         records = routes.get("routes")
@@ -517,6 +763,7 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                     issues.append(f"{label}: duplicate case-document route {combo}")
                 else:
                     route_combos.add(combo)
+                    route_by_combo[combo] = r
 
             _check_enum(label, "official_counterpart_classification",
                         r.get("official_counterpart_classification"), ROUTE_CLASSES, issues)
@@ -530,9 +777,18 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
                     issues.append(f"{label}: official_source_ids {sid!r} does not resolve in the source registry")
                 else:
                     source_ids_used.add(sid)
-            for gid in r.get("gap_ids") or []:
-                if isinstance(gid, str) and gid not in gaps_by_id:
+
+            for gid in _string_list(r.get("gap_ids")) or []:
+                g = gaps_by_id.get(gid)
+                if g is None:
                     issues.append(f"{label}: gap_ids {gid!r} does not resolve")
+                    continue
+                if g.get("case_type") != case or g.get("document_type") != doc:
+                    issues.append(
+                        f"{label}: linked gap {gid!r} belongs to "
+                        f"({g.get('case_type')!r}, {g.get('document_type')!r}), "
+                        f"not ({case!r}, {doc!r})"
+                    )
 
             if not isinstance(r.get("legal_review_required"), bool):
                 issues.append(f"{label}: legal_review_required must be a boolean")
@@ -544,6 +800,19 @@ def validate_analysis(analysis_dir: Path, source_registry_path: Path) -> List[st
         issues.append(f"document-route-assessment: routes {sorted(route_combos)} != all 15 combinations")
     if route_combos and len(route_combos) != 15:
         issues.append(f"document-route-assessment: expected exactly 15 unique routes, found {len(route_combos)}")
+
+    # every gap must be reachable from the route for its own case-document pair
+    for gid, g in sorted(gaps_by_id.items()):
+        combo = (g.get("case_type"), g.get("document_type"))
+        route = route_by_combo.get(combo)
+        if route is None:
+            issues.append(f"gap {gid!r}: no route assessment exists for {combo}")
+            continue
+        route_gaps = _string_list(route.get("gap_ids")) or []
+        if gid not in route_gaps:
+            issues.append(
+                f"gap {gid!r}: is not linked from the {combo[0]!r}/{combo[1]!r} route assessment"
+            )
 
     # --- approval integrity -------------------------------------------------
     for key, records_field in (("crosswalk", "crosswalks"), ("gaps", "gaps")):

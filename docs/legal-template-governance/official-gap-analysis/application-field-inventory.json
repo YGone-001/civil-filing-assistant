@@ -1,5 +1,5 @@
 {
-  "inventory_version": "1.0.0",
+  "inventory_version": "1.1.0",
   "analyzed_revision": "639179933c51f111ea43060157e897fa0a1e4d30",
   "fields": [
     {
@@ -17,7 +17,7 @@
         "evidence_list",
         "service_address_confirmation"
       ],
-      "rendering_location": "utils/doc_generator.py add_party_block",
+      "rendering_location": "utils/doc_generator.py DocumentGenerator.add_party_block",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "空白姓名的主体在 build_case_model 中被跳过；Presenter 在导出前阻止无原告/被告的导出",
       "source_code_evidence": "views/wizard_pages.py PartyPage.get_party_data; presenters/model_builder.py _add_parties",
@@ -38,10 +38,10 @@
         "evidence_list",
         "service_address_confirmation"
       ],
-      "rendering_location": "add_party_block",
+      "rendering_location": "utils/doc_generator.py DocumentGenerator.add_party_block",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "直接渲染为空",
-      "source_code_evidence": "同上去证",
+      "source_code_evidence": "views/wizard_pages.py PartyPage.get_party_data; presenters/model_builder.py _add_parties; utils/doc_generator.py DocumentGenerator.add_party_block",
       "notes": ""
     },
     {
@@ -59,10 +59,10 @@
         "evidence_list",
         "service_address_confirmation"
       ],
-      "rendering_location": "add_party_block",
+      "rendering_location": "utils/doc_generator.py DocumentGenerator.add_party_block",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "直接渲染为空",
-      "source_code_evidence": "同上",
+      "source_code_evidence": "views/wizard_pages.py PartyPage.get_party_data; presenters/model_builder.py _add_parties; utils/doc_generator.py DocumentGenerator.add_party_block",
       "notes": ""
     },
     {
@@ -80,10 +80,10 @@
         "evidence_list",
         "service_address_confirmation"
       ],
-      "rendering_location": "add_party_block",
+      "rendering_location": "utils/doc_generator.py DocumentGenerator.add_party_block",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "直接渲染为空",
-      "source_code_evidence": "同上",
+      "source_code_evidence": "views/wizard_pages.py PartyPage.get_party_data; presenters/model_builder.py _add_parties; utils/doc_generator.py DocumentGenerator.add_party_block",
       "notes": ""
     },
     {
@@ -101,7 +101,7 @@
         "evidence_list",
         "service_address_confirmation"
       ],
-      "rendering_location": "add_party_block",
+      "rendering_location": "utils/doc_generator.py DocumentGenerator.add_party_block",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "未勾选企业法人时按自然人渲染",
       "source_code_evidence": "views/wizard_pages.py PartyPage.add_party_ui",
@@ -122,7 +122,7 @@
         "evidence_list",
         "service_address_confirmation"
       ],
-      "rendering_location": "add_party_block / export_address_form",
+      "rendering_location": "utils/doc_generator.py DocumentGenerator.add_party_block; utils/doc_generator.py DocumentGenerator.export_address_form",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "至少一名原告与一名被告",
       "source_code_evidence": "views/wizard_pages.py PartyPage.isComplete",
@@ -141,7 +141,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "doc_generator.add_footer",
+      "rendering_location": "utils/doc_generator.py DocumentGenerator.add_footer",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填字段",
       "source_code_evidence": "views/wizard_pages.py registerField('*_court_name*')",
@@ -160,7 +160,7 @@
       "output_document_types": [
         "evidence_list"
       ],
-      "rendering_location": "export_evidence_list",
+      "rendering_location": "utils/doc_generator.py DocumentGenerator.export_evidence_list",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "空行被忽略",
       "source_code_evidence": "views/wizard_pages.py EvidencePage.get_evidence_items",
@@ -179,7 +179,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims",
+      "rendering_location": "models/case_model.py render_claims",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:59; models/case_model.py:181",
@@ -198,7 +198,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:57; models/case_model.py:179",
@@ -217,7 +217,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CLAIM_OR_ALLEGATION",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:58; models/case_model.py:180",
@@ -236,7 +236,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:62; models/case_model.py:182",
@@ -255,7 +255,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "CALCULATED_VALUE",
       "missing_value_behavior": "留空则不主张利息",
       "source_code_evidence": "presenters/model_builder.py:60; models/case_model.py:183",
@@ -274,7 +274,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims",
+      "rendering_location": "models/case_model.py render_claims",
       "fact_classification": "CALCULATED_VALUE",
       "missing_value_behavior": "留空则不计算利息",
       "source_code_evidence": "presenters/model_builder.py:61; models/case_model.py:184",
@@ -293,7 +293,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "None 时不输出任何借条表述",
       "source_code_evidence": "presenters/model_builder.py:63; models/case_model.py:185",
@@ -312,7 +312,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空则不输出催款表述",
       "source_code_evidence": "presenters/model_builder.py:64; models/case_model.py:186",
@@ -331,7 +331,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空则不输出催款表述",
       "source_code_evidence": "presenters/model_builder.py:65; models/case_model.py:187",
@@ -350,7 +350,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:70; models/case_model.py:277",
@@ -369,7 +369,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:71; models/case_model.py:278",
@@ -388,7 +388,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:72; models/case_model.py:279",
@@ -407,7 +407,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:73; models/case_model.py:280",
@@ -426,7 +426,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "交货状态非 True 时可留空",
       "source_code_evidence": "presenters/model_builder.py:74; models/case_model.py:281",
@@ -445,7 +445,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "None 时不输出交货事实",
       "source_code_evidence": "presenters/model_builder.py:91; models/case_model.py:283",
@@ -464,7 +464,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "None 时不输出签收事实",
       "source_code_evidence": "presenters/model_builder.py:92; models/case_model.py:284",
@@ -483,7 +483,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:75; models/case_model.py:285",
@@ -502,7 +502,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims",
+      "rendering_location": "models/case_model.py render_claims",
       "fact_classification": "CALCULATED_VALUE",
       "missing_value_behavior": "留空则不主张违约金",
       "source_code_evidence": "presenters/model_builder.py:76; models/case_model.py:286",
@@ -521,7 +521,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims",
+      "rendering_location": "models/case_model.py render_claims",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空则使用中性表述",
       "source_code_evidence": "presenters/model_builder.py:77; models/case_model.py:287",
@@ -540,7 +540,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims",
+      "rendering_location": "models/case_model.py render_claims",
       "fact_classification": "CALCULATED_VALUE",
       "missing_value_behavior": "留空则使用中性表述",
       "source_code_evidence": "presenters/model_builder.py:79-86; models/case_model.py:288",
@@ -559,7 +559,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:96; models/case_model.py:355",
@@ -578,7 +578,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "CALCULATED_VALUE",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:97; models/case_model.py:356",
@@ -597,7 +597,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "CALCULATED_VALUE",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:98; models/case_model.py:357",
@@ -616,7 +616,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:99; models/case_model.py:358",
@@ -635,7 +635,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:100; models/case_model.py:359",
@@ -654,7 +654,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims",
+      "rendering_location": "models/case_model.py render_claims",
       "fact_classification": "USER_CLAIM_OR_ALLEGATION",
       "missing_value_behavior": "留空则不主张违约金",
       "source_code_evidence": "presenters/model_builder.py:101; models/case_model.py:360",
@@ -673,7 +673,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空则不输出催缴表述",
       "source_code_evidence": "presenters/model_builder.py:102; models/case_model.py:361",
@@ -692,7 +692,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "CALCULATED_VALUE",
       "missing_value_behavior": "留空则使用面积×费率×月数计算值",
       "source_code_evidence": "presenters/model_builder.py:103; models/case_model.py:362,422",
@@ -711,7 +711,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:108; models/case_model.py:565",
@@ -730,7 +730,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:109; models/case_model.py:567",
@@ -749,7 +749,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "CALCULATED_VALUE",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:110; models/case_model.py:568",
@@ -768,7 +768,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填；无法解析时不编造金额",
       "source_code_evidence": "presenters/model_builder.py:111; models/case_model.py:569,597",
@@ -787,7 +787,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:112; models/case_model.py:566",
@@ -806,7 +806,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空则不主张加班费",
       "source_code_evidence": "presenters/model_builder.py:113-114; models/case_model.py:570",
@@ -825,7 +825,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "默认不主张二倍工资",
       "source_code_evidence": "presenters/model_builder.py:115; models/case_model.py:571",
@@ -844,7 +844,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "未渲染",
+      "rendering_location": "未渲染（仅作为输入记录，不输出到任何文书）",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空无影响",
       "source_code_evidence": "presenters/model_builder.py:116; models/case_model.py:572",
@@ -863,7 +863,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "必填",
       "source_code_evidence": "presenters/model_builder.py:121; models/case_model.py:485",
@@ -882,7 +882,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空则不输出子女表述",
       "source_code_evidence": "presenters/model_builder.py:122; models/case_model.py:486",
@@ -901,7 +901,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空则不输出出生日期",
       "source_code_evidence": "presenters/model_builder.py:123; models/case_model.py:487",
@@ -920,7 +920,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CLAIM_OR_ALLEGATION",
       "missing_value_behavior": "留空则不主张抚养权",
       "source_code_evidence": "presenters/model_builder.py:124; models/case_model.py:488",
@@ -939,7 +939,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空则不主张抚养费",
       "source_code_evidence": "presenters/model_builder.py:125; models/case_model.py:489",
@@ -958,7 +958,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CLAIM_OR_ALLEGATION",
       "missing_value_behavior": "留空则不输出离婚事由",
       "source_code_evidence": "presenters/model_builder.py:126; models/case_model.py:490",
@@ -977,7 +977,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_facts",
+      "rendering_location": "models/case_model.py render_facts",
       "fact_classification": "USER_CONFIRMED_FACT",
       "missing_value_behavior": "留空则不输出分居表述",
       "source_code_evidence": "presenters/model_builder.py:128; models/case_model.py:491",
@@ -996,7 +996,7 @@
       "output_document_types": [
         "civil_complaint"
       ],
-      "rendering_location": "render_claims/render_facts",
+      "rendering_location": "models/case_model.py render_claims; models/case_model.py render_facts",
       "fact_classification": "USER_CLAIM_OR_ALLEGATION",
       "missing_value_behavior": "留空则不主张财产分割",
       "source_code_evidence": "presenters/model_builder.py:129; models/case_model.py:492",

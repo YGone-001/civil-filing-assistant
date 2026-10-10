@@ -58,3 +58,7 @@ official complaint template does not govern the other two.
 4. The five address-form routes are compared **only** at the level of "is there an official
    counterpart in the inspected source?" — answer: no.
 5. No route may carry `APPROVED`; all are `NOT_REQUESTED`.
+6. Route and crosswalk gap references are **case- and document-scoped**. A complaint route links only
+   its own case's complaint gaps; an evidence-list route links only its own case's evidence-list gap;
+   an address route links only its own case's address gap. No route or crosswalk inherits another
+   case's gap record.

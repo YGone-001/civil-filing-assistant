@@ -1,5 +1,5 @@
 {
-  "register_version": "1.0.0",
+  "register_version": "1.1.0",
   "analyzed_revision": "639179933c51f111ea43060157e897fa0a1e4d30",
   "gaps": [
     {
@@ -9,7 +9,8 @@
       "gap_category": "MISSING_INPUT",
       "severity": "MEDIUM",
       "official_element_ids": [
-        "loan.party.plaintiff.identity_details"
+        "loan.party.plaintiff.identity_details",
+        "loan.party.defendant.natural"
       ],
       "application_field_ids": [],
       "observed_current_behavior": "应用仅采集姓名/证件号/住址/电话。",
@@ -19,8 +20,8 @@
       "potential_remediation": "在获得授权后再评估是否新增采集项；本阶段仅记录。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p134-p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -40,8 +41,8 @@
       "potential_remediation": "评估是否新增；属送达相关事项，需人工核对。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -63,8 +64,8 @@
       "potential_remediation": "评估是否新增证件类型；本阶段不实现。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -84,8 +85,8 @@
       "potential_remediation": "评估是否新增；属当事人自主决定事项。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -107,8 +108,8 @@
       "potential_remediation": "评估是否新增；需与工商登记信息核对。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -128,8 +129,8 @@
       "potential_remediation": "评估是否支持第三人；属结构性变更，须单独授权。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -149,8 +150,8 @@
       "potential_remediation": "评估是否新增；属程序事项，需人工核对。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -170,8 +171,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -191,8 +192,8 @@
       "potential_remediation": "记录差异；不改变现有行为。",
       "legal_review_required": false,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -212,8 +213,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": false,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -233,8 +234,8 @@
       "potential_remediation": "评估是否新增计算与输出；属计算变更，须单独授权。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -256,8 +257,8 @@
       "potential_remediation": "保持独立文档现状；等价性须经法律/内容审查后再评估。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -277,8 +278,8 @@
       "potential_remediation": "不得自动插入法律条文；须人工填写并复核。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -298,8 +299,8 @@
       "potential_remediation": "评估是否新增；属程序事项。",
       "legal_review_required": false,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -324,8 +325,8 @@
       "potential_remediation": "评估是否新增基准日与选项；属计算口径变更，须单独授权。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -335,7 +336,8 @@
       "gap_category": "CALCULATION_RISK",
       "severity": "HIGH",
       "official_element_ids": [
-        "loan.fact.interest_rate"
+        "loan.fact.interest_rate",
+        "loan.claim.interest"
       ],
       "application_field_ids": [
         "loan.interest_rate"
@@ -347,8 +349,8 @@
       "potential_remediation": "不得改变现有计算；须人工核对后决定是否扩展输入。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136-p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -368,8 +370,8 @@
       "potential_remediation": "评估是否新增；须避免编造还款期限。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -389,8 +391,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -410,8 +412,8 @@
       "potential_remediation": "需人工核对；不得自动假定零还款。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -431,8 +433,8 @@
       "potential_remediation": "评估是否新增；须避免编造逾期。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -457,8 +459,8 @@
       "potential_remediation": "评估是否新增；属结构性扩展，须单独授权。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136-p138 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -480,8 +482,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -503,8 +505,8 @@
       "potential_remediation": "评估是否补充买卖方向表述；不得改变当事人事实。",
       "legal_review_required": false,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -526,8 +528,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -549,8 +551,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -560,7 +562,8 @@
       "gap_category": "PARTIAL_FIELD_COVERAGE",
       "severity": "MEDIUM",
       "official_element_ids": [
-        "contract.fact.delivery_terms"
+        "contract.fact.delivery_terms",
+        "contract.fact.payment_delivery_status"
       ],
       "application_field_ids": [
         "contract.delivery_date",
@@ -573,8 +576,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p74-p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -594,8 +597,8 @@
       "potential_remediation": "保持现状；新增须以用户确认为前提。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -618,8 +621,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p74-p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -641,8 +644,8 @@
       "potential_remediation": "评估是否扩展；属产品范围变更，须单独授权。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -665,8 +668,8 @@
       "potential_remediation": "记录语义差异；不得复用现有字段表示不同含义。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -689,8 +692,8 @@
       "potential_remediation": "保持现有“待人工核对”表述；新增字段须单独授权。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -710,8 +713,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -722,7 +725,8 @@
       "severity": "MEDIUM",
       "official_element_ids": [
         "property.fact.penalty_amount",
-        "property.fact.penalty_standard"
+        "property.fact.penalty_standard",
+        "property.claim.penalty"
       ],
       "application_field_ids": [
         "property.late_fee_logic"
@@ -734,8 +738,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p234-p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -755,8 +759,8 @@
       "potential_remediation": "不得自动生成法律依据。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -776,8 +780,8 @@
       "potential_remediation": "记录为有意的范围限制；不扩展范围。",
       "legal_review_required": false,
       "engineering_review_required": false,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -797,8 +801,8 @@
       "potential_remediation": "必须经法律审查确认程序适用性；本阶段不实现。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -823,8 +827,8 @@
       "potential_remediation": "评估是否扩展；属产品范围变更，须单独授权。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -848,8 +852,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -871,8 +875,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -892,8 +896,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": false,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -923,8 +927,8 @@
       "potential_remediation": "须经法律审查确认范围对应关系。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p58-p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -947,8 +951,8 @@
       "potential_remediation": "评估是否结构化；须单独授权。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p58-p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -969,8 +973,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p58-p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -991,8 +995,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -1013,8 +1017,8 @@
       "potential_remediation": "评估是否新增；须单独授权。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -1038,8 +1042,8 @@
       "potential_remediation": "评估是否新增；不得编造婚姻破裂事由。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -1059,8 +1063,8 @@
       "potential_remediation": "评估是否新增。",
       "legal_review_required": false,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -1082,8 +1086,8 @@
       "potential_remediation": "保持现状；等价性须经法律/内容审查。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); presenters/model_builder.py :: build_case_model()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -1104,8 +1108,8 @@
       "potential_remediation": "须检索其他官方材料并人工核对。",
       "legal_review_required": true,
       "engineering_review_required": true,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 1-975 search:\"送达地址\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_address_form(); presenters/model_builder.py :: build_case_model()",
       "review_status": "NOT_REQUESTED"
     },
     {
@@ -1123,8 +1127,1815 @@
       "potential_remediation": "须定期复核官方发布。",
       "legal_review_required": false,
       "engineering_review_required": false,
-      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
-      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "source_evidence": "spc-2025-notice-pdf pages 1-975 method:\"full-text inventory\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-ACCELERATION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.claim.acceleration"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集是否要求提前还款（加速到期）或解除合同。",
+      "source_supported_expectation": "官方表格含是否要求提前还款（加速到期）或解除合同栏。",
+      "difference_description": "缺少加速到期/解除合同请求。",
+      "risk_if_changed_without_review": "需要加速到期的案件无法表达。",
+      "potential_remediation": "评估是否新增；属请求范围扩展，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-CONTRACT-FORMATION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.fact.contract_formation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用仅采集借款发生日期、理由、金额与交付方式，不采集借款合同的名称/编号/时间/地点。",
+      "source_supported_expectation": "官方表格含借款合同签订情况（名称、编号、时间、地点）。",
+      "difference_description": "借款合同签订要素未采集。",
+      "risk_if_changed_without_review": "合同签订情况无法对应官方栏目。",
+      "potential_remediation": "评估是否新增；须避免编造合同签订事实。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-PRINCIPAL-AMOUNT",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.fact.principal_amount",
+        "loan.fact.disbursement_time"
+      ],
+      "application_field_ids": [
+        "loan.principal",
+        "loan.payment_method",
+        "loan.loan_date"
+      ],
+      "observed_current_behavior": "应用以单一本金数额、交付方式与借款日期表述，不区分约定数额与实际提供数额。",
+      "source_supported_expectation": "官方表格区分约定借款数额与实际提供数额，并要求提供时间与金额。",
+      "difference_description": "约定/实际数额与提供金额未分别采集。",
+      "risk_if_changed_without_review": "本金口径可能不足以对应官方栏目。",
+      "potential_remediation": "评估是否补充口径；不得改变现有本金计算。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PENALTY-TERMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.fact.penalty_terms"
+      ],
+      "application_field_ids": [
+        "contract.penalty_amount",
+        "contract.penalty_calc_standard"
+      ],
+      "observed_current_behavior": "应用采集违约金数额与计算标准，但不区分定金与迟延履行违约金。",
+      "source_supported_expectation": "官方表格要求合同约定的违约金（定金）及迟延履行违约金标准。",
+      "difference_description": "违约金类型未区分。",
+      "risk_if_changed_without_review": "违约金性质表述可能不完整。",
+      "potential_remediation": "评估是否补充类型；不得改变现有违约金计算。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-DELAY",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.fact.delay"
+      ],
+      "application_field_ids": [
+        "contract.penalty_start_date"
+      ],
+      "observed_current_behavior": "应用仅采集逾期起算日，不单独采集是否迟延履行的事实状态。",
+      "source_supported_expectation": "官方表格要求说明是否存在迟延履行（逾期付款/逾期交货）。",
+      "difference_description": "迟延履行的事实状态未结构化采集。",
+      "risk_if_changed_without_review": "逾期事实依据不完整。",
+      "potential_remediation": "评估是否新增；须避免编造逾期事实。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-CONTRACT-FORMATION",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.fact.contract_formation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集物业服务合同的名称/编号/签订时间与地点。",
+      "source_supported_expectation": "官方表格含物业服务合同或前期物业服务合同签订情况。",
+      "difference_description": "物业服务合同签订要素未采集。",
+      "risk_if_changed_without_review": "合同签订情况无法对应官方栏目。",
+      "potential_remediation": "评估是否新增；须避免编造合同签订事实。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-DOUBLE-WAGE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.claim.double_wage"
+      ],
+      "application_field_ids": [
+        "labor.is_no_contract"
+      ],
+      "observed_current_behavior": "应用以“未签订书面劳动合同”三态布尔值触发二倍工资请求，不采集未签合同的期间与明细。",
+      "source_supported_expectation": "官方表格要求说明是否主张双倍工资及明细。",
+      "difference_description": "二倍工资的期间与明细未采集。",
+      "risk_if_changed_without_review": "二倍工资请求缺少可核对的计算明细。",
+      "potential_remediation": "评估是否补充明细；不得自动推算二倍工资数额。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-OVERTIME",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.claim.overtime"
+      ],
+      "application_field_ids": [
+        "labor.overtime"
+      ],
+      "observed_current_behavior": "应用采集加班小时数与加班费金额。",
+      "source_supported_expectation": "官方表格要求说明是否主张加班费及明细。",
+      "difference_description": "加班费的计算明细（基数、倍数）未采集。",
+      "risk_if_changed_without_review": "加班费计算依据需人工核对。",
+      "potential_remediation": "评估是否补充明细；不得改变现有金额。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-CONTRACT-FORMATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.fact.contract_formation"
+      ],
+      "application_field_ids": [
+        "labor.is_no_contract"
+      ],
+      "observed_current_behavior": "应用仅以“是否未签订书面劳动合同”表示合同签订情况。",
+      "source_supported_expectation": "官方表格要求劳动合同主体、时间、地点与合同名称。",
+      "difference_description": "劳动合同签订要素不完整。",
+      "risk_if_changed_without_review": "劳动合同关系描述可能不完整。",
+      "potential_remediation": "评估是否新增；不得编造合同签订事实。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-OTHER-FACTS",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "INFORMATIONAL",
+      "official_element_ids": [
+        "labor.fact.other"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集“其他相关情况”。",
+      "source_supported_expectation": "官方表格含其他相关情况（如是否是农民工）。",
+      "difference_description": "自由表述的其他事实入口缺失。",
+      "risk_if_changed_without_review": "个别情形无法表达。",
+      "potential_remediation": "记录为有意的范围限制；不扩展范围。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-CUSTODY-SUPPORT-DETAIL",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.fact.custody",
+        "divorce.fact.support"
+      ],
+      "application_field_ids": [
+        "divorce.custody_preference",
+        "divorce.support_monthly",
+        "divorce.child_name"
+      ],
+      "observed_current_behavior": "应用采集抚养意愿与抚养费金额，不采集抚养归属事由与抚养费支付方式。",
+      "source_supported_expectation": "官方表格要求说明子女直接抚养的事由与抚养费金额、支付方式的事由。",
+      "difference_description": "抚养事由与支付方式未采集。",
+      "risk_if_changed_without_review": "抚养相关说理可能不充分。",
+      "potential_remediation": "评估是否新增；不得编造抚养事由。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-OTHER-FACTS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "INFORMATIONAL",
+      "official_element_ids": [
+        "divorce.fact.other"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集“其他”事实。",
+      "source_supported_expectation": "官方表格含其他事实栏。",
+      "difference_description": "自由表述的其他事实入口缺失。",
+      "risk_if_changed_without_review": "个别情形无法表达。",
+      "potential_remediation": "记录为有意的范围限制；不扩展范围。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "contract",
+      "document_type": "evidence_list",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用输出独立四列证据清单（序号/证据名称/证明对象·目的/备注）。",
+      "source_supported_expectation": "官方起诉状内仅含“证据清单（可另附页）”章节，未发现独立的官方证据清单文书。",
+      "difference_description": "独立文书的官方等价性未经核实。",
+      "risk_if_changed_without_review": "不得声称独立证据清单已获官方认可。",
+      "potential_remediation": "保持现状；等价性须经法律/内容审查。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); presenters/model_builder.py :: build_case_model()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "contract",
+      "document_type": "service_address_confirmation",
+      "gap_category": "SOURCE_VERIFICATION_GAP",
+      "severity": "MEDIUM",
+      "official_element_ids": [],
+      "application_field_ids": [
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "observed_current_behavior": "应用输出独立送达地址确认书。",
+      "source_supported_expectation": "在被检查的官方示范文本 PDF（975 页）中未出现“送达地址”字样。",
+      "difference_description": "在被检查来源中无对应文书；不代表其他官方材料中不存在。",
+      "risk_if_changed_without_review": "送达地址文书的官方依据未知。",
+      "potential_remediation": "须检索其他官方材料并人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf pages 1-975 search:\"送达地址\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_address_form(); presenters/model_builder.py :: build_case_model()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "property",
+      "document_type": "evidence_list",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用输出独立四列证据清单（序号/证据名称/证明对象·目的/备注）。",
+      "source_supported_expectation": "官方起诉状内仅含“证据清单（可另附页）”章节，未发现独立的官方证据清单文书。",
+      "difference_description": "独立文书的官方等价性未经核实。",
+      "risk_if_changed_without_review": "不得声称独立证据清单已获官方认可。",
+      "potential_remediation": "保持现状；等价性须经法律/内容审查。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); presenters/model_builder.py :: build_case_model()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "property",
+      "document_type": "service_address_confirmation",
+      "gap_category": "SOURCE_VERIFICATION_GAP",
+      "severity": "MEDIUM",
+      "official_element_ids": [],
+      "application_field_ids": [
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "observed_current_behavior": "应用输出独立送达地址确认书。",
+      "source_supported_expectation": "在被检查的官方示范文本 PDF（975 页）中未出现“送达地址”字样。",
+      "difference_description": "在被检查来源中无对应文书；不代表其他官方材料中不存在。",
+      "risk_if_changed_without_review": "送达地址文书的官方依据未知。",
+      "potential_remediation": "须检索其他官方材料并人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf pages 1-975 search:\"送达地址\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_address_form(); presenters/model_builder.py :: build_case_model()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "labor",
+      "document_type": "evidence_list",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用输出独立四列证据清单（序号/证据名称/证明对象·目的/备注）。",
+      "source_supported_expectation": "官方起诉状内仅含“证据清单（可另附页）”章节，未发现独立的官方证据清单文书。",
+      "difference_description": "独立文书的官方等价性未经核实。",
+      "risk_if_changed_without_review": "不得声称独立证据清单已获官方认可。",
+      "potential_remediation": "保持现状；等价性须经法律/内容审查。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); presenters/model_builder.py :: build_case_model()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "labor",
+      "document_type": "service_address_confirmation",
+      "gap_category": "SOURCE_VERIFICATION_GAP",
+      "severity": "MEDIUM",
+      "official_element_ids": [],
+      "application_field_ids": [
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "observed_current_behavior": "应用输出独立送达地址确认书。",
+      "source_supported_expectation": "在被检查的官方示范文本 PDF（975 页）中未出现“送达地址”字样。",
+      "difference_description": "在被检查来源中无对应文书；不代表其他官方材料中不存在。",
+      "risk_if_changed_without_review": "送达地址文书的官方依据未知。",
+      "potential_remediation": "须检索其他官方材料并人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf pages 1-975 search:\"送达地址\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_address_form(); presenters/model_builder.py :: build_case_model()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "divorce",
+      "document_type": "evidence_list",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用输出独立四列证据清单（序号/证据名称/证明对象·目的/备注）。",
+      "source_supported_expectation": "官方起诉状内仅含“证据清单（可另附页）”章节，未发现独立的官方证据清单文书。",
+      "difference_description": "独立文书的官方等价性未经核实。",
+      "risk_if_changed_without_review": "不得声称独立证据清单已获官方认可。",
+      "potential_remediation": "保持现状；等价性须经法律/内容审查。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_evidence_list(); presenters/model_builder.py :: build_case_model()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "divorce",
+      "document_type": "service_address_confirmation",
+      "gap_category": "SOURCE_VERIFICATION_GAP",
+      "severity": "MEDIUM",
+      "official_element_ids": [],
+      "application_field_ids": [
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "observed_current_behavior": "应用输出独立送达地址确认书。",
+      "source_supported_expectation": "在被检查的官方示范文本 PDF（975 页）中未出现“送达地址”字样。",
+      "difference_description": "在被检查来源中无对应文书；不代表其他官方材料中不存在。",
+      "risk_if_changed_without_review": "送达地址文书的官方依据未知。",
+      "potential_remediation": "须检索其他官方材料并人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf pages 1-975 search:\"送达地址\" sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; utils/doc_generator.py :: DocumentGenerator.export_address_form(); presenters/model_builder.py :: build_case_model()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-AMOUNT-ASOF",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.claim.delay_interest"
+      ],
+      "application_field_ids": [
+        "contract.penalty_amount",
+        "contract.penalty_calc_standard",
+        "contract.penalty_start_date"
+      ],
+      "observed_current_behavior": "应用按未付货款与违约金标准测算金额，并给出暂计至起诉之日的表述。",
+      "source_supported_expectation": "官方表格要求截至某一日止的尚欠金额，并可选择是否请求至实际清偿之日。",
+      "difference_description": "金额基准日与“至实际清偿之日”选项不完整。",
+      "risk_if_changed_without_review": "金额基准差异可能导致主张口径不一致。",
+      "potential_remediation": "评估是否新增基准日与选项；属计算口径变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-COURT-FEE-CONDITIONAL",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "CONDITIONALITY_DIFFERENCE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.procedure.court_fee"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无条件输出“本案诉讼费由被告承担。”",
+      "source_supported_expectation": "官方表格将诉讼费用作为可选主张（是/否）。",
+      "difference_description": "条件性不同：应用总是主张，官方允许不主张。",
+      "risk_if_changed_without_review": "若改为条件输出需重新设计字段，且不得削弱现有输出。",
+      "potential_remediation": "记录差异；不改变现有行为。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ENFORCEMENT-COST",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.claim.enforcement_cost"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不主张实现债权的费用。",
+      "source_supported_expectation": "官方表格含是否主张实现债权的费用。",
+      "difference_description": "该请求未实现。",
+      "risk_if_changed_without_review": "部分费用无法主张。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-EVIDENCE-STANDALONE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用生成独立的四列证据清单文档；起诉状内不含证据清单章节。",
+      "source_supported_expectation": "官方起诉状表格内含“证据清单（可另附页）”章节。",
+      "difference_description": "官方为起诉状内嵌章节，应用为独立文档；两者是否等价未经核实。",
+      "risk_if_changed_without_review": "不应假定独立文档已获官方认可。",
+      "potential_remediation": "保持独立文档现状；等价性须经法律/内容审查后再评估。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ID-TYPE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.party.plaintiff.id_document"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "observed_current_behavior": "应用仅有一个“身份证号/统一社会信用代码”输入。",
+      "source_supported_expectation": "官方表格区分“证件类型”与“证件号码”。",
+      "difference_description": "缺少证件类型。",
+      "risk_if_changed_without_review": "非身份证件时表述可能不完整。",
+      "potential_remediation": "评估是否新增证件类型；本阶段不实现。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-JURISDICTION-CLAUSE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.procedure.jurisdiction_agreement"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用仅采集“建议管辖法院”。",
+      "source_supported_expectation": "官方表格含有无仲裁/法院管辖约定及条款内容。",
+      "difference_description": "缺少管辖约定字段。",
+      "risk_if_changed_without_review": "管辖依据可能未体现。",
+      "potential_remediation": "评估是否新增；属程序事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-LEGAL-BASIS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.closing.legal_basis"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不在文书中列明法律条文依据。",
+      "source_supported_expectation": "官方表格含“请求依据（写明具体条文）”。",
+      "difference_description": "缺少法律依据输出。",
+      "risk_if_changed_without_review": "不列明条文可能影响说理完整性；具体条文须由人工确定。",
+      "potential_remediation": "不得自动插入法律条文；须人工填写并复核。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-MEDIATION-PREFERENCE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.mediation.preference"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集调解意愿。",
+      "source_supported_expectation": "官方表格含调解认知与是否考虑先行调解。",
+      "difference_description": "缺少调解意愿字段。",
+      "risk_if_changed_without_review": "程序性偏好未采集。",
+      "potential_remediation": "评估是否新增；属程序事项。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ORG-REGISTRATION",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.party.defendant.organization"
+      ],
+      "application_field_ids": [
+        "shared.party.company_fields",
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.address"
+      ],
+      "observed_current_behavior": "应用企业当事人仅采集名称/信用代码/法定代表人/住所地/电话。",
+      "source_supported_expectation": "官方表格另有注册地、企业类型、所有制性质等分类栏。",
+      "difference_description": "企业登记细节不完整。",
+      "risk_if_changed_without_review": "企业身份描述可能不完整。",
+      "potential_remediation": "评估是否新增；需与工商登记信息核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-OTHER-CLAIMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.procedure.other_claims"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无自由表述的其他请求字段。",
+      "source_supported_expectation": "官方表格含“其他请求”。",
+      "difference_description": "缺少其他请求入口。",
+      "risk_if_changed_without_review": "个别请求可能无法表达。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PARTY-IDENTITY-DETAILS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.party.defendant.natural",
+        "contract.party.plaintiff.identity_details"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.id_number",
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "observed_current_behavior": "应用仅采集姓名/证件号/住址/电话。",
+      "source_supported_expectation": "官方表格要求性别、出生日期、民族、工作单位、职务。",
+      "difference_description": "当事人身份细节字段在应用中没有对应输入。",
+      "risk_if_changed_without_review": "不采集即无法填写官方对应栏目。",
+      "potential_remediation": "在获得授权后再评估是否新增采集项；本阶段仅记录。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p71-p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PARTY-RESIDENCE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.party.plaintiff.residence"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用只有住所地。",
+      "source_supported_expectation": "官方表格另有“经常居住地”。",
+      "difference_description": "缺少经常居住地字段。",
+      "risk_if_changed_without_review": "送达地址判断可能不完整。",
+      "potential_remediation": "评估是否新增；属送达相关事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PRESERVATION",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.procedure.preservation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集诉前保全信息。",
+      "source_supported_expectation": "官方表格含是否已诉前保全及法院/时间/案号。",
+      "difference_description": "缺少保全信息。",
+      "risk_if_changed_without_review": "保全事实无法体现。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-REPRESENTATIVE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.party.plaintiff.agent"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集委托诉讼代理人。",
+      "source_supported_expectation": "官方表格含委托诉讼代理人栏（有/无、姓名、单位、职务、电话、代理权限）。",
+      "difference_description": "缺少代理人信息。",
+      "risk_if_changed_without_review": "有代理人的当事人无法在文书上体现代理人。",
+      "potential_remediation": "评估是否新增；属当事人自主决定事项。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-SECURITY",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.claim.security"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集担保（抵押、质押、保证）相关事实与担保权利主张。",
+      "source_supported_expectation": "官方买卖合同表格含担保权利主张栏。",
+      "difference_description": "担保事实与担保权利主张均未采集。",
+      "risk_if_changed_without_review": "有担保的买卖无法完整表达。",
+      "potential_remediation": "评估是否新增；属结构性扩展，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-THIRD-PARTY",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.party.third_party"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不支持第三人。",
+      "source_supported_expectation": "官方表格含第三人（自然人/法人）栏。",
+      "difference_description": "缺少第三人建模。",
+      "risk_if_changed_without_review": "存在第三人时无法在文书中列明。",
+      "potential_remediation": "评估是否支持第三人；属结构性变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-TOTAL-AMOUNT",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.procedure.total_amount"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不输出标的总额。",
+      "source_supported_expectation": "官方表格含标的总额栏。",
+      "difference_description": "缺少标的总额输出。",
+      "risk_if_changed_without_review": "标的总额需人工合计。",
+      "potential_remediation": "评估是否新增计算与输出；属计算变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_contract(); models/case_model.py :: ContractCaseModel.render_claims(); models/case_model.py :: ContractCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-COURT-FEE-CONDITIONAL",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "CONDITIONALITY_DIFFERENCE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "divorce.procedure.court_fee"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无条件输出“本案诉讼费由被告承担。”",
+      "source_supported_expectation": "官方表格将诉讼费用作为可选主张（是/否）。",
+      "difference_description": "条件性不同：应用总是主张，官方允许不主张。",
+      "risk_if_changed_without_review": "若改为条件输出需重新设计字段，且不得削弱现有输出。",
+      "potential_remediation": "记录差异；不改变现有行为。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-EVIDENCE-STANDALONE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用生成独立的四列证据清单文档；起诉状内不含证据清单章节。",
+      "source_supported_expectation": "官方起诉状表格内含“证据清单（可另附页）”章节。",
+      "difference_description": "官方为起诉状内嵌章节，应用为独立文档；两者是否等价未经核实。",
+      "risk_if_changed_without_review": "不应假定独立文档已获官方认可。",
+      "potential_remediation": "保持独立文档现状；等价性须经法律/内容审查后再评估。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-ID-TYPE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "divorce.party.plaintiff.id_document"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "observed_current_behavior": "应用仅有一个“身份证号/统一社会信用代码”输入。",
+      "source_supported_expectation": "官方表格区分“证件类型”与“证件号码”。",
+      "difference_description": "缺少证件类型。",
+      "risk_if_changed_without_review": "非身份证件时表述可能不完整。",
+      "potential_remediation": "评估是否新增证件类型；本阶段不实现。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-JURISDICTION-CLAUSE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.procedure.jurisdiction_agreement"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用仅采集“建议管辖法院”。",
+      "source_supported_expectation": "官方表格含有无仲裁/法院管辖约定及条款内容。",
+      "difference_description": "缺少管辖约定字段。",
+      "risk_if_changed_without_review": "管辖依据可能未体现。",
+      "potential_remediation": "评估是否新增；属程序事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-LEGAL-BASIS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.closing.legal_basis"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不在文书中列明法律条文依据。",
+      "source_supported_expectation": "官方表格含“请求依据（写明具体条文）”。",
+      "difference_description": "缺少法律依据输出。",
+      "risk_if_changed_without_review": "不列明条文可能影响说理完整性；具体条文须由人工确定。",
+      "potential_remediation": "不得自动插入法律条文；须人工填写并复核。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-MEDIATION-PREFERENCE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "LOW",
+      "official_element_ids": [
+        "divorce.mediation.preference"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集调解意愿。",
+      "source_supported_expectation": "官方表格含调解认知与是否考虑先行调解。",
+      "difference_description": "缺少调解意愿字段。",
+      "risk_if_changed_without_review": "程序性偏好未采集。",
+      "potential_remediation": "评估是否新增；属程序事项。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-ORG-REGISTRATION",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "divorce.party.defendant.organization"
+      ],
+      "application_field_ids": [
+        "shared.party.company_fields",
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.address"
+      ],
+      "observed_current_behavior": "应用企业当事人仅采集名称/信用代码/法定代表人/住所地/电话。",
+      "source_supported_expectation": "官方表格另有注册地、企业类型、所有制性质等分类栏。",
+      "difference_description": "企业登记细节不完整。",
+      "risk_if_changed_without_review": "企业身份描述可能不完整。",
+      "potential_remediation": "评估是否新增；需与工商登记信息核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-OTHER-CLAIMS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "divorce.procedure.other_claims"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无自由表述的其他请求字段。",
+      "source_supported_expectation": "官方表格含“其他请求”。",
+      "difference_description": "缺少其他请求入口。",
+      "risk_if_changed_without_review": "个别请求可能无法表达。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-PARTY-IDENTITY-DETAILS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.party.defendant.natural",
+        "divorce.party.plaintiff.identity_details"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.id_number",
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "observed_current_behavior": "应用仅采集姓名/证件号/住址/电话。",
+      "source_supported_expectation": "官方表格要求性别、出生日期、民族、工作单位、职务。",
+      "difference_description": "当事人身份细节字段在应用中没有对应输入。",
+      "risk_if_changed_without_review": "不采集即无法填写官方对应栏目。",
+      "potential_remediation": "在获得授权后再评估是否新增采集项；本阶段仅记录。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p57-p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-PARTY-RESIDENCE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "divorce.party.plaintiff.residence"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用只有住所地。",
+      "source_supported_expectation": "官方表格另有“经常居住地”。",
+      "difference_description": "缺少经常居住地字段。",
+      "risk_if_changed_without_review": "送达地址判断可能不完整。",
+      "potential_remediation": "评估是否新增；属送达相关事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-PRESERVATION",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "divorce.claim.preservation",
+        "divorce.procedure.preservation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集诉前保全信息。",
+      "source_supported_expectation": "官方表格含是否已诉前保全及法院/时间/案号。",
+      "difference_description": "缺少保全信息。",
+      "risk_if_changed_without_review": "保全事实无法体现。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p58-p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-REPRESENTATIVE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.party.plaintiff.agent"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集委托诉讼代理人。",
+      "source_supported_expectation": "官方表格含委托诉讼代理人栏（有/无、姓名、单位、职务、电话、代理权限）。",
+      "difference_description": "缺少代理人信息。",
+      "risk_if_changed_without_review": "有代理人的当事人无法在文书上体现代理人。",
+      "potential_remediation": "评估是否新增；属当事人自主决定事项。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-TOTAL-AMOUNT",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "divorce.procedure.total_amount"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不输出标的总额。",
+      "source_supported_expectation": "官方表格含标的总额栏。",
+      "difference_description": "缺少标的总额输出。",
+      "risk_if_changed_without_review": "标的总额需人工合计。",
+      "potential_remediation": "评估是否新增计算与输出；属计算变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_divorce(); models/case_model.py :: DivorceCaseModel.render_claims(); models/case_model.py :: DivorceCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-AMOUNT-ASOF",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.claim.wages"
+      ],
+      "application_field_ids": [
+        "labor.unpaid_months",
+        "labor.monthly_salary"
+      ],
+      "observed_current_behavior": "应用按月工资×欠薪月数测算欠付工资，并给出欠薪区间。",
+      "source_supported_expectation": "官方表格要求截至某一日止的尚欠金额，并可选择是否请求至实际清偿之日。",
+      "difference_description": "金额基准日与“至实际清偿之日”选项不完整。",
+      "risk_if_changed_without_review": "金额基准差异可能导致主张口径不一致。",
+      "potential_remediation": "评估是否新增基准日与选项；属计算口径变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-COURT-FEE-CONDITIONAL",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "CONDITIONALITY_DIFFERENCE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.procedure.court_fee"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无条件输出“本案诉讼费由被告承担。”",
+      "source_supported_expectation": "官方表格将诉讼费用作为可选主张（是/否）。",
+      "difference_description": "条件性不同：应用总是主张，官方允许不主张。",
+      "risk_if_changed_without_review": "若改为条件输出需重新设计字段，且不得削弱现有输出。",
+      "potential_remediation": "记录差异；不改变现有行为。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-EVIDENCE-STANDALONE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用生成独立的四列证据清单文档；起诉状内不含证据清单章节。",
+      "source_supported_expectation": "官方起诉状表格内含“证据清单（可另附页）”章节。",
+      "difference_description": "官方为起诉状内嵌章节，应用为独立文档；两者是否等价未经核实。",
+      "risk_if_changed_without_review": "不应假定独立文档已获官方认可。",
+      "potential_remediation": "保持独立文档现状；等价性须经法律/内容审查后再评估。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-ID-TYPE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.party.plaintiff.id_document"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "observed_current_behavior": "应用仅有一个“身份证号/统一社会信用代码”输入。",
+      "source_supported_expectation": "官方表格区分“证件类型”与“证件号码”。",
+      "difference_description": "缺少证件类型。",
+      "risk_if_changed_without_review": "非身份证件时表述可能不完整。",
+      "potential_remediation": "评估是否新增证件类型；本阶段不实现。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-JURISDICTION-CLAUSE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.procedure.jurisdiction_agreement"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用仅采集“建议管辖法院”。",
+      "source_supported_expectation": "官方表格含有无仲裁/法院管辖约定及条款内容。",
+      "difference_description": "缺少管辖约定字段。",
+      "risk_if_changed_without_review": "管辖依据可能未体现。",
+      "potential_remediation": "评估是否新增；属程序事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-LEGAL-BASIS",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.closing.legal_basis"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不在文书中列明法律条文依据。",
+      "source_supported_expectation": "官方表格含“请求依据（写明具体条文）”。",
+      "difference_description": "缺少法律依据输出。",
+      "risk_if_changed_without_review": "不列明条文可能影响说理完整性；具体条文须由人工确定。",
+      "potential_remediation": "不得自动插入法律条文；须人工填写并复核。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-MEDIATION-PREFERENCE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.mediation.preference"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集调解意愿。",
+      "source_supported_expectation": "官方表格含调解认知与是否考虑先行调解。",
+      "difference_description": "缺少调解意愿字段。",
+      "risk_if_changed_without_review": "程序性偏好未采集。",
+      "potential_remediation": "评估是否新增；属程序事项。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-ORG-REGISTRATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.party.defendant.organization"
+      ],
+      "application_field_ids": [
+        "shared.party.company_fields",
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.address"
+      ],
+      "observed_current_behavior": "应用企业当事人仅采集名称/信用代码/法定代表人/住所地/电话。",
+      "source_supported_expectation": "官方表格另有注册地、企业类型、所有制性质等分类栏。",
+      "difference_description": "企业登记细节不完整。",
+      "risk_if_changed_without_review": "企业身份描述可能不完整。",
+      "potential_remediation": "评估是否新增；需与工商登记信息核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-OTHER-CLAIMS",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.procedure.other_claims"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无自由表述的其他请求字段。",
+      "source_supported_expectation": "官方表格含“其他请求”。",
+      "difference_description": "缺少其他请求入口。",
+      "risk_if_changed_without_review": "个别请求可能无法表达。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-PARTY-IDENTITY-DETAILS",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.party.defendant.natural",
+        "labor.party.plaintiff.identity_details"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.id_number",
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "observed_current_behavior": "应用仅采集姓名/证件号/住址/电话。",
+      "source_supported_expectation": "官方表格要求性别、出生日期、民族、工作单位、职务。",
+      "difference_description": "当事人身份细节字段在应用中没有对应输入。",
+      "risk_if_changed_without_review": "不采集即无法填写官方对应栏目。",
+      "potential_remediation": "在获得授权后再评估是否新增采集项；本阶段仅记录。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p248-p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-PARTY-RESIDENCE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.party.plaintiff.residence"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用只有住所地。",
+      "source_supported_expectation": "官方表格另有“经常居住地”。",
+      "difference_description": "缺少经常居住地字段。",
+      "risk_if_changed_without_review": "送达地址判断可能不完整。",
+      "potential_remediation": "评估是否新增；属送达相关事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-PRESERVATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.procedure.preservation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集诉前保全信息。",
+      "source_supported_expectation": "官方表格含是否已诉前保全及法院/时间/案号。",
+      "difference_description": "缺少保全信息。",
+      "risk_if_changed_without_review": "保全事实无法体现。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-REPRESENTATIVE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.party.plaintiff.agent"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集委托诉讼代理人。",
+      "source_supported_expectation": "官方表格含委托诉讼代理人栏（有/无、姓名、单位、职务、电话、代理权限）。",
+      "difference_description": "缺少代理人信息。",
+      "risk_if_changed_without_review": "有代理人的当事人无法在文书上体现代理人。",
+      "potential_remediation": "评估是否新增；属当事人自主决定事项。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-THIRD-PARTY",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.party.third_party"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不支持第三人。",
+      "source_supported_expectation": "官方表格含第三人（自然人/法人）栏。",
+      "difference_description": "缺少第三人建模。",
+      "risk_if_changed_without_review": "存在第三人时无法在文书中列明。",
+      "potential_remediation": "评估是否支持第三人；属结构性变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-TOTAL-AMOUNT",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.procedure.total_amount"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不输出标的总额。",
+      "source_supported_expectation": "官方表格含标的总额栏。",
+      "difference_description": "缺少标的总额输出。",
+      "risk_if_changed_without_review": "标的总额需人工合计。",
+      "potential_remediation": "评估是否新增计算与输出；属计算变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_labor(); models/case_model.py :: LaborCaseModel.render_claims(); models/case_model.py :: LaborCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-ROLE-LABELLING",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "SEMANTIC_DIFFERENCE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.fact.contracting_parties"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.name"
+      ],
+      "observed_current_behavior": "应用以原告/被告角色表述。",
+      "source_supported_expectation": "官方民间借贷表格以出借人/借款人表述。",
+      "difference_description": "角色标签语义不同。",
+      "risk_if_changed_without_review": "借贷方向在文中不明确。",
+      "potential_remediation": "评估是否补充角色表述；不得改变当事人事实。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_loan(); models/case_model.py :: LoanCaseModel.render_claims(); models/case_model.py :: LoanCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-AMOUNT-ASOF",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.claim.fee",
+        "property.fact.arrears_amount"
+      ],
+      "application_field_ids": [
+        "property.total_input",
+        "property.house_area",
+        "property.fee_rate"
+      ],
+      "observed_current_behavior": "应用按面积×费率×月数测算物业费金额，并给出欠费期间。",
+      "source_supported_expectation": "官方表格要求截至某一日止的尚欠金额，并可选择是否请求至实际清偿之日。",
+      "difference_description": "金额基准日与“至实际清偿之日”选项不完整。",
+      "risk_if_changed_without_review": "金额基准差异可能导致主张口径不一致。",
+      "potential_remediation": "评估是否新增基准日与选项；属计算口径变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p234-p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-COURT-FEE-CONDITIONAL",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "CONDITIONALITY_DIFFERENCE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.procedure.court_fee"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无条件输出“本案诉讼费由被告承担。”",
+      "source_supported_expectation": "官方表格将诉讼费用作为可选主张（是/否）。",
+      "difference_description": "条件性不同：应用总是主张，官方允许不主张。",
+      "risk_if_changed_without_review": "若改为条件输出需重新设计字段，且不得削弱现有输出。",
+      "potential_remediation": "记录差异；不改变现有行为。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-EVIDENCE-STANDALONE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用生成独立的四列证据清单文档；起诉状内不含证据清单章节。",
+      "source_supported_expectation": "官方起诉状表格内含“证据清单（可另附页）”章节。",
+      "difference_description": "官方为起诉状内嵌章节，应用为独立文档；两者是否等价未经核实。",
+      "risk_if_changed_without_review": "不应假定独立文档已获官方认可。",
+      "potential_remediation": "保持独立文档现状；等价性须经法律/内容审查后再评估。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ID-TYPE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.party.plaintiff.id_document"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "observed_current_behavior": "应用仅有一个“身份证号/统一社会信用代码”输入。",
+      "source_supported_expectation": "官方表格区分“证件类型”与“证件号码”。",
+      "difference_description": "缺少证件类型。",
+      "risk_if_changed_without_review": "非身份证件时表述可能不完整。",
+      "potential_remediation": "评估是否新增证件类型；本阶段不实现。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-JURISDICTION-CLAUSE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.procedure.jurisdiction_agreement"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用仅采集“建议管辖法院”。",
+      "source_supported_expectation": "官方表格含有无仲裁/法院管辖约定及条款内容。",
+      "difference_description": "缺少管辖约定字段。",
+      "risk_if_changed_without_review": "管辖依据可能未体现。",
+      "potential_remediation": "评估是否新增；属程序事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-MEDIATION-PREFERENCE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.mediation.preference"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集调解意愿。",
+      "source_supported_expectation": "官方表格含调解认知与是否考虑先行调解。",
+      "difference_description": "缺少调解意愿字段。",
+      "risk_if_changed_without_review": "程序性偏好未采集。",
+      "potential_remediation": "评估是否新增；属程序事项。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ORG-REGISTRATION",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.party.defendant.organization"
+      ],
+      "application_field_ids": [
+        "shared.party.company_fields",
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.address"
+      ],
+      "observed_current_behavior": "应用企业当事人仅采集名称/信用代码/法定代表人/住所地/电话。",
+      "source_supported_expectation": "官方表格另有注册地、企业类型、所有制性质等分类栏。",
+      "difference_description": "企业登记细节不完整。",
+      "risk_if_changed_without_review": "企业身份描述可能不完整。",
+      "potential_remediation": "评估是否新增；需与工商登记信息核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-OTHER-CLAIMS",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.procedure.other_claims"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无自由表述的其他请求字段。",
+      "source_supported_expectation": "官方表格含“其他请求”。",
+      "difference_description": "缺少其他请求入口。",
+      "risk_if_changed_without_review": "个别请求可能无法表达。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PARTY-IDENTITY-DETAILS",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.party.defendant.natural",
+        "property.party.plaintiff.identity_details"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.id_number",
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "observed_current_behavior": "应用仅采集姓名/证件号/住址/电话。",
+      "source_supported_expectation": "官方表格要求性别、出生日期、民族、工作单位、职务。",
+      "difference_description": "当事人身份细节字段在应用中没有对应输入。",
+      "risk_if_changed_without_review": "不采集即无法填写官方对应栏目。",
+      "potential_remediation": "在获得授权后再评估是否新增采集项；本阶段仅记录。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p233-p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PARTY-RESIDENCE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.party.plaintiff.residence"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用只有住所地。",
+      "source_supported_expectation": "官方表格另有“经常居住地”。",
+      "difference_description": "缺少经常居住地字段。",
+      "risk_if_changed_without_review": "送达地址判断可能不完整。",
+      "potential_remediation": "评估是否新增；属送达相关事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PRESERVATION",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.procedure.preservation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集诉前保全信息。",
+      "source_supported_expectation": "官方表格含是否已诉前保全及法院/时间/案号。",
+      "difference_description": "缺少保全信息。",
+      "risk_if_changed_without_review": "保全事实无法体现。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-REPRESENTATIVE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.party.plaintiff.agent"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集委托诉讼代理人。",
+      "source_supported_expectation": "官方表格含委托诉讼代理人栏（有/无、姓名、单位、职务、电话、代理权限）。",
+      "difference_description": "缺少代理人信息。",
+      "risk_if_changed_without_review": "有代理人的当事人无法在文书上体现代理人。",
+      "potential_remediation": "评估是否新增；属当事人自主决定事项。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ROLE-LABELLING",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "SEMANTIC_DIFFERENCE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.fact.contracting_parties"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.name"
+      ],
+      "observed_current_behavior": "应用以原告/被告角色表述。",
+      "source_supported_expectation": "官方物业服务合同表格以业主/建设单位与物业服务人表述。",
+      "difference_description": "角色标签语义不同。",
+      "risk_if_changed_without_review": "物业服务关系中的主体角色在文中不明确。",
+      "potential_remediation": "评估是否补充角色表述；不得改变当事人事实。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-THIRD-PARTY",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.party.third_party"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不支持第三人。",
+      "source_supported_expectation": "官方表格含第三人（自然人/法人）栏。",
+      "difference_description": "缺少第三人建模。",
+      "risk_if_changed_without_review": "存在第三人时无法在文书中列明。",
+      "potential_remediation": "评估是否支持第三人；属结构性变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; views/wizard_pages.py :: PartyPage.get_party_data(); presenters/model_builder.py :: _add_parties(); utils/doc_generator.py :: DocumentGenerator.add_party_block(); presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-TOTAL-AMOUNT",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.procedure.total_amount"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不输出标的总额。",
+      "source_supported_expectation": "官方表格含标的总额栏。",
+      "difference_description": "缺少标的总额输出。",
+      "risk_if_changed_without_review": "标的总额需人工合计。",
+      "potential_remediation": "评估是否新增计算与输出；属计算变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; presenters/model_builder.py :: _fill_property(); models/case_model.py :: PropertyCaseModel.render_claims(); models/case_model.py :: PropertyCaseModel.render_facts()",
       "review_status": "NOT_REQUESTED"
     }
   ]

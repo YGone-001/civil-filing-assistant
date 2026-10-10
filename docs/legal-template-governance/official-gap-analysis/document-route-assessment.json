@@ -1,5 +1,5 @@
 {
-  "assessment_version": "1.0.0",
+  "assessment_version": "1.1.0",
   "analyzed_revision": "639179933c51f111ea43060157e897fa0a1e4d30",
   "routes": [
     {
@@ -14,10 +14,39 @@
       "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "官方空白表格要素（physical PDF p134-p139）与应用起诉状输出逐项对照。",
-      "gap_ids": [],
+      "gap_ids": [
+        "GAP-COURT-FEE-CONDITIONAL",
+        "GAP-ENFORCEMENT-COST",
+        "GAP-EVIDENCE-STANDALONE",
+        "GAP-ID-TYPE",
+        "GAP-JURISDICTION-CLAUSE",
+        "GAP-LEGAL-BASIS",
+        "GAP-LOAN-ACCELERATION",
+        "GAP-LOAN-ASOF-DATE",
+        "GAP-LOAN-CONTRACT-FORMATION",
+        "GAP-LOAN-INTEREST-BASIS",
+        "GAP-LOAN-OVERDUE",
+        "GAP-LOAN-PRINCIPAL-AMOUNT",
+        "GAP-LOAN-REPAYMENT-METHOD",
+        "GAP-LOAN-REPAYMENT-STATUS",
+        "GAP-LOAN-ROLE-LABELLING",
+        "GAP-LOAN-SECURITY",
+        "GAP-LOAN-TERM",
+        "GAP-MEDIATION-PREFERENCE",
+        "GAP-ORG-REGISTRATION",
+        "GAP-OTHER-CLAIMS",
+        "GAP-PARTY-IDENTITY-DETAILS",
+        "GAP-PARTY-RESIDENCE",
+        "GAP-PRESERVATION",
+        "GAP-REPRESENTATIVE",
+        "GAP-SOURCE-VERSION",
+        "GAP-THIRD-PARTY",
+        "GAP-TOTAL-AMOUNT"
+      ],
       "unresolved_questions": [
         "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
-        "缺失要素是否需要新增采集项，属产品范围决策。"
+        "缺失要素是否需要新增采集项，属产品范围决策。",
+        "官方要素与应用字段的对应关系、缺失项与证据位置均按本记录重新核对，须经法律/内容审查。"
       ],
       "legal_review_required": true,
       "approval_status": "NOT_REQUESTED"
@@ -78,10 +107,39 @@
       "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "官方空白表格要素（physical PDF p71-p76）与应用起诉状输出逐项对照。",
-      "gap_ids": [],
+      "gap_ids": [
+        "GAP-CONTRACT-AMOUNT-ASOF",
+        "GAP-CONTRACT-BUYER-CLAIMS",
+        "GAP-CONTRACT-COURT-FEE-CONDITIONAL",
+        "GAP-CONTRACT-DELAY",
+        "GAP-CONTRACT-DELIVERY-TERMS",
+        "GAP-CONTRACT-DEMAND",
+        "GAP-CONTRACT-ENFORCEMENT-COST",
+        "GAP-CONTRACT-EVIDENCE-STANDALONE",
+        "GAP-CONTRACT-FORMATION",
+        "GAP-CONTRACT-ID-TYPE",
+        "GAP-CONTRACT-JURISDICTION-CLAUSE",
+        "GAP-CONTRACT-LEGAL-BASIS",
+        "GAP-CONTRACT-MEDIATION-PREFERENCE",
+        "GAP-CONTRACT-ORG-REGISTRATION",
+        "GAP-CONTRACT-OTHER-CLAIMS",
+        "GAP-CONTRACT-PARTY-IDENTITY-DETAILS",
+        "GAP-CONTRACT-PARTY-RESIDENCE",
+        "GAP-CONTRACT-PAYMENT-TERMS",
+        "GAP-CONTRACT-PENALTY-TERMS",
+        "GAP-CONTRACT-PRESERVATION",
+        "GAP-CONTRACT-QUALITY",
+        "GAP-CONTRACT-REPRESENTATIVE",
+        "GAP-CONTRACT-SECURITY",
+        "GAP-CONTRACT-SUBJECT",
+        "GAP-CONTRACT-THIRD-PARTY",
+        "GAP-CONTRACT-TOTAL-AMOUNT",
+        "GAP-ROLE-LABELLING"
+      ],
       "unresolved_questions": [
         "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
-        "缺失要素是否需要新增采集项，属产品范围决策。"
+        "缺失要素是否需要新增采集项，属产品范围决策。",
+        "官方要素与应用字段的对应关系、缺失项与证据位置均按本记录重新核对，须经法律/内容审查。"
       ],
       "legal_review_required": true,
       "approval_status": "NOT_REQUESTED"
@@ -99,7 +157,7 @@
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "官方起诉状内嵌“证据清单”章节与应用独立证据清单文书对照。",
       "gap_ids": [
-        "GAP-ROUTE-EVIDENCE-STANDALONE"
+        "GAP-CONTRACT-ROUTE-EVIDENCE-STANDALONE"
       ],
       "unresolved_questions": [
         "独立文书是否可视为官方内嵌章节的等价物，未核实。",
@@ -121,7 +179,7 @@
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "在被检查的 975 页官方示范文本中检索“送达地址”字样。",
       "gap_ids": [
-        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+        "GAP-CONTRACT-ROUTE-ADDRESS-NO-COUNTERPART"
       ],
       "unresolved_questions": [
         "被检查来源中无对应文书；其他官方材料是否存在未核实。",
@@ -142,10 +200,34 @@
       "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "官方空白表格要素（physical PDF p233-p236）与应用起诉状输出逐项对照。",
-      "gap_ids": [],
+      "gap_ids": [
+        "GAP-PROPERTY-AMOUNT-ASOF",
+        "GAP-PROPERTY-CONTRACT-FORMATION",
+        "GAP-PROPERTY-COURT-FEE-CONDITIONAL",
+        "GAP-PROPERTY-EVIDENCE-STANDALONE",
+        "GAP-PROPERTY-ID-TYPE",
+        "GAP-PROPERTY-JURISDICTION-CLAUSE",
+        "GAP-PROPERTY-LEGAL-BASIS",
+        "GAP-PROPERTY-MEDIATION-PREFERENCE",
+        "GAP-PROPERTY-ORG-REGISTRATION",
+        "GAP-PROPERTY-OTHER-CLAIMS",
+        "GAP-PROPERTY-OWNER",
+        "GAP-PROPERTY-PARTY-IDENTITY-DETAILS",
+        "GAP-PROPERTY-PARTY-RESIDENCE",
+        "GAP-PROPERTY-PAYMENT-METHOD",
+        "GAP-PROPERTY-PENALTY-AMOUNT",
+        "GAP-PROPERTY-PRESERVATION",
+        "GAP-PROPERTY-REPRESENTATIVE",
+        "GAP-PROPERTY-ROLE-LABELLING",
+        "GAP-PROPERTY-SCOPE",
+        "GAP-PROPERTY-TERM-SEMANTICS",
+        "GAP-PROPERTY-THIRD-PARTY",
+        "GAP-PROPERTY-TOTAL-AMOUNT"
+      ],
       "unresolved_questions": [
         "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
-        "缺失要素是否需要新增采集项，属产品范围决策。"
+        "缺失要素是否需要新增采集项，属产品范围决策。",
+        "官方要素与应用字段的对应关系、缺失项与证据位置均按本记录重新核对，须经法律/内容审查。"
       ],
       "legal_review_required": true,
       "approval_status": "NOT_REQUESTED"
@@ -163,7 +245,7 @@
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "官方起诉状内嵌“证据清单”章节与应用独立证据清单文书对照。",
       "gap_ids": [
-        "GAP-ROUTE-EVIDENCE-STANDALONE"
+        "GAP-PROPERTY-ROUTE-EVIDENCE-STANDALONE"
       ],
       "unresolved_questions": [
         "独立文书是否可视为官方内嵌章节的等价物，未核实。",
@@ -185,7 +267,7 @@
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "在被检查的 975 页官方示范文本中检索“送达地址”字样。",
       "gap_ids": [
-        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+        "GAP-PROPERTY-ROUTE-ADDRESS-NO-COUNTERPART"
       ],
       "unresolved_questions": [
         "被检查来源中无对应文书；其他官方材料是否存在未核实。",
@@ -206,10 +288,36 @@
       "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "官方空白表格要素（physical PDF p248-p251）与应用起诉状输出逐项对照。",
-      "gap_ids": [],
+      "gap_ids": [
+        "GAP-LABOR-AMOUNT-ASOF",
+        "GAP-LABOR-ARBITRATION",
+        "GAP-LABOR-CLAIM-SCOPE",
+        "GAP-LABOR-CONTRACT-FORMATION",
+        "GAP-LABOR-COURT-FEE-CONDITIONAL",
+        "GAP-LABOR-DOUBLE-WAGE",
+        "GAP-LABOR-EVIDENCE-STANDALONE",
+        "GAP-LABOR-ID-TYPE",
+        "GAP-LABOR-JURISDICTION-CLAUSE",
+        "GAP-LABOR-LEGAL-BASIS",
+        "GAP-LABOR-MEDIATION-PREFERENCE",
+        "GAP-LABOR-ORG-REGISTRATION",
+        "GAP-LABOR-OTHER-CLAIMS",
+        "GAP-LABOR-OTHER-FACTS",
+        "GAP-LABOR-OVERTIME",
+        "GAP-LABOR-PARTY-IDENTITY-DETAILS",
+        "GAP-LABOR-PARTY-RESIDENCE",
+        "GAP-LABOR-PERFORMANCE-DETAIL",
+        "GAP-LABOR-PRESERVATION",
+        "GAP-LABOR-REPRESENTATIVE",
+        "GAP-LABOR-TERMINATION",
+        "GAP-LABOR-THIRD-PARTY",
+        "GAP-LABOR-TOTAL-AMOUNT",
+        "GAP-LABOR-WORK-INJURY"
+      ],
       "unresolved_questions": [
         "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
-        "缺失要素是否需要新增采集项，属产品范围决策。"
+        "缺失要素是否需要新增采集项，属产品范围决策。",
+        "官方要素与应用字段的对应关系、缺失项与证据位置均按本记录重新核对，须经法律/内容审查。"
       ],
       "legal_review_required": true,
       "approval_status": "NOT_REQUESTED"
@@ -227,7 +335,7 @@
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "官方起诉状内嵌“证据清单”章节与应用独立证据清单文书对照。",
       "gap_ids": [
-        "GAP-ROUTE-EVIDENCE-STANDALONE"
+        "GAP-LABOR-ROUTE-EVIDENCE-STANDALONE"
       ],
       "unresolved_questions": [
         "独立文书是否可视为官方内嵌章节的等价物，未核实。",
@@ -249,7 +357,7 @@
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "在被检查的 975 页官方示范文本中检索“送达地址”字样。",
       "gap_ids": [
-        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+        "GAP-LABOR-ROUTE-ADDRESS-NO-COUNTERPART"
       ],
       "unresolved_questions": [
         "被检查来源中无对应文书；其他官方材料是否存在未核实。",
@@ -270,10 +378,33 @@
       "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "官方空白表格要素（physical PDF p57-p60）与应用起诉状输出逐项对照。",
-      "gap_ids": [],
+      "gap_ids": [
+        "GAP-DIVORCE-COMBINED-SCOPE",
+        "GAP-DIVORCE-COURT-FEE-CONDITIONAL",
+        "GAP-DIVORCE-CUSTODY-SUPPORT-DETAIL",
+        "GAP-DIVORCE-DAMAGES",
+        "GAP-DIVORCE-DEBT",
+        "GAP-DIVORCE-EVIDENCE-STANDALONE",
+        "GAP-DIVORCE-ID-TYPE",
+        "GAP-DIVORCE-JURISDICTION-CLAUSE",
+        "GAP-DIVORCE-LEGAL-BASIS",
+        "GAP-DIVORCE-MARRIAGE-FACTS",
+        "GAP-DIVORCE-MEDIATION-PREFERENCE",
+        "GAP-DIVORCE-ORG-REGISTRATION",
+        "GAP-DIVORCE-OTHER-CLAIMS",
+        "GAP-DIVORCE-OTHER-FACTS",
+        "GAP-DIVORCE-PARTY-IDENTITY-DETAILS",
+        "GAP-DIVORCE-PARTY-RESIDENCE",
+        "GAP-DIVORCE-PRESERVATION",
+        "GAP-DIVORCE-PROPERTY-STRUCTURE",
+        "GAP-DIVORCE-REPRESENTATIVE",
+        "GAP-DIVORCE-TOTAL-AMOUNT",
+        "GAP-DIVORCE-VISITATION"
+      ],
       "unresolved_questions": [
         "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
-        "缺失要素是否需要新增采集项，属产品范围决策。"
+        "缺失要素是否需要新增采集项，属产品范围决策。",
+        "官方要素与应用字段的对应关系、缺失项与证据位置均按本记录重新核对，须经法律/内容审查。"
       ],
       "legal_review_required": true,
       "approval_status": "NOT_REQUESTED"
@@ -291,7 +422,7 @@
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "官方起诉状内嵌“证据清单”章节与应用独立证据清单文书对照。",
       "gap_ids": [
-        "GAP-ROUTE-EVIDENCE-STANDALONE"
+        "GAP-DIVORCE-ROUTE-EVIDENCE-STANDALONE"
       ],
       "unresolved_questions": [
         "独立文书是否可视为官方内嵌章节的等价物，未核实。",
@@ -313,7 +444,7 @@
       "source_verification_status": "SOURCE_FILE_VERIFIED",
       "comparison_scope": "在被检查的 975 页官方示范文本中检索“送达地址”字样。",
       "gap_ids": [
-        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+        "GAP-DIVORCE-ROUTE-ADDRESS-NO-COUNTERPART"
       ],
       "unresolved_questions": [
         "被检查来源中无对应文书；其他官方材料是否存在未核实。",
