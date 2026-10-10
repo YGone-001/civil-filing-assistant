@@ -161,6 +161,75 @@ These are four independent approvals and must never be conflated:
 **Passing automated tests is not legal approval. A Git commit is not legal approval.** Do not
 name a legal reviewer unless an actual review occurred.
 
+### Approval-integrity rules (machine-checked metadata contract)
+
+Approval is a **relationship**, not a set of populated text fields. Populating
+`approved_by_or_review_role`, `approval_date` and `approval_evidence` is **not** sufficient.
+
+1. **Bidirectional status invariant.** For any mapping:
+   `mapping_status == "APPROVED"` **if and only if** `approval_status == "APPROVED"`.
+   Approval in only one field is rejected. All non-approved combinations that exist today
+   (for example `UNVERIFIED` / `NOT_REQUESTED`, `CANDIDATE_SOURCE_IDENTIFIED` /
+   `NOT_REQUESTED`) remain valid, and unresolved research states are not required to be
+   approved.
+
+2. **Explicit approved-source binding.** An approved mapping must name exactly one source in
+   `approved_source_id`. That identifier must exist in the source registry and must also appear
+   in the mapping's `candidate_source_ids`. Referencing several candidates never approves the
+   collection: only the explicitly selected source may support the approval. For unapproved
+   mappings the field is absent or `null`.
+
+3. **Eligible source categories.** Only an actual template document may back an approval:
+
+   ```text
+   OFFICIAL_TEMPLATE            (source_level A or B)
+   REPRODUCED_OFFICIAL_SOURCE   (source_level A or B, and the reproduced material
+                                 must be the template itself, not an announcement)
+   ```
+
+   `OFFICIAL_NOTICE`, `OFFICIAL_EXPLANATION`, `OFFICIAL_GUIDANCE`,
+   `SECONDARY_REFERENCE` and `CURRENT_APPLICATION_OUTPUT` may **never** independently support an
+   approval. A verified official notice is still not a verified official template, and an
+   official page describing that templates exist cannot substitute for a verified template file.
+   A level-C source may never be the sole basis of an approved template.
+
+4. **Minimum source verification state.** The selected source must have reached
+   `APPROVED_FOR_ADAPTATION`. `DISCOVERED`, `ANNOUNCEMENT_VERIFIED`, `SOURCE_FILE_VERIFIED`,
+   `CONTENT_REVIEWED` and `MAPPING_REVIEWED` are all **insufficient**, as are `REJECTED` and
+   `UNAVAILABLE`. A verified PDF is not an approved template for a specific case type; a
+   content-reviewed template is not necessarily mapped to the right category; a reviewed
+   mapping is not automatically authorised for adaptation. Eligibility is never inferred from a
+   hash, a title or an official domain.
+
+5. **Review evidence per stage.** An approval-eligible source must carry a verified content
+   hash, a completed `legal_or_copyright_review_status` of `REVIEWED`, and distinct non-empty
+   evidence for each stage:
+
+   ```text
+   content_review_evidence
+   mapping_review_evidence
+   legal_content_review_evidence
+   approval_evidence
+   ```
+
+   One generic string may not stand in for several review stages. Source authentication does
+   not prove mapping applicability; mapping applicability does not prove legal correctness; and
+   legal approval does not imply redistribution rights.
+
+6. **Mapping approval evidence.** An approved mapping additionally requires a non-empty
+   reviewer role or identity, a valid calendar `approval_date`, and non-empty
+   `approval_evidence`. Missing, null, empty, whitespace-only or wrongly-typed values are
+   rejected — never silently accepted and never allowed to crash the validator.
+
+7. **Metadata validation is not legal approval.** The validator can only reject structurally
+   incomplete, contradictory or unverifiable approval records. It cannot prove that a human
+   reviewer performed legal analysis, and a passing validation run must never be reported as a
+   legal approval or certification.
+
+8. **Current state.** The repository registry contains **no approved mappings**: all fifteen
+   mappings are `approval_status = NOT_REQUESTED`, and the official notice PDF source remains
+   `spc-2025-notice-pdf` at `SOURCE_FILE_VERIFIED`. Nothing is promoted by this policy.
+
 ---
 
 ## 6. User-fact integrity (§7.5) — non-negotiable
