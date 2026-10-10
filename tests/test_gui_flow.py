@@ -5,6 +5,7 @@
 import os
 
 import pytest
+from PySide6.QtWidgets import QAbstractButton, QWizard
 
 from helpers import (
     CASE_TYPES,
@@ -23,6 +24,39 @@ EXPECTED_ROUTE_PAGE = {
     "labor": "PAGE_LABOR_CLAIM",
     "divorce": "PAGE_DIVORCE_CLAIM",
 }
+
+
+def _internal_wizard_buttons(wizard):
+    """Qt's QWizard creates one unnamed internal button as a direct child."""
+    return [c for c in wizard.children()
+            if isinstance(c, QAbstractButton) and not c.text() and not c.objectName()]
+
+
+def test_internal_wizard_header_button_is_hidden(qapp):
+    """Qt's QWizard creates an unnamed 32x32 internal button at the top-left of the
+    header area; on Windows it renders as a stray back arrow over the page title.
+    Navigation is provided by the standard Back/Next/Cancel bar, so the internal
+    button must stay hidden on every page while the real buttons keep working."""
+    wizard, _ = make_wizard()
+    internal = _internal_wizard_buttons(wizard)
+    assert len(internal) == 1
+    # only the internal header button is explicitly hidden by the fix
+    assert internal[0].isHidden() is True
+
+    wizard.restart()
+    wizard.next()  # welcome -> case selection
+    select_case(wizard, "loan")
+    wizard.next()  # -> party
+    wizard.next()  # -> loan claim
+    assert wizard.currentId() == wizard.PAGE_LOAN_CLAIM
+    assert internal[0].isHidden() is True
+
+    wizard.back()  # -> party
+    wizard.next()  # -> loan claim
+    wizard.next()  # -> evidence
+    wizard.next()  # -> export
+    assert wizard.currentId() == wizard.PAGE_EXPORT
+    assert internal[0].isHidden() is True
 
 
 def _redirect_desktop(monkeypatch, base):

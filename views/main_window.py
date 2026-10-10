@@ -2,7 +2,7 @@
 # Purpose: Main application window integrating the Wizard
 # Encoding: UTF-8
 
-from PySide6.QtWidgets import QWizard
+from PySide6.QtWidgets import QAbstractButton, QWizard
 from views.wizard_pages import WelcomePage, CaseSelectionPage, PartyPage, LoanClaimPage, ContractClaimPage, PropertyClaimPage, LaborClaimPage, DivorceClaimPage, EvidencePage, ExportPage
 
 class LawsuitWizard(QWizard):
@@ -11,6 +11,17 @@ class LawsuitWizard(QWizard):
         self.setWindowTitle("民事立案文书助手（离线版）")
         self.resize(700, 650)
         self.setWizardStyle(QWizard.ModernStyle)
+
+        # Qt's QWizard creates an internal, unnamed 32x32 QAbstractButton at the
+        # top-left of the header area. On Windows it renders as a stray "back"
+        # arrow overlapping the page title, and it has no function here because
+        # navigation is provided by the standard Back/Next/Cancel bar. Hide it
+        # (and keep it hidden across page changes) without touching the real
+        # navigation buttons, which are not direct children of the wizard.
+        for child in self.children():
+            if isinstance(child, QAbstractButton) and not child.text() and not child.objectName():
+                child.hide()
+        self.currentIdChanged.connect(self._hide_internal_wizard_buttons)
 
         # Define Page IDs
         self.PAGE_WELCOME = 0
@@ -57,9 +68,14 @@ class LawsuitWizard(QWizard):
         # Connect template fill button
         self.welcome_page.fill_btn.clicked.connect(self.fill_template_data)
 
+    def _hide_internal_wizard_buttons(self, *_):
+        """Keep Qt's internal header button hidden across page changes."""
+        for child in self.children():
+            if isinstance(child, QAbstractButton) and not child.text() and not child.objectName():
+                child.hide()
+
     def nextId(self):
         current = self.currentId()
-
         if current == self.PAGE_WELCOME:
             return self.PAGE_CASE_SELECTION
 
