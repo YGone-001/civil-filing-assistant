@@ -314,10 +314,17 @@ class ContractCaseModel(CaseTemplate):
         else:
             fact_str += "目前尚未完成交货。"
 
-        fact_str += (
-            f"原告已向被告催告，被告至今尚欠货款 {self.unpaid_amount} 元未付。"
-            f"为维护原告合法权益，特诉至贵院。"
-        )
+        # The complaint must not assert a payment demand (single or repeated)
+        # that the user never supplied: the sales-contract inputs establish the
+        # contract, delivery, signing status and the outstanding balance only.
+        # The unpaid amount is therefore stated on its own, without inventing a
+        # demand action.
+        amount = (self.unpaid_amount or "").strip()
+        if amount:
+            fact_str += f"被告至今尚欠货款 {amount} 元未付。"
+        else:
+            fact_str += "被告尚欠原告货款，具体金额以双方核对及相关证据为准。"
+        fact_str += "为维护原告合法权益，特诉至贵院。"
         return fact_str
 
 class PropertyCaseModel(CaseTemplate):
@@ -423,11 +430,18 @@ class PropertyCaseModel(CaseTemplate):
         plaintiff_name = self.party_manager.plaintiffs[0].name if self.party_manager.plaintiffs else ""
         defendant_name = self.party_manager.defendants[0].name if self.party_manager.defendants else ""
 
+        # The current inputs do not establish the existence, signature or
+        # content of a property-service contract, nor the defendant's ownership
+        # of the unit. These are therefore framed as the plaintiff's claim, and
+        # the contract details are explicitly flagged as requiring manual
+        # confirmation rather than being asserted as accomplished facts.
         fact_str = (
-            f"{plaintiff_name}系涉案小区的物业服务企业。原告与相关主体签署了《物业服务合同》，约定由原告为该小区提供物业管理服务。"
-            f"被告{defendant_name}系该小区{self.property_addr}的业主。该房屋登记建筑面积为{self.house_area}平方米。"
-            f"根据合同约定，被告应按{self.fee_rate}元/平方米/月的标准向原告缴纳物业管理费。"
-            f"自{self.period_start}起至{self.period_end}止，被告已连续{self.months}个月未缴纳物业管理费，共计欠费{total_str}元。"
+            f"{plaintiff_name}主张其为涉案小区提供物业服务，被告{defendant_name}"
+            f"系{self.property_addr}的业主或使用人，该房屋登记建筑面积为{self.house_area}平方米。"
+            f"原告主张，依据物业服务合同，被告应按{self.fee_rate}元/平方米/月的标准缴纳物业管理费"
+            f"（合同主体、签订时间、服务期限及具体约定以双方提供的书面合同为准，需人工核对）。"
+            f"自{self.period_start}起至{self.period_end}止，原告主张被告欠付物业管理费共计{total_str}元"
+            f"（欠费事实、欠费月份及金额以双方核对及缴费记录为准）。"
         )
 
         if self.is_partial_billing:

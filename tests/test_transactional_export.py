@@ -10,6 +10,8 @@ that no partial, corrupt, or abandoned output survives.
 """
 
 import os
+import zipfile
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -175,3 +177,73 @@ def test_retry_after_failure_produces_complete_set(tmp_path):
     target_dir, files = manager.run_batch_export(_make_model(), str(tmp_path))
     assert len(files) == 3
     assert len(list(tmp_path.rglob("*.docx"))) == 3
+
+
+# --- C3: true partial-byte-write failure injection -------------------------
+
+
+PARTIAL_WRITE_GENERATORS = [
+    "export_complaint",
+    "export_evidence_list",
+    "export_address_form",
+]
+
+
+def _assert_valid_docx(path):
+    path = Path(path)
+    assert path.exists(), f"missing document: {path}"
+    assert zipfile.is_zipfile(path), f"not a valid docx package: {path}"
+    with zipfile.ZipFile(path) as archive:
+        assert "word/document.xml" in archive.namelist(), f"missing document.xml: {path}"
+        assert archive.testzip() is None, f"corrupt docx package: {path}"
+
+
+def _published_dirs(base):
+    """Completed case directories (excluding private staging directories)."""
+    return sorted(
+        p for p in Path(base).iterdir()
+        if p.is_dir() and not p.name.startswith(".cfa_staging_")
+    )
+
+
+@pytest.mark.parametrize("failing_attr", PARTIAL_WRITE_GENERATORS)
+def test_partial_write_then_raise_is_rolled_back(tmp_path, failing_attr):
+    """A generator that writes partial bytes to its destination and then raises
+    must not leave a partial document, a published case directory or staging."""
+    gen = _generator()
+    manager = BatchExportManager(gen)
+
+    # A previously completed export must survive the later failed transaction.
+    first_dir, first_files = manager.run_batch_export(_make_model(), str(tmp_path))
+    assert len(first_files) == 3
+    assert len(_published_dirs(tmp_path)) == 1
+
+    def partial_then_fail(model, path):
+        with open(path, "wb") as stream:
+            stream.write(b"partial document bytes")  # bytes really hit the disk
+        raise OSError("simulated interrupted document write")
+
+    setattr(gen, failing_attr, partial_then_fail)
+
+    with pytest.raises(OSError):
+        manager.run_batch_export(_make_model(), str(tmp_path))
+
+    # 1. The original exception propagated (asserted by pytest.raises above).
+    # 2. No new case directory was published.
+    assert len(_published_dirs(tmp_path)) == 1
+    # 3. No final DOCX is visible beyond the earlier completed export.
+    docs_after = sorted(tmp_path.rglob("*.docx"))
+    assert len(docs_after) == 3, [str(d) for d in docs_after]
+    assert sorted(str(d) for d in docs_after) == sorted(str(Path(f)) for f in first_files)
+    # 4/5. The partially written file was removed together with the staging dir.
+    _no_staging_left(tmp_path)
+
+    # 8/9. A subsequent healthy export produces exactly three valid documents.
+    healthy = _generator()
+    retry_dir, retry_files = BatchExportManager(healthy).run_batch_export(_make_model(), str(tmp_path))
+    assert retry_dir != first_dir
+    assert len(retry_files) == 3
+    for f in retry_files:
+        _assert_valid_docx(f)
+    assert len(list(tmp_path.rglob("*.docx"))) == 6
+    assert len(_published_dirs(tmp_path)) == 2

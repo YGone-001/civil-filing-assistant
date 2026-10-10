@@ -36,7 +36,10 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -r requirements-dev.txt
 
       - name: Compile check
-        run: python -m compileall -q main.py models presenters utils views test_generator.py
+        run: python -m compileall -q main.py models presenters utils views test_generator.py tools tests
+
+      - name: Duplicate test check
+        run: python tools/check_duplicate_tests.py
 
       - name: Commit message policy
         shell: pwsh
@@ -87,7 +90,7 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -r requirements-dev.txt
 
       - name: Compile check
-        run: python -m compileall -q main.py models presenters utils views test_generator.py
+        run: python -m compileall -q main.py models presenters utils views test_generator.py tools tests
 
       - name: Pytest suite
         run: python -m pytest -q

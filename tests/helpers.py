@@ -159,6 +159,59 @@ def prepare_case(wizard, case_type, plaintiffs=None, defendants=None, with_evide
     return wizard
 
 
+def fill_minimal_case(wizard, case_type, plaintiffs=None, defendants=None):
+    """Select a case and fill only the required fields with fictional data.
+
+    Optional factual fields are deliberately left empty so a test can prove that
+    their absence does not produce an invented factual assertion.
+    """
+    select_case(wizard, case_type)
+    set_parties(wizard, plaintiffs=plaintiffs, defendants=defendants)
+
+    if case_type == "loan":
+        p = wizard.loan_claim_page
+        p.loan_date.setText("2023年1月1日")
+        p.loan_reason.setText("资金周转")
+        p.principal.setText("10000")
+        p.payment_method.setText("银行转账")
+        p.demand_date.setText("2023年10月")
+        p.demand_method.setText("微信")
+        p.court_name.setText("示例人民法院")
+    elif case_type == "contract":
+        p = wizard.contract_claim_page
+        p.contract_date.setText("2023年1月1日")
+        p.contract_name.setText("示例合同")
+        p.product_name.setText("示例货物")
+        p.total_amount.setText("10000")
+        p.delivery_date.setText("2023年2月1日")
+        p.unpaid_amount.setText("8000")
+        p.court_name.setText("示例人民法院")
+    elif case_type == "property":
+        p = wizard.property_claim_page
+        p.property_addr.setText("示例小区1栋101室")
+        p.house_area.setText("100")
+        p.fee_rate.setText("2.0")
+        p.period_start.setText("2024-01-01")
+        p.period_end.setText("2024-12-31")
+        p.court_name.setText("示例人民法院")
+    elif case_type == "labor":
+        p = wizard.labor_claim_page
+        p.emp_join_date.setText("2023-01-15")
+        p.job_title.setText("示例岗位")
+        p.monthly_salary.setText("6000")
+        p.unpaid_months.setText("2023年12月")
+        p.emp_term_date.setText("2024-03-20")
+        p.court_name.setText("示例人民法院")
+    elif case_type == "divorce":
+        p = wizard.divorce_claim_page
+        p.marriage_date.setText("2018-05-20")
+        p.child_name.setText("示例子女")
+        p.child_birthday.setText("2020-01-01")
+        p.support_monthly.setText("2000")
+        p.court_name.setText("示例人民法院")
+    return wizard
+
+
 def navigate_to_export(wizard):
     """Navigate a prepared wizard to the export page and return its Finish button.
 
