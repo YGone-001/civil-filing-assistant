@@ -507,7 +507,10 @@ class DivorceCaseModel(CaseTemplate):
         if self.child_name.strip() and self.custody_preference.strip():
             claims.append(f"判令婚生子女{self.child_name}由{self._custody_phrase()}抚养；")
 
-        if self.support_monthly.strip():
+        # A child-support claim requires an identified child: an amount entered
+        # without a child identity is not a supportable claim and must not be
+        # turned into one.
+        if self.support_monthly.strip() and self.child_name.strip():
             claims.append(f"判令被告按月支付抚养费人民币{self.support_monthly}元，至子女年满18周岁止；")
 
         if self.asset_description.strip():
@@ -539,8 +542,10 @@ class DivorceCaseModel(CaseTemplate):
             fact_str += f"关于子女抚养：原告认为由{self._custody_phrase()}抚养更有利于子女健康成长。"
             if self.support_monthly.strip():
                 fact_str += f"被告应按月支付抚养费{self.support_monthly}元。"
-        elif self.support_monthly.strip():
+        elif self.child_name.strip() and self.support_monthly.strip():
             fact_str += f"关于子女抚养：被告应按月支付抚养费{self.support_monthly}元。"
+        # A support amount without an identified child produces no child-support
+        # assertion (the wizard blocks that incomplete combination).
 
         # Property-division facts depend on the property input, not on support.
         if self.asset_description.strip():

@@ -223,9 +223,20 @@ def test_divorce_without_children_has_no_custody_or_support():
 def test_divorce_support_makes_support_claim():
     model = DivorceCaseModel()
     model.marriage_date = "2018-05-20"
+    model.child_name = "测试子女"  # a support claim requires an identified child
     model.support_monthly = "3000"
     claims = model.render_claims()
     assert any("抚养费" in c for c in claims)
+
+
+def test_divorce_support_without_child_makes_no_claim():
+    """A support amount without an identified child must not become a claim."""
+    model = DivorceCaseModel()
+    model.marriage_date = "2018-05-20"
+    model.support_monthly = "3000"  # no child_name
+    claims = model.render_claims()
+    assert not any("抚养费" in c for c in claims)
+    assert "抚养" not in model.render_facts()
 
 
 def test_divorce_property_facts_depend_on_asset_not_support():

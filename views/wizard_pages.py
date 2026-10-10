@@ -442,6 +442,11 @@ class ContractClaimPage(QWizardPage):
         self.court_name = QLineEdit()
         self.court_name.setPlaceholderText("如: 广州市天河区人民法院")
 
+        # On-page explanation for the conditional (scenario-dependent) requirement.
+        self.cond_hint = QLabel("")
+        self.cond_hint.setStyleSheet("color: #B00020;")
+        self.cond_hint.setWordWrap(True)
+
         layout.addRow("合同签订日期:", self.contract_date)
         layout.addRow("合同名称:", self.contract_name)
         layout.addRow("产品名称及数量:", self.product_name)
@@ -449,6 +454,7 @@ class ContractClaimPage(QWizardPage):
         layout.addRow("交货日期:", self.delivery_date)
         layout.addRow("交货状态:", del_layout)
         layout.addRow("签收状态:", sign_layout)
+        layout.addRow("", self.cond_hint)
         layout.addRow("尚欠货款本金(元):", self.unpaid_amount)
         layout.addRow("违约金/逾期利息(元):", self.penalty_amount)
         layout.addRow("", self.penalty_warning)
@@ -465,7 +471,10 @@ class ContractClaimPage(QWizardPage):
         self.registerField("c_contract_name*", self.contract_name)
         self.registerField("c_product_name*", self.product_name)
         self.registerField("c_total_amount*", self.total_amount)
-        self.registerField("c_delivery_date*", self.delivery_date)
+        # The delivery date is required only when the user explicitly confirms
+        # that the goods were delivered (enforced by isComplete() below), so it
+        # is registered without the mandatory "*" marker.
+        self.registerField("c_delivery_date", self.delivery_date)
         self.registerField("c_unpaid_amount*", self.unpaid_amount)
         self.registerField("c_penalty_amount", self.penalty_amount)
         self.registerField("c_court_name*", self.court_name)
@@ -473,6 +482,26 @@ class ContractClaimPage(QWizardPage):
         self.registerField("c_overdue_end", self.overdue_end)
         self.registerField("c_lpr_value", self.lpr_value)
         self.registerField("c_lpr_multiple", self.lpr_multiple)
+
+        # Keep the Next-button state in sync with the conditional requirement.
+        self.delivery_date.textChanged.connect(lambda *_: self._refresh_conditional())
+        self.is_delivered_group.buttonToggled.connect(lambda *_: self._refresh_conditional())
+
+    def _conditional_issue(self):
+        """Return a message when a scenario-specific requirement is unmet."""
+        if self.get_flags()["is_delivered"] is True and not self.delivery_date.text().strip():
+            return "已选择“已交货”，请填写交货日期，或改选“未确认”/“未交货”。"
+        return ""
+
+    def _refresh_conditional(self):
+        self.cond_hint.setText(self._conditional_issue())
+        self.completeChanged.emit()
+
+    def isComplete(self):
+        # Preserve the base mandatory-field behaviour for every other field.
+        if not super().isComplete():
+            return False
+        return not self._conditional_issue()
 
     @staticmethod
     def _tri_state(group, yes_id=1, no_id=0):
@@ -617,6 +646,11 @@ class LoanClaimPage(QWizardPage):
         self.rate_warning.setStyleSheet("color: red;")
         self.rate.textChanged.connect(self.validate_rate)
 
+        # On-page explanation for the conditional demand-information requirement.
+        self.cond_hint = QLabel("")
+        self.cond_hint.setStyleSheet("color: #B00020;")
+        self.cond_hint.setWordWrap(True)
+
         layout.addRow("借款发生日期:", self.loan_date)
         layout.addRow("借款理由:", self.loan_reason)
         layout.addRow("借款本金(元):", self.principal)
@@ -627,6 +661,7 @@ class LoanClaimPage(QWizardPage):
         layout.addRow("利息起算日:", self.start_date)
         layout.addRow("催款时间:", self.demand_date)
         layout.addRow("催款方式:", self.demand_method)
+        layout.addRow("", self.cond_hint)
         layout.addRow("建议管辖法院:", self.court_name)
 
         self.setLayout(layout)
@@ -638,9 +673,33 @@ class LoanClaimPage(QWizardPage):
         self.registerField("payment_method*", self.payment_method)
         self.registerField("rate", self.rate)
         self.registerField("start_date", self.start_date)
-        self.registerField("demand_date*", self.demand_date)
-        self.registerField("demand_method*", self.demand_method)
+        # Demand information is optional (a plaintiff may never have demanded
+        # repayment), so these are registered without the mandatory "*" marker.
+        # A partial record is handled by isComplete() below.
+        self.registerField("demand_date", self.demand_date)
+        self.registerField("demand_method", self.demand_method)
         self.registerField("court_name*", self.court_name)
+
+        # Keep the Next-button state in sync with the conditional requirement.
+        self.demand_date.textChanged.connect(lambda *_: self._refresh_conditional())
+        self.demand_method.textChanged.connect(lambda *_: self._refresh_conditional())
+
+    def _conditional_issue(self):
+        """Demand information must be either fully supplied or fully omitted."""
+        date = self.demand_date.text().strip()
+        method = self.demand_method.text().strip()
+        if bool(date) != bool(method):
+            return "催款时间与催款方式需同时填写，或同时留空（未催款的可以不填）。"
+        return ""
+
+    def _refresh_conditional(self):
+        self.cond_hint.setText(self._conditional_issue())
+        self.completeChanged.emit()
+
+    def isComplete(self):
+        if not super().isComplete():
+            return False
+        return not self._conditional_issue()
 
     def validate_rate(self):
         text = self.rate.text().strip()
@@ -985,11 +1044,17 @@ class DivorceClaimPage(QWizardPage):
         self.court_name = QLineEdit()
         self.court_name.setPlaceholderText("如: 北京市朝阳区人民法院")
 
+        # On-page explanation for the conditional child-information requirement.
+        self.cond_hint = QLabel("")
+        self.cond_hint.setStyleSheet("color: #B00020;")
+        self.cond_hint.setWordWrap(True)
+
         layout.addRow("登记结婚日期:", self.marriage_date)
         layout.addRow("子女姓名:", self.child_name)
         layout.addRow("子女出生日期:", self.child_birthday)
         layout.addRow("抚养权诉求:", self.custody_preference)
         layout.addRow("月抚养费金额(元):", self.support_monthly)
+        layout.addRow("", self.cond_hint)
         layout.addRow("离婚原因:", self.divorce_reason)
         layout.addRow("分居起始日期:", self.separation_start_date)
         layout.addRow("财产分割方案:", self.asset_description)
@@ -998,14 +1063,48 @@ class DivorceClaimPage(QWizardPage):
         self.setLayout(layout)
 
         self.registerField("d_marriage_date*", self.marriage_date)
-        self.registerField("d_child_name*", self.child_name)
-        self.registerField("d_child_birthday*", self.child_birthday)
+        # Child information is optional: a childless divorce must be reachable.
+        # Child-related fields are only consistent together, which is enforced
+        # by isComplete() below, so they are registered without "*".
+        self.registerField("d_child_name", self.child_name)
+        self.registerField("d_child_birthday", self.child_birthday)
         self.registerField("d_custody_preference", self.custody_preference)
-        self.registerField("d_support_monthly*", self.support_monthly)
+        self.registerField("d_support_monthly", self.support_monthly)
         self.registerField("d_divorce_reason", self.divorce_reason)
         self.registerField("d_separation_start_date", self.separation_start_date)
         self.registerField("d_asset_description", self.asset_description)
         self.registerField("d_court_name*", self.court_name)
+
+        # Keep the Next-button state in sync with the conditional requirement.
+        for widget in (self.child_name, self.child_birthday, self.custody_preference,
+                       self.support_monthly):
+            widget.textChanged.connect(lambda *_: self._refresh_conditional())
+
+    def _conditional_issue(self):
+        """Child-related details require an identified child."""
+        if self.child_name.text().strip():
+            return ""
+        orphans = []
+        if self.child_birthday.text().strip():
+            orphans.append("子女出生日期")
+        if self.custody_preference.text().strip():
+            orphans.append("抚养权诉求")
+        if self.support_monthly.text().strip():
+            orphans.append("月抚养费金额")
+        if orphans:
+            return ("已填写" + "、".join(orphans)
+                    + "，请同时填写“子女姓名”，或清空上述子女相关字段"
+                      "（无子女的离婚可以不填）。")
+        return ""
+
+    def _refresh_conditional(self):
+        self.cond_hint.setText(self._conditional_issue())
+        self.completeChanged.emit()
+
+    def isComplete(self):
+        if not super().isComplete():
+            return False
+        return not self._conditional_issue()
 
 class ExportPage(QWizardPage):
     def __init__(self):
