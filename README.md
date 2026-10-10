@@ -144,7 +144,13 @@ python -m compileall -q main.py models presenters utils views test_generator.py
 python test_generator.py
 ```
 
-冒烟测试会在项目根目录生成 `测试_起诉状.docx`。该文件包含模拟案件信息，仅供本地检查，已被 `.gitignore` 排除。当前项目尚未建立自动化单元测试或 CI 工作流。
+运行自动化测试套件：
+
+```powershell
+python -m pytest -q
+```
+
+冒烟测试会在项目根目录生成 `测试_起诉状.docx`。该文件包含模拟案件信息，仅供本地检查，已被 `.gitignore` 排除。项目已建立自动化测试与 CI：`tests/` 目录下为 pytest 测试套件，GitHub Actions 工作流 `.github/workflows/ci.yml` 在 Windows（主任务）与 Linux（补充任务）上执行编译检查、提交信息校验、重复测试检查、完整 pytest 套件与文档冒烟测试；法律模板治理元数据由 `tools/check_template_governance.py` 校验。
 
 ## 输出与隐私
 

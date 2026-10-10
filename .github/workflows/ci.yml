@@ -41,6 +41,9 @@ jobs:
       - name: Duplicate test check
         run: python tools/check_duplicate_tests.py
 
+      - name: Template governance check
+        run: python tools/check_template_governance.py
+
       - name: Commit message policy
         shell: pwsh
         run: |
