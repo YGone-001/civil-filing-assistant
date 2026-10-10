@@ -1,0 +1,4412 @@
+{
+  "crosswalk_version": "1.0.0",
+  "analyzed_revision": "639179933c51f111ea43060157e897fa0a1e4d30",
+  "crosswalks": [
+    {
+      "crosswalk_id": "cw-0001-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.plaintiff.name",
+      "application_field_ids": [
+        "shared.party.plaintiff.name"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为原告姓名。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0002-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.plaintiff.identity_details",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方要求性别/出生日期/民族/工作单位/职务。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0003-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.plaintiff.phone",
+      "application_field_ids": [
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为联系电话。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0004-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.plaintiff.domicile",
+      "application_field_ids": [
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "官方为住所地，应用为住址。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0005-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.plaintiff.residence",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方为经常居住地。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-RESIDENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0006-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.plaintiff.id_document",
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方区分证件类型与号码，应用仅有号码。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-ID-TYPE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0007-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.plaintiff.agent",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含委托诉讼代理人栏。",
+      "condition_comparison": "仅在有代理人时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方代理人栏。",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "gap_ids": [
+        "GAP-REPRESENTATIVE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0008-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.defendant.natural",
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.id_number",
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "被告自然人与原告使用同一套字段。",
+      "condition_comparison": "被告为自然人时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0009-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.defendant.organization",
+      "application_field_ids": [
+        "shared.party.company_fields",
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用支持企业名称/信用代码/法定代表人/住所地。",
+      "condition_comparison": "被告为单位时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏（法人版式）。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "gap_ids": [
+        "GAP-ORG-REGISTRATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0010-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.party.third_party",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含第三人栏。",
+      "condition_comparison": "有第三人时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方第三人栏。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/第三人",
+      "gap_ids": [
+        "GAP-THIRD-PARTY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0011-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.procedure.jurisdiction_agreement",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含管辖约定栏。",
+      "condition_comparison": "有约定时填写。",
+      "data_provenance_comparison": "应用仅有建议管辖法院。",
+      "output_placement": "官方约定管辖栏。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-JURISDICTION-CLAUSE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0012-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.procedure.preservation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含诉前保全栏。",
+      "condition_comparison": "已保全时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉前保全栏。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-PRESERVATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0013-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.procedure.court_fee",
+      "application_field_ids": [],
+      "coverage_status": "CONDITIONAL_MISMATCH",
+      "semantic_comparison": "应用无条件主张诉讼费。",
+      "condition_comparison": "官方为可选主张。",
+      "data_provenance_comparison": "应用无对应字段。",
+      "output_placement": "起诉状诉讼请求末项。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-COURT-FEE-CONDITIONAL"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0014-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.procedure.other_claims",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含其他请求。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-OTHER-CLAIMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0015-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.procedure.total_amount",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含标的总额。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-TOTAL-AMOUNT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0016-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.evidence.list",
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方为起诉状内嵌章节，应用为独立文档。",
+      "condition_comparison": "官方为可另附页章节。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "官方起诉状末段；应用为独立文书。",
+      "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "gap_ids": [
+        "GAP-EVIDENCE-STANDALONE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0017-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.closing.legal_basis",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含请求依据。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方事实与理由末项。",
+      "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "gap_ids": [
+        "GAP-LEGAL-BASIS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0018-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.mediation.preference",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含调解意愿栏。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方文末。",
+      "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "gap_ids": [
+        "GAP-MEDIATION-PREFERENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0019-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.closing.signature",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为具状人签署栏。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手签。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0020-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.closing.date",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为落款日期。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手填。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p139 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0021-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.instruction.filling_notes",
+      "application_field_ids": [],
+      "coverage_status": "NOT_APPLICABLE",
+      "semantic_comparison": "填写说明非案件字段。",
+      "condition_comparison": "不适用。",
+      "data_provenance_comparison": "不适用。",
+      "output_placement": "官方表格说明区。",
+      "source_evidence": "spc-2025-notice-pdf p134 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0022-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.claim.principal",
+      "application_field_ids": [
+        "loan.principal"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "均为本金主张；官方要求截至日期。",
+      "condition_comparison": "官方要求基准日。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LOAN-ASOF-DATE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0023-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.claim.interest",
+      "application_field_ids": [
+        "loan.interest_rate",
+        "loan.interest_start_date"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用测算利息并提示人工核对；官方要求尚欠利息与计算方式。",
+      "condition_comparison": "主张利息时适用。",
+      "data_provenance_comparison": "应用为计算值。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LOAN-ASOF-DATE",
+        "GAP-LOAN-INTEREST-BASIS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0024-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.claim.acceleration",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含加速到期/解除合同。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0025-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.claim.security",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含担保权利主张。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LOAN-SECURITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0026-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.claim.enforcement_cost",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含实现债权费用。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p136 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-ENFORCEMENT-COST"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0027-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.contract_formation",
+      "application_field_ids": [
+        "labor.is_no_contract"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用以三态表示是否未签书面劳动合同。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0028-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.contracting_parties",
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.name"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方区分业主/建设单位与物业服务人。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-ROLE-LABELLING"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0029-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.principal_amount",
+      "application_field_ids": [
+        "loan.principal",
+        "loan.payment_method"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用有本金与交付方式；官方区分约定与实际提供。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0030-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.term",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含借款期限与是否到期。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-TERM"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0031-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.interest_rate",
+      "application_field_ids": [
+        "loan.interest_rate"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用仅有年利率；官方要求计息周期与条款号。",
+      "condition_comparison": "约定利息时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-INTEREST-BASIS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0032-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.disbursement_time",
+      "application_field_ids": [
+        "loan.loan_date"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用借款日期近似对应借款提供时间。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0033-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.repayment_method",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含还款方式。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-REPAYMENT-METHOD"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0034-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.repayment_status",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含已还本金/利息/还息至。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-REPAYMENT-STATUS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0035-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.overdue",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含是否逾期。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-OVERDUE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0036-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.security_contract",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含物的担保合同。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-SECURITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0037-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.guarantor",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含担保人与担保物。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-SECURITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0038-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.max_security",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含最高额担保。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p137 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-SECURITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0039-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.registration",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含抵押质押登记。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p138 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-SECURITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0040-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": "loan.fact.guarantee_contract",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含保证合同。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p138 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-SECURITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0041-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.plaintiff.name",
+      "application_field_ids": [
+        "shared.party.plaintiff.name"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为原告姓名。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0042-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.plaintiff.identity_details",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方要求性别/出生日期/民族/工作单位/职务。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0043-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.plaintiff.phone",
+      "application_field_ids": [
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为联系电话。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0044-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.plaintiff.domicile",
+      "application_field_ids": [
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "官方为住所地，应用为住址。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0045-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.plaintiff.residence",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方为经常居住地。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-RESIDENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0046-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.plaintiff.id_document",
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方区分证件类型与号码，应用仅有号码。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-ID-TYPE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0047-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.plaintiff.agent",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含委托诉讼代理人栏。",
+      "condition_comparison": "仅在有代理人时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方代理人栏。",
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "gap_ids": [
+        "GAP-REPRESENTATIVE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0048-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.defendant.natural",
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.id_number",
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "被告自然人与原告使用同一套字段。",
+      "condition_comparison": "被告为自然人时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0049-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.defendant.organization",
+      "application_field_ids": [
+        "shared.party.company_fields",
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用支持企业名称/信用代码/法定代表人/住所地。",
+      "condition_comparison": "被告为单位时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏（法人版式）。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "gap_ids": [
+        "GAP-ORG-REGISTRATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0050-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.party.third_party",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含第三人栏。",
+      "condition_comparison": "有第三人时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方第三人栏。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/第三人",
+      "gap_ids": [
+        "GAP-THIRD-PARTY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0051-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.procedure.jurisdiction_agreement",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含管辖约定栏。",
+      "condition_comparison": "有约定时填写。",
+      "data_provenance_comparison": "应用仅有建议管辖法院。",
+      "output_placement": "官方约定管辖栏。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-JURISDICTION-CLAUSE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0052-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.procedure.preservation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含诉前保全栏。",
+      "condition_comparison": "已保全时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉前保全栏。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-PRESERVATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0053-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.procedure.court_fee",
+      "application_field_ids": [],
+      "coverage_status": "CONDITIONAL_MISMATCH",
+      "semantic_comparison": "应用无条件主张诉讼费。",
+      "condition_comparison": "官方为可选主张。",
+      "data_provenance_comparison": "应用无对应字段。",
+      "output_placement": "起诉状诉讼请求末项。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-COURT-FEE-CONDITIONAL"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0054-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.procedure.other_claims",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含其他请求。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-OTHER-CLAIMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0055-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.procedure.total_amount",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含标的总额。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-TOTAL-AMOUNT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0056-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.evidence.list",
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方为起诉状内嵌章节，应用为独立文档。",
+      "condition_comparison": "官方为可另附页章节。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "官方起诉状末段；应用为独立文书。",
+      "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "gap_ids": [
+        "GAP-EVIDENCE-STANDALONE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0057-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.closing.legal_basis",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含请求依据。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方事实与理由末项。",
+      "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "gap_ids": [
+        "GAP-LEGAL-BASIS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0058-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.mediation.preference",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含调解意愿栏。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方文末。",
+      "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "gap_ids": [
+        "GAP-MEDIATION-PREFERENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0059-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.closing.signature",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为具状人签署栏。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手签。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0060-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.closing.date",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为落款日期。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手填。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p76 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0061-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.instruction.filling_notes",
+      "application_field_ids": [],
+      "coverage_status": "NOT_APPLICABLE",
+      "semantic_comparison": "填写说明非案件字段。",
+      "condition_comparison": "不适用。",
+      "data_provenance_comparison": "不适用。",
+      "output_placement": "官方表格说明区。",
+      "source_evidence": "spc-2025-notice-pdf p71 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0062-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.claim.price",
+      "application_field_ids": [
+        "contract.unpaid_amount"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为给付价款/货款主张。",
+      "condition_comparison": "原告为卖方时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0063-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.claim.delay_interest",
+      "application_field_ids": [
+        "contract.penalty_amount",
+        "contract.penalty_calc_standard",
+        "contract.penalty_start_date"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用主张违约金/逾期利息；官方区分利息与违约金。",
+      "condition_comparison": "填写后适用。",
+      "data_provenance_comparison": "应用部分为计算值。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LOAN-ASOF-DATE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0064-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.claim.seller_breach",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含卖方违约损失赔偿。",
+      "condition_comparison": "原告为买方时适用。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-CONTRACT-BUYER-CLAIMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0065-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.claim.defect_liability",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含瑕疵责任请求。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-CONTRACT-BUYER-CLAIMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0066-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.claim.performance_or_termination",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含继续履行或解除合同。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-CONTRACT-BUYER-CLAIMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0067-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.claim.security",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含担保权利主张。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LOAN-SECURITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0068-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.claim.enforcement_cost",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含实现债权费用。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p73 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-ENFORCEMENT-COST"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0069-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.contract_formation",
+      "application_field_ids": [
+        "labor.is_no_contract"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用以三态表示是否未签书面劳动合同。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0070-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.contracting_parties",
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.name"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方区分业主/建设单位与物业服务人。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-ROLE-LABELLING"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0071-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.subject_matter",
+      "application_field_ids": [
+        "contract.product_name"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用为单一产品文本；官方要求名称/规格/质量/数量。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-CONTRACT-SUBJECT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0072-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.price_payment_terms",
+      "application_field_ids": [
+        "contract.total_amount"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用仅有总金额；官方要求单价与支付方式。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-CONTRACT-PAYMENT-TERMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0073-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.delivery_terms",
+      "application_field_ids": [
+        "contract.delivery_date",
+        "contract.is_delivered"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用有交货日期与三态状态；官方要求地点/方式/风险/验收。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-CONTRACT-DELIVERY-TERMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0074-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.quality_terms",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含质量标准与检验方式。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-CONTRACT-QUALITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0075-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.penalty_terms",
+      "application_field_ids": [
+        "contract.penalty_amount",
+        "contract.penalty_calc_standard"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用有违约金金额与计算标准；官方另要定金与日万分比。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用部分为计算值。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p74 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0076-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.payment_delivery_status",
+      "application_field_ids": [
+        "contract.unpaid_amount",
+        "contract.is_delivered",
+        "contract.is_signed"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用有欠款与三态交货/签收；官方按按期/逾期分列金额与件数。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-CONTRACT-DELIVERY-TERMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0077-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.delay",
+      "application_field_ids": [
+        "contract.penalty_start_date"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用以逾期起算日近似表示迟延。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0078-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.demand",
+      "application_field_ids": [
+        "property.demand_record"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为催缴情况。",
+      "condition_comparison": "填写后输出。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0079-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.quality_dispute",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含质量争议。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-CONTRACT-QUALITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0080-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.nonconformity",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含不符合约定情况。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-CONTRACT-QUALITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0081-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": "contract.fact.negotiation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含质量协商情况。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p75 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-CONTRACT-QUALITY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0082-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.plaintiff.name",
+      "application_field_ids": [
+        "shared.party.plaintiff.name"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为原告姓名。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0083-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.plaintiff.identity_details",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方要求性别/出生日期/民族/工作单位/职务。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0084-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.plaintiff.phone",
+      "application_field_ids": [
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为联系电话。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0085-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.plaintiff.domicile",
+      "application_field_ids": [
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "官方为住所地，应用为住址。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0086-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.plaintiff.residence",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方为经常居住地。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-RESIDENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0087-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.plaintiff.id_document",
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方区分证件类型与号码，应用仅有号码。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-ID-TYPE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0088-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.plaintiff.agent",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含委托诉讼代理人栏。",
+      "condition_comparison": "仅在有代理人时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方代理人栏。",
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "gap_ids": [
+        "GAP-REPRESENTATIVE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0089-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.defendant.natural",
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.id_number",
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "被告自然人与原告使用同一套字段。",
+      "condition_comparison": "被告为自然人时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0090-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.defendant.organization",
+      "application_field_ids": [
+        "shared.party.company_fields",
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用支持企业名称/信用代码/法定代表人/住所地。",
+      "condition_comparison": "被告为单位时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏（法人版式）。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "gap_ids": [
+        "GAP-ORG-REGISTRATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0091-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.party.third_party",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含第三人栏。",
+      "condition_comparison": "有第三人时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方第三人栏。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/第三人",
+      "gap_ids": [
+        "GAP-THIRD-PARTY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0092-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.procedure.jurisdiction_agreement",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含管辖约定栏。",
+      "condition_comparison": "有约定时填写。",
+      "data_provenance_comparison": "应用仅有建议管辖法院。",
+      "output_placement": "官方约定管辖栏。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-JURISDICTION-CLAUSE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0093-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.procedure.preservation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含诉前保全栏。",
+      "condition_comparison": "已保全时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉前保全栏。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-PRESERVATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0094-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.procedure.court_fee",
+      "application_field_ids": [],
+      "coverage_status": "CONDITIONAL_MISMATCH",
+      "semantic_comparison": "应用无条件主张诉讼费。",
+      "condition_comparison": "官方为可选主张。",
+      "data_provenance_comparison": "应用无对应字段。",
+      "output_placement": "起诉状诉讼请求末项。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-COURT-FEE-CONDITIONAL"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0095-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.procedure.other_claims",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含其他请求。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-OTHER-CLAIMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0096-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.procedure.total_amount",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含标的总额。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-TOTAL-AMOUNT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0097-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.evidence.list",
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方为起诉状内嵌章节，应用为独立文档。",
+      "condition_comparison": "官方为可另附页章节。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "官方起诉状末段；应用为独立文书。",
+      "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "gap_ids": [
+        "GAP-EVIDENCE-STANDALONE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0098-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.closing.legal_basis",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含请求依据。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方事实与理由末项。",
+      "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "gap_ids": [
+        "GAP-LEGAL-BASIS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0099-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.mediation.preference",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含调解意愿栏。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方文末。",
+      "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "gap_ids": [
+        "GAP-MEDIATION-PREFERENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0100-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.closing.signature",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为具状人签署栏。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手签。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0101-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.closing.date",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为落款日期。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手填。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p236 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0102-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.instruction.filling_notes",
+      "application_field_ids": [],
+      "coverage_status": "NOT_APPLICABLE",
+      "semantic_comparison": "填写说明非案件字段。",
+      "condition_comparison": "不适用。",
+      "data_provenance_comparison": "不适用。",
+      "output_placement": "官方表格说明区。",
+      "source_evidence": "spc-2025-notice-pdf p233 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0103-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.claim.fee",
+      "application_field_ids": [
+        "property.total_input",
+        "property.house_area",
+        "property.fee_rate"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为物业费主张。",
+      "condition_comparison": "官方要求截至日期。",
+      "data_provenance_comparison": "应用为计算值或用户自填。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LOAN-ASOF-DATE"
+      ],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0104-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.claim.penalty",
+      "application_field_ids": [
+        "property.late_fee_logic"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用以自由文本表示违约金计算方式。",
+      "condition_comparison": "填写后适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p234 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-PROPERTY-PENALTY-AMOUNT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0105-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.contract_formation",
+      "application_field_ids": [
+        "labor.is_no_contract"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用以三态表示是否未签书面劳动合同。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0106-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.contracting_parties",
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.name"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方区分业主/建设单位与物业服务人。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-ROLE-LABELLING"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0107-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.project",
+      "application_field_ids": [
+        "property.property_addr",
+        "property.house_area"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用有地址与面积；官方另有所有权人。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-PROPERTY-OWNER"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0108-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.fee_standard",
+      "application_field_ids": [
+        "property.fee_rate"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为物业费标准。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0109-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.service_term",
+      "application_field_ids": [
+        "property.period_start",
+        "property.period_end"
+      ],
+      "coverage_status": "SEMANTIC_MISMATCH",
+      "semantic_comparison": "应用起止日期为欠费期间；官方为约定的服务期限。",
+      "condition_comparison": "语义不同。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-PROPERTY-TERM-SEMANTICS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0110-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.payment_method",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含约定支付方式。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-PROPERTY-PAYMENT-METHOD"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0111-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.penalty_standard",
+      "application_field_ids": [
+        "property.late_fee_logic"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用以自由文本表示违约金标准。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-PROPERTY-PENALTY-AMOUNT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0112-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.arrears_amount",
+      "application_field_ids": [
+        "property.total_input",
+        "property.house_area",
+        "property.fee_rate"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用给出欠费金额；官方要求数额与计算方式。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "应用为计算值或用户自填。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LOAN-ASOF-DATE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0113-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.penalty_amount",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方要求应付违约金数额。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-PROPERTY-PENALTY-AMOUNT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0114-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.demand",
+      "application_field_ids": [
+        "property.demand_record"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为催缴情况。",
+      "condition_comparison": "填写后输出。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0115-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": "property.fact.other",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含其他。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p235 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0116-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.plaintiff.name",
+      "application_field_ids": [
+        "shared.party.plaintiff.name"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为原告姓名。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0117-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.plaintiff.identity_details",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方要求性别/出生日期/民族/工作单位/职务。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0118-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.plaintiff.phone",
+      "application_field_ids": [
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为联系电话。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0119-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.plaintiff.domicile",
+      "application_field_ids": [
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "官方为住所地，应用为住址。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0120-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.plaintiff.residence",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方为经常居住地。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-RESIDENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0121-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.plaintiff.id_document",
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方区分证件类型与号码，应用仅有号码。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-ID-TYPE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0122-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.plaintiff.agent",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含委托诉讼代理人栏。",
+      "condition_comparison": "仅在有代理人时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方代理人栏。",
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "gap_ids": [
+        "GAP-REPRESENTATIVE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0123-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.defendant.natural",
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.id_number",
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "被告自然人与原告使用同一套字段。",
+      "condition_comparison": "被告为自然人时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0124-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.defendant.organization",
+      "application_field_ids": [
+        "shared.party.company_fields",
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用支持企业名称/信用代码/法定代表人/住所地。",
+      "condition_comparison": "被告为单位时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏（法人版式）。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "gap_ids": [
+        "GAP-ORG-REGISTRATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0125-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.party.third_party",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含第三人栏。",
+      "condition_comparison": "有第三人时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方第三人栏。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/第三人",
+      "gap_ids": [
+        "GAP-THIRD-PARTY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0126-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.procedure.jurisdiction_agreement",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含管辖约定栏。",
+      "condition_comparison": "有约定时填写。",
+      "data_provenance_comparison": "应用仅有建议管辖法院。",
+      "output_placement": "官方约定管辖栏。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-JURISDICTION-CLAUSE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0127-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.procedure.preservation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含诉前保全栏。",
+      "condition_comparison": "已保全时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉前保全栏。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-PRESERVATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0128-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.procedure.court_fee",
+      "application_field_ids": [],
+      "coverage_status": "CONDITIONAL_MISMATCH",
+      "semantic_comparison": "应用无条件主张诉讼费。",
+      "condition_comparison": "官方为可选主张。",
+      "data_provenance_comparison": "应用无对应字段。",
+      "output_placement": "起诉状诉讼请求末项。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-COURT-FEE-CONDITIONAL"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0129-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.procedure.other_claims",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含其他请求。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-OTHER-CLAIMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0130-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.procedure.total_amount",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含标的总额。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-TOTAL-AMOUNT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0131-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.evidence.list",
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方为起诉状内嵌章节，应用为独立文档。",
+      "condition_comparison": "官方为可另附页章节。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "官方起诉状末段；应用为独立文书。",
+      "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "gap_ids": [
+        "GAP-EVIDENCE-STANDALONE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0132-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.closing.legal_basis",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含请求依据。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方事实与理由末项。",
+      "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "gap_ids": [
+        "GAP-LEGAL-BASIS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0133-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.mediation.preference",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含调解意愿栏。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方文末。",
+      "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "gap_ids": [
+        "GAP-MEDIATION-PREFERENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0134-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.closing.signature",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为具状人签署栏。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手签。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0135-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.closing.date",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为落款日期。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手填。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p251 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0136-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.instruction.filling_notes",
+      "application_field_ids": [],
+      "coverage_status": "NOT_APPLICABLE",
+      "semantic_comparison": "填写说明非案件字段。",
+      "condition_comparison": "不适用。",
+      "data_provenance_comparison": "不适用。",
+      "output_placement": "官方表格说明区。",
+      "source_evidence": "spc-2025-notice-pdf p248 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0137-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.claim.wages",
+      "application_field_ids": [
+        "labor.unpaid_months",
+        "labor.monthly_salary"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "均为工资主张；官方要求截至日期。",
+      "condition_comparison": "官方要求明细。",
+      "data_provenance_comparison": "应用为计算值。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LOAN-ASOF-DATE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0138-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.claim.double_wage",
+      "application_field_ids": [
+        "labor.is_no_contract"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用在未签劳动合同时主张二倍工资差额。",
+      "condition_comparison": "默认不主张。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0139-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.claim.overtime",
+      "application_field_ids": [
+        "labor.overtime"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "均为加班费主张。",
+      "condition_comparison": "填写后适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0140-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.claim.annual_leave",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含未休年休假工资。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LABOR-CLAIM-SCOPE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0141-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.claim.social_insurance_loss",
+      "application_field_ids": [
+        "labor.social_sec_info"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用记录社保信息但不生成请求。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求（未渲染）。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LABOR-CLAIM-SCOPE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0142-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.claim.termination_compensation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含解除经济补偿。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LABOR-CLAIM-SCOPE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0143-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.claim.illegal_termination",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含违法解除赔偿金。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p249 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-LABOR-CLAIM-SCOPE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0144-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.fact.contract_formation",
+      "application_field_ids": [
+        "labor.is_no_contract"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用以三态表示是否未签书面劳动合同。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0145-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.fact.performance",
+      "application_field_ids": [
+        "labor.emp_join_date",
+        "labor.job_title",
+        "labor.monthly_salary"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用采集入职/岗位/工资；官方另要工作地点、工资构成、社保、加班基数与年休假。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LABOR-PERFORMANCE-DETAIL"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0146-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.fact.termination",
+      "application_field_ids": [
+        "labor.emp_term_date"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用仅有离职日期；官方要求原因与补偿数额。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LABOR-TERMINATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0147-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.fact.work_injury",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含工伤情况。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LABOR-WORK-INJURY"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0148-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.fact.arbitration",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方要求劳动仲裁相关情况；应用仅作程序提示。",
+      "condition_comparison": "官方要求。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-LABOR-ARBITRATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0149-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": "labor.fact.other",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含其他。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p250 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0150-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.party.plaintiff.name",
+      "application_field_ids": [
+        "shared.party.plaintiff.name"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为原告姓名。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0151-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.party.plaintiff.identity_details",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方要求性别/出生日期/民族/工作单位/职务。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0152-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.party.plaintiff.phone",
+      "application_field_ids": [
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为联系电话。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0153-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.party.plaintiff.domicile",
+      "application_field_ids": [
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "官方为住所地，应用为住址。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0154-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.party.plaintiff.residence",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方为经常居住地。",
+      "condition_comparison": "官方为可选栏。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-PARTY-RESIDENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0155-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.party.plaintiff.id_document",
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方区分证件类型与号码，应用仅有号码。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/原告",
+      "gap_ids": [
+        "GAP-ID-TYPE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0156-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.party.plaintiff.agent",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含委托诉讼代理人栏。",
+      "condition_comparison": "仅在有代理人时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方代理人栏。",
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 委托诉讼代理人",
+      "gap_ids": [
+        "GAP-REPRESENTATIVE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0157-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.party.defendant.natural",
+      "application_field_ids": [
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.id_number",
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "被告自然人与原告使用同一套字段。",
+      "condition_comparison": "被告为自然人时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（自然人）",
+      "gap_ids": [
+        "GAP-PARTY-IDENTITY-DETAILS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0158-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.party.defendant.organization",
+      "application_field_ids": [
+        "shared.party.company_fields",
+        "shared.party.plaintiff.name",
+        "shared.party.plaintiff.address"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用支持企业名称/信用代码/法定代表人/住所地。",
+      "condition_comparison": "被告为单位时适用。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "起诉状当事人栏（法人版式）。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 当事人信息/被告（法人、非法人组织）",
+      "gap_ids": [
+        "GAP-ORG-REGISTRATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0159-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.procedure.jurisdiction_agreement",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含管辖约定栏。",
+      "condition_comparison": "有约定时填写。",
+      "data_provenance_comparison": "应用仅有建议管辖法院。",
+      "output_placement": "官方约定管辖栏。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-JURISDICTION-CLAUSE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0160-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.procedure.preservation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含诉前保全栏。",
+      "condition_comparison": "已保全时填写。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉前保全栏。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 约定管辖和诉前保全",
+      "gap_ids": [
+        "GAP-PRESERVATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0161-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.procedure.court_fee",
+      "application_field_ids": [],
+      "coverage_status": "CONDITIONAL_MISMATCH",
+      "semantic_comparison": "应用无条件主张诉讼费。",
+      "condition_comparison": "官方为可选主张。",
+      "data_provenance_comparison": "应用无对应字段。",
+      "output_placement": "起诉状诉讼请求末项。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-COURT-FEE-CONDITIONAL"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0162-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.procedure.other_claims",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含其他请求。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-OTHER-CLAIMS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0163-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.procedure.total_amount",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含标的总额。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方诉讼请求栏。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-TOTAL-AMOUNT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0164-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.evidence.list",
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "官方为起诉状内嵌章节，应用为独立文档。",
+      "condition_comparison": "官方为可另附页章节。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "官方起诉状末段；应用为独立文书。",
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 证据清单",
+      "gap_ids": [
+        "GAP-EVIDENCE-STANDALONE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0165-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.closing.legal_basis",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含请求依据。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输出。",
+      "output_placement": "官方事实与理由末项。",
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 请求依据/诉请依据",
+      "gap_ids": [
+        "GAP-LEGAL-BASIS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0166-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.mediation.preference",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含调解意愿栏。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "官方文末。",
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 对纠纷解决方式的意愿",
+      "gap_ids": [
+        "GAP-MEDIATION-PREFERENCE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0167-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.closing.signature",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为具状人签署栏。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手签。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0168-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.closing.date",
+      "application_field_ids": [],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为落款日期。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为留空手填。",
+      "output_placement": "起诉状落款。",
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 落款",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0169-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.instruction.filling_notes",
+      "application_field_ids": [],
+      "coverage_status": "NOT_APPLICABLE",
+      "semantic_comparison": "填写说明非案件字段。",
+      "condition_comparison": "不适用。",
+      "data_provenance_comparison": "不适用。",
+      "output_placement": "官方表格说明区。",
+      "source_evidence": "spc-2025-notice-pdf p57 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 说明/特别提示",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0170-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.claim.dissolution",
+      "application_field_ids": [
+        "divorce.marriage_date"
+      ],
+      "coverage_status": "DIRECT_MATCH",
+      "semantic_comparison": "均为离婚请求。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [],
+      "review_required": false,
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0171-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.claim.property",
+      "application_field_ids": [
+        "divorce.asset_description"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用以自由文本描述；官方按房屋/汽车/存款/其他分项。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-DIVORCE-PROPERTY-STRUCTURE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0172-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.claim.debt",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含夫妻共同债务。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-DIVORCE-DEBT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0173-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.claim.custody",
+      "application_field_ids": [
+        "divorce.child_name",
+        "divorce.custody_preference"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "均为子女直接抚养请求。",
+      "condition_comparison": "需子女姓名。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0174-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.claim.support",
+      "application_field_ids": [
+        "divorce.support_monthly",
+        "divorce.child_name"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "均为抚养费请求。",
+      "condition_comparison": "需子女姓名。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p58 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0175-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.claim.visitation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含探望权。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-DIVORCE-VISITATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0176-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.claim.damages_compensation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含离婚损害赔偿/经济补偿/经济帮助。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-DIVORCE-DAMAGES"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0177-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.claim.preservation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含诉前保全。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "诉讼请求。",
+      "source_evidence": "spc-2025-notice-pdf p60 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 诉讼请求",
+      "gap_ids": [
+        "GAP-PRESERVATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0178-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.fact.marriage",
+      "application_field_ids": [
+        "divorce.marriage_date",
+        "divorce.divorce_reason",
+        "divorce.separation_start_date"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用采集结婚日期/离婚原因/分居起始日。",
+      "condition_comparison": "均无条件。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-DIVORCE-MARRIAGE-FACTS"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0179-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.fact.property",
+      "application_field_ids": [
+        "divorce.asset_description"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "应用为自由文本；官方为分项要素。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-DIVORCE-PROPERTY-STRUCTURE"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0180-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.fact.debt",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含共同债务情况。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-DIVORCE-DEBT"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0181-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.fact.custody",
+      "application_field_ids": [
+        "divorce.custody_preference"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "均为抚养权事由。",
+      "condition_comparison": "需子女姓名。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0182-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.fact.support",
+      "application_field_ids": [
+        "divorce.support_monthly"
+      ],
+      "coverage_status": "PARTIAL_MATCH",
+      "semantic_comparison": "均为抚养费事由。",
+      "condition_comparison": "需子女姓名。",
+      "data_provenance_comparison": "均为用户输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0183-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.fact.visitation",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含探望权情况。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-DIVORCE-VISITATION"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0184-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.fact.damages",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含赔偿/补偿/经济帮助情况。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [
+        "GAP-DIVORCE-DAMAGES"
+      ],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0185-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": "divorce.fact.other",
+      "application_field_ids": [],
+      "coverage_status": "NO_CURRENT_APPLICATION_FIELD",
+      "semantic_comparison": "官方含其他。",
+      "condition_comparison": "可选。",
+      "data_provenance_comparison": "应用无对应输入。",
+      "output_placement": "事实与理由。",
+      "source_evidence": "spc-2025-notice-pdf p59 sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30; 事实与理由",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "对应关系与适用性须经法律/内容审查。"
+      ],
+      "notes": ""
+    },
+    {
+      "crosswalk_id": "cw-0186-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "shared.court_name"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出“此致 <法院>”，官方空白表格正文未设法院名称栏（由受理法院确定）。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0187-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "shared.court_name"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出“此致 <法院>”，官方空白表格正文未设法院名称栏（由受理法院确定）。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0188-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "shared.court_name"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出“此致 <法院>”，官方空白表格正文未设法院名称栏（由受理法院确定）。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0189-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "shared.court_name"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出“此致 <法院>”，官方空白表格正文未设法院名称栏（由受理法院确定）。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0190-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "shared.court_name"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出“此致 <法院>”，官方空白表格正文未设法院名称栏（由受理法院确定）。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0191-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "loan.loan_reason"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出借款理由；官方民间借贷表格未设借款理由栏。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0192-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "loan.has_iou"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出借条出具情况；官方民间借贷表格未设借条栏。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0193-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "loan.demand_date"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用在填写催款时间与方式后输出催款事实；官方民间借贷表格未设催款栏。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0194-loan",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "loan.demand_method"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "同上，催款方式。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0195-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "contract.is_delivered"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出三态交货事实；官方表格以“交付情况”要素承载，非独立状态栏。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0196-contract",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "contract.is_signed"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出三态签收事实；官方表格以“交付情况/验收”要素承载，无独立签收栏。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0197-property",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "property.total_input"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用允许用户自填物业费总额用于比对；官方表格无自填总额栏。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0198-labor",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "labor.social_sec_info"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用记录社保缴纳情况但不生成请求；官方以“未依法缴纳社会保险费造成的经济损失”请求要素承载。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    },
+    {
+      "crosswalk_id": "cw-0199-divorce",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "official_element_id": null,
+      "application_field_ids": [
+        "divorce.separation_start_date"
+      ],
+      "coverage_status": "APPLICATION_ONLY_ELEMENT",
+      "semantic_comparison": "应用输出分居起始日；官方以“双方生活情况”要素承载。",
+      "condition_comparison": "",
+      "data_provenance_comparison": "应用为用户输入或计算值。",
+      "output_placement": "起诉状相应段落。",
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88（在该类别空白表格范围内未发现对应要素）",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "gap_ids": [],
+      "review_required": true,
+      "open_questions": [
+        "该应用独有内容是否需要保留或调整，须经法律/内容审查。"
+      ],
+      "notes": "反向覆盖记录：应用输出在官方表格中无对应要素。"
+    }
+  ]
+}

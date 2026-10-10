@@ -1,0 +1,1006 @@
+{
+  "inventory_version": "1.0.0",
+  "analyzed_revision": "639179933c51f111ea43060157e897fa0a1e4d30",
+  "fields": [
+    {
+      "field_id": "shared.party.plaintiff.name",
+      "case_type_or_shared": "shared",
+      "ui_location": "views/wizard_pages.py PartyPage",
+      "ui_field_or_widget": "plaintiff_widgets[i]['name']",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "get_party_data()['plaintiffs'][i]['name']",
+      "model_location": "models/case_model.py",
+      "model_attribute": "party_manager.plaintiffs[i].name",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint",
+        "evidence_list",
+        "service_address_confirmation"
+      ],
+      "rendering_location": "utils/doc_generator.py add_party_block",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "空白姓名的主体在 build_case_model 中被跳过；Presenter 在导出前阻止无原告/被告的导出",
+      "source_code_evidence": "views/wizard_pages.py PartyPage.get_party_data; presenters/model_builder.py _add_parties",
+      "notes": ""
+    },
+    {
+      "field_id": "shared.party.plaintiff.id_number",
+      "case_type_or_shared": "shared",
+      "ui_location": "views/wizard_pages.py PartyPage",
+      "ui_field_or_widget": "plaintiff_widgets[i]['id']",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "['id_number']",
+      "model_location": "models/case_model.py",
+      "model_attribute": "party_manager.plaintiffs[i].id_number",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint",
+        "evidence_list",
+        "service_address_confirmation"
+      ],
+      "rendering_location": "add_party_block",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "直接渲染为空",
+      "source_code_evidence": "同上去证",
+      "notes": ""
+    },
+    {
+      "field_id": "shared.party.plaintiff.address",
+      "case_type_or_shared": "shared",
+      "ui_location": "views/wizard_pages.py PartyPage",
+      "ui_field_or_widget": "plaintiff_widgets[i]['addr']",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "['address']",
+      "model_location": "models/case_model.py",
+      "model_attribute": "party_manager.plaintiffs[i].address",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint",
+        "evidence_list",
+        "service_address_confirmation"
+      ],
+      "rendering_location": "add_party_block",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "直接渲染为空",
+      "source_code_evidence": "同上",
+      "notes": ""
+    },
+    {
+      "field_id": "shared.party.plaintiff.phone",
+      "case_type_or_shared": "shared",
+      "ui_location": "views/wizard_pages.py PartyPage",
+      "ui_field_or_widget": "plaintiff_widgets[i]['phone']",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "['phone']",
+      "model_location": "models/case_model.py",
+      "model_attribute": "party_manager.plaintiffs[i].phone",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint",
+        "evidence_list",
+        "service_address_confirmation"
+      ],
+      "rendering_location": "add_party_block",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "直接渲染为空",
+      "source_code_evidence": "同上",
+      "notes": ""
+    },
+    {
+      "field_id": "shared.party.company_fields",
+      "case_type_or_shared": "shared",
+      "ui_location": "views/wizard_pages.py PartyPage",
+      "ui_field_or_widget": "is_company/credit_code/legal_rep",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "['is_company']/['credit_code']/['legal_representative']",
+      "model_location": "models/case_model.py",
+      "model_attribute": "party_manager.*.is_company/credit_code/legal_representative",
+      "calculation_or_condition": "is_company 为真时切换为法人版式",
+      "output_document_types": [
+        "civil_complaint",
+        "evidence_list",
+        "service_address_confirmation"
+      ],
+      "rendering_location": "add_party_block",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "未勾选企业法人时按自然人渲染",
+      "source_code_evidence": "views/wizard_pages.py PartyPage.add_party_ui",
+      "notes": ""
+    },
+    {
+      "field_id": "shared.party.multiple_parties",
+      "case_type_or_shared": "shared",
+      "ui_location": "views/wizard_pages.py PartyPage",
+      "ui_field_or_widget": "add_party_ui()",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "plaintiffs/defendants 列表",
+      "model_location": "models/case_model.py",
+      "model_attribute": "party_manager.plaintiffs/defendants",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint",
+        "evidence_list",
+        "service_address_confirmation"
+      ],
+      "rendering_location": "add_party_block / export_address_form",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "至少一名原告与一名被告",
+      "source_code_evidence": "views/wizard_pages.py PartyPage.isComplete",
+      "notes": ""
+    },
+    {
+      "field_id": "shared.court_name",
+      "case_type_or_shared": "shared",
+      "ui_location": "views/wizard_pages.py 各 ClaimPage",
+      "ui_field_or_widget": "court_name",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "view.field('court_name'/'c_court_name'/...)",
+      "model_location": "models/case_model.py",
+      "model_attribute": "court_name",
+      "calculation_or_condition": "各案由必填",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "doc_generator.add_footer",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填字段",
+      "source_code_evidence": "views/wizard_pages.py registerField('*_court_name*')",
+      "notes": ""
+    },
+    {
+      "field_id": "shared.evidence.rows",
+      "case_type_or_shared": "shared",
+      "ui_location": "views/wizard_pages.py EvidencePage",
+      "ui_field_or_widget": "table rows",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "get_evidence_items()",
+      "model_location": "models/case_model.py",
+      "model_attribute": "evidences[] (EvidenceItem)",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "evidence_list"
+      ],
+      "rendering_location": "export_evidence_list",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "空行被忽略",
+      "source_code_evidence": "views/wizard_pages.py EvidencePage.get_evidence_items",
+      "notes": ""
+    },
+    {
+      "field_id": "loan.principal",
+      "case_type_or_shared": "loan",
+      "ui_location": "LoanClaimPage",
+      "ui_field_or_widget": "principal",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('principal')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "principal_amount",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:59; models/case_model.py:181",
+      "notes": ""
+    },
+    {
+      "field_id": "loan.loan_date",
+      "case_type_or_shared": "loan",
+      "ui_location": "LoanClaimPage",
+      "ui_field_or_widget": "loan_date",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('loan_date')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "loan_date",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:57; models/case_model.py:179",
+      "notes": ""
+    },
+    {
+      "field_id": "loan.loan_reason",
+      "case_type_or_shared": "loan",
+      "ui_location": "LoanClaimPage",
+      "ui_field_or_widget": "loan_reason",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('loan_reason')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "loan_reason",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CLAIM_OR_ALLEGATION",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:58; models/case_model.py:180",
+      "notes": ""
+    },
+    {
+      "field_id": "loan.payment_method",
+      "case_type_or_shared": "loan",
+      "ui_location": "LoanClaimPage",
+      "ui_field_or_widget": "payment_method",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('payment_method')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "payment_method",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:62; models/case_model.py:182",
+      "notes": ""
+    },
+    {
+      "field_id": "loan.interest_rate",
+      "case_type_or_shared": "loan",
+      "ui_location": "LoanClaimPage",
+      "ui_field_or_widget": "rate",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('rate')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "interest_rate",
+      "calculation_or_condition": "填写后生成利息请求",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "CALCULATED_VALUE",
+      "missing_value_behavior": "留空则不主张利息",
+      "source_code_evidence": "presenters/model_builder.py:60; models/case_model.py:183",
+      "notes": ""
+    },
+    {
+      "field_id": "loan.interest_start_date",
+      "case_type_or_shared": "loan",
+      "ui_location": "LoanClaimPage",
+      "ui_field_or_widget": "start_date",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('start_date')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "interest_start_date",
+      "calculation_or_condition": "与 rate 同时存在才计算",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims",
+      "fact_classification": "CALCULATED_VALUE",
+      "missing_value_behavior": "留空则不计算利息",
+      "source_code_evidence": "presenters/model_builder.py:61; models/case_model.py:184",
+      "notes": ""
+    },
+    {
+      "field_id": "loan.has_iou",
+      "case_type_or_shared": "loan",
+      "ui_location": "LoanClaimPage",
+      "ui_field_or_widget": "iou_yes/iou_no/iou_unknown",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "get_has_iou()",
+      "model_location": "models/case_model.py",
+      "model_attribute": "has_iou",
+      "calculation_or_condition": "三态 None/True/False",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "None 时不输出任何借条表述",
+      "source_code_evidence": "presenters/model_builder.py:63; models/case_model.py:185",
+      "notes": ""
+    },
+    {
+      "field_id": "loan.demand_date",
+      "case_type_or_shared": "loan",
+      "ui_location": "LoanClaimPage",
+      "ui_field_or_widget": "demand_date",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('demand_date')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "demand_date",
+      "calculation_or_condition": "与 demand_method 同时存在才输出",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空则不输出催款表述",
+      "source_code_evidence": "presenters/model_builder.py:64; models/case_model.py:186",
+      "notes": ""
+    },
+    {
+      "field_id": "loan.demand_method",
+      "case_type_or_shared": "loan",
+      "ui_location": "LoanClaimPage",
+      "ui_field_or_widget": "demand_method",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('demand_method')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "demand_method",
+      "calculation_or_condition": "同上",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空则不输出催款表述",
+      "source_code_evidence": "presenters/model_builder.py:65; models/case_model.py:187",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.contract_date",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "contract_date",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('c_contract_date')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "contract_date",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:70; models/case_model.py:277",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.contract_name",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "contract_name",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('c_contract_name')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "contract_name",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:71; models/case_model.py:278",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.product_name",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "product_name",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('c_product_name')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "product_name",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:72; models/case_model.py:279",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.total_amount",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "total_amount",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('c_total_amount')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "total_amount",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:73; models/case_model.py:280",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.delivery_date",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "delivery_date",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('c_delivery_date')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "delivery_date",
+      "calculation_or_condition": "仅当交货状态为 True 时必填",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "交货状态非 True 时可留空",
+      "source_code_evidence": "presenters/model_builder.py:74; models/case_model.py:281",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.is_delivered",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "del_yes/del_no/del_unknown",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "get_flags()['is_delivered']",
+      "model_location": "models/case_model.py",
+      "model_attribute": "is_delivered",
+      "calculation_or_condition": "三态；False 且签收为 True 时阻止导出",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "None 时不输出交货事实",
+      "source_code_evidence": "presenters/model_builder.py:91; models/case_model.py:283",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.is_signed",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "sign_yes/sign_no/sign_unknown",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "get_flags()['is_signed']",
+      "model_location": "models/case_model.py",
+      "model_attribute": "is_signed",
+      "calculation_or_condition": "三态",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "None 时不输出签收事实",
+      "source_code_evidence": "presenters/model_builder.py:92; models/case_model.py:284",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.unpaid_amount",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "unpaid_amount",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('c_unpaid_amount')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "unpaid_amount",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:75; models/case_model.py:285",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.penalty_amount",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "penalty_amount",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('c_penalty_amount')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "penalty_amount",
+      "calculation_or_condition": "填写后才生成违约金请求",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims",
+      "fact_classification": "CALCULATED_VALUE",
+      "missing_value_behavior": "留空则不主张违约金",
+      "source_code_evidence": "presenters/model_builder.py:76; models/case_model.py:286",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.penalty_start_date",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "overdue_start",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('c_overdue_start')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "penalty_start_date",
+      "calculation_or_condition": "可选",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空则使用中性表述",
+      "source_code_evidence": "presenters/model_builder.py:77; models/case_model.py:287",
+      "notes": ""
+    },
+    {
+      "field_id": "contract.penalty_calc_standard",
+      "case_type_or_shared": "contract",
+      "ui_location": "ContractClaimPage",
+      "ui_field_or_widget": "lpr_value/lpr_multiple",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('c_lpr_value'/'c_lpr_multiple')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "penalty_calc_standard",
+      "calculation_or_condition": "两者都填写才生成计算标准",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims",
+      "fact_classification": "CALCULATED_VALUE",
+      "missing_value_behavior": "留空则使用中性表述",
+      "source_code_evidence": "presenters/model_builder.py:79-86; models/case_model.py:288",
+      "notes": ""
+    },
+    {
+      "field_id": "property.property_addr",
+      "case_type_or_shared": "property",
+      "ui_location": "PropertyClaimPage",
+      "ui_field_or_widget": "property_addr",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('p_property_addr')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "property_addr",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:96; models/case_model.py:355",
+      "notes": ""
+    },
+    {
+      "field_id": "property.house_area",
+      "case_type_or_shared": "property",
+      "ui_location": "PropertyClaimPage",
+      "ui_field_or_widget": "house_area",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('p_house_area')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "house_area",
+      "calculation_or_condition": "参与金额计算",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "CALCULATED_VALUE",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:97; models/case_model.py:356",
+      "notes": ""
+    },
+    {
+      "field_id": "property.fee_rate",
+      "case_type_or_shared": "property",
+      "ui_location": "PropertyClaimPage",
+      "ui_field_or_widget": "fee_rate",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('p_fee_rate')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "fee_rate",
+      "calculation_or_condition": "参与金额计算",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "CALCULATED_VALUE",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:98; models/case_model.py:357",
+      "notes": ""
+    },
+    {
+      "field_id": "property.period_start",
+      "case_type_or_shared": "property",
+      "ui_location": "PropertyClaimPage",
+      "ui_field_or_widget": "period_start",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('p_period_start')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "period_start",
+      "calculation_or_condition": "参与月数计算",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:99; models/case_model.py:358",
+      "notes": ""
+    },
+    {
+      "field_id": "property.period_end",
+      "case_type_or_shared": "property",
+      "ui_location": "PropertyClaimPage",
+      "ui_field_or_widget": "period_end",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('p_period_end')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "period_end",
+      "calculation_or_condition": "参与月数计算",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:100; models/case_model.py:359",
+      "notes": ""
+    },
+    {
+      "field_id": "property.late_fee_logic",
+      "case_type_or_shared": "property",
+      "ui_location": "PropertyClaimPage",
+      "ui_field_or_widget": "late_fee_logic",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('p_late_fee_logic')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "late_fee_logic",
+      "calculation_or_condition": "填写后才生成违约金请求",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims",
+      "fact_classification": "USER_CLAIM_OR_ALLEGATION",
+      "missing_value_behavior": "留空则不主张违约金",
+      "source_code_evidence": "presenters/model_builder.py:101; models/case_model.py:360",
+      "notes": ""
+    },
+    {
+      "field_id": "property.demand_record",
+      "case_type_or_shared": "property",
+      "ui_location": "PropertyClaimPage",
+      "ui_field_or_widget": "demand_record",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('p_demand_record')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "demand_record",
+      "calculation_or_condition": "填写后才输出催缴表述",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空则不输出催缴表述",
+      "source_code_evidence": "presenters/model_builder.py:102; models/case_model.py:361",
+      "notes": ""
+    },
+    {
+      "field_id": "property.total_input",
+      "case_type_or_shared": "property",
+      "ui_location": "PropertyClaimPage",
+      "ui_field_or_widget": "total_input",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('p_total_input')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "total_principal",
+      "calculation_or_condition": "用户自填优先于计算值",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "CALCULATED_VALUE",
+      "missing_value_behavior": "留空则使用面积×费率×月数计算值",
+      "source_code_evidence": "presenters/model_builder.py:103; models/case_model.py:362,422",
+      "notes": ""
+    },
+    {
+      "field_id": "labor.emp_join_date",
+      "case_type_or_shared": "labor",
+      "ui_location": "LaborClaimPage",
+      "ui_field_or_widget": "emp_join_date",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('l_emp_join_date')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "emp_join_date",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:108; models/case_model.py:565",
+      "notes": ""
+    },
+    {
+      "field_id": "labor.job_title",
+      "case_type_or_shared": "labor",
+      "ui_location": "LaborClaimPage",
+      "ui_field_or_widget": "job_title",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('l_job_title')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "job_title",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:109; models/case_model.py:567",
+      "notes": ""
+    },
+    {
+      "field_id": "labor.monthly_salary",
+      "case_type_or_shared": "labor",
+      "ui_location": "LaborClaimPage",
+      "ui_field_or_widget": "monthly_salary",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('l_monthly_salary')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "monthly_salary",
+      "calculation_or_condition": "参与欠薪计算",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "CALCULATED_VALUE",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:110; models/case_model.py:568",
+      "notes": ""
+    },
+    {
+      "field_id": "labor.unpaid_months",
+      "case_type_or_shared": "labor",
+      "ui_location": "LaborClaimPage",
+      "ui_field_or_widget": "unpaid_months",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('l_unpaid_months')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "unpaid_months",
+      "calculation_or_condition": "解析月份区间；失败时回退为人工确认占位",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填；无法解析时不编造金额",
+      "source_code_evidence": "presenters/model_builder.py:111; models/case_model.py:569,597",
+      "notes": ""
+    },
+    {
+      "field_id": "labor.emp_term_date",
+      "case_type_or_shared": "labor",
+      "ui_location": "LaborClaimPage",
+      "ui_field_or_widget": "emp_term_date",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('l_emp_term_date')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "emp_term_date",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:112; models/case_model.py:566",
+      "notes": ""
+    },
+    {
+      "field_id": "labor.overtime",
+      "case_type_or_shared": "labor",
+      "ui_location": "LaborClaimPage",
+      "ui_field_or_widget": "overtime_hours/overtime_pay",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('l_overtime_hours'/'l_overtime_pay')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "overtime_hours/overtime_pay",
+      "calculation_or_condition": "两者都填写才输出",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空则不主张加班费",
+      "source_code_evidence": "presenters/model_builder.py:113-114; models/case_model.py:570",
+      "notes": ""
+    },
+    {
+      "field_id": "labor.is_no_contract",
+      "case_type_or_shared": "labor",
+      "ui_location": "LaborClaimPage",
+      "ui_field_or_widget": "no_contract_yes/no_contract_no",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "get_has_no_contract()",
+      "model_location": "models/case_model.py",
+      "model_attribute": "is_no_contract",
+      "calculation_or_condition": "默认 False；勾选是才主张二倍工资",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "默认不主张二倍工资",
+      "source_code_evidence": "presenters/model_builder.py:115; models/case_model.py:571",
+      "notes": ""
+    },
+    {
+      "field_id": "labor.social_sec_info",
+      "case_type_or_shared": "labor",
+      "ui_location": "LaborClaimPage",
+      "ui_field_or_widget": "social_sec_info",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('l_social_sec_info')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "social_sec_info",
+      "calculation_or_condition": "仅作为输入记录，不生成独立请求",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "未渲染",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空无影响",
+      "source_code_evidence": "presenters/model_builder.py:116; models/case_model.py:572",
+      "notes": ""
+    },
+    {
+      "field_id": "divorce.marriage_date",
+      "case_type_or_shared": "divorce",
+      "ui_location": "DivorceClaimPage",
+      "ui_field_or_widget": "marriage_date",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('d_marriage_date')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "marriage_date",
+      "calculation_or_condition": "无",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "必填",
+      "source_code_evidence": "presenters/model_builder.py:121; models/case_model.py:485",
+      "notes": ""
+    },
+    {
+      "field_id": "divorce.child_name",
+      "case_type_or_shared": "divorce",
+      "ui_location": "DivorceClaimPage",
+      "ui_field_or_widget": "child_name",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('d_child_name')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "child_name",
+      "calculation_or_condition": "无子女时留空；填写后才生成抚养相关表述",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空则不输出子女表述",
+      "source_code_evidence": "presenters/model_builder.py:122; models/case_model.py:486",
+      "notes": ""
+    },
+    {
+      "field_id": "divorce.child_birthday",
+      "case_type_or_shared": "divorce",
+      "ui_location": "DivorceClaimPage",
+      "ui_field_or_widget": "child_birthday",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('d_child_birthday')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "child_birthday",
+      "calculation_or_condition": "需与子女姓名同时填写",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空则不输出出生日期",
+      "source_code_evidence": "presenters/model_builder.py:123; models/case_model.py:487",
+      "notes": ""
+    },
+    {
+      "field_id": "divorce.custody_preference",
+      "case_type_or_shared": "divorce",
+      "ui_location": "DivorceClaimPage",
+      "ui_field_or_widget": "custody_preference",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('d_custody_preference')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "custody_preference",
+      "calculation_or_condition": "需与子女姓名同时填写",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CLAIM_OR_ALLEGATION",
+      "missing_value_behavior": "留空则不主张抚养权",
+      "source_code_evidence": "presenters/model_builder.py:124; models/case_model.py:488",
+      "notes": ""
+    },
+    {
+      "field_id": "divorce.support_monthly",
+      "case_type_or_shared": "divorce",
+      "ui_location": "DivorceClaimPage",
+      "ui_field_or_widget": "support_monthly",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('d_support_monthly')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "support_monthly",
+      "calculation_or_condition": "需与子女姓名同时填写",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空则不主张抚养费",
+      "source_code_evidence": "presenters/model_builder.py:125; models/case_model.py:489",
+      "notes": ""
+    },
+    {
+      "field_id": "divorce.divorce_reason",
+      "case_type_or_shared": "divorce",
+      "ui_location": "DivorceClaimPage",
+      "ui_field_or_widget": "divorce_reason",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('d_divorce_reason')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "divorce_reason",
+      "calculation_or_condition": "填写后才输出离婚事由",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CLAIM_OR_ALLEGATION",
+      "missing_value_behavior": "留空则不输出离婚事由",
+      "source_code_evidence": "presenters/model_builder.py:126; models/case_model.py:490",
+      "notes": ""
+    },
+    {
+      "field_id": "divorce.separation_start_date",
+      "case_type_or_shared": "divorce",
+      "ui_location": "DivorceClaimPage",
+      "ui_field_or_widget": "separation_start_date",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('d_separation_start_date')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "separation_start_date",
+      "calculation_or_condition": "填写后才输出分居表述",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_facts",
+      "fact_classification": "USER_CONFIRMED_FACT",
+      "missing_value_behavior": "留空则不输出分居表述",
+      "source_code_evidence": "presenters/model_builder.py:128; models/case_model.py:491",
+      "notes": ""
+    },
+    {
+      "field_id": "divorce.asset_description",
+      "case_type_or_shared": "divorce",
+      "ui_location": "DivorceClaimPage",
+      "ui_field_or_widget": "asset_description",
+      "presenter_location": "presenters/model_builder.py",
+      "presenter_attribute": "field('d_asset_description')",
+      "model_location": "models/case_model.py",
+      "model_attribute": "asset_description",
+      "calculation_or_condition": "填写后才主张财产分割",
+      "output_document_types": [
+        "civil_complaint"
+      ],
+      "rendering_location": "render_claims/render_facts",
+      "fact_classification": "USER_CLAIM_OR_ALLEGATION",
+      "missing_value_behavior": "留空则不主张财产分割",
+      "source_code_evidence": "presenters/model_builder.py:129; models/case_model.py:492",
+      "notes": ""
+    }
+  ]
+}

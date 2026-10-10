@@ -1,0 +1,326 @@
+{
+  "assessment_version": "1.0.0",
+  "analyzed_revision": "639179933c51f111ea43060157e897fa0a1e4d30",
+  "routes": [
+    {
+      "route_id": "route-loan-civil-complaint",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_complaint",
+      "current_output_summary": "叙事式起诉状：当事人栏、诉讼请求、事实与理由、此致/具结栏。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方空白表格要素（physical PDF p134-p139）与应用起诉状输出逐项对照。",
+      "gap_ids": [],
+      "unresolved_questions": [
+        "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
+        "缺失要素是否需要新增采集项，属产品范围决策。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-loan-evidence-list",
+      "case_type": "loan",
+      "document_type": "evidence_list",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_evidence_list",
+      "current_output_summary": "独立四列证据清单表格（序号/证据名称/证明对象·目的/备注）。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方起诉状内嵌“证据清单”章节与应用独立证据清单文书对照。",
+      "gap_ids": [
+        "GAP-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "unresolved_questions": [
+        "独立文书是否可视为官方内嵌章节的等价物，未核实。",
+        "官方证据清单章节的证据分类指引是否需要体现，未决。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-loan-service-address-confirmation",
+      "case_type": "loan",
+      "document_type": "service_address_confirmation",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_address_form",
+      "current_output_summary": "独立送达地址确认书：每名当事人一张六行表格 + 确认人/日期。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "在被检查的 975 页官方示范文本中检索“送达地址”字样。",
+      "gap_ids": [
+        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "unresolved_questions": [
+        "被检查来源中无对应文书；其他官方材料是否存在未核实。",
+        "该文书的管辖/程序依据须由法律审查确认。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-contract-civil-complaint",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_complaint",
+      "current_output_summary": "叙事式起诉状：当事人栏、诉讼请求、事实与理由、此致/具结栏。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方空白表格要素（physical PDF p71-p76）与应用起诉状输出逐项对照。",
+      "gap_ids": [],
+      "unresolved_questions": [
+        "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
+        "缺失要素是否需要新增采集项，属产品范围决策。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-contract-evidence-list",
+      "case_type": "contract",
+      "document_type": "evidence_list",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_evidence_list",
+      "current_output_summary": "独立四列证据清单表格（序号/证据名称/证明对象·目的/备注）。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方起诉状内嵌“证据清单”章节与应用独立证据清单文书对照。",
+      "gap_ids": [
+        "GAP-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "unresolved_questions": [
+        "独立文书是否可视为官方内嵌章节的等价物，未核实。",
+        "官方证据清单章节的证据分类指引是否需要体现，未决。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-contract-service-address-confirmation",
+      "case_type": "contract",
+      "document_type": "service_address_confirmation",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_address_form",
+      "current_output_summary": "独立送达地址确认书：每名当事人一张六行表格 + 确认人/日期。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "在被检查的 975 页官方示范文本中检索“送达地址”字样。",
+      "gap_ids": [
+        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "unresolved_questions": [
+        "被检查来源中无对应文书；其他官方材料是否存在未核实。",
+        "该文书的管辖/程序依据须由法律审查确认。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-property-civil-complaint",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_complaint",
+      "current_output_summary": "叙事式起诉状：当事人栏、诉讼请求、事实与理由、此致/具结栏。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方空白表格要素（physical PDF p233-p236）与应用起诉状输出逐项对照。",
+      "gap_ids": [],
+      "unresolved_questions": [
+        "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
+        "缺失要素是否需要新增采集项，属产品范围决策。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-property-evidence-list",
+      "case_type": "property",
+      "document_type": "evidence_list",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_evidence_list",
+      "current_output_summary": "独立四列证据清单表格（序号/证据名称/证明对象·目的/备注）。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方起诉状内嵌“证据清单”章节与应用独立证据清单文书对照。",
+      "gap_ids": [
+        "GAP-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "unresolved_questions": [
+        "独立文书是否可视为官方内嵌章节的等价物，未核实。",
+        "官方证据清单章节的证据分类指引是否需要体现，未决。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-property-service-address-confirmation",
+      "case_type": "property",
+      "document_type": "service_address_confirmation",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_address_form",
+      "current_output_summary": "独立送达地址确认书：每名当事人一张六行表格 + 确认人/日期。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "在被检查的 975 页官方示范文本中检索“送达地址”字样。",
+      "gap_ids": [
+        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "unresolved_questions": [
+        "被检查来源中无对应文书；其他官方材料是否存在未核实。",
+        "该文书的管辖/程序依据须由法律审查确认。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-labor-civil-complaint",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_complaint",
+      "current_output_summary": "叙事式起诉状：当事人栏、诉讼请求、事实与理由、此致/具结栏。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方空白表格要素（physical PDF p248-p251）与应用起诉状输出逐项对照。",
+      "gap_ids": [],
+      "unresolved_questions": [
+        "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
+        "缺失要素是否需要新增采集项，属产品范围决策。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-labor-evidence-list",
+      "case_type": "labor",
+      "document_type": "evidence_list",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_evidence_list",
+      "current_output_summary": "独立四列证据清单表格（序号/证据名称/证明对象·目的/备注）。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方起诉状内嵌“证据清单”章节与应用独立证据清单文书对照。",
+      "gap_ids": [
+        "GAP-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "unresolved_questions": [
+        "独立文书是否可视为官方内嵌章节的等价物，未核实。",
+        "官方证据清单章节的证据分类指引是否需要体现，未决。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-labor-service-address-confirmation",
+      "case_type": "labor",
+      "document_type": "service_address_confirmation",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_address_form",
+      "current_output_summary": "独立送达地址确认书：每名当事人一张六行表格 + 确认人/日期。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "在被检查的 975 页官方示范文本中检索“送达地址”字样。",
+      "gap_ids": [
+        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "unresolved_questions": [
+        "被检查来源中无对应文书；其他官方材料是否存在未核实。",
+        "该文书的管辖/程序依据须由法律审查确认。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-divorce-civil-complaint",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_complaint",
+      "current_output_summary": "叙事式起诉状：当事人栏、诉讼请求、事实与理由、此致/具结栏。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方空白表格要素（physical PDF p57-p60）与应用起诉状输出逐项对照。",
+      "gap_ids": [],
+      "unresolved_questions": [
+        "官方要素与现有应用字段的对应关系是否满足实际立案需要，须经法律/内容审查。",
+        "缺失要素是否需要新增采集项，属产品范围决策。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-divorce-evidence-list",
+      "case_type": "divorce",
+      "document_type": "evidence_list",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_evidence_list",
+      "current_output_summary": "独立四列证据清单表格（序号/证据名称/证明对象·目的/备注）。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "官方起诉状内嵌“证据清单”章节与应用独立证据清单文书对照。",
+      "gap_ids": [
+        "GAP-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "unresolved_questions": [
+        "独立文书是否可视为官方内嵌章节的等价物，未核实。",
+        "官方证据清单章节的证据分类指引是否需要体现，未决。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    },
+    {
+      "route_id": "route-divorce-service-address-confirmation",
+      "case_type": "divorce",
+      "document_type": "service_address_confirmation",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_address_form",
+      "current_output_summary": "独立送达地址确认书：每名当事人一张六行表格 + 确认人/日期。",
+      "official_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "source_verification_status": "SOURCE_FILE_VERIFIED",
+      "comparison_scope": "在被检查的 975 页官方示范文本中检索“送达地址”字样。",
+      "gap_ids": [
+        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "unresolved_questions": [
+        "被检查来源中无对应文书；其他官方材料是否存在未核实。",
+        "该文书的管辖/程序依据须由法律审查确认。"
+      ],
+      "legal_review_required": true,
+      "approval_status": "NOT_REQUESTED"
+    }
+  ]
+}

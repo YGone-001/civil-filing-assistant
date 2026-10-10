@@ -1,0 +1,1131 @@
+{
+  "register_version": "1.0.0",
+  "analyzed_revision": "639179933c51f111ea43060157e897fa0a1e4d30",
+  "gaps": [
+    {
+      "gap_id": "GAP-PARTY-IDENTITY-DETAILS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.party.plaintiff.identity_details"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用仅采集姓名/证件号/住址/电话。",
+      "source_supported_expectation": "官方表格要求性别、出生日期、民族、工作单位、职务。",
+      "difference_description": "当事人身份细节字段在应用中没有对应输入。",
+      "risk_if_changed_without_review": "不采集即无法填写官方对应栏目。",
+      "potential_remediation": "在获得授权后再评估是否新增采集项；本阶段仅记录。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PARTY-RESIDENCE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.party.plaintiff.residence"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用只有住所地。",
+      "source_supported_expectation": "官方表格另有“经常居住地”。",
+      "difference_description": "缺少经常居住地字段。",
+      "risk_if_changed_without_review": "送达地址判断可能不完整。",
+      "potential_remediation": "评估是否新增；属送达相关事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-ID-TYPE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.party.plaintiff.id_document"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.id_number"
+      ],
+      "observed_current_behavior": "应用仅有一个“身份证号/统一社会信用代码”输入。",
+      "source_supported_expectation": "官方表格区分“证件类型”与“证件号码”。",
+      "difference_description": "缺少证件类型。",
+      "risk_if_changed_without_review": "非身份证件时表述可能不完整。",
+      "potential_remediation": "评估是否新增证件类型；本阶段不实现。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-REPRESENTATIVE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.party.plaintiff.agent"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集委托诉讼代理人。",
+      "source_supported_expectation": "官方表格含委托诉讼代理人栏（有/无、姓名、单位、职务、电话、代理权限）。",
+      "difference_description": "缺少代理人信息。",
+      "risk_if_changed_without_review": "有代理人的当事人无法在文书上体现代理人。",
+      "potential_remediation": "评估是否新增；属当事人自主决定事项。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-ORG-REGISTRATION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.party.defendant.organization"
+      ],
+      "application_field_ids": [
+        "shared.party.company_fields"
+      ],
+      "observed_current_behavior": "应用企业当事人仅采集名称/信用代码/法定代表人/住所地/电话。",
+      "source_supported_expectation": "官方表格另有注册地、企业类型、所有制性质等分类栏。",
+      "difference_description": "企业登记细节不完整。",
+      "risk_if_changed_without_review": "企业身份描述可能不完整。",
+      "potential_remediation": "评估是否新增；需与工商登记信息核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-THIRD-PARTY",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.party.third_party"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不支持第三人。",
+      "source_supported_expectation": "官方表格含第三人（自然人/法人）栏。",
+      "difference_description": "缺少第三人建模。",
+      "risk_if_changed_without_review": "存在第三人时无法在文书中列明。",
+      "potential_remediation": "评估是否支持第三人；属结构性变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-JURISDICTION-CLAUSE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.procedure.jurisdiction_agreement"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用仅采集“建议管辖法院”。",
+      "source_supported_expectation": "官方表格含有无仲裁/法院管辖约定及条款内容。",
+      "difference_description": "缺少管辖约定字段。",
+      "risk_if_changed_without_review": "管辖依据可能未体现。",
+      "potential_remediation": "评估是否新增；属程序事项，需人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PRESERVATION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.procedure.preservation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集诉前保全信息。",
+      "source_supported_expectation": "官方表格含是否已诉前保全及法院/时间/案号。",
+      "difference_description": "缺少保全信息。",
+      "risk_if_changed_without_review": "保全事实无法体现。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-COURT-FEE-CONDITIONAL",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "CONDITIONALITY_DIFFERENCE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.procedure.court_fee"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无条件输出“本案诉讼费由被告承担。”",
+      "source_supported_expectation": "官方表格将诉讼费用作为可选主张（是/否）。",
+      "difference_description": "条件性不同：应用总是主张，官方允许不主张。",
+      "risk_if_changed_without_review": "若改为条件输出需重新设计字段，且不得削弱现有输出。",
+      "potential_remediation": "记录差异；不改变现有行为。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-OTHER-CLAIMS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.procedure.other_claims"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用无自由表述的其他请求字段。",
+      "source_supported_expectation": "官方表格含“其他请求”。",
+      "difference_description": "缺少其他请求入口。",
+      "risk_if_changed_without_review": "个别请求可能无法表达。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-TOTAL-AMOUNT",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.procedure.total_amount"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不输出标的总额。",
+      "source_supported_expectation": "官方表格含标的总额栏。",
+      "difference_description": "缺少标的总额输出。",
+      "risk_if_changed_without_review": "标的总额需人工合计。",
+      "potential_remediation": "评估是否新增计算与输出；属计算变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-EVIDENCE-STANDALONE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用生成独立的四列证据清单文档；起诉状内不含证据清单章节。",
+      "source_supported_expectation": "官方起诉状表格内含“证据清单（可另附页）”章节。",
+      "difference_description": "官方为起诉状内嵌章节，应用为独立文档；两者是否等价未经核实。",
+      "risk_if_changed_without_review": "不应假定独立文档已获官方认可。",
+      "potential_remediation": "保持独立文档现状；等价性须经法律/内容审查后再评估。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LEGAL-BASIS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.closing.legal_basis"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不在文书中列明法律条文依据。",
+      "source_supported_expectation": "官方表格含“请求依据（写明具体条文）”。",
+      "difference_description": "缺少法律依据输出。",
+      "risk_if_changed_without_review": "不列明条文可能影响说理完整性；具体条文须由人工确定。",
+      "potential_remediation": "不得自动插入法律条文；须人工填写并复核。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-MEDIATION-PREFERENCE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.mediation.preference"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集调解意愿。",
+      "source_supported_expectation": "官方表格含调解认知与是否考虑先行调解。",
+      "difference_description": "缺少调解意愿字段。",
+      "risk_if_changed_without_review": "程序性偏好未采集。",
+      "potential_remediation": "评估是否新增；属程序事项。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-ASOF-DATE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.claim.principal",
+        "loan.claim.interest"
+      ],
+      "application_field_ids": [
+        "loan.principal",
+        "loan.interest_rate",
+        "loan.interest_start_date"
+      ],
+      "observed_current_behavior": "应用按本金与利率计算利息并给出暂计截止日。",
+      "source_supported_expectation": "官方表格要求“截至某日止”的尚欠本金与尚欠利息，并可选择是否请求至实际清偿之日。",
+      "difference_description": "金额基准日与“至实际清偿之日”选项不完整。",
+      "risk_if_changed_without_review": "利息口径差异可能导致金额主张不一致。",
+      "potential_remediation": "评估是否新增基准日与选项；属计算口径变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-INTEREST-BASIS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "CALCULATION_RISK",
+      "severity": "HIGH",
+      "official_element_ids": [
+        "loan.fact.interest_rate"
+      ],
+      "application_field_ids": [
+        "loan.interest_rate"
+      ],
+      "observed_current_behavior": "应用按年利率百分比测算并提示人工核对利率适用性。",
+      "source_supported_expectation": "官方表格要求利率及计息周期（年/季/月）与合同条款号。",
+      "difference_description": "利率口径（年/季/月）与合同条款出处未采集。",
+      "risk_if_changed_without_review": "仅凭年利率可能不足以对应官方栏目。",
+      "potential_remediation": "不得改变现有计算；须人工核对后决定是否扩展输入。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-TERM",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.fact.term"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用采集借款发生日期，但不采集借款期限与是否到期。",
+      "source_supported_expectation": "官方表格含借款期限（是否到期、约定期限起止）。",
+      "difference_description": "缺少借款期限。",
+      "risk_if_changed_without_review": "到期/未到期的表述依据不足。",
+      "potential_remediation": "评估是否新增；须避免编造还款期限。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-REPAYMENT-METHOD",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.fact.repayment_method"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集还款方式。",
+      "source_supported_expectation": "官方表格含还款方式选项。",
+      "difference_description": "缺少还款方式。",
+      "risk_if_changed_without_review": "还款安排无法体现。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-REPAYMENT-STATUS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "HIGH",
+      "official_element_ids": [
+        "loan.fact.repayment_status"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集已还本金/已还利息/还息至。",
+      "source_supported_expectation": "官方表格要求已还本金、已还利息与还息截止。",
+      "difference_description": "缺少已还款信息；应用直接主张全额本金与测算利息。",
+      "risk_if_changed_without_review": "若存在部分还款，主张金额可能与实际不符。",
+      "potential_remediation": "需人工核对；不得自动假定零还款。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-OVERDUE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.fact.overdue"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集是否逾期及逾期时间。",
+      "source_supported_expectation": "官方表格含是否存在逾期还款及逾期时间。",
+      "difference_description": "缺少逾期状态。",
+      "risk_if_changed_without_review": "逾期事实依据不足。",
+      "potential_remediation": "评估是否新增；须避免编造逾期。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LOAN-SECURITY",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.fact.security_contract",
+        "loan.fact.guarantor",
+        "loan.fact.max_security",
+        "loan.fact.registration",
+        "loan.fact.guarantee_contract",
+        "loan.claim.security"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集担保（抵押、质押、保证）相关信息。",
+      "source_supported_expectation": "官方表格含物的担保、保证合同、担保人/物、最高额担保与登记情况。",
+      "difference_description": "担保事实与担保权利主张均未采集。",
+      "risk_if_changed_without_review": "有担保的借贷无法完整表达。",
+      "potential_remediation": "评估是否新增；属结构性扩展，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-FORMATION",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.fact.contract_formation"
+      ],
+      "application_field_ids": [
+        "contract.contract_name"
+      ],
+      "observed_current_behavior": "应用仅采集合同名称与签订日期。",
+      "source_supported_expectation": "官方表格要求合同名称、编号、签订时间与地点，且无书面合同时须注明。",
+      "difference_description": "合同编号/地点/无书面合同情形未采集。",
+      "risk_if_changed_without_review": "合同成立要素不完整。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-ROLE-LABELLING",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "SEMANTIC_DIFFERENCE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.fact.contracting_parties"
+      ],
+      "application_field_ids": [
+        "shared.party.plaintiff.name"
+      ],
+      "observed_current_behavior": "应用以原告/被告角色表述。",
+      "source_supported_expectation": "官方表格以出卖人（卖方）/买受人（买方）表述。",
+      "difference_description": "角色标签语义不同。",
+      "risk_if_changed_without_review": "买卖方向在文中不明确。",
+      "potential_remediation": "评估是否补充买卖方向表述；不得改变当事人事实。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-SUBJECT",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.fact.subject_matter"
+      ],
+      "application_field_ids": [
+        "contract.product_name"
+      ],
+      "observed_current_behavior": "应用采集产品名称及数量（单一文本）。",
+      "source_supported_expectation": "官方表格要求标的物名称、规格、质量、数量。",
+      "difference_description": "规格与质量未结构化采集。",
+      "risk_if_changed_without_review": "标的物描述可能不完整。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PAYMENT-TERMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.fact.price_payment_terms"
+      ],
+      "application_field_ids": [
+        "contract.total_amount"
+      ],
+      "observed_current_behavior": "应用采集合同总金额。",
+      "source_supported_expectation": "官方表格要求单价、总价、支付方式与一次性/分期。",
+      "difference_description": "单价与支付方式未采集。",
+      "risk_if_changed_without_review": "价款约定不完整。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-DELIVERY-TERMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.fact.delivery_terms"
+      ],
+      "application_field_ids": [
+        "contract.delivery_date",
+        "contract.is_delivered"
+      ],
+      "observed_current_behavior": "应用采集交货日期与三态交货状态。",
+      "source_supported_expectation": "官方表格要求交货时间、地点、方式、风险承担、安装、调试、验收。",
+      "difference_description": "地点/方式/风险/验收未采集。",
+      "risk_if_changed_without_review": "交付义务描述不完整。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-DEMAND",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "contract.fact.demand"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用在买卖合同中没有催告字段（此前已移除无条件催告表述）。",
+      "source_supported_expectation": "官方表格含“是否催促过履行”及催促时间与方式。",
+      "difference_description": "官方有催告要素，应用无对应输入，故不输出催告。",
+      "risk_if_changed_without_review": "若未来新增，必须由用户确认，不得恢复默认催告。",
+      "potential_remediation": "保持现状；新增须以用户确认为前提。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-QUALITY",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.fact.quality_terms",
+        "contract.fact.quality_dispute",
+        "contract.fact.nonconformity",
+        "contract.fact.negotiation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集质量约定、质量争议与协商情况。",
+      "source_supported_expectation": "官方表格含质量标准/检验/异议期限及质量争议相关要素。",
+      "difference_description": "质量相关要素全部缺失。",
+      "risk_if_changed_without_review": "涉及质量争议的案件无法完整表达。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-CONTRACT-BUYER-CLAIMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "contract.claim.seller_breach",
+        "contract.claim.defect_liability",
+        "contract.claim.performance_or_termination"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用仅支持货款与违约金请求。",
+      "source_supported_expectation": "官方表格另有卖方违约损失赔偿、瑕疵责任、继续履行或解除合同等请求。",
+      "difference_description": "买方视角请求未覆盖。",
+      "risk_if_changed_without_review": "买方场景支持不足。",
+      "potential_remediation": "评估是否扩展；属产品范围变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-TERM-SEMANTICS",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "SEMANTIC_DIFFERENCE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.fact.service_term"
+      ],
+      "application_field_ids": [
+        "property.period_start",
+        "property.period_end"
+      ],
+      "observed_current_behavior": "应用的起止日期表示“欠费期间”。",
+      "source_supported_expectation": "官方表格的起止日期表示“约定的物业服务期限”。",
+      "difference_description": "字段名相似但语义不同。",
+      "risk_if_changed_without_review": "若直接套用会造成语义错配。",
+      "potential_remediation": "记录语义差异；不得复用现有字段表示不同含义。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-OWNER",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.fact.project"
+      ],
+      "application_field_ids": [
+        "property.property_addr",
+        "property.house_area"
+      ],
+      "observed_current_behavior": "应用采集地址与建筑面积，并已将业主/使用人身份改为待核对表述。",
+      "source_supported_expectation": "官方表格要求物业项目坐落位置、面积与所有权人。",
+      "difference_description": "缺少所有权人字段。",
+      "risk_if_changed_without_review": "业主身份与责任依据需人工核对。",
+      "potential_remediation": "保持现有“待人工核对”表述；新增字段须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PAYMENT-METHOD",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.fact.payment_method"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集约定的物业费支付方式。",
+      "source_supported_expectation": "官方表格含约定的物业费支付方式。",
+      "difference_description": "缺少支付方式。",
+      "risk_if_changed_without_review": "缴费约定不完整。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PENALTY-AMOUNT",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "property.fact.penalty_amount",
+        "property.fact.penalty_standard"
+      ],
+      "application_field_ids": [
+        "property.late_fee_logic"
+      ],
+      "observed_current_behavior": "应用以自由文本采集违约金/滞纳金计算方式，不单独采集违约金数额。",
+      "source_supported_expectation": "官方表格要求违约金标准与应付违约金数额及计算方式。",
+      "difference_description": "缺少违约金数额字段。",
+      "risk_if_changed_without_review": "违约金金额需人工填写。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-LEGAL-BASIS",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "property.closing.legal_basis"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不输出合同约定与法律规定的依据。",
+      "source_supported_expectation": "官方表格含请求依据（合同约定、法律规定）。",
+      "difference_description": "缺少依据输出。",
+      "risk_if_changed_without_review": "依据需人工填写。",
+      "potential_remediation": "不得自动生成法律依据。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-PROPERTY-SCOPE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "INFORMATIONAL",
+      "official_element_ids": [
+        "property.fact.other"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用的物业场景聚焦物业费催收。",
+      "source_supported_expectation": "官方物业服务合同纠纷表格覆盖更广的物业服务争议要素。",
+      "difference_description": "应用范围窄于官方表格的全部要素。",
+      "risk_if_changed_without_review": "不应假定全部官方要素均适用于催收场景。",
+      "potential_remediation": "记录为有意的范围限制；不扩展范围。",
+      "legal_review_required": false,
+      "engineering_review_required": false,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-ARBITRATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "HIGH",
+      "official_element_ids": [
+        "labor.fact.arbitration"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用通过提示告知劳动仲裁前置程序，但不采集仲裁申请时间/请求/结果。",
+      "source_supported_expectation": "官方劳动争议起诉状表格要求填写劳动仲裁相关情况。",
+      "difference_description": "程序性事实未采集；且仲裁与诉讼的适用关系未决。",
+      "risk_if_changed_without_review": "程序适用性未经核实，直接改写可能产生误导。",
+      "potential_remediation": "必须经法律审查确认程序适用性；本阶段不实现。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-CLAIM-SCOPE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.claim.annual_leave",
+        "labor.claim.social_insurance_loss",
+        "labor.claim.termination_compensation",
+        "labor.claim.illegal_termination"
+      ],
+      "application_field_ids": [
+        "labor.social_sec_info"
+      ],
+      "observed_current_behavior": "应用支持欠薪、加班费与二倍工资；社保信息仅记录不生成请求。",
+      "source_supported_expectation": "官方表格另有年休假工资、社保损失、解除经济补偿、违法解除赔偿金。",
+      "difference_description": "四类请求未实现。",
+      "risk_if_changed_without_review": "劳动者部分常见诉求无法表达。",
+      "potential_remediation": "评估是否扩展；属产品范围变更，须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-PERFORMANCE-DETAIL",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "labor.fact.performance"
+      ],
+      "application_field_ids": [
+        "labor.emp_join_date",
+        "labor.job_title",
+        "labor.monthly_salary"
+      ],
+      "observed_current_behavior": "应用采集入职日期、岗位、月工资与欠薪区间。",
+      "source_supported_expectation": "官方表格还要求工作地点、工资构成、社保办理、加班基数与年休假等。",
+      "difference_description": "履行细节不完整。",
+      "risk_if_changed_without_review": "事实描述可能不足以对应官方要素。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-TERMINATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.fact.termination"
+      ],
+      "application_field_ids": [
+        "labor.emp_term_date"
+      ],
+      "observed_current_behavior": "应用仅采集离职/截止日期。",
+      "source_supported_expectation": "官方表格要求解除或终止的原因及经济补偿/赔偿金数额。",
+      "difference_description": "解除原因未采集。",
+      "risk_if_changed_without_review": "劳动关系终止描述不完整。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-LABOR-WORK-INJURY",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "labor.fact.work_injury"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集工伤情况。",
+      "source_supported_expectation": "官方表格含工伤时间、认定、伤残等级与费用。",
+      "difference_description": "工伤要素缺失。",
+      "risk_if_changed_without_review": "工伤案件无法表达。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-COMBINED-SCOPE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "PROCEDURAL_APPLICABILITY",
+      "severity": "HIGH",
+      "official_element_ids": [
+        "divorce.claim.dissolution",
+        "divorce.claim.property",
+        "divorce.claim.custody",
+        "divorce.claim.support",
+        "divorce.claim.visitation",
+        "divorce.claim.damages_compensation"
+      ],
+      "application_field_ids": [
+        "divorce.child_name",
+        "divorce.custody_preference",
+        "divorce.support_monthly",
+        "divorce.asset_description"
+      ],
+      "observed_current_behavior": "应用以单一“离婚析产/抚养费纠纷”类别覆盖离婚、抚养、抚养费与财产分割。",
+      "source_supported_expectation": "官方离婚纠纷表格将上述请求作为同一表格内的分项要素。",
+      "difference_description": "范围可能一致，但应用缺少探望权、离婚损害赔偿/经济补偿/经济帮助等分项。",
+      "risk_if_changed_without_review": "直接改写可能遗漏或错误合并请求。",
+      "potential_remediation": "须经法律审查确认范围对应关系。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-PROPERTY-STRUCTURE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.fact.property",
+        "divorce.claim.property"
+      ],
+      "application_field_ids": [
+        "divorce.asset_description"
+      ],
+      "observed_current_behavior": "应用以单一自由文本描述财产分割方案。",
+      "source_supported_expectation": "官方表格按房屋/汽车/存款/其他分项列明并标注归属。",
+      "difference_description": "结构化程度不同。",
+      "risk_if_changed_without_review": "财产明细可能不完整。",
+      "potential_remediation": "评估是否结构化；须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-DEBT",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.fact.debt",
+        "divorce.claim.debt"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集夫妻共同债务。",
+      "source_supported_expectation": "官方表格含夫妻共同债务及承担主体。",
+      "difference_description": "共同债务要素缺失。",
+      "risk_if_changed_without_review": "涉及债务的案件无法表达。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-VISITATION",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.fact.visitation",
+        "divorce.claim.visitation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集探望权。",
+      "source_supported_expectation": "官方表格含探望权行使主体与方式。",
+      "difference_description": "探望权要素缺失。",
+      "risk_if_changed_without_review": "探望权诉求无法表达。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-DAMAGES",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_INPUT",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.fact.damages",
+        "divorce.claim.damages_compensation"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不采集离婚损害赔偿/经济补偿/经济帮助。",
+      "source_supported_expectation": "官方表格含上述三类请求及金额。",
+      "difference_description": "该三类请求缺失。",
+      "risk_if_changed_without_review": "相关诉求无法表达。",
+      "potential_remediation": "评估是否新增；须单独授权。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-DIVORCE-MARRIAGE-FACTS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "gap_category": "PARTIAL_FIELD_COVERAGE",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "divorce.fact.marriage"
+      ],
+      "application_field_ids": [
+        "divorce.marriage_date",
+        "divorce.divorce_reason",
+        "divorce.separation_start_date"
+      ],
+      "observed_current_behavior": "应用采集结婚日期、离婚原因与分居起始日。",
+      "source_supported_expectation": "官方表格还要求生育子女情况、双方生活情况、之前有无提起过离婚诉讼。",
+      "difference_description": "若干婚姻关系要素未采集。",
+      "risk_if_changed_without_review": "婚姻关系描述可能不完整。",
+      "potential_remediation": "评估是否新增；不得编造婚姻破裂事由。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-ENFORCEMENT-COST",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "MISSING_OUTPUT",
+      "severity": "LOW",
+      "official_element_ids": [
+        "loan.claim.enforcement_cost"
+      ],
+      "application_field_ids": [],
+      "observed_current_behavior": "应用不主张实现债权的费用。",
+      "source_supported_expectation": "官方表格含是否主张实现债权的费用。",
+      "difference_description": "该请求未实现。",
+      "risk_if_changed_without_review": "部分费用无法主张。",
+      "potential_remediation": "评估是否新增。",
+      "legal_review_required": false,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "loan",
+      "document_type": "evidence_list",
+      "gap_category": "EVIDENCE_PRESENTATION",
+      "severity": "MEDIUM",
+      "official_element_ids": [
+        "loan.evidence.list"
+      ],
+      "application_field_ids": [
+        "shared.evidence.rows"
+      ],
+      "observed_current_behavior": "应用输出独立四列证据清单（序号/证据名称/证明对象·目的/备注）。",
+      "source_supported_expectation": "官方起诉状内仅含“证据清单（可另附页）”章节，未发现独立的官方证据清单文书。",
+      "difference_description": "独立文书的官方等价性未经核实。",
+      "risk_if_changed_without_review": "不得声称独立证据清单已获官方认可。",
+      "potential_remediation": "保持现状；等价性须经法律/内容审查。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "loan",
+      "document_type": "service_address_confirmation",
+      "gap_category": "SOURCE_VERIFICATION_GAP",
+      "severity": "MEDIUM",
+      "official_element_ids": [],
+      "application_field_ids": [
+        "shared.party.plaintiff.address",
+        "shared.party.plaintiff.phone"
+      ],
+      "observed_current_behavior": "应用输出独立送达地址确认书。",
+      "source_supported_expectation": "在被检查的官方示范文本 PDF（975 页）中未出现“送达地址”字样。",
+      "difference_description": "在被检查来源中无对应文书；不代表其他官方材料中不存在。",
+      "risk_if_changed_without_review": "送达地址文书的官方依据未知。",
+      "potential_remediation": "须检索其他官方材料并人工核对。",
+      "legal_review_required": true,
+      "engineering_review_required": true,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    },
+    {
+      "gap_id": "GAP-SOURCE-VERSION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "gap_category": "SOURCE_VERIFICATION_GAP",
+      "severity": "LOW",
+      "official_element_ids": [],
+      "application_field_ids": [],
+      "observed_current_behavior": "本分析基于 2025-06-22 上传的通知 PDF（975 页，sha256 已核验）。",
+      "source_supported_expectation": "未发现可独立确认的后续修订版本。",
+      "difference_description": "版本状态未决。",
+      "risk_if_changed_without_review": "若存在新版，字段可能不同。",
+      "potential_remediation": "须定期复核官方发布。",
+      "legal_review_required": false,
+      "engineering_review_required": false,
+      "source_evidence": "spc-2025-notice-pdf sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+      "code_evidence": "revision 639179933c51f111ea43060157e897fa0a1e4d30",
+      "review_status": "NOT_REQUESTED"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "ledger_version": "1.0.0",
+  "repository": "https://github.com/YGone-001/civil-filing-assistant.git",
+  "analyzed_revision": "639179933c51f111ea43060157e897fa0a1e4d30",
+  "source_id": "spc-2025-notice-pdf",
+  "retrieval": {
+    "official_download_url": "https://www.court.gov.cn/upload/file/2025/06/22/17/43/202506221742_01.pdf",
+    "linking_official_publication_url": "https://www.court.gov.cn/zixun/xiangqing/468671.html",
+    "retrieval_date": "2026-10-10",
+    "http_outcome": "HTTP GET returned 200 and the full body; a HEAD request to the same URL returned 403 (recorded as an access quirk, not a failure of the GET).",
+    "local_temporary_path": "<temporary directory outside the repository; not committed>",
+    "file_size_bytes": 6832359,
+    "pdf_page_count": 975,
+    "sha256": "07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+    "pdf_version": "1.7",
+    "text_extraction_capability": "PARTIAL — embedded CID fonts; many pages extract cleanly while a minority return no text (e.g. physical pages 1-5, 14-20).",
+    "pages_visually_inspected": false,
+    "page_numbering_convention": "1-based physical PDF page. Where the document also prints an internal page number, it is recorded separately as printed_page_number.",
+    "extraction_tooling": "pypdf in the project virtual environment, used for development-time inspection only; no application dependency was added."
+  },
+  "registry_hash_comparison": {
+    "registry_source_id": "spc-2025-notice-pdf",
+    "registry_recorded_sha256": "07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+    "independently_computed_sha256": "07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+    "SOURCE_HASH_MATCH": "PASS",
+    "note": "The registry claim was re-verified by retrieving the file again on 2026-10-10 and hashing the retrieved bytes. The registry was not modified."
+  },
+  "version_check": {
+    "later_revision_found": false,
+    "observation": "The notice announces nationwide use of 67 demonstration-text categories from 2025-07-14 and states that the texts will be optimised dynamically. No separately identifiable later authoritative revision of the same document was retrieved during this analysis.",
+    "decision": "UNRESOLVED_AND_RECORDED — the analysis is scoped to the retrieved 2025-06-22 upload; a future revision would require a fresh ledger.",
+    "unverified_claims": [
+      "Whether the uploaded file has been replaced in place without a URL change is not established.",
+      "Whether provincial reproductions differ from the central file is not established."
+    ]
+  },
+  "category_locations": [
+    {"case_type": "divorce", "official_category_title": "离婚纠纷", "complaint_form_pages": [57, 60], "printed_pages": [41, 44], "answer_form_pages": [61, 63], "complaint_example_pages": [64, 67], "answer_example_pages": [68, 70]},
+    {"case_type": "contract", "official_category_title": "买卖合同纠纷", "complaint_form_pages": [71, 76], "printed_pages": [55, 60], "answer_form_pages": [77, 81], "complaint_example_pages": [82, 87], "answer_example_pages": [88, 92], "note": "A distinct 房屋买卖合同纠纷 category follows at physical pages 93-98 and was deliberately NOT merged into the contract analysis."},
+    {"case_type": "loan", "official_category_title": "民间借贷纠纷", "complaint_form_pages": [134, 139], "printed_pages": [118, 123], "answer_form_pages": [140, 143], "complaint_example_pages": [144, 147], "answer_example_pages": [148, 151]},
+    {"case_type": "property", "official_category_title": "物业服务合同纠纷", "complaint_form_pages": [233, 236], "printed_pages": [217, 220], "answer_form_pages": [237, 240], "complaint_example_pages": [241, 244], "answer_example_pages": [245, 247]},
+    {"case_type": "labor", "official_category_title": "劳动争议纠纷", "complaint_form_pages": [248, 251], "printed_pages": [232, 235], "answer_form_pages": [252, 254], "complaint_example_pages": [255, 258], "answer_example_pages": [259, 262]}
+  ],
+  "corrections_to_prior_hints": [
+    {"prior_hint": "loan complaint starting page 134", "independent_result": "confirmed — physical page 134", "status": "CONFIRMED"},
+    {"prior_hint": "contract complaint starting page 71", "independent_result": "confirmed — physical page 71 (blank 买卖合同纠纷 form)", "status": "CONFIRMED"},
+    {"prior_hint": "property complaint starting page 233", "independent_result": "confirmed — physical page 233", "status": "CONFIRMED"},
+    {"prior_hint": "labor complaint starting page 248", "independent_result": "confirmed — physical page 248", "status": "CONFIRMED"},
+    {"prior_hint": "divorce complaint starting page 57", "independent_result": "confirmed — physical page 57", "status": "CONFIRMED"}
+  ],
+  "service_address_search": {
+    "search_term": "送达地址",
+    "pages_matching": 0,
+    "scanned_pages": 975,
+    "conclusion": "The inspected official demonstration-text PDF contains no service-address confirmation document. This is a statement about THIS source only and must not be generalised to all official court materials."
+  },
+  "evidence_section_search": {
+    "search_term": "证据清单",
+    "pages_matching": 211,
+    "conclusion": "证据清单 appears as an embedded section inside the demonstration texts, not as a standalone official document."
+  },
+  "redistribution_boundary": {
+    "file_committed_to_repository": false,
+    "committed_artifacts": "Short element labels, physical page pointers, semantic summaries and source references only.",
+    "not_committed": ["the official PDF", "any official DOCX", "page images", "bulk extracted text", "verbatim reproductions of form text"],
+    "rights_review_status": "NOT_REVIEWED"
+  }
+}
