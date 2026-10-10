@@ -18,6 +18,8 @@ written into the real registries and are never a real legal approval.
 """
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -80,8 +82,11 @@ def _synthetic_approved_source(**overrides):
 
 
 def _valid_mapping(case_type="loan", document_type="civil_complaint", **overrides):
+    def _slug(value):
+        return value.replace("_", "-") if isinstance(value, str) else type(value).__name__
+
     mapping = {
-        "mapping_id": f"map-{case_type}-{document_type.replace('_', '-')}",
+        "mapping_id": f"map-{_slug(case_type)}-{_slug(document_type)}",
         "case_type": case_type,
         "document_type": document_type,
         "current_generator": "utils/doc_generator.py :: export_x",
@@ -590,3 +595,307 @@ def test_validator_does_not_crash_on_malformed_approval_metadata(tmp_path):
         ),
     )
     assert issues, "malformed approval metadata must be reported"
+
+
+# --- Phase 1-A-D: type-safe malformed-metadata handling ----------------------
+# JSON arrays/objects are unhashable in Python. Every one of these fixtures used
+# to raise `TypeError: unhashable type`; they must now return validation issues.
+
+MALFORMED_VALUES = [[], {"a": 1}, 5, True]
+MALFORMED_IDS = ["list", "dict", "int", "bool"]
+
+
+def _type_name(value):
+    return type(value).__name__
+
+
+# C1 — approved_source_id on an *unapproved* mapping
+
+
+@pytest.mark.parametrize("value", MALFORMED_VALUES, ids=MALFORMED_IDS)
+def test_unapproved_mapping_rejects_malformed_approved_source_id(tmp_path, value):
+    """C1-T05..T08: list/dict/number/boolean references are rejected, not fatal."""
+    mapping = _valid_mapping(approved_source_id=value)
+    issues = _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping))
+    assert any(
+        "approved_source_id" in issue and _type_name(value) in issue for issue in issues
+    ), issues
+
+
+@pytest.mark.parametrize("value", ["", "   ", "\t\n"], ids=["empty", "spaces", "whitespace"])
+def test_unapproved_mapping_rejects_blank_approved_source_id(tmp_path, value):
+    """C1-T09: empty and whitespace-only references are rejected."""
+    mapping = _valid_mapping(approved_source_id=value)
+    issues = _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping))
+    assert any("approved_source_id" in issue for issue in issues), issues
+
+
+def test_unapproved_mapping_accepts_absent_approved_source_id(tmp_path):
+    """C1-T01: the field is optional for unapproved mappings."""
+    mapping = _valid_mapping()
+    assert "approved_source_id" not in mapping
+    assert _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping)) == []
+
+
+def test_unapproved_mapping_accepts_null_approved_source_id(tmp_path):
+    """C1-T02: an explicit null is valid."""
+    mapping = _valid_mapping(approved_source_id=None)
+    assert _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping)) == []
+
+
+def test_unapproved_mapping_accepts_existing_string_reference(tmp_path):
+    """C1-T03: an existing string reference preserves the established contract."""
+    mapping = _valid_mapping(approved_source_id="test-source")
+    assert _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping)) == []
+
+
+def test_unapproved_mapping_rejects_unknown_string_reference(tmp_path):
+    """C1-T04: an unknown string reference is a validation issue."""
+    mapping = _valid_mapping(approved_source_id="ghost-source")
+    issues = _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping))
+    assert any("does not exist in the source registry" in issue for issue in issues), issues
+
+
+def test_c1_t10_approved_source_validation_remains_enforced(tmp_path):
+    """C1-T10: the approval-path checks are unchanged."""
+    issues = _approval_issues(
+        tmp_path,
+        _synthetic_approved_source(),
+        approved=_approved_mapping(approved_source_id="ghost-source"),
+    )
+    assert any("does not exist in the source registry" in issue for issue in issues)
+
+
+# C2 — candidate_source_ids elements
+
+
+@pytest.mark.parametrize(
+    "value",
+    [["nested"], {"source_id": "x"}, 123, True, None, "", "   "],
+    ids=["list", "dict", "int", "bool", "null", "empty", "whitespace"],
+)
+def test_candidate_sources_reject_malformed_elements(tmp_path, value):
+    """C2-T03..T09: every malformed element type is rejected with an index."""
+    mapping = _valid_mapping(candidate_source_ids=[value])
+    issues = _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping))
+    assert any("candidate_source_ids[0]" in issue for issue in issues), issues
+
+
+def test_candidate_sources_accept_empty_and_valid_lists(tmp_path):
+    """C2-T01/T02: empty lists and real IDs remain valid."""
+    assert _issues(tmp_path, [_valid_source()], _fixture_mappings(_valid_mapping())) == []
+    mapping = _valid_mapping(candidate_source_ids=["test-source"])
+    assert _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping)) == []
+
+
+def test_candidate_sources_reject_unknown_string_id(tmp_path):
+    """C2-T10: an unknown string ID is still rejected."""
+    mapping = _valid_mapping(candidate_source_ids=["does-not-exist"])
+    issues = _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping))
+    assert any("unknown source_id" in issue for issue in issues), issues
+
+
+def test_candidate_sources_report_every_malformed_element(tmp_path):
+    """C2-T11: multiple malformed elements are reported independently."""
+    mapping = _valid_mapping(candidate_source_ids=[["a"], {"b": 1}, 7])
+    issues = _issues(tmp_path, [_valid_source()], _fixture_mappings(mapping))
+    for index in (0, 1, 2):
+        assert any(f"candidate_source_ids[{index}]" in issue for issue in issues), issues
+
+
+def test_c2_t12_malformed_candidate_cannot_authorize_an_approved_mapping(tmp_path):
+    """C2-T12: a malformed candidate can never support an approval."""
+    issues = _approval_issues(
+        tmp_path,
+        _synthetic_approved_source(),
+        approved=_approved_mapping(candidate_source_ids=[[SYNTHETIC_SOURCE_ID]]),
+    )
+    assert any("candidate_source_ids[0]" in issue for issue in issues), issues
+    assert any("not among candidate_source_ids" in issue for issue in issues), issues
+
+
+# C3 / C4 — enumeration fields
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["source_type", "verification_status", "source_level", "legal_or_copyright_review_status"],
+)
+@pytest.mark.parametrize("value", MALFORMED_VALUES, ids=MALFORMED_IDS)
+def test_source_enums_reject_unhashable_values(tmp_path, field, value):
+    """C3-T01..T09: source enumeration fields are type-checked before membership."""
+    issues = _issues(tmp_path, [_valid_source(**{field: value})], _all_mappings())
+    assert any(field in issue and _type_name(value) in issue for issue in issues), issues
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["case_type", "document_type", "mapping_status", "approval_status"],
+)
+@pytest.mark.parametrize("value", MALFORMED_VALUES, ids=MALFORMED_IDS)
+def test_mapping_enums_reject_unhashable_values(tmp_path, field, value):
+    """C4-T01..T09: mapping enumeration fields are type-checked before membership."""
+    mapping = _valid_mapping(**{field: value})
+    issues = _issues(tmp_path, [_valid_source()], [mapping])
+    assert any(field in issue and _type_name(value) in issue for issue in issues), issues
+
+
+def test_mapping_enums_reject_null_for_required_fields(tmp_path):
+    """C4: required enumeration fields reject an explicit null."""
+    for field in ("case_type", "document_type", "mapping_status", "approval_status"):
+        issues = _issues(tmp_path, [_valid_source()], [_valid_mapping(**{field: None})])
+        assert any(field in issue for issue in issues), (field, issues)
+
+
+def test_source_enums_allow_null_only_for_source_level(tmp_path):
+    """C3-T11: source_level may be null; the other enums may not."""
+    ok = _issues(tmp_path, [_valid_source(source_level=None)], _all_mappings())
+    assert ok == []
+    for field in ("source_type", "verification_status", "legal_or_copyright_review_status"):
+        issues = _issues(tmp_path, [_valid_source(**{field: None})], _all_mappings())
+        assert any(field in issue for issue in issues), (field, issues)
+
+
+def test_malformed_case_type_does_not_break_combination_tracking(tmp_path):
+    """C4-T10: an invalid case type is reported without an unsafe dict key."""
+    mappings = _all_mappings()
+    mappings[0]["case_type"] = []
+    issues = _issues(tmp_path, [_valid_source()], mappings)
+    assert any("case_type" in issue for issue in issues), issues
+    assert any("missing case-document combinations" in issue for issue in issues), issues
+
+
+# C3 — approval prerequisites must not raise
+
+
+def test_approved_source_prerequisites_handle_malformed_fields(tmp_path):
+    """C3-T10: a malformed source claiming approval produces issues, not exceptions."""
+    source = _synthetic_approved_source(
+        source_type=[],
+        source_level={},
+        legal_or_copyright_review_status=[],
+        content_hash_if_verified={},
+    )
+    issues = _issues(tmp_path, [source], _all_mappings())
+    assert issues, "malformed approved source must produce issues"
+    assert any("source_type" in issue for issue in issues), issues
+    assert any("source_level" in issue for issue in issues), issues
+
+
+def test_malformed_source_cannot_authorize_an_approved_mapping(tmp_path):
+    """A malformed source selected by an approved mapping is rejected safely."""
+    issues = _approval_issues(tmp_path, _synthetic_approved_source(source_type=[]))
+    assert any("not eligible for approval" in issue for issue in issues), issues
+
+
+def test_approved_source_prerequisites_is_directly_type_safe():
+    """The prerequisite helper itself must never raise on malformed input."""
+    malformed = {
+        "source_type": [],
+        "source_level": {},
+        "verification_status": ["x"],
+        "content_hash_if_verified": {},
+        "legal_or_copyright_review_status": [],
+        "content_review_evidence": 5,
+        "mapping_review_evidence": {},
+        "legal_content_review_evidence": [],
+        "approval_evidence": True,
+    }
+    reasons = ctg.source_approval_prerequisites(malformed)
+    assert reasons, "a malformed source must never be reported as eligible"
+
+
+# C5 — diagnostics, determinism, CLI
+
+
+def test_validator_reports_multiple_malformed_records(tmp_path):
+    """C5-T03: several malformed records all yield stable diagnostics."""
+    sources = [
+        _valid_source(source_id="bad-source-1", source_type=[]),
+        _valid_source(source_id="bad-source-2", verification_status={}),
+    ]
+    mappings = _fixture_mappings(_valid_mapping(candidate_source_ids=[["nested"]]))
+    issues = _issues(tmp_path, sources, mappings)
+    assert any("bad-source-1" in issue for issue in issues), issues
+    assert any("bad-source-2" in issue for issue in issues), issues
+    assert any("candidate_source_ids[0]" in issue for issue in issues), issues
+
+
+@pytest.mark.parametrize(
+    "sources,mappings",
+    [
+        ([_valid_source(source_type=[])], None),
+        ([_valid_source()], "malformed-approved-source"),
+        ([_valid_source(verification_status={})], None),
+    ],
+    ids=["malformed-source", "malformed-approved-ref", "malformed-enum"],
+)
+def test_validator_malformed_inputs_are_deterministic(tmp_path, sources, mappings):
+    """C5-T04: repeated validation of the same malformed fixture is identical."""
+    if mappings == "malformed-approved-source":
+        mappings = _fixture_mappings(_valid_mapping(approved_source_id=["x"]))
+    elif mappings is None:
+        mappings = _all_mappings()
+
+    source_path, mapping_path = _write_pair(tmp_path, sources, mappings)
+    first = ctg.validate_registries(source_path, mapping_path)
+    second = ctg.validate_registries(source_path, mapping_path)
+    assert first == second
+    assert first, "malformed fixtures must produce issues"
+
+
+def _run_cli(tmp_path, sources, mappings):
+    source_path, mapping_path = _write_pair(tmp_path, sources, mappings)
+    return subprocess.run(
+        [sys.executable, "tools/check_template_governance.py",
+         "--source-registry", str(source_path),
+         "--mapping-registry", str(mapping_path)],
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        text=True,
+    )
+
+
+def test_validator_cli_rejects_malformed_metadata(tmp_path):
+    """C5-T05/T06: nonzero exit, a specific error, and no traceback."""
+    result = _run_cli(
+        tmp_path,
+        [_valid_source(source_type=[])],
+        _fixture_mappings(_valid_mapping(candidate_source_ids=[["nested"]])),
+    )
+    assert result.returncode != 0
+    assert "FAIL" in result.stdout
+    assert "source_type" in result.stdout
+    assert "candidate_source_ids[0]" in result.stdout
+    assert "Traceback" not in result.stdout
+    assert "Traceback" not in result.stderr
+    assert "OK   template governance metadata is valid" not in result.stdout
+
+
+def test_validator_cli_accepts_the_real_registries():
+    """C5-T07: the real registries still exit 0 with the success message."""
+    result = subprocess.run(
+        [sys.executable, "tools/check_template_governance.py"],
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0
+    assert "OK   template governance metadata is valid" in result.stdout
+
+
+def test_validator_does_not_modify_the_registries(tmp_path):
+    """C5-T08: validation is read-only."""
+    source_path, mapping_path = _write_pair(tmp_path, [_valid_source()], _all_mappings())
+    before = (source_path.read_bytes(), mapping_path.read_bytes())
+    ctg.validate_registries(source_path, mapping_path)
+    assert (source_path.read_bytes(), mapping_path.read_bytes()) == before
+
+
+def test_existing_approval_integrity_remains_enforced(tmp_path):
+    """The malformed-input hardening must not bypass any approval check."""
+    assert _approval_issues(tmp_path, _synthetic_approved_source()) == []
+    # A well-formed but ineligible approval must still be rejected.
+    weak = _synthetic_approved_source(verification_status="SOURCE_FILE_VERIFIED")
+    issues = _approval_issues(tmp_path, weak)
+    assert any("not eligible for approval" in issue for issue in issues), issues

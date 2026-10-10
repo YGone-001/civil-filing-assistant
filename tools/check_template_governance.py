@@ -192,6 +192,36 @@ def _nonempty_str(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def _check_enum_field(
+    label: str,
+    field: str,
+    value: Any,
+    allowed: frozenset,
+    issues: List[str],
+    *,
+    optional: bool = False,
+    unknown_word: str = "unknown",
+) -> bool:
+    """Type-safe enumeration check.
+
+    Returns ``True`` only when *value* is an allowed string member. JSON arrays
+    and objects are unhashable, so the type is established **before** any set
+    membership test. ``optional=True`` additionally accepts an explicit ``null``.
+    """
+    if value is None:
+        if optional:
+            return True
+        issues.append(f"{label}: {field} must be a string, got null")
+        return False
+    if not isinstance(value, str):
+        issues.append(f"{label}: {field} must be a string, got {type(value).__name__}")
+        return False
+    if value not in allowed:
+        issues.append(f"{label}: {unknown_word} {field} {value!r}")
+        return False
+    return True
+
+
 def _load_json(path: Path, issues: List[str]) -> Optional[Dict[str, Any]]:
     try:
         with open(path, "r", encoding="utf-8") as handle:
@@ -244,13 +274,13 @@ def source_approval_prerequisites(source: Dict[str, Any]) -> List[str]:
     reasons: List[str] = []
 
     source_type = source.get("source_type")
-    if source_type not in ELIGIBLE_APPROVAL_SOURCE_TYPES:
+    if not (isinstance(source_type, str) and source_type in ELIGIBLE_APPROVAL_SOURCE_TYPES):
         reasons.append(
             f"source_type {source_type!r} is not an official template source"
         )
 
     level = source.get("source_level")
-    if level not in ELIGIBLE_APPROVAL_SOURCE_LEVELS:
+    if not (isinstance(level, str) and level in ELIGIBLE_APPROVAL_SOURCE_LEVELS):
         reasons.append(f"source_level {level!r} is not an official level A/B source")
 
     status = source.get("verification_status")
@@ -262,7 +292,8 @@ def source_approval_prerequisites(source: Dict[str, Any]) -> List[str]:
     if not _nonempty_str(source.get("content_hash_if_verified")):
         reasons.append("no verified content hash")
 
-    if source.get("legal_or_copyright_review_status") not in COMPLETED_LEGAL_REVIEW_STATUSES:
+    legal_review = source.get("legal_or_copyright_review_status")
+    if not (isinstance(legal_review, str) and legal_review in COMPLETED_LEGAL_REVIEW_STATUSES):
         reasons.append("legal/content review is not completed")
 
     for field in SOURCE_APPROVAL_EVIDENCE_FIELDS:
@@ -309,21 +340,22 @@ def _check_sources(sources: Any, issues: List[str]) -> Dict[str, Dict[str, Any]]
         elif sid is not None:
             issues.append(f"{label}: source_id must be a string")
 
-        source_type = source.get("source_type")
-        if source_type is not None and source_type not in SOURCE_TYPES:
-            issues.append(f"{label}: unknown source_type {source_type!r}")
+        if "source_type" in source:
+            _check_enum_field(label, "source_type", source.get("source_type"), SOURCE_TYPES, issues)
 
         status = source.get("verification_status")
-        if status is not None and status not in VERIFICATION_STATES:
-            issues.append(f"{label}: invalid verification_status {status!r}")
+        if "verification_status" in source:
+            _check_enum_field(label, "verification_status", status, VERIFICATION_STATES,
+                              issues, unknown_word="invalid")
 
-        level = source.get("source_level")
-        if level is not None and level not in SOURCE_LEVELS:
-            issues.append(f"{label}: source_level must be null or one of {sorted(SOURCE_LEVELS)}")
+        if "source_level" in source:
+            _check_enum_field(label, "source_level", source.get("source_level"), SOURCE_LEVELS,
+                              issues, optional=True, unknown_word="invalid")
 
-        legal_review = source.get("legal_or_copyright_review_status")
-        if legal_review is not None and legal_review not in LEGAL_REVIEW_STATUSES:
-            issues.append(f"{label}: invalid legal_or_copyright_review_status {legal_review!r}")
+        if "legal_or_copyright_review_status" in source:
+            _check_enum_field(label, "legal_or_copyright_review_status",
+                              source.get("legal_or_copyright_review_status"),
+                              LEGAL_REVIEW_STATUSES, issues, unknown_word="invalid")
 
         for field in ("publication_date", "document_date", "retrieval_or_review_date"):
             _check_date(f"{label}: {field}", source.get(field), issues)
@@ -336,7 +368,7 @@ def _check_sources(sources: Any, issues: List[str]) -> Dict[str, Dict[str, Any]]
 
         # Inconsistent verification claims.
         has_hash = _nonempty_str(source.get("content_hash_if_verified"))
-        if status in FILE_VERIFIED_STATES and not has_hash:
+        if isinstance(status, str) and status in FILE_VERIFIED_STATES and not has_hash:
             issues.append(f"{label}: status {status!r} requires a recorded content hash")
         if status == "DISCOVERED" and source.get("content_hash_if_verified") is not None:
             issues.append(f"{label}: a DISCOVERED source must not carry a content hash")
@@ -375,9 +407,23 @@ def _check_mapping_approval(
     reference = mapping.get(APPROVED_SOURCE_FIELD)
 
     if not approval_claimed:
-        # Not claiming approval: the field must be absent/null, or at least point
-        # at a real source so the registry cannot accumulate dangling references.
-        if reference is not None and reference not in sources_by_id:
+        # Not claiming approval: absent/null is valid. A supplied value must be a
+        # well-formed source identifier that resolves, so the registry cannot
+        # accumulate dangling references and malformed types cannot crash.
+        if reference is None:
+            return
+        if not isinstance(reference, str):
+            issues.append(
+                f"{label}: {APPROVED_SOURCE_FIELD} must be a valid source identifier "
+                f"string or null, got {type(reference).__name__}"
+            )
+            return
+        if not reference.strip():
+            issues.append(
+                f"{label}: {APPROVED_SOURCE_FIELD} must be a non-empty source identifier string or null"
+            )
+            return
+        if reference not in sources_by_id:
             issues.append(
                 f"{label}: {APPROVED_SOURCE_FIELD} {reference!r} does not exist in the source registry"
             )
@@ -451,14 +497,17 @@ def _check_mappings(mappings: Any, sources_by_id: Dict[str, Dict[str, Any]], iss
             issues.append(f"{label}: mapping_id must be a string")
 
         case_type = mapping.get("case_type")
-        if case_type is not None and case_type not in CASE_TYPES:
-            issues.append(f"{label}: unknown case_type {case_type!r}")
+        case_ok = False
+        if "case_type" in mapping:
+            case_ok = _check_enum_field(label, "case_type", case_type, CASE_TYPES, issues)
 
         document_type = mapping.get("document_type")
-        if document_type is not None and document_type not in DOCUMENT_TYPES:
-            issues.append(f"{label}: unknown document_type {document_type!r}")
+        document_ok = False
+        if "document_type" in mapping:
+            document_ok = _check_enum_field(label, "document_type", document_type,
+                                            DOCUMENT_TYPES, issues)
 
-        if case_type in CASE_TYPES and document_type in DOCUMENT_TYPES:
+        if case_ok and document_ok:
             combo = (case_type, document_type)
             if combo in seen_combos:
                 issues.append(
@@ -472,17 +521,32 @@ def _check_mappings(mappings: Any, sources_by_id: Dict[str, Dict[str, Any]], iss
         if not isinstance(refs, list):
             issues.append(f"{label}: candidate_source_ids must be a list")
         else:
-            for ref in refs:
-                if ref not in sources_by_id:
+            for index, ref in enumerate(refs):
+                if not isinstance(ref, str):
+                    issues.append(
+                        f"{label}: candidate_source_ids[{index}] must be a source ID "
+                        f"string, got {type(ref).__name__}"
+                    )
+                elif not ref.strip():
+                    issues.append(
+                        f"{label}: candidate_source_ids[{index}] must be a non-empty source ID string"
+                    )
+                elif not _SOURCE_ID_RE.match(ref):
+                    issues.append(
+                        f"{label}: candidate_source_ids[{index}] {ref!r} is not a valid source ID"
+                    )
+                elif ref not in sources_by_id:
                     issues.append(f"{label}: references unknown source_id {ref!r}")
 
         status = mapping.get("mapping_status")
-        if status is not None and status not in MAPPING_STATUSES:
-            issues.append(f"{label}: invalid mapping_status {status!r}")
+        if "mapping_status" in mapping:
+            _check_enum_field(label, "mapping_status", status, MAPPING_STATUSES,
+                              issues, unknown_word="invalid")
 
         approval = mapping.get("approval_status")
-        if approval is not None and approval not in APPROVAL_STATUSES:
-            issues.append(f"{label}: invalid approval_status {approval!r}")
+        if "approval_status" in mapping:
+            _check_enum_field(label, "approval_status", approval, APPROVAL_STATUSES,
+                              issues, unknown_word="invalid")
 
         if not isinstance(mapping.get("required_manual_review"), bool):
             issues.append(f"{label}: required_manual_review must be a boolean")

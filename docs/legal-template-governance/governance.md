@@ -69,6 +69,12 @@ Rules:
 
 - Unestablished attributes are recorded as explicit `null`. **Never** invent a date, hash,
   identifier or version.
+- `null` is only for genuinely optional attributes (for example the `source_level` of the
+  project's own non-official output, or a date that has not been established). The required
+  enumeration fields — `source_type`, `verification_status` and
+  `legal_or_copyright_review_status` — must carry an explicit allowed value. An explicit `null`
+  or a non-string value (array, object, number, boolean) is a validation error and is never
+  silently coerced or stringified.
 - A hash may only be recorded after the file has actually been retrieved and hashed.
 - An inaccessible attachment is recorded as `UNAVAILABLE` with the blocker — never silently
   replaced by an unofficial copy.
