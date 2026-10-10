@@ -1,0 +1,702 @@
+{
+  "plan_version": "1.0.0",
+  "baseline_revision": "488607d11d592c0bd906f7bb38c6530304f4b612",
+  "planning_date": "2026-10-10",
+  "notes": "Readiness planning only. No route is authorized for implementation.",
+  "routes": [
+    {
+      "route_id": "route-contract-civil-complaint",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "governance_mapping_id": "map-contract-complaint",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "linked_gap_ids": [
+        "GAP-CONTRACT-AMOUNT-ASOF",
+        "GAP-CONTRACT-BUYER-CLAIMS",
+        "GAP-CONTRACT-COURT-FEE-CONDITIONAL",
+        "GAP-CONTRACT-DELAY",
+        "GAP-CONTRACT-DELIVERY-TERMS",
+        "GAP-CONTRACT-DEMAND",
+        "GAP-CONTRACT-ENFORCEMENT-COST",
+        "GAP-CONTRACT-EVIDENCE-STANDALONE",
+        "GAP-CONTRACT-FORMATION",
+        "GAP-CONTRACT-ID-TYPE",
+        "GAP-CONTRACT-JURISDICTION-CLAUSE",
+        "GAP-CONTRACT-LEGAL-BASIS",
+        "GAP-CONTRACT-MEDIATION-PREFERENCE",
+        "GAP-CONTRACT-ORG-REGISTRATION",
+        "GAP-CONTRACT-OTHER-CLAIMS",
+        "GAP-CONTRACT-PARTY-IDENTITY-DETAILS",
+        "GAP-CONTRACT-PARTY-RESIDENCE",
+        "GAP-CONTRACT-PAYMENT-TERMS",
+        "GAP-CONTRACT-PENALTY-TERMS",
+        "GAP-CONTRACT-PRESERVATION",
+        "GAP-CONTRACT-QUALITY",
+        "GAP-CONTRACT-REPRESENTATIVE",
+        "GAP-CONTRACT-SECURITY",
+        "GAP-CONTRACT-SUBJECT",
+        "GAP-CONTRACT-THIRD-PARTY",
+        "GAP-CONTRACT-TOTAL-AMOUNT",
+        "GAP-ROLE-LABELLING"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "LEGAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "CANDIDATE_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_REQUIRED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION",
+        "TEMPLATE_VARIANT_UNRESOLVED",
+        "DEMAND_ELEMENT_NOT_CAPTURED"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Resolve the generic 买卖合同纠纷 vs 房屋买卖合同纠纷 variant question and review the element set before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-contract-civil-complaint",
+        "docs/legal-template-governance/case-template-mapping.json#map-contract-complaint",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-contract-evidence-list",
+      "case_type": "contract",
+      "document_type": "evidence_list",
+      "governance_mapping_id": "map-contract-evidence",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "linked_gap_ids": [
+        "GAP-CONTRACT-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "LEGAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "UNVERIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "STANDALONE_EQUIVALENCE_UNVERIFIED",
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Establish whether an official standalone evidence-list document exists elsewhere before planning any change to the independent evidence list.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-contract-evidence-list",
+        "docs/legal-template-governance/case-template-mapping.json#map-contract-evidence",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-contract-service-address-confirmation",
+      "case_type": "contract",
+      "document_type": "service_address_confirmation",
+      "governance_mapping_id": "map-contract-address",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "linked_gap_ids": [
+        "GAP-CONTRACT-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "BLOCKED",
+      "source_verification_state": "NO_CANDIDATE_SOURCE_IDENTIFIED",
+      "mapping_review_state": "NO_OFFICIAL_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "NO_CANDIDATE_SOURCE_IDENTIFIED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "NO_VERIFIED_AUTHORITY_FOR_FORM"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Retrieve and verify an independent official authority for a service-address confirmation form; do not alter the current document meanwhile.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-contract-service-address-confirmation",
+        "docs/legal-template-governance/case-template-mapping.json#map-contract-address",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-divorce-civil-complaint",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "governance_mapping_id": "map-divorce-complaint",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "linked_gap_ids": [
+        "GAP-DIVORCE-COMBINED-SCOPE",
+        "GAP-DIVORCE-COURT-FEE-CONDITIONAL",
+        "GAP-DIVORCE-CUSTODY-SUPPORT-DETAIL",
+        "GAP-DIVORCE-DAMAGES",
+        "GAP-DIVORCE-DEBT",
+        "GAP-DIVORCE-EVIDENCE-STANDALONE",
+        "GAP-DIVORCE-ID-TYPE",
+        "GAP-DIVORCE-JURISDICTION-CLAUSE",
+        "GAP-DIVORCE-LEGAL-BASIS",
+        "GAP-DIVORCE-MARRIAGE-FACTS",
+        "GAP-DIVORCE-MEDIATION-PREFERENCE",
+        "GAP-DIVORCE-ORG-REGISTRATION",
+        "GAP-DIVORCE-OTHER-CLAIMS",
+        "GAP-DIVORCE-OTHER-FACTS",
+        "GAP-DIVORCE-PARTY-IDENTITY-DETAILS",
+        "GAP-DIVORCE-PARTY-RESIDENCE",
+        "GAP-DIVORCE-PRESERVATION",
+        "GAP-DIVORCE-PROPERTY-STRUCTURE",
+        "GAP-DIVORCE-REPRESENTATIVE",
+        "GAP-DIVORCE-TOTAL-AMOUNT",
+        "GAP-DIVORCE-VISITATION"
+      ],
+      "high_risk_gap_ids": [
+        "GAP-DIVORCE-COMBINED-SCOPE"
+      ],
+      "readiness_classification": "LEGAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "CANDIDATE_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_REQUIRED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION",
+        "COMBINED_SCOPE_UNRESOLVED",
+        "VISITATION_AND_COMPENSATION_NOT_CAPTURED"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Resolve whether one official divorce form covers the combined relief, and review which optional claims must stay conditional.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-divorce-civil-complaint",
+        "docs/legal-template-governance/case-template-mapping.json#map-divorce-complaint",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-divorce-evidence-list",
+      "case_type": "divorce",
+      "document_type": "evidence_list",
+      "governance_mapping_id": "map-divorce-evidence",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "linked_gap_ids": [
+        "GAP-DIVORCE-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "LEGAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "UNVERIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "STANDALONE_EQUIVALENCE_UNVERIFIED",
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Establish whether an official standalone evidence-list document exists elsewhere before planning any change to the independent evidence list.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-divorce-evidence-list",
+        "docs/legal-template-governance/case-template-mapping.json#map-divorce-evidence",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-divorce-service-address-confirmation",
+      "case_type": "divorce",
+      "document_type": "service_address_confirmation",
+      "governance_mapping_id": "map-divorce-address",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "linked_gap_ids": [
+        "GAP-DIVORCE-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "BLOCKED",
+      "source_verification_state": "NO_CANDIDATE_SOURCE_IDENTIFIED",
+      "mapping_review_state": "NO_OFFICIAL_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "NO_CANDIDATE_SOURCE_IDENTIFIED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "NO_VERIFIED_AUTHORITY_FOR_FORM"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Retrieve and verify an independent official authority for a service-address confirmation form; do not alter the current document meanwhile.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-divorce-service-address-confirmation",
+        "docs/legal-template-governance/case-template-mapping.json#map-divorce-address",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-labor-civil-complaint",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "governance_mapping_id": "map-labor-complaint",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "linked_gap_ids": [
+        "GAP-LABOR-AMOUNT-ASOF",
+        "GAP-LABOR-ARBITRATION",
+        "GAP-LABOR-CLAIM-SCOPE",
+        "GAP-LABOR-CONTRACT-FORMATION",
+        "GAP-LABOR-COURT-FEE-CONDITIONAL",
+        "GAP-LABOR-DOUBLE-WAGE",
+        "GAP-LABOR-EVIDENCE-STANDALONE",
+        "GAP-LABOR-ID-TYPE",
+        "GAP-LABOR-JURISDICTION-CLAUSE",
+        "GAP-LABOR-LEGAL-BASIS",
+        "GAP-LABOR-MEDIATION-PREFERENCE",
+        "GAP-LABOR-ORG-REGISTRATION",
+        "GAP-LABOR-OTHER-CLAIMS",
+        "GAP-LABOR-OTHER-FACTS",
+        "GAP-LABOR-OVERTIME",
+        "GAP-LABOR-PARTY-IDENTITY-DETAILS",
+        "GAP-LABOR-PARTY-RESIDENCE",
+        "GAP-LABOR-PERFORMANCE-DETAIL",
+        "GAP-LABOR-PRESERVATION",
+        "GAP-LABOR-REPRESENTATIVE",
+        "GAP-LABOR-TERMINATION",
+        "GAP-LABOR-THIRD-PARTY",
+        "GAP-LABOR-TOTAL-AMOUNT",
+        "GAP-LABOR-WORK-INJURY"
+      ],
+      "high_risk_gap_ids": [
+        "GAP-LABOR-ARBITRATION"
+      ],
+      "readiness_classification": "PROCEDURAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "CANDIDATE_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "PROCEDURAL_REVIEW_REQUIRED",
+      "engineering_readiness": "ENGINEERING_DESIGN_REQUIRED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION",
+        "PROCEDURAL_POSTURE_UNRESOLVED",
+        "ARBITRATION_PRECONDITION_UNRESOLVED"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Determine the correct procedural posture (arbitration application vs court complaint vs post-arbitration litigation) before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-labor-civil-complaint",
+        "docs/legal-template-governance/case-template-mapping.json#map-labor-complaint",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-labor-evidence-list",
+      "case_type": "labor",
+      "document_type": "evidence_list",
+      "governance_mapping_id": "map-labor-evidence",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "linked_gap_ids": [
+        "GAP-LABOR-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "LEGAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "UNVERIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "STANDALONE_EQUIVALENCE_UNVERIFIED",
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Establish whether an official standalone evidence-list document exists elsewhere before planning any change to the independent evidence list.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-labor-evidence-list",
+        "docs/legal-template-governance/case-template-mapping.json#map-labor-evidence",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-labor-service-address-confirmation",
+      "case_type": "labor",
+      "document_type": "service_address_confirmation",
+      "governance_mapping_id": "map-labor-address",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "linked_gap_ids": [
+        "GAP-LABOR-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "BLOCKED",
+      "source_verification_state": "NO_CANDIDATE_SOURCE_IDENTIFIED",
+      "mapping_review_state": "NO_OFFICIAL_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "NO_CANDIDATE_SOURCE_IDENTIFIED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "NO_VERIFIED_AUTHORITY_FOR_FORM"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Retrieve and verify an independent official authority for a service-address confirmation form; do not alter the current document meanwhile.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-labor-service-address-confirmation",
+        "docs/legal-template-governance/case-template-mapping.json#map-labor-address",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-loan-civil-complaint",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "governance_mapping_id": "map-loan-complaint",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "linked_gap_ids": [
+        "GAP-COURT-FEE-CONDITIONAL",
+        "GAP-ENFORCEMENT-COST",
+        "GAP-EVIDENCE-STANDALONE",
+        "GAP-ID-TYPE",
+        "GAP-JURISDICTION-CLAUSE",
+        "GAP-LEGAL-BASIS",
+        "GAP-LOAN-ACCELERATION",
+        "GAP-LOAN-ASOF-DATE",
+        "GAP-LOAN-CONTRACT-FORMATION",
+        "GAP-LOAN-INTEREST-BASIS",
+        "GAP-LOAN-OVERDUE",
+        "GAP-LOAN-PRINCIPAL-AMOUNT",
+        "GAP-LOAN-REPAYMENT-METHOD",
+        "GAP-LOAN-REPAYMENT-STATUS",
+        "GAP-LOAN-ROLE-LABELLING",
+        "GAP-LOAN-SECURITY",
+        "GAP-LOAN-TERM",
+        "GAP-MEDIATION-PREFERENCE",
+        "GAP-ORG-REGISTRATION",
+        "GAP-OTHER-CLAIMS",
+        "GAP-PARTY-IDENTITY-DETAILS",
+        "GAP-PARTY-RESIDENCE",
+        "GAP-PRESERVATION",
+        "GAP-REPRESENTATIVE",
+        "GAP-SOURCE-VERSION",
+        "GAP-THIRD-PARTY",
+        "GAP-TOTAL-AMOUNT"
+      ],
+      "high_risk_gap_ids": [
+        "GAP-LOAN-INTEREST-BASIS",
+        "GAP-LOAN-REPAYMENT-STATUS"
+      ],
+      "readiness_classification": "LEGAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "CANDIDATE_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_REQUIRED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION",
+        "INTEREST_BASIS_UNRESOLVED",
+        "REPAYMENT_HISTORY_NOT_CAPTURED",
+        "AGREED_VS_PROVIDED_AMOUNT_NOT_SEPARATED"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Complete a legal/content review of the 民间借贷纠纷 element set and of the interest-basis and repayment-history questions before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-loan-civil-complaint",
+        "docs/legal-template-governance/case-template-mapping.json#map-loan-complaint",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-loan-evidence-list",
+      "case_type": "loan",
+      "document_type": "evidence_list",
+      "governance_mapping_id": "map-loan-evidence",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "linked_gap_ids": [
+        "GAP-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "LEGAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "UNVERIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "STANDALONE_EQUIVALENCE_UNVERIFIED",
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Establish whether an official standalone evidence-list document exists elsewhere before planning any change to the independent evidence list.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-loan-evidence-list",
+        "docs/legal-template-governance/case-template-mapping.json#map-loan-evidence",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-loan-service-address-confirmation",
+      "case_type": "loan",
+      "document_type": "service_address_confirmation",
+      "governance_mapping_id": "map-loan-address",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "linked_gap_ids": [
+        "GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "BLOCKED",
+      "source_verification_state": "NO_CANDIDATE_SOURCE_IDENTIFIED",
+      "mapping_review_state": "NO_OFFICIAL_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "NO_CANDIDATE_SOURCE_IDENTIFIED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "NO_VERIFIED_AUTHORITY_FOR_FORM"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Retrieve and verify an independent official authority for a service-address confirmation form; do not alter the current document meanwhile.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-loan-service-address-confirmation",
+        "docs/legal-template-governance/case-template-mapping.json#map-loan-address",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-property-civil-complaint",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "governance_mapping_id": "map-property-complaint",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "linked_gap_ids": [
+        "GAP-PROPERTY-AMOUNT-ASOF",
+        "GAP-PROPERTY-CONTRACT-FORMATION",
+        "GAP-PROPERTY-COURT-FEE-CONDITIONAL",
+        "GAP-PROPERTY-EVIDENCE-STANDALONE",
+        "GAP-PROPERTY-ID-TYPE",
+        "GAP-PROPERTY-JURISDICTION-CLAUSE",
+        "GAP-PROPERTY-LEGAL-BASIS",
+        "GAP-PROPERTY-MEDIATION-PREFERENCE",
+        "GAP-PROPERTY-ORG-REGISTRATION",
+        "GAP-PROPERTY-OTHER-CLAIMS",
+        "GAP-PROPERTY-OWNER",
+        "GAP-PROPERTY-PARTY-IDENTITY-DETAILS",
+        "GAP-PROPERTY-PARTY-RESIDENCE",
+        "GAP-PROPERTY-PAYMENT-METHOD",
+        "GAP-PROPERTY-PENALTY-AMOUNT",
+        "GAP-PROPERTY-PRESERVATION",
+        "GAP-PROPERTY-REPRESENTATIVE",
+        "GAP-PROPERTY-ROLE-LABELLING",
+        "GAP-PROPERTY-SCOPE",
+        "GAP-PROPERTY-TERM-SEMANTICS",
+        "GAP-PROPERTY-THIRD-PARTY",
+        "GAP-PROPERTY-TOTAL-AMOUNT"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "LEGAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "CANDIDATE_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_REQUIRED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION",
+        "SERVICE_RELATIONSHIP_UNCONFIRMED",
+        "ARREARS_VS_SERVICE_TERM_UNRESOLVED"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Review whether the official element set covers a pure fee-collection claim and whether the arrears period may stand in for the service term.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-property-civil-complaint",
+        "docs/legal-template-governance/case-template-mapping.json#map-property-complaint",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-property-evidence-list",
+      "case_type": "property",
+      "document_type": "evidence_list",
+      "governance_mapping_id": "map-property-evidence",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "official_counterpart_classification": "OFFICIAL_SECTION_ONLY",
+      "linked_gap_ids": [
+        "GAP-PROPERTY-ROUTE-EVIDENCE-STANDALONE"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "LEGAL_REVIEW_REQUIRED",
+      "source_verification_state": "SOURCE_FILE_VERIFIED",
+      "mapping_review_state": "UNVERIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "STANDALONE_EQUIVALENCE_UNVERIFIED",
+        "MAPPING_APPLICABILITY_NOT_REVIEWED",
+        "LEGAL_CONTENT_REVIEW_NOT_PERFORMED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "SOURCE_NOT_APPROVED_FOR_ADAPTATION"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Establish whether an official standalone evidence-list document exists elsewhere before planning any change to the independent evidence list.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-property-evidence-list",
+        "docs/legal-template-governance/case-template-mapping.json#map-property-evidence",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    },
+    {
+      "route_id": "route-property-service-address-confirmation",
+      "case_type": "property",
+      "document_type": "service_address_confirmation",
+      "governance_mapping_id": "map-property-address",
+      "source_ids": [
+        "spc-2025-notice-pdf"
+      ],
+      "candidate_source_ids": [],
+      "official_counterpart_classification": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+      "linked_gap_ids": [
+        "GAP-PROPERTY-ROUTE-ADDRESS-NO-COUNTERPART"
+      ],
+      "high_risk_gap_ids": [],
+      "readiness_classification": "BLOCKED",
+      "source_verification_state": "NO_CANDIDATE_SOURCE_IDENTIFIED",
+      "mapping_review_state": "NO_OFFICIAL_SOURCE_IDENTIFIED",
+      "legal_content_review_state": "NOT_REQUESTED",
+      "rights_review_state": "NOT_REVIEWED",
+      "procedural_applicability_state": "NOT_APPLICABLE",
+      "engineering_readiness": "ENGINEERING_DESIGN_BLOCKED",
+      "implementation_authorization": "NOT_AUTHORIZED",
+      "blocking_conditions": [
+        "NO_CANDIDATE_SOURCE_IDENTIFIED",
+        "RIGHTS_REVIEW_NOT_REVIEWED",
+        "NO_VERIFIED_AUTHORITY_FOR_FORM"
+      ],
+      "review_required": true,
+      "recommended_next_action": "Retrieve and verify an independent official authority for a service-address confirmation form; do not alter the current document meanwhile.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/document-route-assessment.json#route-property-service-address-confirmation",
+        "docs/legal-template-governance/case-template-mapping.json#map-property-address",
+        "docs/legal-template-governance/source-registry.json#spc-2025-notice-pdf"
+      ]
+    }
+  ]
+}

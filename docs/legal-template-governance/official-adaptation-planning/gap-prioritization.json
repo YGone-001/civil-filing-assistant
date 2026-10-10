@@ -1,0 +1,4679 @@
+{
+  "plan_version": "1.0.0",
+  "baseline_revision": "488607d11d592c0bd906f7bb38c6530304f4b612",
+  "planning_date": "2026-10-10",
+  "notes": "All frozen gap records are accounted for exactly once.",
+  "gaps": [
+    {
+      "gap_id": "GAP-CONTRACT-AMOUNT-ASOF",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P0",
+      "priority_score": 55,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-AMOUNT-ASOF"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-BUYER-CLAIMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 42,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 2,
+        "reversibility": 2,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-BUYER-CLAIMS"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-COURT-FEE-CONDITIONAL",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "CONDITIONALITY_DIFFERENCE",
+      "planning_priority": "P2",
+      "priority_score": 39,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-COURT-FEE-CONDITIONAL"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-DELAY",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-DELAY"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-DELIVERY-TERMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-DELIVERY-TERMS"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-DEMAND",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 42,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-DEMAND"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ENFORCEMENT-COST",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P3",
+      "priority_score": 27,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-ENFORCEMENT-COST"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-EVIDENCE-STANDALONE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-FORMATION",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 42,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-FORMATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ID-TYPE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-ID-TYPE"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-JURISDICTION-CLAUSE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 52,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-JURISDICTION-CLAUSE"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-LEGAL-BASIS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 2,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-LEGAL-BASIS"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-MEDIATION-PREFERENCE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P3",
+      "priority_score": 30,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 2,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 1,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-MEDIATION-PREFERENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ORG-REGISTRATION",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-ORG-REGISTRATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-OTHER-CLAIMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P3",
+      "priority_score": 35,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-OTHER-CLAIMS"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PARTY-IDENTITY-DETAILS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-PARTY-IDENTITY-DETAILS"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PARTY-RESIDENCE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-PARTY-RESIDENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PAYMENT-TERMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-PAYMENT-TERMS"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PENALTY-TERMS",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 47,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-PENALTY-TERMS"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-PRESERVATION",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-PRESERVATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-QUALITY",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-QUALITY"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-REPRESENTATIVE",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-REPRESENTATIVE"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "contract",
+      "document_type": "service_address_confirmation",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "SOURCE_VERIFICATION_GAP",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 3,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 1
+      },
+      "review_dependencies": [
+        "LEGAL_CONTENT_REVIEW",
+        "SOURCE_VERIFICATION"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-address"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-ROUTE-ADDRESS-NO-COUNTERPART"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "contract",
+      "document_type": "evidence_list",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-evidence"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-ROUTE-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-SECURITY",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 49,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 2,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-SECURITY"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-SUBJECT",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-SUBJECT"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-THIRD-PARTY",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-THIRD-PARTY"
+      ]
+    },
+    {
+      "gap_id": "GAP-CONTRACT-TOTAL-AMOUNT",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-CONTRACT-TOTAL-AMOUNT"
+      ]
+    },
+    {
+      "gap_id": "GAP-COURT-FEE-CONDITIONAL",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "CONDITIONALITY_DIFFERENCE",
+      "planning_priority": "P2",
+      "priority_score": 37,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-COURT-FEE-CONDITIONAL"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-COMBINED-SCOPE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "HIGH",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P0",
+      "priority_score": 54,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 3,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 3,
+        "reversibility": 1,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-COMBINED-SCOPE"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-COURT-FEE-CONDITIONAL",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "CONDITIONALITY_DIFFERENCE",
+      "planning_priority": "P2",
+      "priority_score": 39,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-COURT-FEE-CONDITIONAL"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-CUSTODY-SUPPORT-DETAIL",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 53,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-CUSTODY-SUPPORT-DETAIL"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-DAMAGES",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-DAMAGES"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-DEBT",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-DEBT"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-EVIDENCE-STANDALONE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-ID-TYPE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-ID-TYPE"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-JURISDICTION-CLAUSE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 52,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-JURISDICTION-CLAUSE"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-LEGAL-BASIS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 2,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-LEGAL-BASIS"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-MARRIAGE-FACTS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-MARRIAGE-FACTS"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-MEDIATION-PREFERENCE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P3",
+      "priority_score": 30,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 2,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 1,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-MEDIATION-PREFERENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-ORG-REGISTRATION",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-ORG-REGISTRATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-OTHER-CLAIMS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P3",
+      "priority_score": 35,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-OTHER-CLAIMS"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-OTHER-FACTS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "INFORMATIONAL",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P3",
+      "priority_score": 23,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 2,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 0,
+        "reversibility": 1,
+        "cross_case_impact": 2,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-OTHER-FACTS"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-PARTY-IDENTITY-DETAILS",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-PARTY-IDENTITY-DETAILS"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-PARTY-RESIDENCE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-PARTY-RESIDENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-PRESERVATION",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-PRESERVATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-PROPERTY-STRUCTURE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-PROPERTY-STRUCTURE"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-REPRESENTATIVE",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-REPRESENTATIVE"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "divorce",
+      "document_type": "service_address_confirmation",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "SOURCE_VERIFICATION_GAP",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 3,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 1
+      },
+      "review_dependencies": [
+        "LEGAL_CONTENT_REVIEW",
+        "SOURCE_VERIFICATION"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-address"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-ROUTE-ADDRESS-NO-COUNTERPART"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "divorce",
+      "document_type": "evidence_list",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-evidence"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-ROUTE-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-TOTAL-AMOUNT",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-TOTAL-AMOUNT"
+      ]
+    },
+    {
+      "gap_id": "GAP-DIVORCE-VISITATION",
+      "case_type": "divorce",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-divorce-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-DIVORCE-VISITATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-ENFORCEMENT-COST",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P3",
+      "priority_score": 27,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-ENFORCEMENT-COST"
+      ]
+    },
+    {
+      "gap_id": "GAP-EVIDENCE-STANDALONE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 41,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-ID-TYPE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-ID-TYPE"
+      ]
+    },
+    {
+      "gap_id": "GAP-JURISDICTION-CLAUSE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-JURISDICTION-CLAUSE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-AMOUNT-ASOF",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P0",
+      "priority_score": 55,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-AMOUNT-ASOF"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-ARBITRATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "HIGH",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P0",
+      "priority_score": 54,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 3,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 3,
+        "reversibility": 1,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-ARBITRATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-CLAIM-SCOPE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 42,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 2,
+        "reversibility": 2,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-CLAIM-SCOPE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-CONTRACT-FORMATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 52,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-CONTRACT-FORMATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-COURT-FEE-CONDITIONAL",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "CONDITIONALITY_DIFFERENCE",
+      "planning_priority": "P2",
+      "priority_score": 39,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-COURT-FEE-CONDITIONAL"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-DOUBLE-WAGE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 53,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-DOUBLE-WAGE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-EVIDENCE-STANDALONE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-ID-TYPE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-ID-TYPE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-JURISDICTION-CLAUSE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 52,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-JURISDICTION-CLAUSE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-LEGAL-BASIS",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 2,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-LEGAL-BASIS"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-MEDIATION-PREFERENCE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P3",
+      "priority_score": 30,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 2,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 1,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-MEDIATION-PREFERENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-ORG-REGISTRATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-ORG-REGISTRATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-OTHER-CLAIMS",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P3",
+      "priority_score": 35,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-OTHER-CLAIMS"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-OTHER-FACTS",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "INFORMATIONAL",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P3",
+      "priority_score": 23,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 2,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 0,
+        "reversibility": 1,
+        "cross_case_impact": 2,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-OTHER-FACTS"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-OVERTIME",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-OVERTIME"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-PARTY-IDENTITY-DETAILS",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-PARTY-IDENTITY-DETAILS"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-PARTY-RESIDENCE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-PARTY-RESIDENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-PERFORMANCE-DETAIL",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-PERFORMANCE-DETAIL"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-PRESERVATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-PRESERVATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-REPRESENTATIVE",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-REPRESENTATIVE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "labor",
+      "document_type": "service_address_confirmation",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "SOURCE_VERIFICATION_GAP",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 3,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 1
+      },
+      "review_dependencies": [
+        "LEGAL_CONTENT_REVIEW",
+        "SOURCE_VERIFICATION"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-address"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-ROUTE-ADDRESS-NO-COUNTERPART"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "labor",
+      "document_type": "evidence_list",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-evidence"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-ROUTE-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-TERMINATION",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-TERMINATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-THIRD-PARTY",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-THIRD-PARTY"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-TOTAL-AMOUNT",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-TOTAL-AMOUNT"
+      ]
+    },
+    {
+      "gap_id": "GAP-LABOR-WORK-INJURY",
+      "case_type": "labor",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P3",
+      "priority_score": 33,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-labor-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LABOR-WORK-INJURY"
+      ]
+    },
+    {
+      "gap_id": "GAP-LEGAL-BASIS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 42,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 2,
+        "reversibility": 2,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LEGAL-BASIS"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-ACCELERATION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-ACCELERATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-ASOF-DATE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 53,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-ASOF-DATE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-CONTRACT-FORMATION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-CONTRACT-FORMATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-INTEREST-BASIS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "HIGH",
+      "frozen_gap_category": "CALCULATION_RISK",
+      "planning_priority": "P0",
+      "priority_score": 60,
+      "risk_dimensions": {
+        "factual_integrity_impact": 3,
+        "monetary_calculation_impact": 3,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 3,
+        "reversibility": 2,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-INTEREST-BASIS"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-OVERDUE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-OVERDUE"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-PRINCIPAL-AMOUNT",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 47,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-PRINCIPAL-AMOUNT"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-REPAYMENT-METHOD",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 42,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-REPAYMENT-METHOD"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-REPAYMENT-STATUS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "HIGH",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P0",
+      "priority_score": 57,
+      "risk_dimensions": {
+        "factual_integrity_impact": 3,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 3,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-REPAYMENT-STATUS"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-ROLE-LABELLING",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "SEMANTIC_DIFFERENCE",
+      "planning_priority": "P3",
+      "priority_score": 29,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 1,
+        "cross_case_impact": 2,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-ROLE-LABELLING"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-SECURITY",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 49,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 2,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-SECURITY"
+      ]
+    },
+    {
+      "gap_id": "GAP-LOAN-TERM",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-LOAN-TERM"
+      ]
+    },
+    {
+      "gap_id": "GAP-MEDIATION-PREFERENCE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P3",
+      "priority_score": 28,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 2,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 1,
+        "reversibility": 1,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-MEDIATION-PREFERENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-ORG-REGISTRATION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-ORG-REGISTRATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-OTHER-CLAIMS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P3",
+      "priority_score": 33,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-OTHER-CLAIMS"
+      ]
+    },
+    {
+      "gap_id": "GAP-PARTY-IDENTITY-DETAILS",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PARTY-IDENTITY-DETAILS"
+      ]
+    },
+    {
+      "gap_id": "GAP-PARTY-RESIDENCE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 42,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PARTY-RESIDENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-PRESERVATION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PRESERVATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-AMOUNT-ASOF",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P0",
+      "priority_score": 55,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-AMOUNT-ASOF"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-CONTRACT-FORMATION",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-CONTRACT-FORMATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-COURT-FEE-CONDITIONAL",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "CONDITIONALITY_DIFFERENCE",
+      "planning_priority": "P2",
+      "priority_score": 39,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-COURT-FEE-CONDITIONAL"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-EVIDENCE-STANDALONE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ID-TYPE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-ID-TYPE"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-JURISDICTION-CLAUSE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 52,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-JURISDICTION-CLAUSE"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-LEGAL-BASIS",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 38,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-LEGAL-BASIS"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-MEDIATION-PREFERENCE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P3",
+      "priority_score": 30,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 2,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 1,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-MEDIATION-PREFERENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ORG-REGISTRATION",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 1,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-ORG-REGISTRATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-OTHER-CLAIMS",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P3",
+      "priority_score": 35,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-OTHER-CLAIMS"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-OWNER",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-OWNER"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PARTY-IDENTITY-DETAILS",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-PARTY-IDENTITY-DETAILS"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PARTY-RESIDENCE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-PARTY-RESIDENCE"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PAYMENT-METHOD",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 42,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-PAYMENT-METHOD"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PENALTY-AMOUNT",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "PARTIAL_FIELD_COVERAGE",
+      "planning_priority": "P1",
+      "priority_score": 53,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-PENALTY-AMOUNT"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-PRESERVATION",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P2",
+      "priority_score": 46,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 1,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 1,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-PRESERVATION"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-REPRESENTATIVE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-REPRESENTATIVE"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ROLE-LABELLING",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "SEMANTIC_DIFFERENCE",
+      "planning_priority": "P3",
+      "priority_score": 29,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 1,
+        "cross_case_impact": 2,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-ROLE-LABELLING"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "property",
+      "document_type": "service_address_confirmation",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "SOURCE_VERIFICATION_GAP",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 3,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 1
+      },
+      "review_dependencies": [
+        "LEGAL_CONTENT_REVIEW",
+        "SOURCE_VERIFICATION"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-address"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-ROUTE-ADDRESS-NO-COUNTERPART"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "property",
+      "document_type": "evidence_list",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-evidence"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-ROUTE-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-SCOPE",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "INFORMATIONAL",
+      "frozen_gap_category": "PROCEDURAL_APPLICABILITY",
+      "planning_priority": "P3",
+      "priority_score": 22,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 2,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 0,
+        "reversibility": 1,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "MAPPING_APPLICABILITY_REVIEW",
+        "PROCEDURAL_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-SCOPE"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-TERM-SEMANTICS",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "SEMANTIC_DIFFERENCE",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-TERM-SEMANTICS"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-THIRD-PARTY",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 50,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-THIRD-PARTY"
+      ]
+    },
+    {
+      "gap_id": "GAP-PROPERTY-TOTAL-AMOUNT",
+      "case_type": "property",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 44,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-property-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-PROPERTY-TOTAL-AMOUNT"
+      ]
+    },
+    {
+      "gap_id": "GAP-REPRESENTATIVE",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-REPRESENTATIVE"
+      ]
+    },
+    {
+      "gap_id": "GAP-ROLE-LABELLING",
+      "case_type": "contract",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "SEMANTIC_DIFFERENCE",
+      "planning_priority": "P3",
+      "priority_score": 28,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 1,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 2
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-contract-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-ROLE-LABELLING"
+      ]
+    },
+    {
+      "gap_id": "GAP-ROUTE-ADDRESS-NO-COUNTERPART",
+      "case_type": "loan",
+      "document_type": "service_address_confirmation",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "SOURCE_VERIFICATION_GAP",
+      "planning_priority": "P2",
+      "priority_score": 41,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 3,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 1
+      },
+      "review_dependencies": [
+        "LEGAL_CONTENT_REVIEW",
+        "SOURCE_VERIFICATION"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-address"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-ROUTE-ADDRESS-NO-COUNTERPART"
+      ]
+    },
+    {
+      "gap_id": "GAP-ROUTE-EVIDENCE-STANDALONE",
+      "case_type": "loan",
+      "document_type": "evidence_list",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "EVIDENCE_PRESENTATION",
+      "planning_priority": "P2",
+      "priority_score": 43,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 2,
+        "reversibility": 1,
+        "cross_case_impact": 3,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-evidence"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-ROUTE-EVIDENCE-STANDALONE"
+      ]
+    },
+    {
+      "gap_id": "GAP-SOURCE-VERSION",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "SOURCE_VERIFICATION_GAP",
+      "planning_priority": "P3",
+      "priority_score": 26,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 3,
+        "legal_content_review_dependency": 0,
+        "rights_redistribution_dependency": 3,
+        "engineering_implementation_complexity": 1,
+        "regression_risk": 1,
+        "reversibility": 1,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 1
+      },
+      "review_dependencies": [
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW",
+        "SOURCE_VERIFICATION"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-SOURCE-VERSION"
+      ]
+    },
+    {
+      "gap_id": "GAP-THIRD-PARTY",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "MEDIUM",
+      "frozen_gap_category": "MISSING_INPUT",
+      "planning_priority": "P1",
+      "priority_score": 48,
+      "risk_dimensions": {
+        "factual_integrity_impact": 2,
+        "monetary_calculation_impact": 0,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 3,
+        "regression_risk": 2,
+        "reversibility": 3,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": false,
+      "deferral_rationale": "Not deferrable: the item carries a HIGH severity or a blocking review dependency that must be resolved before any engineering design.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-THIRD-PARTY"
+      ]
+    },
+    {
+      "gap_id": "GAP-TOTAL-AMOUNT",
+      "case_type": "loan",
+      "document_type": "civil_complaint",
+      "frozen_severity": "LOW",
+      "frozen_gap_category": "MISSING_OUTPUT",
+      "planning_priority": "P2",
+      "priority_score": 42,
+      "risk_dimensions": {
+        "factual_integrity_impact": 1,
+        "monetary_calculation_impact": 2,
+        "procedural_applicability": 0,
+        "source_verification_dependency": 2,
+        "legal_content_review_dependency": 3,
+        "rights_redistribution_dependency": 2,
+        "engineering_implementation_complexity": 2,
+        "regression_risk": 1,
+        "reversibility": 2,
+        "cross_case_impact": 1,
+        "user_facing_consequence": 3
+      },
+      "review_dependencies": [
+        "ENGINEERING_DESIGN",
+        "LEGAL_CONTENT_REVIEW",
+        "MAPPING_APPLICABILITY_REVIEW",
+        "RIGHTS_REVIEW"
+      ],
+      "candidate_work_package_ids": [
+        "wp-loan-complaint"
+      ],
+      "can_be_deferred": true,
+      "deferral_rationale": "Sequencing may place this item after P0/P1 work; the listed review dependencies are not waived by deferral.",
+      "evidence_references": [
+        "docs/legal-template-governance/official-gap-analysis/gap-register.json#GAP-TOTAL-AMOUNT"
+      ]
+    }
+  ]
+}
