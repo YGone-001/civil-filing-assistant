@@ -1000,3 +1000,341 @@ def test_a30_frozen_input_files_are_not_mutated(tmp_path):
     ctap.validate_plan(target, ANALYSIS_DIR, SOURCE_REGISTRY, MAPPING_REGISTRY)
     after = {str(p): p.read_bytes() for p in watched}
     assert before == after
+
+
+# ===========================================================================
+# Phase 1-C-D — frozen source binding and provenance integrity
+# ===========================================================================
+
+PDF = "spc-2025-notice-pdf"
+QA = "spc-2025-qa"
+NEWS = "spc-2025-notice-news"
+PROPERTY_ROUTE = "route-property-civil-complaint"
+PROPERTY_ADDRESS_ROUTE = "route-property-service-address-confirmation"
+LOAN_EVIDENCE_ROUTE = "route-loan-evidence-list"
+LOAN_ADDRESS_ROUTE = "route-loan-service-address-confirmation"
+
+
+# --- P01–P06: candidate source binding to the frozen governance mapping -----
+
+def test_p01_candidate_replaced_with_another_registered_source_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["candidate_source_ids"] = [NEWS]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("candidate_source_ids" in i and "do not match the authoritative governance mapping" in i
+               and NEWS in i for i in issues), issues
+
+
+def test_p02_candidate_appended_with_unrelated_source_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["candidate_source_ids"] = [PDF, QA]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("candidate_source_ids" in i and "do not match the authoritative governance mapping" in i
+               and QA in i for i in issues), issues
+
+
+def test_p03_required_candidate_removed_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["candidate_source_ids"] = []
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("candidate_source_ids" in i and "do not match the authoritative governance mapping" in i
+               and "missing" in i for i in issues), issues
+
+
+def test_p04_duplicate_candidate_source_id_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["candidate_source_ids"] = [PDF, PDF]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("candidate_source_ids" in i and "duplicate reference" in i for i in issues), issues
+
+
+@pytest.mark.parametrize("value,label", [
+    pytest.param([["x"]], "nested-array", id="nested-array"),
+    pytest.param({"a": 1}, "object", id="object"),
+    pytest.param(5, "number", id="number"),
+    pytest.param(None, "null", id="null"),
+    pytest.param("spc-2025-notice-pdf", "string", id="string"),
+])
+def test_p05_malformed_candidate_list_is_rejected_without_exception(tmp_path, value, label):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["candidate_source_ids"] = value
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("candidate_source_ids" in i for i in issues), (value, issues)
+
+
+def test_p06_consistent_looking_candidate_source_state_substitution_is_rejected(tmp_path):
+    """C1.3 — changing candidate, inspected source and state together must still fail."""
+    def mutate(records):
+        r = _find_route(records, PROPERTY_ROUTE)
+        r["candidate_source_ids"] = [NEWS]
+        r["source_ids"] = [NEWS]
+        r["source_verification_state"] = "ANNOUNCEMENT_VERIFIED"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any(PROPERTY_ROUTE in i and "candidate_source_ids" in i and NEWS in i
+               and "authoritative governance mapping" in i for i in issues), issues
+    # and it must not be satisfied by a missing-file or invalid-enum error alone
+    assert not any("file not found" in i for i in issues)
+
+
+# --- P07–P11: route inspected-source binding --------------------------------
+
+def test_p07_inspected_source_replaced_with_another_registry_source_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["source_ids"] = [QA]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("source_ids" in i and "is not scoped to this route" in i for i in issues), issues
+    assert any("source_ids" in i and "inspected-source set" in i for i in issues), issues
+
+
+def test_p08_inspected_source_removed_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["source_ids"] = []
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("source_ids" in i and "inspected-source set" in i and "missing" in i
+               for i in issues), issues
+
+
+def test_p09_inspected_source_augmented_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["source_ids"] = [PDF, QA]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("source_ids" in i and "inspected-source set" in i and QA in i
+               for i in issues), issues
+
+
+def test_p10_inspected_source_duplicated_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["source_ids"] = [PDF, PDF]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("source_ids" in i and "duplicate reference" in i for i in issues), issues
+
+
+def test_p11_inspected_only_source_promoted_to_candidate_is_rejected(tmp_path):
+    """An inspected-only source must not become a standalone template candidate."""
+    def mutate(records):
+        r = _find_route(records, PROPERTY_ADDRESS_ROUTE)
+        r["candidate_source_ids"] = [PDF]
+        r["source_verification_state"] = "SOURCE_FILE_VERIFIED"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("candidate_source_ids" in i and "do not match the authoritative governance mapping" in i
+               for i in issues), issues
+    assert any("NO_CANDIDATE_SOURCE_IDENTIFIED" in i for i in issues), issues
+
+
+# --- P12–P16: work-package source ownership ---------------------------------
+
+def test_p12_work_package_source_replaced_with_explanation_source_is_rejected(tmp_path):
+    def mutate(records):
+        _find_wp(records, "wp-property-complaint")["source_ids"] = [QA]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("source_ids do not match the linked route" in i and QA in i for i in issues), issues
+
+
+def test_p13_work_package_source_list_emptied_is_rejected(tmp_path):
+    def mutate(records):
+        _find_wp(records, "wp-property-complaint")["source_ids"] = []
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("source_ids must not be empty" in i for i in issues), issues
+
+
+def test_p14_work_package_source_augmented_with_unrelated_source_is_rejected(tmp_path):
+    def mutate(records):
+        _find_wp(records, "wp-property-complaint")["source_ids"] = [PDF, QA]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("source_ids do not match the linked route" in i and QA in i for i in issues), issues
+
+
+def test_p15_work_package_source_duplicated_is_rejected(tmp_path):
+    def mutate(records):
+        _find_wp(records, "wp-property-complaint")["source_ids"] = [PDF, PDF]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("source_ids" in i and "duplicate reference" in i for i in issues), issues
+
+
+@pytest.mark.parametrize("value,label", [
+    pytest.param([["x"]], "nested-array", id="nested-array"),
+    pytest.param({"a": 1}, "object", id="object"),
+    pytest.param(5, "number", id="number"),
+    pytest.param(None, "null", id="null"),
+])
+def test_p16_malformed_work_package_source_list_is_rejected_without_exception(tmp_path, value, label):
+    def mutate(records):
+        _find_wp(records, "wp-property-complaint")["source_ids"] = value
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("source_ids" in i for i in issues), (value, issues)
+
+
+# --- P17–P20: verification-state derivation --------------------------------
+
+def test_p17_source_state_increased_without_registry_support_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["source_verification_state"] = "CONTENT_REVIEWED"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("does not match the frozen source registry state" in i for i in issues), issues
+
+
+def test_p18_source_state_inconsistent_with_authoritative_candidate_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["source_verification_state"] = "DISCOVERED"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("does not match the frozen source registry state 'SOURCE_FILE_VERIFIED'" in i
+               for i in issues), issues
+
+
+def test_p19_empty_authoritative_candidate_cannot_be_overridden(tmp_path):
+    def mutate(records):
+        r = _find_route(records, PROPERTY_ADDRESS_ROUTE)
+        r["candidate_source_ids"] = [PDF]
+        r["source_ids"] = [PDF]
+        r["source_verification_state"] = "SOURCE_FILE_VERIFIED"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("NO_CANDIDATE_SOURCE_IDENTIFIED" in i for i in issues), issues
+
+
+def test_p20_fabricated_source_adaptation_approval_is_rejected(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["source_verification_state"] = \
+            "APPROVED_FOR_ADAPTATION"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("APPROVED_FOR_ADAPTATION" in i and "is not permitted" in i for i in issues), issues
+
+
+# --- P21–P25: positive controls ---------------------------------------------
+
+def test_p21_valid_complaint_candidate_and_source_references_are_accepted(tmp_path):
+    def mutate(records):
+        r = _find_route(records, PROPERTY_ROUTE)
+        r["candidate_source_ids"] = [PDF]
+        r["source_ids"] = [PDF]
+        r["source_verification_state"] = "SOURCE_FILE_VERIFIED"
+    assert _mutated_safe(tmp_path, mutate) == []
+
+
+def test_p22_valid_evidence_list_inspected_source_relationship_is_accepted(tmp_path):
+    def mutate(records):
+        r = _find_route(records, LOAN_EVIDENCE_ROUTE)
+        assert r["candidate_source_ids"] == [PDF]
+        assert r["source_ids"] == [PDF]
+    assert _mutated_safe(tmp_path, mutate) == []
+
+
+def test_p23_valid_service_address_inspected_only_relationship_is_accepted(tmp_path):
+    def mutate(records):
+        r = _find_route(records, LOAN_ADDRESS_ROUTE)
+        assert r["candidate_source_ids"] == []
+        assert r["source_ids"] == [PDF]
+        assert r["source_verification_state"] == "NO_CANDIDATE_SOURCE_IDENTIFIED"
+    assert _mutated_safe(tmp_path, mutate) == []
+
+
+def test_p24_all_fifteen_route_source_bindings_validate():
+    records = _records()
+    mappings = json.loads(MAPPING_REGISTRY.read_text(encoding="utf-8"))["mappings"]
+    by_id = {m["mapping_id"]: m for m in mappings}
+    frozen_routes = json.loads(
+        (ANALYSIS_DIR / "document-route-assessment.json").read_text(encoding="utf-8"))["routes"]
+    by_route = {r["route_id"]: r for r in frozen_routes}
+    routes = records["readiness"]["routes"]
+    assert len(routes) == 15
+    for r in routes:
+        assert set(r["candidate_source_ids"]) == \
+            set(by_id[r["governance_mapping_id"]]["candidate_source_ids"]), r["route_id"]
+        assert set(r["source_ids"]) == \
+            set(by_route[r["route_id"]]["official_source_ids"]), r["route_id"]
+    assert ctap.validate_plan(PLANNING_DIR, ANALYSIS_DIR, SOURCE_REGISTRY,
+                              MAPPING_REGISTRY) == []
+
+
+def test_p25_all_fifteen_work_package_source_bindings_validate():
+    records = _records()
+    routes = {r["route_id"]: r for r in records["readiness"]["routes"]}
+    packages = records["packages"]["work_packages"]
+    assert len(packages) == 15
+    for w in packages:
+        assert set(w["source_ids"]) == set(routes[w["linked_route_id"]]["source_ids"]), \
+            w["work_package_id"]
+    assert ctap.validate_plan(PLANNING_DIR, ANALYSIS_DIR, SOURCE_REGISTRY,
+                              MAPPING_REGISTRY) == []
+
+
+# --- P26–P28: preserved protections -----------------------------------------
+
+def test_p26_existing_default_deny_controls_are_preserved(tmp_path):
+    def mutate(records):
+        r = _find_route(records, PROPERTY_ROUTE)
+        r["legal_content_review_state"] = "COMPLETED"
+        r["legal_content_review_evidence"] = "reviewed"
+        r["rights_review_state"] = "REVIEWED"
+        r["rights_review_evidence"] = "cleared"
+        r["implementation_authorization"] = "AUTHORIZED"
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("legal_content_review_state" in i and "is not permitted" in i for i in issues), issues
+    assert any("rights_review_state" in i and "is not permitted" in i for i in issues), issues
+    assert any("only 'NOT_AUTHORIZED' is valid" in i for i in issues), issues
+
+
+def test_p27_existing_gap_and_crosswalk_reciprocity_is_preserved(tmp_path):
+    def mutate(records):
+        _find_gap(records, "GAP-PROPERTY-OWNER")["candidate_work_package_ids"] = \
+            ["wp-contract-complaint"]
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("candidate work package" in i and "belongs to" in i for i in issues), issues
+
+    def mutate_cross(records):
+        _find_wp(records, "wp-property-complaint")["linked_crosswalk_ids"] = ["cw-0117-labor"]
+    cross_issues = _mutated_safe(tmp_path, mutate_cross)
+    assert any("linked crosswalk" in i and "belongs to" in i for i in cross_issues), cross_issues
+
+
+def test_p28_existing_priority_arithmetic_is_preserved(tmp_path):
+    def mutate(records):
+        g = _find_gap(records, "GAP-PROPERTY-OWNER")
+        g["priority_score"] = g["priority_score"] + 1
+    issues = _mutated_safe(tmp_path, mutate)
+    assert any("does not match the computed score" in i for i in issues), issues
+
+
+# --- P29–P32: CLI, determinism and freeze -----------------------------------
+
+def test_p29_p30_invalid_source_cli_fails_without_traceback(tmp_path):
+    records = _records()
+    r = _find_route(records, PROPERTY_ROUTE)
+    r["candidate_source_ids"] = [NEWS]
+    r["source_ids"] = [NEWS]
+    r["source_verification_state"] = "ANNOUNCEMENT_VERIFIED"
+    target = _write(tmp_path, records)
+    result = subprocess.run(
+        [sys.executable, "tools/check_template_adaptation_plan.py",
+         "--planning-dir", str(target), "--analysis-dir", str(ANALYSIS_DIR),
+         "--source-registry", str(SOURCE_REGISTRY),
+         "--mapping-registry", str(MAPPING_REGISTRY)],
+        cwd=str(REPO_ROOT), capture_output=True, text=True,
+    )
+    assert result.returncode != 0
+    assert "FAIL" in result.stdout
+    assert "candidate_source_ids" in result.stdout
+    assert NEWS in result.stdout
+    assert "Traceback" not in result.stdout and "Traceback" not in result.stderr
+
+
+def test_p31_invalid_source_diagnostics_are_deterministic(tmp_path):
+    def mutate(records):
+        _find_route(records, PROPERTY_ROUTE)["candidate_source_ids"] = [NEWS]
+        _find_wp(records, "wp-property-complaint")["source_ids"] = [QA]
+        _find_route(records, PROPERTY_ROUTE)["source_ids"] = []
+    first = _mutated_safe(tmp_path, mutate)
+    second = _mutated_safe(tmp_path, mutate)
+    assert first
+    assert first == second
+
+
+def test_p32_frozen_source_and_planning_files_are_unchanged(tmp_path):
+    watched = [SOURCE_REGISTRY, MAPPING_REGISTRY,
+               PLANNING_DIR / "route-readiness.json",
+               PLANNING_DIR / "gap-prioritization.json",
+               PLANNING_DIR / "adaptation-work-packages.json"]
+    before = {str(p): p.read_bytes() for p in watched}
+    target = _write(tmp_path, _records())
+    ctap.validate_plan(target, ANALYSIS_DIR, SOURCE_REGISTRY, MAPPING_REGISTRY)
+    after = {str(p): p.read_bytes() for p in watched}
+    assert before == after

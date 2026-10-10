@@ -403,6 +403,7 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
 
     # --- route readiness ----------------------------------------------------
     readiness_ids: set = set()
+    readiness_by_id: Dict[str, Dict[str, Any]] = {}
     readiness_combos: set = set()
     high_gaps_seen: set = set()
     readiness_records = plan.get("readiness")
@@ -428,6 +429,7 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                     issues.append(f"{label}: duplicate route_id")
                 else:
                     readiness_ids.add(rid)
+                    readiness_by_id[rid] = r
             elif rid is not None:
                 issues.append(f"{label}: route_id must be a string")
 
@@ -483,6 +485,7 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
             # C2.3 — the mapping must be the exact frozen case-document mapping, and
             # the planning mapping state must equal the registry mapping_status.
             mid = r.get("governance_mapping_id")
+            authoritative_candidates: Optional[List[str]] = None
             if not _nonempty_str(mid):
                 issues.append(f"{label}: governance_mapping_id must be a non-empty string")
             elif mid not in mapping_ids:
@@ -504,17 +507,50 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                         f"{label}: mapping_review_state {planning_mapping_state!r} does not match "
                         f"the frozen governance mapping_status {m.get('mapping_status')!r}"
                     )
+                raw_candidates = m.get("candidate_source_ids")
+                if not isinstance(raw_candidates, list) or \
+                        any(not isinstance(s, str) for s in raw_candidates):
+                    issues.append(
+                        f"{label}: frozen governance mapping {mid!r} has a malformed "
+                        f"candidate_source_ids and cannot bind provenance"
+                    )
+                else:
+                    authoritative_candidates = list(raw_candidates)
 
-            # C2.2 — source references must be scoped to this route.
-            candidates = _check_string_list(label, "candidate_source_ids",
-                                            r.get("candidate_source_ids"), issues, optional=True)
-            inspected: List[str] = []
+            # C2.1 — the frozen route's inspected sources are the authoritative provenance.
+            inspected_expected: Optional[set] = None
             if frozen is not None:
-                inspected = [s for s in (frozen.get("official_source_ids") or [])
-                             if isinstance(s, str)]
-            allowed_sources = set(inspected) | set(candidates or [])
-            source_ids = _check_string_list(label, "source_ids", r.get("source_ids"),
-                                            issues, optional=True)
+                raw_inspected = frozen.get("official_source_ids")
+                if isinstance(raw_inspected, list) and \
+                        all(isinstance(s, str) for s in raw_inspected):
+                    inspected_expected = set(raw_inspected)
+                else:
+                    issues.append(
+                        f"{label}: frozen route {rid!r} has a malformed official_source_ids and "
+                        f"cannot bind provenance"
+                    )
+
+            # C1 — the planning candidate set must equal the authoritative mapping set.
+            candidates = _check_string_list(label, "candidate_source_ids",
+                                            r.get("candidate_source_ids"), issues)
+            candidates = _check_unique(label, "candidate_source_ids", candidates, issues)
+            for sid in candidates or []:
+                if sid not in registry_ids:
+                    issues.append(f"{label}: candidate_source_ids {sid!r} does not resolve in the source registry")
+            if candidates is not None and authoritative_candidates is not None:
+                expected_candidates = set(authoritative_candidates)
+                if set(candidates) != expected_candidates:
+                    issues.append(
+                        f"{label}: candidate_source_ids do not match the authoritative governance "
+                        f"mapping {mid!r} candidate source set "
+                        f"({_set_delta(candidates, expected_candidates)}); planning metadata "
+                        f"cannot create its own source allow-list"
+                    )
+
+            # C2.2 — the planning inspected-source set must equal the frozen route's.
+            source_ids = _check_string_list(label, "source_ids", r.get("source_ids"), issues)
+            source_ids = _check_unique(label, "source_ids", source_ids, issues)
+            allowed_sources = set(inspected_expected or set()) | set(authoritative_candidates or [])
             for sid in source_ids or []:
                 if sid not in registry_ids:
                     issues.append(f"{label}: source_ids {sid!r} does not resolve in the source registry")
@@ -523,9 +559,12 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                         f"{label}: source_ids {sid!r} is not scoped to this route "
                         f"(expected one of {sorted(allowed_sources) or 'none'})"
                     )
-            for sid in candidates or []:
-                if sid not in registry_ids:
-                    issues.append(f"{label}: candidate_source_ids {sid!r} does not resolve in the source registry")
+            if source_ids is not None and inspected_expected is not None:
+                if set(source_ids) != inspected_expected:
+                    issues.append(
+                        f"{label}: source_ids do not match the frozen route {rid!r} "
+                        f"inspected-source set ({_set_delta(source_ids, inspected_expected)})"
+                    )
 
             _check_enum(label, "readiness_classification", r.get("readiness_classification"),
                         READINESS_CLASSIFICATIONS, issues)
@@ -535,8 +574,9 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                         r.get("official_counterpart_classification"),
                         COUNTERPART_CLASSIFICATIONS, issues)
 
-            # C2.1 — the planning source state must equal the authoritative registry
-            # state of the route's scoped candidate source(s).
+            # C2.1 / C4 — the planning source state must equal the authoritative registry
+            # state of the frozen mapping's candidate source(s), never of a
+            # planning-supplied candidate list.
             source_state = _check_enum(label, "source_verification_state",
                                        r.get("source_verification_state"),
                                        SOURCE_VERIFICATION_STATES, issues)
@@ -547,31 +587,35 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                         f"permitted; no source approval exists and an evidence string cannot "
                         f"create one"
                     )
-                elif not candidates:
-                    if source_state != "NO_CANDIDATE_SOURCE_IDENTIFIED":
-                        issues.append(
-                            f"{label}: source_verification_state {source_state!r} does not match "
-                            f"the frozen source registry state 'NO_CANDIDATE_SOURCE_IDENTIFIED' "
-                            f"for a route with no candidate source"
-                        )
-                else:
-                    candidate_states = [registry_ids[sid].get("verification_status")
-                                        for sid in candidates if sid in registry_ids]
-                    expected_rank = min((_verification_rank(s) for s in candidate_states),
-                                        default=-1)
-                    if expected_rank < 0:
-                        issues.append(
-                            f"{label}: candidate source(s) {sorted(candidates)} have no usable "
-                            f"verification status in the frozen registry"
-                        )
-                    else:
-                        expected_state = VERIFICATION_LADDER[expected_rank]
-                        if source_state != expected_state:
+                elif authoritative_candidates is not None:
+                    if not authoritative_candidates:
+                        if source_state != "NO_CANDIDATE_SOURCE_IDENTIFIED":
                             issues.append(
-                                f"{label}: source_verification_state {source_state!r} does not "
-                                f"match the frozen source registry state {expected_state!r} for "
-                                f"the scoped candidate source(s) {sorted(candidates)}"
+                                f"{label}: source_verification_state {source_state!r} does not match "
+                                f"the frozen source registry state 'NO_CANDIDATE_SOURCE_IDENTIFIED' "
+                                f"for a route whose authoritative mapping has no candidate source"
                             )
+                    else:
+                        candidate_states = [registry_ids[sid].get("verification_status")
+                                            for sid in authoritative_candidates
+                                            if sid in registry_ids]
+                        expected_rank = min((_verification_rank(s) for s in candidate_states),
+                                            default=-1)
+                        if expected_rank < 0:
+                            issues.append(
+                                f"{label}: authoritative candidate source(s) "
+                                f"{sorted(authoritative_candidates)} have no usable verification "
+                                f"status in the frozen registry"
+                            )
+                        else:
+                            expected_state = VERIFICATION_LADDER[expected_rank]
+                            if source_state != expected_state:
+                                issues.append(
+                                    f"{label}: source_verification_state {source_state!r} does not "
+                                    f"match the frozen source registry state {expected_state!r} for "
+                                    f"the authoritative candidate source(s) "
+                                    f"{sorted(authoritative_candidates)}"
+                                )
 
             _check_enum(label, "mapping_review_state", r.get("mapping_review_state"),
                         MAPPING_REVIEW_STATES, issues)
@@ -866,10 +910,33 @@ def validate_plan(planning_dir: Path, analysis_dir: Path, source_registry_path: 
                         f"({case!r}, {doc!r}) ({_set_delta(cross_list, expected_cross)})"
                     )
 
-            src_list = _check_string_list(label, "source_ids", wp.get("source_ids"), issues)
+            # C3 — work-package sources must equal the linked route's source scope.
+            src_list = _check_nonempty_string_list(label, "source_ids",
+                                                   wp.get("source_ids"), issues)
+            src_list = _check_unique(label, "source_ids", src_list, issues)
             for sid in src_list or []:
                 if sid not in registry_ids:
                     issues.append(f"{label}: source_id {sid!r} does not resolve in the source registry")
+            if src_list is not None:
+                linked_route = readiness_by_id.get(rid) if isinstance(rid, str) else None
+                if linked_route is None:
+                    issues.append(
+                        f"{label}: cannot bind source provenance; linked planning route {rid!r} "
+                        f"does not resolve"
+                    )
+                else:
+                    route_sources = linked_route.get("source_ids")
+                    if not isinstance(route_sources, list) or \
+                            any(not isinstance(s, str) for s in route_sources):
+                        issues.append(
+                            f"{label}: linked planning route {rid!r} has a malformed source_ids "
+                            f"and cannot bind provenance"
+                        )
+                    elif set(src_list) != set(route_sources):
+                        issues.append(
+                            f"{label}: source_ids do not match the linked route {rid!r} source set "
+                            f"({_set_delta(src_list, set(route_sources))})"
+                        )
 
             for field in ("objective", "calculation_effects"):
                 if not _nonempty_str(wp.get(field)):
