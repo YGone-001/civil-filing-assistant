@@ -375,25 +375,35 @@ class ContractClaimPage(QWizardPage):
         self.delivery_date = QLineEdit()
         self.delivery_date.setPlaceholderText("如: 2023年2月1日")
 
+        # Delivery status is tri-state: an explicit "未确认" option is selected by
+        # default so an untouched control means UNKNOWN, never "delivered".
         self.is_delivered_group = QButtonGroup(self)
         self.del_yes = QRadioButton("已交货")
         self.del_no = QRadioButton("未交货")
+        self.del_unknown = QRadioButton("未确认")
         self.is_delivered_group.addButton(self.del_yes, 1)
         self.is_delivered_group.addButton(self.del_no, 0)
-        self.del_yes.setChecked(True)
+        self.is_delivered_group.addButton(self.del_unknown, 2)
+        self.del_unknown.setChecked(True)
         del_layout = QHBoxLayout()
         del_layout.addWidget(self.del_yes)
         del_layout.addWidget(self.del_no)
+        del_layout.addWidget(self.del_unknown)
 
+        # Receipt status is tri-state as well. The negative option is a neutral
+        # "未签收": a missing signature is not proof of an intentional refusal.
         self.is_signed_group = QButtonGroup(self)
         self.sign_yes = QRadioButton("已签收")
-        self.sign_no = QRadioButton("拒签收/未签收")
+        self.sign_no = QRadioButton("未签收")
+        self.sign_unknown = QRadioButton("未确认")
         self.is_signed_group.addButton(self.sign_yes, 1)
         self.is_signed_group.addButton(self.sign_no, 0)
-        self.sign_yes.setChecked(True)
+        self.is_signed_group.addButton(self.sign_unknown, 2)
+        self.sign_unknown.setChecked(True)
         sign_layout = QHBoxLayout()
         sign_layout.addWidget(self.sign_yes)
         sign_layout.addWidget(self.sign_no)
+        sign_layout.addWidget(self.sign_unknown)
 
         self.unpaid_amount = QLineEdit()
         self.unpaid_amount.setPlaceholderText("如: 30000")
@@ -464,10 +474,25 @@ class ContractClaimPage(QWizardPage):
         self.registerField("c_lpr_value", self.lpr_value)
         self.registerField("c_lpr_multiple", self.lpr_multiple)
 
+    @staticmethod
+    def _tri_state(group, yes_id=1, no_id=0):
+        """Map a radio group to ``True`` / ``False`` / ``None`` (unconfirmed)."""
+        checked = group.checkedId()
+        if checked == yes_id:
+            return True
+        if checked == no_id:
+            return False
+        return None
+
     def get_flags(self):
+        """Return tri-state delivery/receipt flags.
+
+        ``None`` means the fact has not been confirmed by the user; it must never
+        be coerced into ``False`` or ``True`` downstream.
+        """
         return {
-            "is_delivered": self.is_delivered_group.checkedId() == 1,
-            "is_signed": self.is_signed_group.checkedId() == 1
+            "is_delivered": self._tri_state(self.is_delivered_group),
+            "is_signed": self._tri_state(self.is_signed_group),
         }
 
     def update_penalty_warning(self):
@@ -563,15 +588,20 @@ class LoanClaimPage(QWizardPage):
         self.start_date = QLineEdit()
         self.start_date.setPlaceholderText("如: 2023年5月1日")
 
+        # IOU status is tri-state: the default "未确认" means no IOU fact may be
+        # asserted until the user explicitly selects 有借条 or 无借条.
         self.has_iou_group = QButtonGroup(self)
         self.iou_yes = QRadioButton("有借条")
         self.iou_no = QRadioButton("无借条")
+        self.iou_unknown = QRadioButton("未确认")
         self.has_iou_group.addButton(self.iou_yes, 1)
         self.has_iou_group.addButton(self.iou_no, 0)
-        self.iou_yes.setChecked(True)
+        self.has_iou_group.addButton(self.iou_unknown, 2)
+        self.iou_unknown.setChecked(True)
         iou_layout = QHBoxLayout()
         iou_layout.addWidget(self.iou_yes)
         iou_layout.addWidget(self.iou_no)
+        iou_layout.addWidget(self.iou_unknown)
 
         self.demand_date = QLineEdit()
         self.demand_date.setPlaceholderText("如: 2023年10月至今")
@@ -634,7 +664,13 @@ class LoanClaimPage(QWizardPage):
             )
 
     def get_has_iou(self):
-        return self.has_iou_group.checkedId() == 1
+        """Return ``True`` / ``False`` / ``None`` (unconfirmed) IOU status."""
+        checked = self.has_iou_group.checkedId()
+        if checked == 1:
+            return True
+        if checked == 0:
+            return False
+        return None
 
 class PropertyClaimPage(QWizardPage):
     def __init__(self):

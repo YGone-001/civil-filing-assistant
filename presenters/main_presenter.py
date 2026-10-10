@@ -75,6 +75,19 @@ class MainPresenter:
 
         model = build_case_model(self.view)
 
+        # Explicitly confirmed facts that contradict each other must block export
+        # so that no self-contradictory document is published; the wizard stays
+        # open so the user can correct the input and retry.
+        conflict = getattr(model, "delivery_receipt_conflict", None)
+        if callable(conflict) and conflict():
+            QMessageBox.warning(
+                self.view,
+                "信息相互矛盾",
+                "“未交货”与“已签收”不能同时成立。\n"
+                "请返回修改交货状态或签收状态后再生成文书；本次未导出任何文件。",
+            )
+            return self.FINISH_VALIDATION_FAILED
+
         if case_type == "property":
             self._warn_property_mismatch(model)
 

@@ -81,8 +81,12 @@ def set_parties(wizard, plaintiffs=None, defendants=None):
     _set_party_list(page, 1, defendants if defendants is not None else DEFAULT_DEFENDANTS)
 
 
-def fill_case_facts(wizard, case_type):
-    """Fill the case-specific "facts and reasons" page."""
+def fill_case_facts(wizard, case_type, confirm_flags=True):
+    """Fill the case-specific "facts and reasons" page.
+
+    ``confirm_flags=False`` leaves the tri-state factual controls (delivery,
+    receipt, IOU) untouched so a test can exercise the *unknown* state.
+    """
     if case_type == "loan":
         p = wizard.loan_claim_page
         p.loan_date.setText("2023年1月1日")
@@ -91,7 +95,8 @@ def fill_case_facts(wizard, case_type):
         p.payment_method.setText("银行转账")
         p.rate.setText("14.6")
         p.start_date.setText("2023-05-01")
-        p.iou_yes.setChecked(True)
+        if confirm_flags:
+            p.iou_yes.setChecked(True)
         p.demand_date.setText("2023年10月")
         p.demand_method.setText("微信及电话")
         p.court_name.setText("上海市徐汇区人民法院")
@@ -102,8 +107,9 @@ def fill_case_facts(wizard, case_type):
         p.product_name.setText("10台测试电脑")
         p.total_amount.setText("50000")
         p.delivery_date.setText("2023年2月1日")
-        p.del_yes.setChecked(True)
-        p.sign_yes.setChecked(True)
+        if confirm_flags:
+            p.del_yes.setChecked(True)
+            p.sign_yes.setChecked(True)
         p.unpaid_amount.setText("30000")
         p.penalty_amount.setText("5000")
         p.overdue_start.setText("2023-03-01")
@@ -149,11 +155,12 @@ def fill_case_facts(wizard, case_type):
     return case_type
 
 
-def prepare_case(wizard, case_type, plaintiffs=None, defendants=None, with_evidence=True):
+def prepare_case(wizard, case_type, plaintiffs=None, defendants=None, with_evidence=True,
+                 confirm_flags=True):
     """Select a case, fill parties and facts, and load default evidence."""
     select_case(wizard, case_type)
     set_parties(wizard, plaintiffs=plaintiffs, defendants=defendants)
-    fill_case_facts(wizard, case_type)
+    fill_case_facts(wizard, case_type, confirm_flags=confirm_flags)
     if with_evidence:
         wizard.evidence_page.initializePage()
     return wizard

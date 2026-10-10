@@ -182,7 +182,7 @@ class LoanCaseModel(CaseTemplate):
         self.payment_method = ""
         self.interest_rate = ""
         self.interest_start_date = ""
-        self.has_iou = False
+        self.has_iou = None
         self.demand_date = ""
         self.demand_method = ""
 
@@ -228,14 +228,19 @@ class LoanCaseModel(CaseTemplate):
         return claims
 
     def render_facts(self):
-        iou_text = "出具了借条" if self.has_iou else "未出具借条"
-
         # The opening is drawn only from supplied facts; no party relationship
         # (such as "friends") is asserted.
         fact_str = (
             f"{self.loan_date}，被告因{self.loan_reason}向原告借款，"
-            f"原告通过{self.payment_method}向被告支付借款本金 {self.principal_amount} 元，被告{iou_text}。"
+            f"原告通过{self.payment_method}向被告支付借款本金 {self.principal_amount} 元。"
         )
+
+        # The IOU statement is emitted only when the user explicitly confirmed
+        # the state; an unconfirmed (``None``) status asserts neither outcome.
+        if self.has_iou is True:
+            fact_str += "被告出具了借条。"
+        elif self.has_iou is False:
+            fact_str += "被告未出具借条。"
 
         if self.interest_rate:
             fact_str += f"双方约定借款年利率为 {self.interest_rate}%。"
@@ -274,8 +279,9 @@ class ContractCaseModel(CaseTemplate):
         self.product_name = ""
         self.total_amount = ""
         self.delivery_date = ""
-        self.is_delivered = True
-        self.is_signed = True
+        # Tri-state: None = not confirmed, True = delivered, False = not delivered.
+        self.is_delivered = None
+        self.is_signed = None
         self.unpaid_amount = ""
         self.penalty_amount = ""
         self.penalty_start_date = ""
@@ -298,21 +304,35 @@ class ContractCaseModel(CaseTemplate):
         claims.append("本案诉讼费由被告承担。")
         return claims
 
+    def delivery_receipt_conflict(self):
+        """True when the explicit delivery/receipt states contradict each other."""
+        return self.is_delivered is False and self.is_signed is True
+
     def render_facts(self):
         fact_str = (
             f"原告与被告于{self.contract_date}签订了《{self.contract_name}》，"
             f"约定被告向原告采购{self.product_name}，总金额为 {self.total_amount} 元。"
         )
 
-        if self.is_delivered:
-            fact_str += f"原告已于{self.delivery_date}完成交货，"
-            if self.is_signed:
-                fact_str += "被告已签收。"
-            else:
-                # Failure to sign is stated without asserting a reason for it.
-                fact_str += "被告尚未签收。"
+        # Delivery is tri-state: assert only what the user explicitly confirmed.
+        if self.is_delivered is True:
+            fact_str += f"原告已于{self.delivery_date}完成交货。"
+        elif self.is_delivered is False:
+            fact_str += "原告尚未完成交货。"
         else:
-            fact_str += "目前尚未完成交货。"
+            fact_str += "关于货物是否已经交付，现有材料尚未确认，需人工核对后补充。"
+
+        # Receipt is tri-state as well. A contradiction between the two states is
+        # flagged for review instead of silently producing a self-contradictory
+        # narrative.
+        if self.delivery_receipt_conflict():
+            fact_str += "（提示：交货状态与签收状态相互矛盾，请人工核对并修正后再行提交。）"
+        elif self.is_signed is True:
+            fact_str += "被告已签收。"
+        elif self.is_signed is False:
+            # Failure to sign is stated without asserting a reason for it.
+            fact_str += "被告尚未签收。"
+        # None → the receipt assertion is omitted entirely.
 
         # The complaint must not assert a payment demand (single or repeated)
         # that the user never supplied: the sales-contract inputs establish the
@@ -436,8 +456,9 @@ class PropertyCaseModel(CaseTemplate):
         # the contract details are explicitly flagged as requiring manual
         # confirmation rather than being asserted as accomplished facts.
         fact_str = (
-            f"{plaintiff_name}主张其为涉案小区提供物业服务，被告{defendant_name}"
-            f"系{self.property_addr}的业主或使用人，该房屋登记建筑面积为{self.house_area}平方米。"
+            f"{plaintiff_name}主张其为涉案小区提供物业服务。原告主张被告{defendant_name}与"
+            f"{self.property_addr}（登记建筑面积{self.house_area}平方米）的物业费负担存在相关权利义务关系，"
+            f"被告的具体身份（业主、使用人或其他）及相应责任依据需结合物业服务合同、产权资料及其他证据人工核对。"
             f"原告主张，依据物业服务合同，被告应按{self.fee_rate}元/平方米/月的标准缴纳物业管理费"
             f"（合同主体、签订时间、服务期限及具体约定以双方提供的书面合同为准，需人工核对）。"
             f"自{self.period_start}起至{self.period_end}止，原告主张被告欠付物业管理费共计{total_str}元"
