@@ -13,7 +13,11 @@ accessible names, scroll containers, status styles, and focus recovery —
 remains stable across future refactors.  All data is fictional.
 """
 
+from pathlib import Path
+
 import pytest
+from PySide6.QtCore import QItemSelectionModel, Qt
+from PySide6.QtTest import QTest
 from PySide6.QtWidgets import (
     QScrollArea,
     QWizard,
@@ -22,11 +26,20 @@ from PySide6.QtWidgets import (
     QComboBox,
     QTableWidget,
     QLineEdit,
+    QTextEdit,
 )
 
-from helpers import make_wizard, select_case, set_parties, CASE_TYPES
+from helpers import (
+    CASE_TYPES,
+    make_wizard,
+    navigate_to_export,
+    prepare_case,
+    select_case,
+    set_parties,
+)
 from views.theme import (
     INFO_LABEL,
+    REMINDER_LABEL,
     WARNING_LABEL,
     ERROR_LABEL,
     SUCCESS_LABEL,
@@ -34,6 +47,7 @@ from views.theme import (
     SECONDARY_BUTTON,
     DANGER_BUTTON,
     COLOR_INFO_BG,
+    COLOR_REMINDER_BG,
     COLOR_WARNING_BG,
     COLOR_ERROR_BG,
     COLOR_SUCCESS_BG,
@@ -381,17 +395,18 @@ def test_set_status_hides_label_on_empty_text(qapp):
 
 
 def test_five_status_label_object_names_are_distinct():
-    names = {INFO_LABEL, WARNING_LABEL, ERROR_LABEL, SUCCESS_LABEL}
-    assert len(names) == 4
+    names = {INFO_LABEL, REMINDER_LABEL, WARNING_LABEL, ERROR_LABEL, SUCCESS_LABEL}
+    assert len(names) == 5
     assert INFO_LABEL == "infoLabel"
+    assert REMINDER_LABEL == "reminderLabel"
     assert WARNING_LABEL == "warningLabel"
     assert ERROR_LABEL == "errorLabel"
     assert SUCCESS_LABEL == "successLabel"
 
 
 def test_five_status_color_tokens_are_defined_and_distinct():
-    colors = {COLOR_INFO_BG, COLOR_WARNING_BG, COLOR_ERROR_BG, COLOR_SUCCESS_BG}
-    assert len(colors) == 4
+    colors = {COLOR_INFO_BG, COLOR_REMINDER_BG, COLOR_WARNING_BG, COLOR_ERROR_BG, COLOR_SUCCESS_BG}
+    assert len(colors) == 5
     for c in colors:
         assert c.startswith("#")
 
@@ -403,6 +418,16 @@ def test_status_labels_use_warning_not_error_for_conditional_hints(qapp):
     assert wizard.loan_claim_page.cond_hint.objectName() == WARNING_LABEL
     assert wizard.contract_claim_page.cond_hint.objectName() == WARNING_LABEL
     assert wizard.divorce_claim_page.cond_hint.objectName() == WARNING_LABEL
+
+
+def test_nonblocking_legal_and_calculation_advisories_use_reminder_style(qapp):
+    """Persistent reminders must not look like navigation-blocking warnings."""
+    wizard, _ = make_wizard()
+    assert wizard.case_selection_page.labor_notice.objectName() == REMINDER_LABEL
+    assert wizard.labor_claim_page.arbitration_notice.objectName() == REMINDER_LABEL
+    assert wizard.loan_claim_page.rate_warning.objectName() == REMINDER_LABEL
+    assert wizard.contract_claim_page.penalty_warning.objectName() == REMINDER_LABEL
+    assert wizard.property_claim_page.warn_label.objectName() == REMINDER_LABEL
 
 
 # ---------------------------------------------------------------------------
@@ -457,6 +482,61 @@ def test_contract_calc_buttons_have_accessible_names(qapp):
     assert page.calc_lpr_btn.accessibleName() == "按LPR倍数折算违约金"
 
 
+def test_every_labeled_text_input_has_an_accessible_name(qapp):
+    """No visible text entry may depend on disappearing placeholder text."""
+    wizard, _ = make_wizard()
+    pages = (
+        wizard.contract_claim_page,
+        wizard.loan_claim_page,
+        wizard.property_claim_page,
+        wizard.labor_claim_page,
+        wizard.divorce_claim_page,
+    )
+    inputs = []
+    for page in pages:
+        inputs.extend(page.findChildren(QLineEdit))
+        inputs.extend(page.findChildren(QTextEdit))
+    assert inputs
+    assert not [field for field in inputs if not field.accessibleName()]
+
+
+def test_party_card_inputs_have_numbered_accessible_names(qapp):
+    wizard, _ = make_wizard()
+    set_parties(wizard)
+    plaintiff = wizard.party_page.plaintiff_widgets[0]
+    assert plaintiff["name"].accessibleName() == "原告1姓名/名称"
+    assert plaintiff["credit_code"].accessibleName() == "原告1统一社会信用代码"
+
+
+def test_party_validation_focuses_first_missing_name(qapp):
+    wizard, _ = make_wizard()
+    wizard.show()
+    wizard.next()
+    select_case(wizard, "loan")
+    wizard.next()
+    qapp.processEvents()
+
+    page = wizard.party_page
+    assert page.validatePage() is False
+    qapp.processEvents()
+    assert page.plaintiff_widgets[0]["name"].hasFocus()
+
+
+def test_party_card_tab_moves_to_the_next_input(qapp):
+    wizard, _ = make_wizard()
+    wizard.show()
+    wizard.next()
+    select_case(wizard, "loan")
+    wizard.next()
+    qapp.processEvents()
+
+    card = wizard.party_page.plaintiff_widgets[0]
+    card["name"].setFocus()
+    QTest.keyClick(card["name"], Qt.Key.Key_Tab)
+    qapp.processEvents()
+    assert card["id"].hasFocus()
+
+
 # ---------------------------------------------------------------------------
 # 9. Scroll-area wrapping on claim pages (T11)
 # ---------------------------------------------------------------------------
@@ -486,6 +566,50 @@ def test_scroll_area_has_no_frame_to_blend_with_page(qapp):
     wizard, _ = make_wizard()
     scroll_areas = wizard.loan_claim_page.findChildren(QScrollArea)
     assert scroll_areas[0].frameShape() == QScrollArea.Shape.NoFrame
+
+
+def test_wizard_minimum_size_keeps_navigation_usable(qapp):
+    wizard, _ = make_wizard()
+    assert wizard.minimumWidth() >= 680
+    assert wizard.minimumHeight() >= 560
+
+
+def test_wizard_pages_do_not_use_absolute_positioning():
+    source = (Path(__file__).resolve().parents[1] / "views" / "wizard_pages.py").read_text(
+        encoding="utf-8"
+    )
+    assert "setGeometry(" not in source
+    assert ".move(" not in source
+
+
+def test_evidence_multiple_row_deletion_preserves_unselected_row(qapp):
+    wizard, _ = make_wizard()
+    page = wizard.evidence_page
+    for name in ("证据甲", "证据乙", "证据丙"):
+        page.add_row(name, "证明目的", auto_edit=False)
+
+    selection = page.table.selectionModel()
+    flags = QItemSelectionModel.SelectionFlag.Select | QItemSelectionModel.SelectionFlag.Rows
+    selection.select(page.table.model().index(0, 0), flags)
+    selection.select(page.table.model().index(2, 0), flags)
+    page.remove_selected_rows()
+
+    assert page.table.rowCount() == 1
+    assert page.table.item(0, 0).text() == "证据乙"
+
+
+def test_user_evidence_survives_forward_and_back_navigation(qapp):
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "loan")
+    page = wizard.evidence_page
+    page.add_row("用户补充证据", "证明双方曾协商还款", auto_edit=False)
+
+    navigate_to_export(wizard)
+    wizard.back()
+    qapp.processEvents()
+
+    assert wizard.currentId() == wizard.PAGE_EVIDENCE
+    assert ("用户补充证据", "证明双方曾协商还款") in page.get_evidence_items()
 
 
 # ---------------------------------------------------------------------------

@@ -24,6 +24,8 @@ COLOR_DANGER = "#B00020"           # destructive actions, errors
 COLOR_DANGER_HOVER = "#8F001A"
 COLOR_WARNING = "#B26A00"          # reminders / cautions
 COLOR_WARNING_BG = "#FBF3E4"
+COLOR_REMINDER = "#6A4C93"         # non-blocking action reminders
+COLOR_REMINDER_BG = "#F1ECF7"
 COLOR_ERROR = "#B00020"
 COLOR_ERROR_BG = "#FBEAEC"
 COLOR_SUCCESS = "#2E7D32"
@@ -62,6 +64,7 @@ SECONDARY_BUTTON = "secondaryButton"
 DANGER_BUTTON = "dangerButton"
 
 INFO_LABEL = "infoLabel"
+REMINDER_LABEL = "reminderLabel"
 WARNING_LABEL = "warningLabel"
 ERROR_LABEL = "errorLabel"
 SUCCESS_LABEL = "successLabel"
@@ -193,6 +196,14 @@ QPushButton#{DANGER_BUTTON}:hover {{
 QLabel#{INFO_LABEL} {{
     color: {COLOR_INFO};
     background-color: {COLOR_INFO_BG};
+    border: 1px solid {COLOR_BORDER};
+    border-radius: {RADIUS_SM}px;
+    padding: {SPACING_MD}px;
+}}
+
+QLabel#{REMINDER_LABEL} {{
+    color: {COLOR_REMINDER};
+    background-color: {COLOR_REMINDER_BG};
     border: 1px solid {COLOR_BORDER};
     border-radius: {RADIUS_SM}px;
     padding: {SPACING_MD}px;

@@ -20,7 +20,7 @@ from PySide6.QtWidgets import QGroupBox, QWizard
 
 from helpers import docx_all_text, make_wizard, select_case, set_parties
 from presenters.model_builder import build_case_model
-from views.theme import SECONDARY_BUTTON, WARNING_LABEL, WARNING_LABEL
+from views.theme import REMINDER_LABEL, SECONDARY_BUTTON
 
 CLAIM_PAGE_ATTR = {
     "loan": "PAGE_LOAN_CLAIM",
@@ -620,7 +620,7 @@ def test_h_t06_labor_arbitration_notice_is_persistent(qapp):
     assert "仲裁前置" in text
     assert "依据" in text
     assert "整理时间" in text
-    assert notice.objectName() == WARNING_LABEL
+    assert notice.objectName() == REMINDER_LABEL
 
 
 def test_h_t06_labor_amount_fields_constrained(qapp):

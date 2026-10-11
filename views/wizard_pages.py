@@ -15,6 +15,7 @@ from views.theme import (
     ERROR_LABEL,
     INFO_LABEL,
     PRIMARY_BUTTON,
+    REMINDER_LABEL,
     SECONDARY_BUTTON,
     SUCCESS_LABEL,
     WARNING_LABEL,
@@ -68,24 +69,38 @@ def _section(root, title):
     return form
 
 
-def _wrap_in_scroll(root_layout):
-    """Wrap *root_layout* in a resizable QScrollArea and return the outer layout.
+def _set_form_accessibility(form, prefix=""):
+    """Give labelled text inputs explicit, screen-reader-friendly names.
 
-    Callers do ``self.setLayout(_wrap_in_scroll(root))`` instead of
-    ``self.setLayout(root)`` so that long forms stay usable on small screens
-    and high-DPI scaling factors.  The outer layout has zero margins so the
-    scroll area fills the page exactly as the original layout did.
+    Qt does not automatically expose a ``QFormLayout`` label as an accessible
+    name.  Keeping this close to the form-building helpers means every input
+    added through a labelled row receives both a name and a concise purpose,
+    without relying on placeholder text (which disappears as soon as users
+    start typing).
     """
-    scroll = QScrollArea()
-    scroll.setWidgetResizable(True)
-    scroll.setFrameShape(QScrollArea.Shape.NoFrame)
-    content = QWidget()
-    content.setLayout(root_layout)
-    scroll.setWidget(content)
-    outer = QVBoxLayout()
-    outer.setContentsMargins(0, 0, 0, 0)
-    outer.addWidget(scroll)
-    return outer
+    for row in range(form.rowCount()):
+        label_item = form.itemAt(row, QFormLayout.ItemRole.LabelRole)
+        field_item = form.itemAt(row, QFormLayout.ItemRole.FieldRole)
+        if label_item is None or field_item is None:
+            continue
+        label = label_item.widget()
+        field = field_item.widget()
+        if not isinstance(label, QLabel) or not isinstance(
+            field, (QLineEdit, QTextEdit, QPlainTextEdit)
+        ):
+            continue
+        label_text = label.text().replace(":", "").replace("：", "").strip()
+        if not label_text:
+            continue
+        name = f"{prefix}{label_text}" if prefix else label_text
+        field.setAccessibleName(name)
+        field.setAccessibleDescription(f"填写{name}")
+
+
+def _set_page_form_accessibility(page):
+    """Apply the labelled-input convention to every form on a wizard page."""
+    for form in page.findChildren(QFormLayout):
+        _set_form_accessibility(form)
 
 
 def _wrap_in_scroll(root_layout):
@@ -185,7 +200,7 @@ class CaseSelectionPage(QWizardPage):
         # Persistent labour-arbitration notice, shown only while "labor" is
         # selected (replaces the previous blocking dialog).
         self.labor_notice = QLabel("")
-        self.labor_notice.setObjectName(WARNING_LABEL)
+        self.labor_notice.setObjectName(REMINDER_LABEL)
         self.labor_notice.setWordWrap(True)
         self.labor_notice.setVisible(False)
         layout.addWidget(self.labor_notice)
@@ -298,6 +313,7 @@ class PartyPage(QWizardPage):
         # Initialize with at least 1 plaintiff and 1 defendant
         self.add_party_ui(0)
         self.add_party_ui(1)
+        self._rebuild_party_tab_order()
 
     def add_party_ui(self, party_type):
         is_plaintiff = (party_type == 0)
@@ -353,7 +369,7 @@ class PartyPage(QWizardPage):
         # Only create addr_hint for property cases
         if is_property_case and not is_plaintiff:
             addr_hint = QLabel("提示：若被告搬家，请填写现居住满一年的地址，以便法院送达。")
-            addr_hint.setObjectName(WARNING_LABEL)
+            addr_hint.setObjectName(REMINDER_LABEL)
             addr_hint.setWordWrap(True)
             layout.addRow(addr_hint)
 
@@ -393,6 +409,7 @@ class PartyPage(QWizardPage):
             "credit_code_label": credit_code_label,
             "legal_rep_label": legal_rep_label,
             "delete_btn": delete_btn,
+            "form": layout,
         }
         delete_btn.clicked.connect(lambda _=False, t=party_type, d=widget: self._remove_party(t, d))
 
@@ -416,6 +433,7 @@ class PartyPage(QWizardPage):
             credit_code_label,
             legal_rep_label,
         )
+        _set_form_accessibility(layout, f"{kind}{number}")
 
         # Keep the live guidance and the wizard "Next" button state in sync, and
         # mark the page as touched when the user leaves a field.
@@ -424,6 +442,7 @@ class PartyPage(QWizardPage):
             w.editingFinished.connect(self._on_field_edited)
 
         self._refresh_validation_message()
+        self._rebuild_party_tab_order()
 
     def _toggle_company_fields(
         self,
@@ -453,8 +472,30 @@ class PartyPage(QWizardPage):
         """Keep card numbers contiguous after additions/removals."""
         for idx, w in enumerate(self.plaintiff_widgets, 1):
             w["group"].setTitle(f"原告{idx}")
+            _set_form_accessibility(w["form"], f"原告{idx}")
         for idx, w in enumerate(self.defendant_widgets, 1):
             w["group"].setTitle(f"被告{idx}")
+            _set_form_accessibility(w["form"], f"被告{idx}")
+
+    def _rebuild_party_tab_order(self):
+        """Keep keyboard traversal aligned with the visible party-card order."""
+        sequence = []
+        for card in self.plaintiff_widgets:
+            sequence.extend(
+                card[key]
+                for key in ("name", "id", "credit_code", "legal_rep", "addr", "phone",
+                            "is_company", "delete_btn")
+            )
+        sequence.append(self.add_p_btn)
+        for card in self.defendant_widgets:
+            sequence.extend(
+                card[key]
+                for key in ("name", "id", "credit_code", "legal_rep", "addr", "phone",
+                            "is_company", "delete_btn")
+            )
+        sequence.append(self.add_d_btn)
+        for previous, following in zip(sequence, sequence[1:]):
+            QWidget.setTabOrder(previous, following)
 
     def _remove_party(self, party_type, widget):
         widgets = self.plaintiff_widgets if party_type == 0 else self.defendant_widgets
@@ -464,6 +505,7 @@ class PartyPage(QWizardPage):
             return
         widget["group"].deleteLater()
         self._renumber_parties()
+        self._rebuild_party_tab_order()
         self._refresh_validation_message()
 
     def remove_party_ui(self, party_type, index):
@@ -694,7 +736,7 @@ class ContractClaimPage(QWizardPage):
         _decimal_validator(self.penalty_amount)
 
         self.penalty_warning = QLabel("")
-        self.penalty_warning.setObjectName(WARNING_LABEL)
+        self.penalty_warning.setObjectName(REMINDER_LABEL)
         self.penalty_warning.setWordWrap(True)
         self.penalty_warning.setVisible(False)
         self.penalty_amount.textChanged.connect(self.update_penalty_warning)
@@ -758,6 +800,7 @@ class ContractClaimPage(QWizardPage):
         court.addRow("建议管辖法院:", self.court_name)
 
         self.setLayout(_wrap_in_scroll(root))
+        _set_page_form_accessibility(self)
 
         self.registerField("c_contract_date*", self.contract_date)
         self.registerField("c_contract_name*", self.contract_name)
@@ -945,7 +988,7 @@ class LoanClaimPage(QWizardPage):
 
         # Validation warning label
         self.rate_warning = QLabel("")
-        self.rate_warning.setObjectName(WARNING_LABEL)
+        self.rate_warning.setObjectName(REMINDER_LABEL)
         self.rate_warning.setWordWrap(True)
         self.rate_warning.setVisible(False)
         self.rate.textChanged.connect(self.validate_rate)
@@ -985,6 +1028,7 @@ class LoanClaimPage(QWizardPage):
         court.addRow("建议管辖法院:", self.court_name)
 
         self.setLayout(_wrap_in_scroll(root))
+        _set_page_form_accessibility(self)
 
         # Register fields
         self.registerField("loan_date*", self.loan_date)
@@ -1129,7 +1173,7 @@ class PropertyClaimPage(QWizardPage):
         self.calc_label.setObjectName(INFO_LABEL)
         self.calc_label.setWordWrap(True)
         self.warn_label = QLabel("")
-        self.warn_label.setObjectName(WARNING_LABEL)
+        self.warn_label.setObjectName(REMINDER_LABEL)
         self.warn_label.setWordWrap(True)
         self.warn_label.setVisible(False)
 
@@ -1146,6 +1190,7 @@ class PropertyClaimPage(QWizardPage):
         court.addRow("建议管辖法院:", self.court_name)
 
         self.setLayout(_wrap_in_scroll(root))
+        _set_page_form_accessibility(self)
 
         for w in [self.house_area, self.fee_rate, self.period_start, self.period_end, self.total_input]:
             w.textChanged.connect(self.update_calc)
@@ -1383,7 +1428,7 @@ class LaborClaimPage(QWizardPage):
         # time, so the page never reads as a universally current conclusion.
         from utils.labor_security import LaborProcedureGuard
         self.arbitration_notice = QLabel(LaborProcedureGuard().get_persistent_notice())
-        self.arbitration_notice.setObjectName(WARNING_LABEL)
+        self.arbitration_notice.setObjectName(REMINDER_LABEL)
         self.arbitration_notice.setWordWrap(True)
         root.addWidget(self.arbitration_notice)
 
@@ -1454,6 +1499,7 @@ class LaborClaimPage(QWizardPage):
         court.addRow("建议管辖法院:", self.court_name)
 
         self.setLayout(_wrap_in_scroll(root))
+        _set_page_form_accessibility(self)
 
         self.registerField("l_emp_join_date*", self.emp_join_date)
         self.registerField("l_job_title*", self.job_title)
@@ -1547,6 +1593,7 @@ class DivorceClaimPage(QWizardPage):
         court.addRow("建议管辖法院:", self.court_name)
 
         self.setLayout(_wrap_in_scroll(root))
+        _set_page_form_accessibility(self)
 
         self.registerField("d_marriage_date*", self.marriage_date)
         # Child information is optional: a childless divorce must be reachable.
