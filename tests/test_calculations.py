@@ -256,3 +256,65 @@ def test_divorce_no_invented_child_facts_when_none():
     model.marriage_date = "2018-05-20"
     facts = model.render_facts()
     assert "子女" not in facts
+
+
+# --- Contract view-level penalty calculation (T05: buttons stay auxiliary) ---
+
+
+def test_contract_view_daily_penalty_computes(qapp):
+    from helpers import make_wizard
+
+    wizard, _ = make_wizard()
+    page = wizard.contract_claim_page
+    page.unpaid_amount.setText("10000")
+    page.overdue_start.setText("2023-03-01")
+    page.overdue_end.setText("2023-03-08")
+    page.calc_penalty_daily_5_per_10k()
+    # unpaid × 0.0005 × 7 days = 10000 × 0.0005 × 7 = 35.00
+    assert page.penalty_amount.text() == "35.00"
+
+
+def test_contract_view_lpr_penalty_computes(qapp):
+    from helpers import make_wizard
+
+    wizard, _ = make_wizard()
+    page = wizard.contract_claim_page
+    page.unpaid_amount.setText("10000")
+    page.lpr_value.setText("3.65")
+    page.lpr_multiple.setText("4")
+    page.overdue_start.setText("2023-01-01")
+    page.overdue_end.setText("2023-01-11")
+    page.calc_penalty_by_lpr_multiple()
+    # annual = 3.65 × 4 / 100 = 0.146; 10000 × 0.146 × 10 days / 365 = 40.00
+    assert page.penalty_amount.text() == "40.00"
+
+
+# --- Contract view-level penalty calculation (T05: buttons stay auxiliary) ---
+
+
+def test_contract_view_daily_penalty_computes(qapp):
+    from helpers import make_wizard
+
+    wizard, _ = make_wizard()
+    page = wizard.contract_claim_page
+    page.unpaid_amount.setText("10000")
+    page.overdue_start.setText("2023-03-01")
+    page.overdue_end.setText("2023-03-08")
+    page.calc_penalty_daily_5_per_10k()
+    # unpaid × 0.0005 × 7 days = 10000 × 0.0005 × 7 = 35.00
+    assert page.penalty_amount.text() == "35.00"
+
+
+def test_contract_view_lpr_penalty_computes(qapp):
+    from helpers import make_wizard
+
+    wizard, _ = make_wizard()
+    page = wizard.contract_claim_page
+    page.unpaid_amount.setText("10000")
+    page.lpr_value.setText("3.65")
+    page.lpr_multiple.setText("4")
+    page.overdue_start.setText("2023-01-01")
+    page.overdue_end.setText("2023-01-11")
+    page.calc_penalty_by_lpr_multiple()
+    # annual = 3.65 × 4 / 100 = 0.146; 10000 × 0.146 × 10 days / 365 = 40.00
+    assert page.penalty_amount.text() == "40.00"

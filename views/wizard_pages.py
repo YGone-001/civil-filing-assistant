@@ -14,6 +14,7 @@ from views.theme import (
     ERROR_LABEL,
     INFO_LABEL,
     PRIMARY_BUTTON,
+    SECONDARY_BUTTON,
     WARNING_LABEL,
 )
 
@@ -32,6 +33,44 @@ def _set_status(label, text):
 # precise digit-count check happens in PartyPage.validate_parties() so that a
 # legitimate landline or extension is not rejected outright.
 _PHONE_INPUT_PATTERN = QRegularExpression(r"^[0-9+\-() ]{0,20}$")
+
+# Amount / percentage inputs (元, %, 倍数等) accept a non-negative decimal with up
+# to two fraction digits. Empty is allowed so optional fields can stay blank; the
+# mandatory check is enforced separately by the ``*`` field marker. Letters and
+# leading signs are rejected at the text-entry level.
+_DECIMAL_INPUT_PATTERN = QRegularExpression(r"^(?:\d{1,12}(?:\.\d{0,2})?)?$")
+
+
+def _decimal_validator(line_edit):
+    """Restrict ``line_edit`` to non-negative decimals (empty allowed)."""
+    line_edit.setValidator(QRegularExpressionValidator(_DECIMAL_INPUT_PATTERN, line_edit))
+
+
+def _section(root, title):
+    """Append a titled group box to ``root`` and return its inner form layout."""
+    box = QGroupBox(title)
+    form = QFormLayout(box)
+    root.addWidget(box)
+    return form
+
+# Amount / percentage inputs (元, %, 倍数等) accept a non-negative decimal with up
+# to two fraction digits. Empty is allowed so optional fields can stay blank; the
+# mandatory check is enforced separately by the ``*`` field marker. Letters and
+# leading signs are rejected at the text-entry level.
+_DECIMAL_INPUT_PATTERN = QRegularExpression(r"^(?:\d{1,12}(?:\.\d{0,2})?)?$")
+
+
+def _decimal_validator(line_edit):
+    """Restrict ``line_edit`` to non-negative decimals (empty allowed)."""
+    line_edit.setValidator(QRegularExpressionValidator(_DECIMAL_INPUT_PATTERN, line_edit))
+
+
+def _section(root, title):
+    """Append a titled group box to ``root`` and return its inner form layout."""
+    box = QGroupBox(title)
+    form = QFormLayout(box)
+    root.addWidget(box)
+    return form
 
 class WelcomePage(QWizardPage):
     def __init__(self):
@@ -529,10 +568,13 @@ class ContractClaimPage(QWizardPage):
         super().__init__()
         self.setTitle("填写案情与请求（买卖合同）")
 
-        layout = QFormLayout()
+        root = QVBoxLayout()
+
+        # --- 一、合同基本事实 -------------------------------------------------
+        basics = _section(root, "一、合同基本事实")
 
         self.contract_date = QLineEdit()
-        self.contract_date.setPlaceholderText("如: 2023年1月1日")
+        self.contract_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-01-01")
 
         self.contract_name = QLineEdit()
         self.contract_name.setPlaceholderText("如: 产品购销合同")
@@ -541,10 +583,19 @@ class ContractClaimPage(QWizardPage):
         self.product_name.setPlaceholderText("如: 10台联想电脑")
 
         self.total_amount = QLineEdit()
-        self.total_amount.setPlaceholderText("如: 50000")
+        self.total_amount.setPlaceholderText("单位：元，如 50000")
+        _decimal_validator(self.total_amount)
+
+        basics.addRow("合同签订日期:", self.contract_date)
+        basics.addRow("合同名称:", self.contract_name)
+        basics.addRow("产品名称及数量:", self.product_name)
+        basics.addRow("合同总金额(元):", self.total_amount)
+
+        # --- 二、履行与签收情况 ---------------------------------------------
+        performance = _section(root, "二、履行与签收情况")
 
         self.delivery_date = QLineEdit()
-        self.delivery_date.setPlaceholderText("如: 2023年2月1日")
+        self.delivery_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-02-01（已交货时必填）")
 
         # Delivery status is tri-state: an explicit "未确认" option is selected by
         # default so an untouched control means UNKNOWN, never "delivered".
@@ -576,11 +627,27 @@ class ContractClaimPage(QWizardPage):
         sign_layout.addWidget(self.sign_no)
         sign_layout.addWidget(self.sign_unknown)
 
+        # On-page explanation for the conditional (scenario-dependent) requirement.
+        self.cond_hint = QLabel("")
+        self.cond_hint.setObjectName(ERROR_LABEL)
+        self.cond_hint.setWordWrap(True)
+        self.cond_hint.setVisible(False)
+
+        performance.addRow("交货日期:", self.delivery_date)
+        performance.addRow("交货状态:", del_layout)
+        performance.addRow("签收状态:", sign_layout)
+        performance.addRow("", self.cond_hint)
+
+        # --- 三、尚欠货款与违约金/逾期利息 -----------------------------------
+        amounts = _section(root, "三、尚欠货款与违约金/逾期利息")
+
         self.unpaid_amount = QLineEdit()
-        self.unpaid_amount.setPlaceholderText("如: 30000")
+        self.unpaid_amount.setPlaceholderText("单位：元，如 30000")
+        _decimal_validator(self.unpaid_amount)
 
         self.penalty_amount = QLineEdit()
-        self.penalty_amount.setPlaceholderText("如: 5000 (留空表示无)")
+        self.penalty_amount.setPlaceholderText("单位：元，如 5000（留空表示无）")
+        _decimal_validator(self.penalty_amount)
 
         self.penalty_warning = QLabel("")
         self.penalty_warning.setObjectName(WARNING_LABEL)
@@ -589,57 +656,62 @@ class ContractClaimPage(QWizardPage):
         self.penalty_amount.textChanged.connect(self.update_penalty_warning)
 
         self.overdue_start = QLineEdit()
-        self.overdue_start.setPlaceholderText("逾期起算日(YYYY-MM-DD)")
+        self.overdue_start.setPlaceholderText("格式 YYYY-MM-DD，如 2023-03-01")
 
         self.overdue_end = QLineEdit()
-        self.overdue_end.setPlaceholderText("起诉日/截止日(YYYY-MM-DD，留空默认今天)")
+        self.overdue_end.setPlaceholderText("格式 YYYY-MM-DD（留空默认今天）")
 
         self.lpr_value = QLineEdit("3.45")
         self.lpr_value.setPlaceholderText("LPR(%)，手动维护")
+        _decimal_validator(self.lpr_value)
 
         self.lpr_multiple = QLineEdit("4")
         self.lpr_multiple.setPlaceholderText("倍数，如 4")
+        _decimal_validator(self.lpr_multiple)
 
-        self.calc_daily_btn = QPushButton("按日万五折算")
+        self.calc_daily_btn = QPushButton("按日万五折算（辅助）")
+        self.calc_daily_btn.setObjectName(SECONDARY_BUTTON)
         self.calc_daily_btn.clicked.connect(self.calc_penalty_daily_5_per_10k)
 
-        self.calc_lpr_btn = QPushButton("按 LPR×倍数折算")
+        self.calc_lpr_btn = QPushButton("按 LPR×倍数折算（辅助）")
+        self.calc_lpr_btn.setObjectName(SECONDARY_BUTTON)
         self.calc_lpr_btn.clicked.connect(self.calc_penalty_by_lpr_multiple)
 
         calc_btn_layout = QHBoxLayout()
         calc_btn_layout.addWidget(self.calc_daily_btn)
         calc_btn_layout.addWidget(self.calc_lpr_btn)
+        calc_btn_layout.addStretch()
         calc_btn_widget = QWidget()
         calc_btn_widget.setLayout(calc_btn_layout)
 
+        # Auxiliary explanation: the buttons only fill in the penalty box from the
+        # supplied principal/date/LPR figures; the result stays user-editable and
+        # is never a final legal conclusion.
+        self.calc_help = QLabel(
+            "辅助计算仅依据上方填写的本金、逾期起止日与 LPR 估算，结果自动填入"
+            "“违约金/逾期利息”框，可手动修改；最终是否支持及其数额由法院认定。"
+        )
+        self.calc_help.setObjectName(INFO_LABEL)
+        self.calc_help.setWordWrap(True)
+
+        amounts.addRow("尚欠货款本金(元):", self.unpaid_amount)
+        amounts.addRow("违约金/逾期利息(元):", self.penalty_amount)
+        amounts.addRow("", self.penalty_warning)
+        amounts.addRow("违约金计算起算:", self.overdue_start)
+        amounts.addRow("违约金计算截止:", self.overdue_end)
+        amounts.addRow("LPR(%)：", self.lpr_value)
+        amounts.addRow("LPR倍数：", self.lpr_multiple)
+        amounts.addRow("", calc_btn_widget)
+        amounts.addRow(self.calc_help)
+
+        # --- 四、建议管辖法院 ------------------------------------------------
+        court = _section(root, "四、建议管辖法院")
+
         self.court_name = QLineEdit()
         self.court_name.setPlaceholderText("如: 广州市天河区人民法院")
+        court.addRow("建议管辖法院:", self.court_name)
 
-        # On-page explanation for the conditional (scenario-dependent) requirement.
-        self.cond_hint = QLabel("")
-        self.cond_hint.setObjectName(ERROR_LABEL)
-        self.cond_hint.setWordWrap(True)
-        self.cond_hint.setVisible(False)
-
-        layout.addRow("合同签订日期:", self.contract_date)
-        layout.addRow("合同名称:", self.contract_name)
-        layout.addRow("产品名称及数量:", self.product_name)
-        layout.addRow("合同总金额(元):", self.total_amount)
-        layout.addRow("交货日期:", self.delivery_date)
-        layout.addRow("交货状态:", del_layout)
-        layout.addRow("签收状态:", sign_layout)
-        layout.addRow("", self.cond_hint)
-        layout.addRow("尚欠货款本金(元):", self.unpaid_amount)
-        layout.addRow("违约金/逾期利息(元):", self.penalty_amount)
-        layout.addRow("", self.penalty_warning)
-        layout.addRow("违约金计算起算:", self.overdue_start)
-        layout.addRow("违约金计算截止:", self.overdue_end)
-        layout.addRow("LPR(%)：", self.lpr_value)
-        layout.addRow("LPR倍数：", self.lpr_multiple)
-        layout.addRow("", calc_btn_widget)
-        layout.addRow("建议管辖法院:", self.court_name)
-
-        self.setLayout(layout)
+        self.setLayout(root)
 
         self.registerField("c_contract_date*", self.contract_date)
         self.registerField("c_contract_name*", self.contract_name)
@@ -772,25 +844,19 @@ class LoanClaimPage(QWizardPage):
         super().__init__()
         self.setTitle("填写案情与请求（民间借贷）")
 
-        layout = QFormLayout()
+        root = QVBoxLayout()
+
+        # --- 一、借款基本事实 -------------------------------------------------
+        basics = _section(root, "一、借款基本事实")
 
         self.loan_date = QLineEdit()
-        self.loan_date.setPlaceholderText("如: 2023年1月1日")
+        self.loan_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-01-01")
 
         self.loan_reason = QLineEdit()
         self.loan_reason.setPlaceholderText("如: 资金周转 / 装修房屋")
 
-        self.principal = QLineEdit()
-        self.principal.setPlaceholderText("如: 50000")
-
         self.payment_method = QLineEdit()
         self.payment_method.setPlaceholderText("如: 银行转账、微信、支付宝、现金")
-
-        self.rate = QLineEdit()
-        self.rate.setPlaceholderText("如: 14.6 (留空表示无利息约定)")
-
-        self.start_date = QLineEdit()
-        self.start_date.setPlaceholderText("如: 2023年5月1日")
 
         # IOU status is tri-state: the default "未确认" means no IOU fact may be
         # asserted until the user explicitly selects 有借条 or 无借条.
@@ -807,14 +873,21 @@ class LoanClaimPage(QWizardPage):
         iou_layout.addWidget(self.iou_no)
         iou_layout.addWidget(self.iou_unknown)
 
-        self.demand_date = QLineEdit()
-        self.demand_date.setPlaceholderText("如: 2023年10月至今")
+        basics.addRow("借款发生日期:", self.loan_date)
+        basics.addRow("借款理由:", self.loan_reason)
+        basics.addRow("交付方式:", self.payment_method)
+        basics.addRow("是否有借条:", iou_layout)
 
-        self.demand_method = QLineEdit()
-        self.demand_method.setPlaceholderText("如: 微信、电话、上门")
+        # --- 二、借款金额与利息 ---------------------------------------------
+        amounts = _section(root, "二、借款金额与利息")
 
-        self.court_name = QLineEdit()
-        self.court_name.setPlaceholderText("如: 广州市天河区人民法院")
+        self.principal = QLineEdit()
+        self.principal.setPlaceholderText("单位：元，如 50000")
+        _decimal_validator(self.principal)
+
+        self.rate = QLineEdit()
+        self.rate.setPlaceholderText("单位：%（留空表示无利息约定），如 14.6")
+        _decimal_validator(self.rate)
 
         # Validation warning label
         self.rate_warning = QLabel("")
@@ -823,26 +896,41 @@ class LoanClaimPage(QWizardPage):
         self.rate_warning.setVisible(False)
         self.rate.textChanged.connect(self.validate_rate)
 
+        self.start_date = QLineEdit()
+        self.start_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-05-01")
+
+        amounts.addRow("借款本金(元):", self.principal)
+        amounts.addRow("约定年利率(%):", self.rate)
+        amounts.addRow("", self.rate_warning)
+        amounts.addRow("利息起算日:", self.start_date)
+
+        # --- 三、催款情况（选填） -------------------------------------------
+        demand = _section(root, "三、催款情况（选填）")
+
+        self.demand_date = QLineEdit()
+        self.demand_date.setPlaceholderText("如: 2023年10月（未催款的可不填）")
+
+        self.demand_method = QLineEdit()
+        self.demand_method.setPlaceholderText("如: 微信、电话、上门")
+
         # On-page explanation for the conditional demand-information requirement.
         self.cond_hint = QLabel("")
         self.cond_hint.setObjectName(ERROR_LABEL)
         self.cond_hint.setWordWrap(True)
         self.cond_hint.setVisible(False)
 
-        layout.addRow("借款发生日期:", self.loan_date)
-        layout.addRow("借款理由:", self.loan_reason)
-        layout.addRow("借款本金(元):", self.principal)
-        layout.addRow("交付方式:", self.payment_method)
-        layout.addRow("是否有借条:", iou_layout)
-        layout.addRow("约定年利率(%):", self.rate)
-        layout.addRow("", self.rate_warning)
-        layout.addRow("利息起算日:", self.start_date)
-        layout.addRow("催款时间:", self.demand_date)
-        layout.addRow("催款方式:", self.demand_method)
-        layout.addRow("", self.cond_hint)
-        layout.addRow("建议管辖法院:", self.court_name)
+        demand.addRow("催款时间:", self.demand_date)
+        demand.addRow("催款方式:", self.demand_method)
+        demand.addRow("", self.cond_hint)
 
-        self.setLayout(layout)
+        # --- 四、建议管辖法院 ------------------------------------------------
+        court = _section(root, "四、建议管辖法院")
+
+        self.court_name = QLineEdit()
+        self.court_name.setPlaceholderText("如: 广州市天河区人民法院")
+        court.addRow("建议管辖法院:", self.court_name)
+
+        self.setLayout(root)
 
         # Register fields
         self.registerField("loan_date*", self.loan_date)
