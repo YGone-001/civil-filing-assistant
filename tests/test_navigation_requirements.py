@@ -20,7 +20,7 @@ from PySide6.QtWidgets import QGroupBox, QWizard
 
 from helpers import docx_all_text, make_wizard, select_case, set_parties
 from presenters.model_builder import build_case_model
-from views.theme import SECONDARY_BUTTON, WARNING_LABEL
+from views.theme import SECONDARY_BUTTON, WARNING_LABEL, WARNING_LABEL
 
 CLAIM_PAGE_ATTR = {
     "loan": "PAGE_LOAN_CLAIM",

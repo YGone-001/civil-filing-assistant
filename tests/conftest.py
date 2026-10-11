@@ -19,7 +19,7 @@ TESTS_DIR = Path(__file__).resolve().parent
 if str(TESTS_DIR) not in sys.path:
     sys.path.insert(0, str(TESTS_DIR))
 
-from PySide6.QtWidgets import QApplication, QMessageBox  # noqa: E402
+from PySide6.QtWidgets import QApplication, QDialog, QFileDialog, QMessageBox  # noqa: E402
 
 
 @pytest.fixture(scope="session")
@@ -42,12 +42,30 @@ def dialog_recorder(monkeypatch, qapp):
     def _make(kind):
         def _fake(*args, **kwargs):
             recorded.append({"kind": kind, "args": args, "kwargs": kwargs})
+            # Return the affirmative button appropriate to each dialog type so
+            # that confirmation flows (e.g. evidence-row deletion) proceed.
+            if kind == "question":
+                return QMessageBox.Yes
             return QMessageBox.Ok
 
         return _fake
 
     for kind in ("information", "warning", "critical", "question"):
         monkeypatch.setattr(QMessageBox, kind, _make(kind))
+
+    # Prevent custom QDialog subclasses (e.g. _PreviewDialog) from blocking.
+    def _fake_exec(self, *args, **kwargs):
+        recorded.append({"kind": "dialog_exec", "args": args, "kwargs": kwargs})
+        return QDialog.Accepted
+
+    monkeypatch.setattr(QDialog, "exec", _fake_exec)
+
+    # Prevent QFileDialog.getExistingDirectory from blocking; return "" so
+    # "change directory" is a no-op in tests unless explicitly overridden.
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", staticmethod(
+        lambda *a, **kw: ""
+    ))
+
     return recorded
 
 

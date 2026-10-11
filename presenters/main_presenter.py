@@ -2,8 +2,6 @@
 # Purpose: Bridge between View (QWizard) and Model/Utils
 # Encoding: UTF-8
 
-import os
-
 from PySide6.QtWidgets import QMessageBox
 
 from presenters.model_builder import build_case_model
@@ -92,9 +90,9 @@ class MainPresenter:
             self._warn_property_mismatch(model)
 
         try:
-            desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+            output_dir = self.view.export_page.get_output_directory()
             manager = BatchExportManager(DocumentGenerator())
-            target_dir, files = manager.run_batch_export(model, desktop_path)
+            target_dir, files = manager.run_batch_export(model, output_dir)
         except Exception as exc:
             # A failed export must not be reported as success, must not leave
             # the process, and must leave the application usable for retry.

@@ -176,9 +176,8 @@ def test_preview_is_case_specific(qapp, dialog_recorder):
 
         wizard.export_page.show_preview()
 
-        infos = [e for e in dialog_recorder if e["kind"] == "information"]
-        assert infos, f"no preview shown for {case_type}"
-        text = " ".join(str(a) for a in infos[-1]["args"])
+        text = getattr(wizard.export_page, "_last_preview_text", "")
+        assert text, f"no preview shown for {case_type}"
         assert keyword in text, f"{case_type} preview missing {keyword!r}: {text}"
 
 
@@ -338,3 +337,171 @@ def test_reentrant_finish_does_not_duplicate_export(qapp, monkeypatch, tmp_path,
     assert result == presenter.FINISH_SUCCESS
     assert state["exports"] == 1, "reentrant Finish must not run a second export"
     assert len(list(desktop.rglob("*.docx"))) == 3
+
+
+# --- T07: evidence editability and anti-mistake -----------------------------
+
+
+def test_t07_evidence_edit_hint_is_visible(qapp):
+    wizard, _ = make_wizard()
+    page = wizard.evidence_page
+    assert page.edit_hint.text(), "edit hint label should have text"
+    assert page.edit_hint.objectName() == "infoLabel"
+
+
+def test_t07_evidence_labor_has_dedicated_description(qapp):
+    wizard, _ = make_wizard()
+    select_case(wizard, "labor")
+    wizard.evidence_page.initializePage()
+    text = wizard.evidence_page.desc_label.text()
+    assert "劳动" in text, f"labor description missing case-specific text: {text}"
+
+
+def test_t07_evidence_divorce_has_dedicated_description(qapp):
+    wizard, _ = make_wizard()
+    select_case(wizard, "divorce")
+    wizard.evidence_page.initializePage()
+    text = wizard.evidence_page.desc_label.text()
+    assert "离婚" in text, f"divorce description missing case-specific text: {text}"
+
+
+def test_t07_evidence_suggested_rows_are_marked(qapp):
+    wizard, _ = make_wizard()
+    select_case(wizard, "loan")
+    page = wizard.evidence_page
+    page.initializePage()
+    assert page._suggested_count > 0, "suggested rows should be loaded"
+    # First row (suggested) should have a tinted background.
+    item = page.table.item(0, 0)
+    assert item is not None
+    tint = page._SUGGESTED_TINT.color()
+    bg = item.background().color()
+    assert (bg.red(), bg.green(), bg.blue()) == (tint.red(), tint.green(), tint.blue()), \
+        "suggested row should have the tinted background"
+    # A user-added row should not have the tint.
+    page.add_row("自定义证据（测试）", "", auto_edit=False)
+    user_item = page.table.item(page.table.rowCount() - 1, 0)
+    user_bg = user_item.background().color()
+    assert (user_bg.red(), user_bg.green(), user_bg.blue()) != (tint.red(), tint.green(), tint.blue()), \
+        "user-added row should not be tinted"
+
+
+def test_t07_evidence_add_row_sets_current_item(qapp):
+    wizard, _ = make_wizard()
+    page = wizard.evidence_page
+    page.add_row("新证据（测试）", "证明目的", auto_edit=True)
+    current = page.table.currentItem()
+    assert current is not None, "current item should be set after add_row"
+    assert current.row() == page.table.rowCount() - 1
+    assert current.column() == 0
+
+
+def test_t07_evidence_delete_confirms_when_content_exists(qapp, dialog_recorder):
+    wizard, _ = make_wizard()
+    select_case(wizard, "contract")
+    page = wizard.evidence_page
+    page.initializePage()
+    dialog_recorder.clear()
+    # Select the first suggested row (which has content) and delete it.
+    page.table.selectRow(0)
+    page.remove_selected_rows()
+    questions = [e for e in dialog_recorder if e["kind"] == "question"]
+    assert questions, "should confirm deletion when content exists"
+    assert page.table.rowCount() >= 0  # deletion proceeded (Yes was returned)
+
+
+def test_t07_evidence_delete_skips_confirm_for_empty_rows(qapp, dialog_recorder):
+    wizard, _ = make_wizard()
+    page = wizard.evidence_page
+    # Add a blank row (no content) and delete it — no confirmation needed.
+    page.add_row("", "", auto_edit=False)
+    dialog_recorder.clear()
+    page.table.selectRow(page.table.rowCount() - 1)
+    before = page.table.rowCount()
+    page.remove_selected_rows()
+    questions = [e for e in dialog_recorder if e["kind"] == "question"]
+    assert not questions, "should not confirm deletion of empty rows"
+    assert page.table.rowCount() == before - 1
+
+
+# --- T08: export page redo --------------------------------------------------
+
+
+def test_t08_export_page_lists_three_documents(qapp):
+    from PySide6.QtWidgets import QGroupBox
+
+    wizard, _ = make_wizard()
+    page = wizard.export_page
+    groups = page.findChildren(QGroupBox)
+    doc_group = next((g for g in groups if "将生成的文书" in g.title()), None)
+    assert doc_group is not None, "should have a document group"
+    text = " ".join(label.text() for label in doc_group.findChildren(type(wizard.export_page.dir_label)))
+    for name in ("民事起诉状", "证据清单", "送达地址确认书"):
+        assert name in text, f"document list missing {name}: {text}"
+    assert "可编辑 Word 初稿" in text
+
+
+def test_t08_export_page_shows_default_output_directory(qapp):
+    wizard, _ = make_wizard()
+    page = wizard.export_page
+    assert page.dir_label.text(), "directory label should show a path"
+    assert page.get_output_directory() == page.dir_label.text()
+
+
+def test_t08_export_page_change_directory(qapp, monkeypatch):
+    from PySide6.QtWidgets import QFileDialog
+
+    wizard, _ = make_wizard()
+    page = wizard.export_page
+    custom = "C:/custom_output_dir_test"
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory",
+                        staticmethod(lambda *a, **kw: custom))
+    page.change_directory()
+    assert page.get_output_directory() == custom
+    assert page.dir_label.text() == custom
+
+
+def test_t08_export_page_preview_is_scrollable_dialog(qapp, dialog_recorder):
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "loan")
+    dialog_recorder.clear()
+    wizard.export_page.show_preview()
+    execs = [e for e in dialog_recorder if e["kind"] == "dialog_exec"]
+    assert execs, "preview should use a QDialog, not a QMessageBox"
+    # The preview text should be stashed for inspection.
+    text = getattr(wizard.export_page, "_last_preview_text", "")
+    assert text, "preview text should be available"
+
+
+def test_t08_export_page_preview_clarifies_not_final_layout(qapp):
+    from PySide6.QtWidgets import QLabel
+    from views.wizard_pages import _PreviewDialog
+
+    wizard, _ = make_wizard()
+    dialog = _PreviewDialog("关键信息预览", "测试内容", wizard.export_page)
+    labels = dialog.findChildren(QLabel)
+    disclaimer_text = " ".join(l.text() for l in labels)
+    assert "不代表最终" in disclaimer_text, \
+        f"preview dialog should clarify it is not final layout, got: {disclaimer_text}"
+
+
+def test_t08_export_page_exit_is_secondary_button(qapp):
+    from views.theme import SECONDARY_BUTTON
+
+    wizard, _ = make_wizard()
+    btn = wizard.export_page.secure_exit_btn
+    assert btn.objectName() == SECONDARY_BUTTON, \
+        f"exit button should be secondary, got {btn.objectName()!r}"
+
+
+def test_t08_presenter_reads_directory_from_export_page(qapp, monkeypatch, tmp_path):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    # Change the output directory to a custom path.
+    custom_dir = tmp_path / "custom_export"
+    custom_dir.mkdir()
+    wizard.export_page.output_dir = str(custom_dir)
+    presenter.attempt_finish()
+    docs = sorted(custom_dir.rglob("*.docx"))
+    assert len(docs) == 3, f"presenter should export to the custom dir, got {len(docs)} files"

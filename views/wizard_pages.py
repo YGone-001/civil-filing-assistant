@@ -2,11 +2,12 @@
 # Purpose: Wizard UI pages for the lawsuit application
 # Encoding: UTF-8
 
+import os
 import re
 
 from PySide6.QtCore import QRegularExpression
-from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QRadioButton, QButtonGroup, QTextEdit, QGroupBox, QHBoxLayout, QPushButton, QScrollArea, QWidget, QTableWidget, QTableWidgetItem, QHeaderView
-from PySide6.QtGui import QRegularExpressionValidator
+from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QRadioButton, QButtonGroup, QTextEdit, QGroupBox, QHBoxLayout, QPushButton, QScrollArea, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QDialog, QPlainTextEdit, QFileDialog
+from PySide6.QtGui import QBrush, QColor, QRegularExpressionValidator
 
 from views.theme import (
     DANGER_BUTTON,
@@ -1153,6 +1154,11 @@ class PropertyClaimPage(QWizardPage):
         self.demo_badge.setVisible(enabled)
 
 class EvidencePage(QWizardPage):
+    # A faint background tint for rows loaded from EvidenceLibrary so the user
+    # can tell suggested evidence apart from rows they added themselves.  The
+    # tint is purely visual — get_evidence_items() returns the same structure.
+    _SUGGESTED_TINT = QBrush(QColor(245, 248, 252))
+
     def __init__(self):
         super().__init__()
         self.setTitle("证据清单（选填）")
@@ -1160,6 +1166,11 @@ class EvidencePage(QWizardPage):
         layout = QVBoxLayout()
         self.desc_label = QLabel("请列出您准备提交的证据。")
         layout.addWidget(self.desc_label)
+
+        self.edit_hint = QLabel("双击任意单元格即可编辑证据名称或证明目的。")
+        self.edit_hint.setObjectName(INFO_LABEL)
+        self.edit_hint.setWordWrap(True)
+        layout.addWidget(self.edit_hint)
 
         btn_layout = QHBoxLayout()
         self.add_row_btn = QPushButton("[+] 添加证据")
@@ -1180,6 +1191,10 @@ class EvidencePage(QWizardPage):
         self.table.setEditTriggers(QTableWidget.EditTrigger.DoubleClicked | QTableWidget.EditTrigger.SelectedClicked | QTableWidget.EditTrigger.EditKeyPressed)
         layout.addWidget(self.table)
 
+        # Number of rows that came from EvidenceLibrary suggestions.  Rows beyond
+        # this count were added by the user and are not tinted.
+        self._suggested_count = 0
+
         self.setLayout(layout)
 
     def initializePage(self):
@@ -1194,24 +1209,74 @@ class EvidencePage(QWizardPage):
                 self.desc_label.setText("民间借贷纠纷常见证据（可按需修改/增删）：")
             elif case_type == "property":
                 self.desc_label.setText("物业服务合同纠纷常见证据（可按需修改/增删）：")
+            elif case_type == "labor":
+                self.desc_label.setText("劳动报酬/工资追索常见证据（可按需修改/增删）：")
+            elif case_type == "divorce":
+                self.desc_label.setText("离婚纠纷常见证据（可按需修改/增删）：")
             else:
                 self.desc_label.setText("常见证据（可按需修改/增删）：")
             if self.table.rowCount() == 0:
+                self._suggested_count = 0
                 for name, target in items:
-                    self.add_row(name, target)
+                    self.add_row(name, target, suggested=True)
         except Exception:
             return
 
-    def add_row(self, name="", target=""):
+    def add_row(self, name="", target="", suggested=False, auto_edit=True):
+        """Append a row and optionally start editing the first cell.
+
+        ``suggested=True`` tints the row so the user can distinguish
+        EvidenceLibrary defaults from rows they added.  ``auto_edit=True``
+        puts the cursor straight into the first cell so the user can type
+        without a second click.
+        """
         row = self.table.rowCount()
         self.table.insertRow(row)
-        self.table.setItem(row, 0, QTableWidgetItem(str(name)))
-        self.table.setItem(row, 1, QTableWidgetItem(str(target)))
+        name_item = QTableWidgetItem(str(name))
+        target_item = QTableWidgetItem(str(target))
+        if suggested:
+            name_item.setBackground(self._SUGGESTED_TINT)
+            target_item.setBackground(self._SUGGESTED_TINT)
+            self._suggested_count += 1
+        self.table.setItem(row, 0, name_item)
+        self.table.setItem(row, 1, target_item)
+        if auto_edit and not suggested:
+            self.table.setCurrentItem(name_item)
+            self.table.editItem(name_item)
 
     def remove_selected_rows(self):
+        """Remove selected rows, confirming only when content would be lost."""
+        from PySide6.QtWidgets import QMessageBox
+
         rows = sorted({idx.row() for idx in self.table.selectionModel().selectedRows()}, reverse=True)
+        if not rows:
+            return
+
+        has_content = False
+        for r in rows:
+            for c in range(self.table.columnCount()):
+                item = self.table.item(r, c)
+                if item and item.text().strip():
+                    has_content = True
+                    break
+            if has_content:
+                break
+
+        if has_content:
+            reply = QMessageBox.question(
+                self,
+                "确认删除",
+                f"将删除 {len(rows)} 行证据，确定吗？",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if reply != QMessageBox.StandardButton.Yes:
+                return
+
         for r in rows:
             self.table.removeRow(r)
+            if r < self._suggested_count:
+                self._suggested_count = max(0, self._suggested_count - 1)
 
     def get_evidence_items(self):
         items = []
@@ -1444,6 +1509,37 @@ class DivorceClaimPage(QWizardPage):
             return False
         return not self._conditional_issue()
 
+class _PreviewDialog(QDialog):
+    """A scrollable, read-only preview of the case text before export.
+
+    The dialog explicitly states that the preview is plain text only and does
+    not represent the final Word layout (fonts, tables, headers, page breaks).
+    """
+
+    def __init__(self, title, text, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+
+        layout = QVBoxLayout(self)
+
+        disclaimer = QLabel(
+            "以下预览仅展示文本内容，不代表最终 Word 排版"
+            "（字体、表格、页眉页脚、分页等）。"
+        )
+        disclaimer.setObjectName(INFO_LABEL)
+        disclaimer.setWordWrap(True)
+        layout.addWidget(disclaimer)
+
+        viewer = QPlainTextEdit()
+        viewer.setReadOnly(True)
+        viewer.setPlainText(text)
+        layout.addWidget(viewer)
+
+        close_btn = QPushButton("关闭")
+        close_btn.clicked.connect(self.accept)
+        layout.addWidget(close_btn)
+
+
 class ExportPage(QWizardPage):
     def __init__(self):
         super().__init__()
@@ -1451,38 +1547,120 @@ class ExportPage(QWizardPage):
         # Ensure it acts as the final page
         self.setFinalPage(True)
 
+        # Default output directory: the current user's desktop.
+        self.output_dir = os.path.join(os.path.expanduser("~"), "Desktop")
+
         layout = QVBoxLayout()
 
-        self.preview_btn = QPushButton("预览起诉状文本")
+        intro = QLabel("信息收集完毕，请核对以下内容后生成文书。")
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+
+        # --- Three document descriptions ----------------------------------
+        doc_group = QGroupBox("将生成的文书")
+        doc_layout = QVBoxLayout()
+        for name in (
+            "民事起诉状（可编辑 Word 初稿）",
+            "证据清单（可编辑 Word 初稿）",
+            "送达地址确认书（可编辑 Word 初稿）",
+        ):
+            doc_label = QLabel(name)
+            doc_layout.addWidget(doc_label)
+        doc_note = QLabel("以上文书均为辅助生成的可编辑初稿，请人工核对后再行使用。")
+        doc_note.setObjectName(INFO_LABEL)
+        doc_note.setWordWrap(True)
+        doc_layout.addWidget(doc_note)
+        doc_group.setLayout(doc_layout)
+        layout.addWidget(doc_group)
+
+        # --- Output directory ---------------------------------------------
+        dir_group = QGroupBox("保存位置")
+        dir_layout = QVBoxLayout()
+        self.dir_label = QLabel(self.output_dir)
+        self.dir_label.setWordWrap(True)
+        dir_layout.addWidget(self.dir_label)
+
+        dir_btn_layout = QHBoxLayout()
+        self.change_dir_btn = QPushButton("更改目录")
+        self.change_dir_btn.setObjectName(SECONDARY_BUTTON)
+        self.change_dir_btn.clicked.connect(self.change_directory)
+        dir_btn_layout.addWidget(self.change_dir_btn)
+
+        self.open_dir_btn = QPushButton("打开输出目录")
+        self.open_dir_btn.setObjectName(SECONDARY_BUTTON)
+        self.open_dir_btn.clicked.connect(self.open_output_directory)
+        dir_btn_layout.addWidget(self.open_dir_btn)
+        dir_btn_layout.addStretch()
+        dir_btn_widget = QWidget()
+        dir_btn_widget.setLayout(dir_btn_layout)
+        dir_layout.addWidget(dir_btn_widget)
+
+        dir_group.setLayout(dir_layout)
+        layout.addWidget(dir_group)
+
+        # --- Preview -------------------------------------------------------
+        self.preview_btn = QPushButton("预览关键信息")
+        self.preview_btn.setObjectName(SECONDARY_BUTTON)
         self.preview_btn.clicked.connect(self.show_preview)
         layout.addWidget(self.preview_btn)
 
-        label = QLabel("信息收集完毕！\n\n点击“完成”按钮，系统将为您生成标准的 Word 格式起诉状（及证据清单）并直接保存在您的桌面上。")
-        label.setWordWrap(True)
-        layout.addWidget(label)
-
+        # --- Exit (secondary, not destructive) ----------------------------
         self.secure_exit_btn = QPushButton("退出程序（不删除已生成文件）")
-        self.secure_exit_btn.setObjectName(DANGER_BUTTON)
+        self.secure_exit_btn.setObjectName(SECONDARY_BUTTON)
         self.secure_exit_btn.clicked.connect(self.secure_exit)
         layout.addWidget(self.secure_exit_btn)
 
         self.setLayout(layout)
 
+    # ------------------------------------------------------------------ #
+    # Output directory
+    # ------------------------------------------------------------------ #
+
+    def get_output_directory(self):
+        """Return the currently configured output directory."""
+        return self.output_dir
+
+    def change_directory(self):
+        """Let the user pick a different output directory via a file dialog."""
+        new_dir = QFileDialog.getExistingDirectory(
+            self,
+            "选择保存目录",
+            self.output_dir,
+        )
+        if new_dir:
+            self.output_dir = new_dir
+            self.dir_label.setText(new_dir)
+
+    def open_output_directory(self):
+        """Open the configured output directory in the system file explorer."""
+        path = self.output_dir
+        if not os.path.isdir(path):
+            try:
+                os.makedirs(path, exist_ok=True)
+            except OSError:
+                pass
+        try:
+            if os.name == "nt":
+                os.startfile(path)  # type: ignore[attr-defined]
+            else:
+                import subprocess
+                subprocess.Popen(["xdg-open", path])
+        except Exception:
+            pass
+
+    # ------------------------------------------------------------------ #
+    # Preview
+    # ------------------------------------------------------------------ #
+
     def show_preview(self):
-        """Show a case-specific preview built from the same model as the export."""
+        """Show a case-specific preview in a scrollable dialog."""
         from PySide6.QtWidgets import QMessageBox
+
+        from views.widgets import CASE_TYPE_LABELS
 
         wizard = self.wizard()
         case_type = wizard.field("case_type")
-
-        case_labels = {
-            "loan": "民间借贷纠纷",
-            "contract": "买卖合同纠纷",
-            "property": "物业服务合同纠纷",
-            "labor": "劳动报酬/工资追索",
-            "divorce": "离婚纠纷",
-        }
-        label = case_labels.get(case_type, "未知案由")
+        label = CASE_TYPE_LABELS.get(case_type, "未知案由")
 
         try:
             from presenters.model_builder import build_case_model
@@ -1494,17 +1672,33 @@ class ExportPage(QWizardPage):
             return
 
         claims_text = "\n".join(f"{i}. {c}" for i, c in enumerate(claims, 1))
+
+        evidence_lines = []
+        for i, ev in enumerate(getattr(model, "evidences", []), 1):
+            name = getattr(ev, "name", str(ev))
+            target = getattr(ev, "target", "")
+            if target:
+                evidence_lines.append(f"{i}. {name} —— {target}")
+            else:
+                evidence_lines.append(f"{i}. {name}")
+        evidence_text = "\n".join(evidence_lines) if evidence_lines else "（未填写证据）"
+
         preview_text = (
             f"案由：{label}\n\n"
             f"【诉讼请求（预览）】\n{claims_text}\n\n"
-            f"【事实与理由（预览）】\n{facts}"
+            f"【事实与理由（预览）】\n{facts}\n\n"
+            f"【证据清单（预览）】\n{evidence_text}"
         )
-        QMessageBox.information(
-            self,
-            "起诉状预览（部分文本）",
-            "以下预览由与最终文书相同的案件模型生成，仅展示诉讼请求与事实理由的文本，"
-            "不含当事人排版、表格与页眉页脚：\n\n" + preview_text,
-        )
+
+        # Stash the text so tests can inspect it without a modal dialog.
+        self._last_preview_text = preview_text
+
+        dialog = _PreviewDialog("关键信息预览", preview_text, self)
+        dialog.exec()
+
+    # ------------------------------------------------------------------ #
+    # Exit
+    # ------------------------------------------------------------------ #
 
     def secure_exit(self):
         """Close the wizard without claiming that files or memory were destroyed."""

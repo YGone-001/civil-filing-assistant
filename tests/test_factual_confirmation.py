@@ -48,9 +48,9 @@ def _complaint(docs):
 def _preview_text(wizard, dialog_recorder):
     dialog_recorder.clear()
     wizard.export_page.show_preview()
-    infos = [e for e in dialog_recorder if e["kind"] == "information"]
-    assert infos, "no preview dialog shown"
-    return " ".join(str(a) for a in infos[-1]["args"])
+    text = getattr(wizard.export_page, "_last_preview_text", "")
+    assert text, "no preview dialog shown"
+    return text
 
 
 def _contract_wizard(tmp_path, monkeypatch, delivery=None, receipt=None, with_evidence=False):
@@ -425,6 +425,19 @@ def test_loan_iou_docx_matrix(qapp, monkeypatch, tmp_path, dialog_recorder, iou,
         assert phrase in text, f"missing {phrase!r} for iou={iou}"
     for phrase in forbidden:
         assert phrase not in text, f"unexpected {phrase!r} for iou={iou}"
+
+
+# --- T06: labour facts preserved, optional overtime omitted when blank -------
+
+
+def _labor_complaint(tmp_path, monkeypatch, mutate=None):
+    desktop = _home(tmp_path, monkeypatch)
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "labor")
+    if mutate is not None:
+        mutate(wizard)
+    presenter.on_wizard_accepted()
+    return _complaint(sorted(desktop.rglob("*.docx")))
 
 
 # --- T06: labour facts preserved, optional overtime omitted when blank -------
