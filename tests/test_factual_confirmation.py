@@ -425,3 +425,33 @@ def test_loan_iou_docx_matrix(qapp, monkeypatch, tmp_path, dialog_recorder, iou,
         assert phrase in text, f"missing {phrase!r} for iou={iou}"
     for phrase in forbidden:
         assert phrase not in text, f"unexpected {phrase!r} for iou={iou}"
+
+
+# --- T06: labour facts preserved, optional overtime omitted when blank -------
+
+
+def _labor_complaint(tmp_path, monkeypatch, mutate=None):
+    desktop = _home(tmp_path, monkeypatch)
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "labor")
+    if mutate is not None:
+        mutate(wizard)
+    presenter.on_wizard_accepted()
+    return _complaint(sorted(desktop.rglob("*.docx")))
+
+
+def test_t06_labor_entered_facts_reach_the_docx(qapp, monkeypatch, tmp_path, dialog_recorder):
+    text = _labor_complaint(tmp_path, monkeypatch)
+    assert "测试工程师" in text
+    assert "8000" in text
+    assert "2023年12月至2024年2月" in text
+
+
+def test_t06_labor_blank_overtime_is_not_invented(qapp, monkeypatch, tmp_path, dialog_recorder):
+    def _no_overtime(wizard):
+        p = wizard.labor_claim_page
+        p.overtime_hours.setText("")
+        p.overtime_pay.setText("")
+
+    text = _labor_complaint(tmp_path, monkeypatch, mutate=_no_overtime)
+    assert "加班" not in text

@@ -53,24 +53,6 @@ def _section(root, title):
     root.addWidget(box)
     return form
 
-# Amount / percentage inputs (元, %, 倍数等) accept a non-negative decimal with up
-# to two fraction digits. Empty is allowed so optional fields can stay blank; the
-# mandatory check is enforced separately by the ``*`` field marker. Letters and
-# leading signs are rejected at the text-entry level.
-_DECIMAL_INPUT_PATTERN = QRegularExpression(r"^(?:\d{1,12}(?:\.\d{0,2})?)?$")
-
-
-def _decimal_validator(line_edit):
-    """Restrict ``line_edit`` to non-negative decimals (empty allowed)."""
-    line_edit.setValidator(QRegularExpressionValidator(_DECIMAL_INPUT_PATTERN, line_edit))
-
-
-def _section(root, title):
-    """Append a titled group box to ``root`` and return its inner form layout."""
-    box = QGroupBox(title)
-    form = QFormLayout(box)
-    root.addWidget(box)
-    return form
 
 class WelcomePage(QWizardPage):
     def __init__(self):
@@ -1003,34 +985,48 @@ class PropertyClaimPage(QWizardPage):
         super().__init__()
         self.setTitle("填写案情与请求（物业服务合同）")
 
-        layout = QFormLayout()
+        root = QVBoxLayout()
 
         # Demo-mode badge, hidden in production.
         self.demo_badge = QLabel("演示模式")
         self.demo_badge.setObjectName(DEMO_BADGE)
         self.demo_badge.setVisible(False)
-        layout.addRow("", self.demo_badge)
+        root.addWidget(self.demo_badge)
 
         # Test-data entry point, only shown in demo mode (see set_demo_mode).
         self.fill_btn = QPushButton("一键填写测试数据")
         self.fill_btn.setObjectName(PRIMARY_BUTTON)
         self.fill_btn.setVisible(False)
-        layout.addRow("", self.fill_btn)
+        root.addWidget(self.fill_btn)
+
+        # --- 一、物业与计费情况 ---------------------------------------------
+        basic = _section(root, "一、物业与计费情况")
 
         self.property_addr = QLineEdit()
         self.property_addr.setPlaceholderText("如: 幸福里小区 3 栋 1201 室")
 
         self.house_area = QLineEdit()
+        _decimal_validator(self.house_area)
         self.house_area.setPlaceholderText("如: 115.5")
 
         self.fee_rate = QLineEdit()
+        _decimal_validator(self.fee_rate)
         self.fee_rate.setPlaceholderText("如: 2.8")
 
         self.period_start = QLineEdit()
-        self.period_start.setPlaceholderText("如: 2024-01-01 或 2024年1月1日")
+        self.period_start.setPlaceholderText("格式 YYYY-MM-DD 或 YYYY年M月D日，如 2024-01-01")
 
         self.period_end = QLineEdit()
-        self.period_end.setPlaceholderText("如: 2025-12-31 或 2025年12月31日")
+        self.period_end.setPlaceholderText("格式 YYYY-MM-DD 或 YYYY年M月D日，如 2025-12-31")
+
+        basic.addRow("物业地址/房号:", self.property_addr)
+        basic.addRow("房屋面积(m²):", self.house_area)
+        basic.addRow("计费标准(元/m²/月):", self.fee_rate)
+        basic.addRow("欠费起始日期:", self.period_start)
+        basic.addRow("欠费截止日期:", self.period_end)
+
+        # --- 二、违约金与催缴 -----------------------------------------------
+        demand = _section(root, "二、违约金与催缴")
 
         self.late_fee_logic = QLineEdit()
         self.late_fee_logic.setPlaceholderText("如: 按合同约定计算 / 暂计 500 元")
@@ -1039,8 +1035,15 @@ class PropertyClaimPage(QWizardPage):
         self.demand_record.setMaximumHeight(80)
         self.demand_record.setPlaceholderText("如: 2025年6月多次张贴催缴通知并发送短信。")
 
+        demand.addRow("违约金/滞纳金计算:", self.late_fee_logic)
+        demand.addRow("催缴方式:", self.demand_record)
+
+        # --- 三、金额核对（系统计算） ---------------------------------------
+        amount = _section(root, "三、金额核对（系统计算）")
+
         self.total_input = QLineEdit()
-        self.total_input.setPlaceholderText("可选：用户自填总金额，用于比对提示")
+        _decimal_validator(self.total_input)
+        self.total_input.setPlaceholderText("可选：用户自填总金额，用于与系统计算比对")
 
         self.calc_label = QLabel("")
         self.calc_label.setObjectName(INFO_LABEL)
@@ -1050,25 +1053,22 @@ class PropertyClaimPage(QWizardPage):
         self.warn_label.setWordWrap(True)
         self.warn_label.setVisible(False)
 
+        amount.addRow("自填总金额(元):", self.total_input)
+        amount.addRow("系统计算:", self.calc_label)
+        amount.addRow("", self.warn_label)
+
+        # --- 四、建议管辖法院 -----------------------------------------------
+        court = _section(root, "四、建议管辖法院")
+
         self.court_name = QLineEdit()
         self.court_name.setPlaceholderText("如: 上海市徐汇区人民法院")
 
+        court.addRow("建议管辖法院:", self.court_name)
+
+        self.setLayout(root)
+
         for w in [self.house_area, self.fee_rate, self.period_start, self.period_end, self.total_input]:
             w.textChanged.connect(self.update_calc)
-
-        layout.addRow("物业地址/房号:", self.property_addr)
-        layout.addRow("房屋面积(m²):", self.house_area)
-        layout.addRow("计费标准(元/m²/月):", self.fee_rate)
-        layout.addRow("欠费起始日期:", self.period_start)
-        layout.addRow("欠费截止日期:", self.period_end)
-        layout.addRow("违约金/滞纳金计算:", self.late_fee_logic)
-        layout.addRow("催缴方式:", self.demand_record)
-        layout.addRow("自填总金额(元):", self.total_input)
-        layout.addRow("系统计算:", self.calc_label)
-        layout.addRow("", self.warn_label)
-        layout.addRow("建议管辖法院:", self.court_name)
-
-        self.setLayout(layout)
 
         self.registerField("p_property_addr*", self.property_addr)
         self.registerField("p_house_area*", self.house_area)
@@ -1229,28 +1229,57 @@ class LaborClaimPage(QWizardPage):
         super().__init__()
         self.setTitle("填写案情与请求（劳动报酬／工资追索）")
 
-        layout = QFormLayout()
+        root = QVBoxLayout()
+
+        # Persistent arbitration-precondition notice with an explicit basis
+        # time, so the page never reads as a universally current conclusion.
+        from utils.labor_security import LaborProcedureGuard
+        self.arbitration_notice = QLabel(LaborProcedureGuard().get_persistent_notice())
+        self.arbitration_notice.setObjectName(WARNING_LABEL)
+        self.arbitration_notice.setWordWrap(True)
+        root.addWidget(self.arbitration_notice)
+
+        # --- 一、劳动关系基本事实 -------------------------------------------
+        basic = _section(root, "一、劳动关系基本事实")
 
         self.emp_join_date = QLineEdit()
-        self.emp_join_date.setPlaceholderText("如: 2023-01-15")
+        self.emp_join_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-01-15")
 
         self.job_title = QLineEdit()
         self.job_title.setPlaceholderText("如: 软件工程师")
 
         self.monthly_salary = QLineEdit()
+        _decimal_validator(self.monthly_salary)
         self.monthly_salary.setPlaceholderText("如: 8000")
 
-        self.unpaid_months = QLineEdit()
-        self.unpaid_months.setPlaceholderText("如: 2023年12月至2024年2月")
-
         self.emp_term_date = QLineEdit()
-        self.emp_term_date.setPlaceholderText("如: 2024-03-20")
+        self.emp_term_date.setPlaceholderText("格式 YYYY-MM-DD，如 2024-03-20")
+
+        basic.addRow("入职日期:", self.emp_join_date)
+        basic.addRow("岗位:", self.job_title)
+        basic.addRow("月工资标准(元):", self.monthly_salary)
+        basic.addRow("离职/截止日期:", self.emp_term_date)
+
+        # --- 二、欠薪与加班 -------------------------------------------------
+        unpaid = _section(root, "二、欠薪与加班")
+
+        self.unpaid_months = QLineEdit()
+        self.unpaid_months.setPlaceholderText("如: 2023年12月至2024年2月（整月区间）")
 
         self.overtime_hours = QLineEdit()
-        self.overtime_hours.setPlaceholderText("如: 40 (选填)")
+        _decimal_validator(self.overtime_hours)
+        self.overtime_hours.setPlaceholderText("如: 40（选填）")
 
         self.overtime_pay = QLineEdit()
-        self.overtime_pay.setPlaceholderText("如: 3500 (选填)")
+        _decimal_validator(self.overtime_pay)
+        self.overtime_pay.setPlaceholderText("如: 3500（选填）")
+
+        unpaid.addRow("欠薪月份/区间:", self.unpaid_months)
+        unpaid.addRow("加班工时(小时，选填):", self.overtime_hours)
+        unpaid.addRow("加班费(元，选填):", self.overtime_pay)
+
+        # --- 三、合同与社保 -------------------------------------------------
+        contract = _section(root, "三、合同与社保")
 
         self.is_no_contract_group = QButtonGroup(self)
         self.no_contract_yes = QRadioButton("是")
@@ -1263,23 +1292,20 @@ class LaborClaimPage(QWizardPage):
         no_contract_layout.addWidget(self.no_contract_no)
 
         self.social_sec_info = QLineEdit()
-        self.social_sec_info.setPlaceholderText("如: 未按实际工资基数缴纳 (选填)")
+        self.social_sec_info.setPlaceholderText("如: 未按实际工资基数缴纳（选填）")
+
+        contract.addRow("是否未签劳动合同:", no_contract_layout)
+        contract.addRow("社保缴纳情况:", self.social_sec_info)
+
+        # --- 四、建议管辖法院 -----------------------------------------------
+        court = _section(root, "四、建议管辖法院")
 
         self.court_name = QLineEdit()
         self.court_name.setPlaceholderText("如: 北京市朝阳区人民法院")
 
-        layout.addRow("入职日期:", self.emp_join_date)
-        layout.addRow("岗位:", self.job_title)
-        layout.addRow("月工资标准(元):", self.monthly_salary)
-        layout.addRow("欠薪月份/区间:", self.unpaid_months)
-        layout.addRow("离职/截止日期:", self.emp_term_date)
-        layout.addRow("加班工时(小时，选填):", self.overtime_hours)
-        layout.addRow("加班费(元，选填):", self.overtime_pay)
-        layout.addRow("是否未签劳动合同:", no_contract_layout)
-        layout.addRow("社保缴纳情况:", self.social_sec_info)
-        layout.addRow("建议管辖法院:", self.court_name)
+        court.addRow("建议管辖法院:", self.court_name)
 
-        self.setLayout(layout)
+        self.setLayout(root)
 
         self.registerField("l_emp_join_date*", self.emp_join_date)
         self.registerField("l_job_title*", self.job_title)
@@ -1299,34 +1325,49 @@ class DivorceClaimPage(QWizardPage):
         super().__init__()
         self.setTitle("填写案情与请求（离婚析产／抚养费纠纷）")
 
-        layout = QFormLayout()
+        root = QVBoxLayout()
+
+        # --- 一、婚姻与离婚原因 ---------------------------------------------
+        marriage = _section(root, "一、婚姻与离婚原因")
 
         self.marriage_date = QLineEdit()
-        self.marriage_date.setPlaceholderText("如: 2018-05-20")
-
-        self.child_name = QLineEdit()
-        self.child_name.setPlaceholderText("如: 张三")
-
-        self.child_birthday = QLineEdit()
-        self.child_birthday.setPlaceholderText("如: 2020-01-01")
-
-        self.custody_preference = QLineEdit()
-        self.custody_preference.setPlaceholderText("如: 由原告抚养")
-
-        self.support_monthly = QLineEdit()
-        self.support_monthly.setPlaceholderText("如: 3000")
+        self.marriage_date.setPlaceholderText("格式 YYYY-MM-DD，如 2018-05-20")
 
         self.divorce_reason = QLineEdit()
         self.divorce_reason.setPlaceholderText("如: 感情不和/长期分居")
 
         self.separation_start_date = QLineEdit()
-        self.separation_start_date.setPlaceholderText("如: 2022-01-01")
+        self.separation_start_date.setPlaceholderText("格式 YYYY-MM-DD，如 2022-01-01")
 
-        self.asset_description = QLineEdit()
-        self.asset_description.setPlaceholderText("如: 房产归原告，车辆归被告")
+        marriage.addRow("登记结婚日期:", self.marriage_date)
+        marriage.addRow("离婚原因:", self.divorce_reason)
+        marriage.addRow("分居起始日期:", self.separation_start_date)
 
-        self.court_name = QLineEdit()
-        self.court_name.setPlaceholderText("如: 北京市朝阳区人民法院")
+        # --- 二、子女与抚养（无子女可留空） ---------------------------------
+        child = _section(root, "二、子女与抚养（无子女可留空）")
+
+        self.child_name = QLineEdit()
+        self.child_name.setPlaceholderText("如: 张三")
+
+        self.child_birthday = QLineEdit()
+        self.child_birthday.setPlaceholderText("格式 YYYY-MM-DD，如 2020-01-01")
+
+        self.custody_preference = QLineEdit()
+        self.custody_preference.setPlaceholderText("如: 由原告抚养")
+
+        self.support_monthly = QLineEdit()
+        _decimal_validator(self.support_monthly)
+        self.support_monthly.setPlaceholderText("如: 3000")
+
+        # Persistent guidance clarifying the conditional relationship: a
+        # childless divorce may leave every child-related field blank, but any
+        # one of them requires the child's name to identify the child.
+        self.child_help = QLabel(
+            "无子女的离婚可不填本组任何字段；若填写出生日期、抚养权或抚养费，"
+            "需同时填写子女姓名。"
+        )
+        self.child_help.setObjectName(INFO_LABEL)
+        self.child_help.setWordWrap(True)
 
         # On-page explanation for the conditional child-information requirement.
         self.cond_hint = QLabel("")
@@ -1334,18 +1375,30 @@ class DivorceClaimPage(QWizardPage):
         self.cond_hint.setWordWrap(True)
         self.cond_hint.setVisible(False)
 
-        layout.addRow("登记结婚日期:", self.marriage_date)
-        layout.addRow("子女姓名:", self.child_name)
-        layout.addRow("子女出生日期:", self.child_birthday)
-        layout.addRow("抚养权诉求:", self.custody_preference)
-        layout.addRow("月抚养费金额(元):", self.support_monthly)
-        layout.addRow("", self.cond_hint)
-        layout.addRow("离婚原因:", self.divorce_reason)
-        layout.addRow("分居起始日期:", self.separation_start_date)
-        layout.addRow("财产分割方案:", self.asset_description)
-        layout.addRow("建议管辖法院:", self.court_name)
+        child.addRow("子女姓名:", self.child_name)
+        child.addRow("子女出生日期:", self.child_birthday)
+        child.addRow("抚养权诉求:", self.custody_preference)
+        child.addRow("月抚养费金额(元):", self.support_monthly)
+        child.addRow("", self.child_help)
+        child.addRow("", self.cond_hint)
 
-        self.setLayout(layout)
+        # --- 三、财产分割 ---------------------------------------------------
+        asset = _section(root, "三、财产分割")
+
+        self.asset_description = QLineEdit()
+        self.asset_description.setPlaceholderText("如: 房产归原告，车辆归被告")
+
+        asset.addRow("财产分割方案:", self.asset_description)
+
+        # --- 四、建议管辖法院 -----------------------------------------------
+        court = _section(root, "四、建议管辖法院")
+
+        self.court_name = QLineEdit()
+        self.court_name.setPlaceholderText("如: 北京市朝阳区人民法院")
+
+        court.addRow("建议管辖法院:", self.court_name)
+
+        self.setLayout(root)
 
         self.registerField("d_marriage_date*", self.marriage_date)
         # Child information is optional: a childless divorce must be reachable.

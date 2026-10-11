@@ -289,32 +289,19 @@ def test_contract_view_lpr_penalty_computes(qapp):
     assert page.penalty_amount.text() == "40.00"
 
 
-# --- Contract view-level penalty calculation (T05: buttons stay auxiliary) ---
+# --- Property view-level monthly total (T06: result sits near amount field) ---
 
 
-def test_contract_view_daily_penalty_computes(qapp):
+def test_property_view_total_computes(qapp):
     from helpers import make_wizard
 
     wizard, _ = make_wizard()
-    page = wizard.contract_claim_page
-    page.unpaid_amount.setText("10000")
-    page.overdue_start.setText("2023-03-01")
-    page.overdue_end.setText("2023-03-08")
-    page.calc_penalty_daily_5_per_10k()
-    # unpaid × 0.0005 × 7 days = 10000 × 0.0005 × 7 = 35.00
-    assert page.penalty_amount.text() == "35.00"
-
-
-def test_contract_view_lpr_penalty_computes(qapp):
-    from helpers import make_wizard
-
-    wizard, _ = make_wizard()
-    page = wizard.contract_claim_page
-    page.unpaid_amount.setText("10000")
-    page.lpr_value.setText("3.65")
-    page.lpr_multiple.setText("4")
-    page.overdue_start.setText("2023-01-01")
-    page.overdue_end.setText("2023-01-11")
-    page.calc_penalty_by_lpr_multiple()
-    # annual = 3.65 × 4 / 100 = 0.146; 10000 × 0.146 × 10 days / 365 = 40.00
-    assert page.penalty_amount.text() == "40.00"
+    page = wizard.property_claim_page
+    page.house_area.setText("115.5")
+    page.fee_rate.setText("2.8")
+    page.period_start.setText("2024-01-01")
+    page.period_end.setText("2025-12-31")
+    page.update_calc()
+    # 115.5 × 2.8 × 24 months = 7761.60
+    assert "7761.60" in page.calc_label.text()
+    assert "月数=24" in page.calc_label.text()

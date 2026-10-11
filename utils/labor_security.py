@@ -2,6 +2,15 @@
 # Purpose: Safety checks for labor dispute procedures
 # Encoding: UTF-8
 
+# Last review time of the arbitration-precondition wording against the cited
+# regulation. Shown in the UI so the notice never reads as a universally
+# current conclusion without a basis time.
+ARBITRATION_NOTICE_BASIS = (
+    "依据：《劳动争议调解仲裁法》关于“先裁后审”的规定；"
+    "整理时间：2026-10，请以最新法律及当地仲裁/法院实践为准。"
+)
+
+
 class LaborProcedureGuard:
     def __init__(self):
         self.LABOR_CASE_ID = 4
@@ -29,6 +38,18 @@ class LaborProcedureGuard:
             "3. 建议操作：若您尚未经过仲裁程序，建议先咨询当地劳动监察大队或申请劳动仲裁。"
         )
         return msg
+
+    def get_persistent_notice(self):
+        """Concise arbitration-precondition notice with an explicit basis time.
+
+        Intended for the labour claim page's always-visible reminder; the full
+        :meth:`get_warning_text` remains on the case-selection page.
+        """
+        return (
+            "【仲裁前置程序提示】劳动争议一般须先向劳动人事争议仲裁委员会申请仲裁，"
+            "对仲裁裁决不服方可向法院起诉；未经仲裁直接起诉的，法院通常不予受理。\n"
+            + ARBITRATION_NOTICE_BASIS
+        )
 
     def get_special_case_text(self):
         """

@@ -20,7 +20,7 @@ from PySide6.QtWidgets import QGroupBox, QWizard
 
 from helpers import docx_all_text, make_wizard, select_case, set_parties
 from presenters.model_builder import build_case_model
-from views.theme import SECONDARY_BUTTON
+from views.theme import SECONDARY_BUTTON, WARNING_LABEL
 
 CLAIM_PAGE_ATTR = {
     "loan": "PAGE_LOAN_CLAIM",
@@ -327,9 +327,6 @@ def test_g_t05_contract_calc_buttons_are_auxiliary(qapp):
 def test_g_t05_tri_state_defaults_are_unconfirmed(qapp):
     assert _loan_page(qapp).get_has_iou() is None
     assert _contract_page(qapp).get_flags() == {"is_delivered": None, "is_signed": None}
-    page.demand_method.setText("微信")                       # complete it via the real control
-    qapp.processEvents()
-    assert _next(wizard).isEnabled()
 
 
 def test_c2_t04_only_demand_method_blocks(qapp, monkeypatch, tmp_path, dialog_recorder):
@@ -566,127 +563,93 @@ def test_p0_error_revealed_after_edit_then_clears(qapp):
     assert wizard.currentId() == wizard.PAGE_LOAN_CLAIM
 
 
-# --- G: T05 民间借贷 / 买卖合同表单分组与输入约束 -------------------------
+# --- H: T06 物业 / 劳动 / 离婚表单分组、约束与常驻提示 -------------------
 
 
-def _loan_page(qapp):
+def _property_page(qapp):
     wizard, _ = make_wizard()
-    return wizard.loan_claim_page
+    return wizard.property_claim_page
 
 
-def _contract_page(qapp):
+def _labor_page(qapp):
     wizard, _ = make_wizard()
-    return wizard.contract_claim_page
+    return wizard.labor_claim_page
 
 
-def _group_titles(page):
-    return [g.title() for g in page.findChildren(QGroupBox)]
+def _divorce_page(qapp):
+    wizard, _ = make_wizard()
+    return wizard.divorce_claim_page
 
 
-def test_g_t05_loan_form_is_grouped(qapp):
-    titles = _group_titles(_loan_page(qapp))
-    for expected in ("基本事实", "金额与利息", "催款情况", "管辖法院"):
+def test_h_t06_property_form_is_grouped(qapp):
+    titles = _group_titles(_property_page(qapp))
+    for expected in ("物业与计费", "违约金与催缴", "金额核对", "管辖法院"):
         assert any(expected in t for t in titles), titles
 
 
-def test_g_t05_contract_form_is_grouped(qapp):
-    titles = _group_titles(_contract_page(qapp))
-    for expected in ("基本事实", "履行与签收", "违约金", "管辖法院"):
-        assert any(expected in t for t in titles), titles
-
-
-def test_g_t05_loan_amount_and_rate_constrained(qapp):
-    page = _loan_page(qapp)
-    for field in (page.principal, page.rate):
+def test_h_t06_property_amount_fields_constrained(qapp):
+    page = _property_page(qapp)
+    for field in (page.house_area, page.fee_rate, page.total_input):
         validator = field.validator()
         assert validator is not None
         assert validator.validate("abc", 0)[0] == QValidator.State.Invalid
-        assert validator.validate("14.6", 0)[0] == QValidator.State.Acceptable
+        assert validator.validate("115.5", 0)[0] == QValidator.State.Acceptable
         assert validator.validate("", 0)[0] == QValidator.State.Acceptable
 
 
-def test_g_t05_contract_amount_and_lpr_constrained(qapp):
-    page = _contract_page(qapp)
-    for field in (page.total_amount, page.unpaid_amount, page.penalty_amount,
-                  page.lpr_value, page.lpr_multiple):
-        validator = field.validator()
-        assert validator is not None
-        assert validator.validate("abc", 0)[0] == QValidator.State.Invalid
-        assert validator.validate("3.45", 0)[0] == QValidator.State.Acceptable
+def test_h_t06_property_calc_result_sits_in_amount_group(qapp):
+    page = _property_page(qapp)
+    groups = [g for g in page.findChildren(QGroupBox) if "金额核对" in g.title()]
+    assert len(groups) == 1
+    amount_group = groups[0]
+    assert page.total_input.parent() is amount_group
+    assert page.calc_label.parent() is amount_group
 
 
-def test_g_t05_contract_calc_buttons_are_auxiliary(qapp):
-    page = _contract_page(qapp)
-    assert "辅助" in page.calc_daily_btn.text()
-    assert "辅助" in page.calc_lpr_btn.text()
-    assert page.calc_daily_btn.objectName() == SECONDARY_BUTTON
-    assert page.calc_lpr_btn.objectName() == SECONDARY_BUTTON
-    assert page.calc_help.text()
-
-
-def test_g_t05_tri_state_defaults_are_unconfirmed(qapp):
-    assert _loan_page(qapp).get_has_iou() is None
-    assert _contract_page(qapp).get_flags() == {"is_delivered": None, "is_signed": None}
-
-
-# --- G: T05 民间借贷 / 买卖合同表单分组与输入约束 -------------------------
-
-
-def _loan_page(qapp):
-    wizard, _ = make_wizard()
-    return wizard.loan_claim_page
-
-
-def _contract_page(qapp):
-    wizard, _ = make_wizard()
-    return wizard.contract_claim_page
-
-
-def _group_titles(page):
-    return [g.title() for g in page.findChildren(QGroupBox)]
-
-
-def test_g_t05_loan_form_is_grouped(qapp):
-    titles = _group_titles(_loan_page(qapp))
-    for expected in ("基本事实", "金额与利息", "催款情况", "管辖法院"):
+def test_h_t06_labor_form_is_grouped(qapp):
+    titles = _group_titles(_labor_page(qapp))
+    for expected in ("劳动关系", "欠薪与加班", "合同与社保", "管辖法院"):
         assert any(expected in t for t in titles), titles
 
 
-def test_g_t05_contract_form_is_grouped(qapp):
-    titles = _group_titles(_contract_page(qapp))
-    for expected in ("基本事实", "履行与签收", "违约金", "管辖法院"):
-        assert any(expected in t for t in titles), titles
+def test_h_t06_labor_arbitration_notice_is_persistent(qapp):
+    page = _labor_page(qapp)
+    notice = page.arbitration_notice
+    text = notice.text()
+    assert text
+    assert "仲裁前置" in text
+    assert "依据" in text
+    assert "整理时间" in text
+    assert notice.objectName() == WARNING_LABEL
 
 
-def test_g_t05_loan_amount_and_rate_constrained(qapp):
-    page = _loan_page(qapp)
-    for field in (page.principal, page.rate):
+def test_h_t06_labor_amount_fields_constrained(qapp):
+    page = _labor_page(qapp)
+    for field in (page.monthly_salary, page.overtime_hours, page.overtime_pay):
         validator = field.validator()
         assert validator is not None
         assert validator.validate("abc", 0)[0] == QValidator.State.Invalid
-        assert validator.validate("14.6", 0)[0] == QValidator.State.Acceptable
+        assert validator.validate("8000", 0)[0] == QValidator.State.Acceptable
         assert validator.validate("", 0)[0] == QValidator.State.Acceptable
 
 
-def test_g_t05_contract_amount_and_lpr_constrained(qapp):
-    page = _contract_page(qapp)
-    for field in (page.total_amount, page.unpaid_amount, page.penalty_amount,
-                  page.lpr_value, page.lpr_multiple):
-        validator = field.validator()
-        assert validator is not None
-        assert validator.validate("abc", 0)[0] == QValidator.State.Invalid
-        assert validator.validate("3.45", 0)[0] == QValidator.State.Acceptable
+def test_h_t06_divorce_form_is_grouped(qapp):
+    titles = _group_titles(_divorce_page(qapp))
+    for expected in ("婚姻与离婚原因", "子女与抚养", "财产分割", "管辖法院"):
+        assert any(expected in t for t in titles), titles
 
 
-def test_g_t05_contract_calc_buttons_are_auxiliary(qapp):
-    page = _contract_page(qapp)
-    assert "辅助" in page.calc_daily_btn.text()
-    assert "辅助" in page.calc_lpr_btn.text()
-    assert page.calc_daily_btn.objectName() == SECONDARY_BUTTON
-    assert page.calc_lpr_btn.objectName() == SECONDARY_BUTTON
-    assert page.calc_help.text()
+def test_h_t06_divorce_child_help_explains_optional(qapp):
+    page = _divorce_page(qapp)
+    text = page.child_help.text()
+    assert "无子女" in text
+    assert "不填" in text
 
 
-def test_g_t05_tri_state_defaults_are_unconfirmed(qapp):
-    assert _loan_page(qapp).get_has_iou() is None
-    assert _contract_page(qapp).get_flags() == {"is_delivered": None, "is_signed": None}
+def test_h_t06_divorce_support_monthly_constrained(qapp):
+    page = _divorce_page(qapp)
+    validator = page.support_monthly.validator()
+    assert validator is not None
+    assert validator.validate("abc", 0)[0] == QValidator.State.Invalid
+    assert validator.validate("3000", 0)[0] == QValidator.State.Acceptable
+    assert validator.validate("", 0)[0] == QValidator.State.Acceptable
