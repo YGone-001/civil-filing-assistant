@@ -134,3 +134,102 @@ def test_complete_with_valid_parties(qapp):
     select_case(wizard, "divorce")
     set_parties(wizard)
     assert wizard.party_page.isComplete() is True
+
+
+# --- 当事人卡片：个人/企业切换、删除与重新编号 ----------------------------
+
+
+def test_company_toggle_swaps_identity_fields(qapp):
+    wizard, _ = make_wizard()
+    select_case(wizard, "contract")
+    set_parties(wizard)
+    w = wizard.party_page.plaintiff_widgets[0]
+
+    # 自然人默认：显示身份证号，隐藏企业字段。
+    assert not w["id"].isHidden()
+    assert not w["id_label"].isHidden()
+    assert w["credit_code"].isHidden()
+    assert w["credit_code_label"].isHidden()
+    assert w["legal_rep"].isHidden()
+    assert w["legal_rep_label"].isHidden()
+
+    w["is_company"].setChecked(True)
+    assert w["id"].isHidden()
+    assert w["id_label"].isHidden()
+    assert not w["credit_code"].isHidden()
+    assert not w["credit_code_label"].isHidden()
+    assert not w["legal_rep"].isHidden()
+    assert not w["legal_rep_label"].isHidden()
+
+    w["is_company"].setChecked(False)
+    assert not w["id"].isHidden()
+    assert not w["id_label"].isHidden()
+    assert w["credit_code"].isHidden()
+    assert w["credit_code_label"].isHidden()
+    assert w["legal_rep"].isHidden()
+    assert w["legal_rep_label"].isHidden()
+
+
+def test_delete_button_removes_card_and_renumbers(qapp):
+    wizard, _ = make_wizard()
+    select_case(wizard, "loan")
+    set_parties(
+        wizard,
+        plaintiffs=[
+            {"name": "原告甲（测试）"},
+            {"name": "原告丙（测试）"},
+        ],
+        defendants=DEFAULT_DEFENDANTS,
+    )
+    p = wizard.party_page
+    assert [g["group"].title() for g in p.plaintiff_widgets] == ["原告1", "原告2"]
+
+    # 点击第一张卡片的“删除”按钮。
+    p.plaintiff_widgets[0]["delete_btn"].click()
+    qapp.processEvents()
+
+    assert len(p.plaintiff_widgets) == 1
+    assert p.plaintiff_widgets[0]["name"].text() == "原告丙（测试）"
+    assert p.plaintiff_widgets[0]["group"].title() == "原告1"
+
+    data = p.get_party_data()
+    assert [d["name"] for d in data["plaintiffs"]] == ["原告丙（测试）"]
+
+
+def test_remove_last_party_leaves_page_incomplete(qapp):
+    wizard, _ = make_wizard()
+    select_case(wizard, "loan")
+    set_parties(wizard)  # 一名原告 + 一名被告
+    p = wizard.party_page
+
+    p.remove_party_ui(0, 0)  # 删除唯一原告
+
+    assert p.plaintiff_widgets == []
+    assert p.isComplete() is False
+    assert any("原告" in i for i in p.validate_parties())
+
+
+def test_validate_parties_emits_single_message_per_empty_card(qapp):
+    wizard, _ = make_wizard()
+    select_case(wizard, "loan")
+    set_parties(wizard, plaintiffs=[{"name": ""}], defendants=[{"name": ""}])
+
+    issues = wizard.party_page.validate_parties()
+    # 每张空白卡片只有一条“不能为空”提示，不再出现向导级的重复提示。
+    assert [i for i in issues if "不能为空" in i].__len__() == 2
+    assert not any("请至少填写" in i for i in issues)
+
+
+def test_added_blank_party_blocks_validate_page(qapp):
+    wizard, _ = make_wizard()
+    select_case(wizard, "loan")
+    set_parties(
+        wizard,
+        plaintiffs=[{"name": "原告甲（测试）"}, {"name": ""}],
+        defendants=DEFAULT_DEFENDANTS,
+    )
+
+    page = wizard.party_page
+    assert page.isComplete() is True  # The standard Next button can be active.
+    assert page.validatePage() is False
+    assert "原告2的姓名/名称不能为空" in page.msg_label.text()

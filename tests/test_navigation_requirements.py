@@ -451,3 +451,51 @@ def test_c3_t12_backward_navigation_then_edit(qapp, monkeypatch, tmp_path, dialo
     text = _complaint(_finish_and_collect(wizard, qapp, desktop))
     assert "测试子女" in text
     assert "抚养费人民币2000元" in text
+
+
+# --- P0: 当事人页渐进式校验与错误摘要 -------------------------------------
+
+
+def test_p0_fresh_party_page_is_silent_and_blocks(qapp):
+    wizard, _ = make_wizard()
+    wizard.show()
+    qapp.processEvents()
+    _click(wizard, qapp, _next(wizard))                     # welcome -> case selection
+    select_case(wizard, "loan")
+    qapp.processEvents()
+    _click(wizard, qapp, _next(wizard))                     # -> party
+    assert wizard.currentId() == wizard.PAGE_PARTY
+
+    page = wizard.party_page
+    # 首次进入：未触碰任何字段，不显示错误，且因当事人不完整而禁用下一步。
+    assert page.msg_label.text() == ""
+    assert not page.msg_label.isVisible()
+    assert not _next(wizard).isEnabled()
+
+
+def test_p0_error_revealed_after_edit_then_clears(qapp):
+    wizard, _ = make_wizard()
+    wizard.show()
+    qapp.processEvents()
+    _click(wizard, qapp, _next(wizard))                     # welcome -> case selection
+    select_case(wizard, "loan")
+    qapp.processEvents()
+    _click(wizard, qapp, _next(wizard))                     # -> party
+    page = wizard.party_page
+
+    # 只有“离开”原告姓名字段后，渐进校验才第一次给出错误摘要。
+    page.plaintiff_widgets[0]["name"].setText("原告甲（测试）")
+    page.plaintiff_widgets[0]["name"].editingFinished.emit()
+    qapp.processEvents()
+    assert page._touched is True
+    assert "被告" in page.msg_label.text()
+
+    # 补齐被告后错误消失，下一步重新可用。
+    page.defendant_widgets[0]["name"].setText("被告乙（测试）")
+    page.defendant_widgets[0]["name"].editingFinished.emit()
+    qapp.processEvents()
+    assert page.msg_label.text() == ""
+    assert _next(wizard).isEnabled()
+
+    _click(wizard, qapp, _next(wizard))
+    assert wizard.currentId() == wizard.PAGE_LOAN_CLAIM

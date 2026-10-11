@@ -170,6 +170,10 @@ class PartyPage(QWizardPage):
         # Flag to prevent multiple initialization
         self.is_initialized = False
 
+        # Progressive validation: nothing is flagged until the user interacts
+        # (leaves a field or clicks Next); reset on each fresh entry.
+        self._touched = False
+
         # Add Plaintiff Button
         self.add_p_btn = QPushButton("[+] 添加原告")
         self.add_p_btn.clicked.connect(lambda: self.add_party_ui(0))
@@ -207,15 +211,20 @@ class PartyPage(QWizardPage):
         self.current_case_type = case_type
         self.is_initialized = True
 
+        # Fresh entry: hide any previously shown errors until interaction.
+        self._touched = False
+
         # Initialize with at least 1 plaintiff and 1 defendant
         self.add_party_ui(0)
         self.add_party_ui(1)
 
     def add_party_ui(self, party_type):
         is_plaintiff = (party_type == 0)
-        title = "原告信息" if is_plaintiff else "被告信息"
-        group = QGroupBox(title)
+        kind = "原告" if is_plaintiff else "被告"
+        number = (len(self.plaintiff_widgets) + 1) if is_plaintiff else (len(self.defendant_widgets) + 1)
+        group = QGroupBox(f"{kind}{number}")
         layout = QFormLayout()
+        layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
 
         name_edit = QLineEdit()
         id_edit = QLineEdit()
@@ -223,15 +232,12 @@ class PartyPage(QWizardPage):
         phone_edit = QLineEdit()
 
         from PySide6.QtWidgets import QCheckBox, QLabel
-        is_company_check = QCheckBox("是企业法人（物业公司/公司等）")
+        is_company_check = QCheckBox("该当事人为单位/企业（非自然人）")
         is_company_check.setChecked(False)
 
         # Company-specific widgets are always created so that a corporate party
         # works for every case type and the extraction code never touches a
-        # ``None`` widget. They stay hidden until the checkbox is ticked.
-        case_type = self.field("case_type")
-        is_property_case = (case_type == "property")
-
+        # ``None`` widget. They stay hidden until the toggle is switched.
         credit_code_edit = QLineEdit()
         credit_code_edit.setPlaceholderText("统一社会信用代码")
         credit_code_edit.setVisible(False)
@@ -240,77 +246,149 @@ class PartyPage(QWizardPage):
         legal_rep_edit.setPlaceholderText("法定代表人姓名")
         legal_rep_edit.setVisible(False)
 
-        is_company_check.toggled.connect(lambda checked: self._toggle_company_fields(checked, credit_code_edit, legal_rep_edit))
-
+        # "身份证号" is the personal identity field; resuming a company toggles
+        # it away and reveals the credit-code/legal-representative fields, so no
+        # duplicate identity row is ever shown.
         layout.addRow("姓名/名称:", name_edit)
-        layout.addRow("身份证号/统一社会信用代码:", id_edit)
+        layout.addRow("身份证号:", id_edit)
+        layout.addRow("统一社会信用代码:", credit_code_edit)
+        layout.addRow("法定代表人:", legal_rep_edit)
         layout.addRow("住址/住所地:", addr_edit)
         layout.addRow("电话:", phone_edit)
+
+        # QFormLayout owns separate label widgets. Hide and show those labels
+        # together with their fields so switching party type never leaves a
+        # dangling identity-field caption behind.
+        id_label = layout.labelForField(id_edit)
+        credit_code_label = layout.labelForField(credit_code_edit)
+        legal_rep_label = layout.labelForField(legal_rep_edit)
 
         phone_validator = QRegularExpressionValidator(_PHONE_INPUT_PATTERN)
         phone_edit.setValidator(phone_validator)
 
-        # Keep the live guidance and the wizard "Next" button state in sync.
-        name_edit.textChanged.connect(lambda _text: self._refresh_validation_message())
-        phone_edit.textChanged.connect(lambda _text: self._refresh_validation_message())
-        credit_code_edit.textChanged.connect(lambda _text: self._refresh_validation_message())
+        case_type = self.field("case_type")
+        is_property_case = (case_type == "property")
 
         # Only create addr_hint for property cases
         if is_property_case and not is_plaintiff:
-            from PySide6.QtWidgets import QLabel
             addr_hint = QLabel("提示：若被告搬家，请填写现居住满一年的地址，以便法院送达。")
             addr_hint.setObjectName(WARNING_LABEL)
             addr_hint.setWordWrap(True)
-            layout.addRow("", addr_hint)
+            layout.addRow(addr_hint)
 
-        layout.addRow("", is_company_check)
-        if credit_code_edit is not None:
-            layout.addRow("统一社会信用代码:", credit_code_edit)
-        if legal_rep_edit is not None:
-            layout.addRow("法定代表人:", legal_rep_edit)
+        # 个人/企业 toggle, full-width. Toggling swaps the personal ID field for
+        # the company credit-code/legal-representative fields.
+        is_company_check.toggled.connect(
+            lambda checked: self._toggle_company_fields(
+                checked,
+                id_edit,
+                credit_code_edit,
+                legal_rep_edit,
+                id_label,
+                credit_code_label,
+                legal_rep_label,
+            )
+        )
+        layout.addRow(is_company_check)
+
+        # Per-card delete action.
+        delete_btn = QPushButton("删除")
+        delete_btn.setObjectName(DANGER_BUTTON)
+        layout.addRow(delete_btn)
 
         group.setLayout(layout)
 
+        widget = {
+            "group": group,
+            "name": name_edit,
+            "id": id_edit,
+            "addr": addr_edit,
+            "phone": phone_edit,
+            "is_company": is_company_check,
+            "credit_code": credit_code_edit,
+            "legal_rep": legal_rep_edit,
+            "id_label": id_label,
+            "credit_code_label": credit_code_label,
+            "legal_rep_label": legal_rep_label,
+            "delete_btn": delete_btn,
+        }
+        delete_btn.clicked.connect(lambda _=False, t=party_type, d=widget: self._remove_party(t, d))
+
         # Insert before the add buttons or stretch
         if is_plaintiff:
-            idx = len(self.plaintiff_widgets)
-            # Remove previous group if it exists to allow dynamic add/remove
-            # For simplicity in this demo, we just append
             insert_idx = self.scroll_layout.indexOf(self.add_p_btn)
             self.scroll_layout.insertWidget(insert_idx, group)
-            self.plaintiff_widgets.append({
-                "group": group,
-                "name": name_edit,
-                "id": id_edit,
-                "addr": addr_edit,
-                "phone": phone_edit,
-                "is_company": is_company_check,
-                "credit_code": credit_code_edit,
-                "legal_rep": legal_rep_edit
-            })
+            self.plaintiff_widgets.append(widget)
         else:
-            idx = len(self.defendant_widgets)
             insert_idx = self.scroll_layout.indexOf(self.add_d_btn)
             self.scroll_layout.insertWidget(insert_idx, group)
-            self.defendant_widgets.append({
-                "group": group,
-                "name": name_edit,
-                "id": id_edit,
-                "addr": addr_edit,
-                "phone": phone_edit,
-                "is_company": is_company_check,
-                "credit_code": credit_code_edit,
-                "legal_rep": legal_rep_edit
-            })
+            self.defendant_widgets.append(widget)
+
+        # Apply the initial natural-person state to both fields and labels.
+        self._toggle_company_fields(
+            False,
+            id_edit,
+            credit_code_edit,
+            legal_rep_edit,
+            id_label,
+            credit_code_label,
+            legal_rep_label,
+        )
+
+        # Keep the live guidance and the wizard "Next" button state in sync, and
+        # mark the page as touched when the user leaves a field.
+        for w in (name_edit, phone_edit, credit_code_edit, legal_rep_edit):
+            w.textChanged.connect(lambda _text: self._refresh_validation_message())
+            w.editingFinished.connect(self._on_field_edited)
 
         self._refresh_validation_message()
 
-    def _toggle_company_fields(self, checked, credit_code_edit, legal_rep_edit):
+    def _toggle_company_fields(
+        self,
+        checked,
+        id_edit,
+        credit_code_edit,
+        legal_rep_edit,
+        id_label,
+        credit_code_label,
+        legal_rep_label,
+    ):
+        if id_edit is not None:
+            id_edit.setVisible(not checked)
+        if id_label is not None:
+            id_label.setVisible(not checked)
         if credit_code_edit is not None:
             credit_code_edit.setVisible(checked)
+        if credit_code_label is not None:
+            credit_code_label.setVisible(checked)
         if legal_rep_edit is not None:
             legal_rep_edit.setVisible(checked)
+        if legal_rep_label is not None:
+            legal_rep_label.setVisible(checked)
         self._refresh_validation_message()
+
+    def _renumber_parties(self):
+        """Keep card numbers contiguous after additions/removals."""
+        for idx, w in enumerate(self.plaintiff_widgets, 1):
+            w["group"].setTitle(f"原告{idx}")
+        for idx, w in enumerate(self.defendant_widgets, 1):
+            w["group"].setTitle(f"被告{idx}")
+
+    def _remove_party(self, party_type, widget):
+        widgets = self.plaintiff_widgets if party_type == 0 else self.defendant_widgets
+        try:
+            widgets.remove(widget)
+        except ValueError:
+            return
+        widget["group"].deleteLater()
+        self._renumber_parties()
+        self._refresh_validation_message()
+
+    def remove_party_ui(self, party_type, index):
+        """Remove the party card at ``index`` (0-based) for tests and scripts."""
+        widgets = self.plaintiff_widgets if party_type == 0 else self.defendant_widgets
+        if 0 <= index < len(widgets):
+            self._remove_party(party_type, widgets[index])
 
     @staticmethod
     def _widget_text(widget):
@@ -330,8 +408,8 @@ class PartyPage(QWizardPage):
     def isComplete(self):
         """Require at least one named plaintiff and one named defendant.
 
-        This prevents the export flow from silently dropping incomplete parties
-        and producing a document that only reflects part of the case.
+        ``validatePage`` additionally blocks an explicitly added empty card,
+        preventing the model builder from silently skipping that party.
         """
         return (
             self._has_named_party(self.plaintiff_widgets)
@@ -341,15 +419,19 @@ class PartyPage(QWizardPage):
     def validate_parties(self):
         """Return a list of human-readable party-input issues.
 
-        Missing required parties come first; softer format warnings (phone or
-        unified social credit code) follow. The intention is to warn, not to
-        reject legitimately optional or unavailable information.
+        Each empty party card yields exactly one "不能为空" message (no
+        side-level duplicate), so the summary is de-duplicated. Softer format
+        warnings (phone length or unified social credit code) follow and only
+        advise — they never block generation.
         """
         issues = []
 
-        if not self._has_named_party(self.plaintiff_widgets):
+        # A side-level message only when a side has no card left at all (e.g.
+        # every card was deleted). Otherwise per-card messages below cover it,
+        # so a normal blank card never produces a duplicated side-level warning.
+        if not self.plaintiff_widgets:
             issues.append("请至少填写一名原告的姓名/名称。")
-        if not self._has_named_party(self.defendant_widgets):
+        if not self.defendant_widgets:
             issues.append("请至少填写一名被告的姓名/名称。")
 
         for kind, idx, w in self._iter_parties():
@@ -373,9 +455,49 @@ class PartyPage(QWizardPage):
 
     def _refresh_validation_message(self):
         issues = self.validate_parties()
-        _set_status(self.msg_label, "\n".join(issues))
+        # Progressive validation: nothing is shown until the page is touched.
+        _set_status(self.msg_label, "\n".join(issues) if self._touched else "")
         # Notify the wizard so the "Next" button reflects the current state.
         self.completeChanged.emit()
+
+    def _on_field_edited(self):
+        """Mark the page touched when a field loses focus, then refresh errors."""
+        self._touched = True
+        self._refresh_validation_message()
+
+    def _first_invalid_name_widget(self):
+        """Return the first empty name field (the one that blocks the page)."""
+        for w in self.plaintiff_widgets + self.defendant_widgets:
+            if not self._widget_text(w["name"]).strip():
+                return w["name"]
+        return None
+
+    def _has_missing_party_name(self):
+        """Return whether any existing party card lacks its required name."""
+        return any(
+            not self._widget_text(w["name"]).strip()
+            for w in self.plaintiff_widgets + self.defendant_widgets
+        )
+
+    def focus_first_invalid(self):
+        """Move focus to the first blocking field; return whether it existed."""
+        widget = self._first_invalid_name_widget()
+        if widget is not None:
+            widget.setFocus()
+            return True
+        return False
+
+    def validatePage(self):
+        """Run on Next: reveal errors, focus the first invalid field, and block
+        navigation while the page is incomplete."""
+        self._touched = True
+        _set_status(self.msg_label, "\n".join(self.validate_parties()))
+        self.focus_first_invalid()
+        # ``isComplete`` keeps the standard QWizard button state responsive
+        # once each side has a named party. A deliberately added but blank
+        # extra card must still block the transition here; otherwise the model
+        # builder would silently skip it during export.
+        return self.isComplete() and not self._has_missing_party_name()
 
     def get_party_data(self):
         """Extract all party data to pass to presenter.

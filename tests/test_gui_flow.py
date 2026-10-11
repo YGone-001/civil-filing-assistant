@@ -47,6 +47,7 @@ def test_internal_wizard_header_button_is_hidden(qapp):
     wizard.next()  # welcome -> case selection
     select_case(wizard, "loan")
     wizard.next()  # -> party
+    set_parties(wizard)
     wizard.next()  # -> loan claim
     assert wizard.currentId() == wizard.PAGE_LOAN_CLAIM
     assert internal[0].isHidden() is True
@@ -74,6 +75,7 @@ def test_wizard_routes_and_initializes(qapp, case_type):
     select_case(wizard, case_type)
     wizard.next()  # -> party
     assert wizard.currentId() == wizard.PAGE_PARTY
+    set_parties(wizard)
 
     claim_page_id = getattr(wizard, EXPECTED_ROUTE_PAGE[case_type])
     assert wizard.nextId() == claim_page_id
