@@ -27,6 +27,7 @@ COLOR_WARNING_BG = "#FBF3E4"
 COLOR_ERROR = "#B00020"
 COLOR_ERROR_BG = "#FBEAEC"
 COLOR_SUCCESS = "#2E7D32"
+COLOR_SUCCESS_BG = "#E8F5E9"
 COLOR_INFO = "#1F5E8C"
 COLOR_INFO_BG = "#EAF1F7"
 
@@ -96,6 +97,18 @@ QLineEdit, QComboBox, QTextEdit, QTableWidget {{
 
 QLineEdit:focus, QComboBox:focus, QTextEdit:focus {{
     border: 1px solid {COLOR_PRIMARY};
+}}
+
+QRadioButton:focus {{
+    border: 1px solid {COLOR_PRIMARY};
+    border-radius: {RADIUS_SM}px;
+    padding: {SPACING_SM}px;
+}}
+
+QRadioButton:focus {{
+    border: 1px solid {COLOR_PRIMARY};
+    border-radius: {RADIUS_SM}px;
+    padding: {SPACING_SM}px;
 }}
 
 QLineEdit:disabled, QComboBox:disabled, QTextEdit:disabled {{
@@ -203,7 +216,7 @@ QLabel#{ERROR_LABEL} {{
 
 QLabel#{SUCCESS_LABEL} {{
     color: {COLOR_SUCCESS};
-    background-color: {COLOR_INFO_BG};
+    background-color: {COLOR_SUCCESS_BG};
     border: 1px solid {COLOR_DIVIDER};
     border-radius: {RADIUS_SM}px;
     padding: {SPACING_MD}px;

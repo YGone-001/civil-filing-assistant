@@ -16,6 +16,7 @@ from views.theme import (
     INFO_LABEL,
     PRIMARY_BUTTON,
     SECONDARY_BUTTON,
+    SUCCESS_LABEL,
     WARNING_LABEL,
 )
 
@@ -28,6 +29,18 @@ def _set_status(label, text):
     """
     label.setText(text)
     label.setVisible(bool(text))
+
+
+def _dedup_messages(messages):
+    """Remove duplicate messages while preserving order and non-empty values."""
+    seen = set()
+    result = []
+    for msg in messages:
+        msg = msg.strip()
+        if msg and msg not in seen:
+            seen.add(msg)
+            result.append(msg)
+    return result
 
 # Phone input accepts only digits and the common grouping/prefix characters so
 # that obviously invalid text (letters, brackets, etc.) cannot be entered. The
@@ -53,6 +66,46 @@ def _section(root, title):
     form = QFormLayout(box)
     root.addWidget(box)
     return form
+
+
+def _wrap_in_scroll(root_layout):
+    """Wrap *root_layout* in a resizable QScrollArea and return the outer layout.
+
+    Callers do ``self.setLayout(_wrap_in_scroll(root))`` instead of
+    ``self.setLayout(root)`` so that long forms stay usable on small screens
+    and high-DPI scaling factors.  The outer layout has zero margins so the
+    scroll area fills the page exactly as the original layout did.
+    """
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+    content = QWidget()
+    content.setLayout(root_layout)
+    scroll.setWidget(content)
+    outer = QVBoxLayout()
+    outer.setContentsMargins(0, 0, 0, 0)
+    outer.addWidget(scroll)
+    return outer
+
+
+def _wrap_in_scroll(root_layout):
+    """Wrap *root_layout* in a resizable QScrollArea and return the outer layout.
+
+    Callers do ``self.setLayout(_wrap_in_scroll(root))`` instead of
+    ``self.setLayout(root)`` so that long forms stay usable on small screens
+    and high-DPI scaling factors.  The outer layout has zero margins so the
+    scroll area fills the page exactly as the original layout did.
+    """
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+    content = QWidget()
+    content.setLayout(root_layout)
+    scroll.setWidget(content)
+    outer = QVBoxLayout()
+    outer.setContentsMargins(0, 0, 0, 0)
+    outer.addWidget(scroll)
+    return outer
 
 
 class WelcomePage(QWizardPage):
@@ -115,6 +168,8 @@ class CaseSelectionPage(QWizardPage):
 
         from PySide6.QtWidgets import QComboBox
         self.case_combo = QComboBox()
+        self.case_combo.setAccessibleName("案由选择")
+        self.case_combo.setAccessibleDescription("选择起诉状的案件类型")
         self.case_combo.addItem("民间借贷纠纷", "loan")
         self.case_combo.addItem("买卖合同纠纷", "contract")
         self.case_combo.addItem("物业服务合同纠纷", "property")
@@ -198,11 +253,15 @@ class PartyPage(QWizardPage):
 
         # Add Plaintiff Button
         self.add_p_btn = QPushButton("[+] 添加原告")
+        self.add_p_btn.setAccessibleName("添加原告")
+        self.add_p_btn.setAccessibleDescription("添加一名原告当事人卡片")
         self.add_p_btn.clicked.connect(lambda: self.add_party_ui(0))
         self.scroll_layout.addWidget(self.add_p_btn)
 
         # Add Defendant Button
         self.add_d_btn = QPushButton("[+] 添加被告")
+        self.add_d_btn.setAccessibleName("添加被告")
+        self.add_d_btn.setAccessibleDescription("添加一名被告当事人卡片")
         self.add_d_btn.clicked.connect(lambda: self.add_party_ui(1))
         self.scroll_layout.addWidget(self.add_d_btn)
 
@@ -316,6 +375,7 @@ class PartyPage(QWizardPage):
         # Per-card delete action.
         delete_btn = QPushButton("删除")
         delete_btn.setObjectName(DANGER_BUTTON)
+        delete_btn.setAccessibleName(f"删除{kind}卡片")
         layout.addRow(delete_btn)
 
         group.setLayout(layout)
@@ -476,7 +536,7 @@ class PartyPage(QWizardPage):
         return issues
 
     def _refresh_validation_message(self):
-        issues = self.validate_parties()
+        issues = _dedup_messages(self.validate_parties())
         # Progressive validation: nothing is shown until the page is touched.
         _set_status(self.msg_label, "\n".join(issues) if self._touched else "")
         # Notify the wizard so the "Next" button reflects the current state.
@@ -513,7 +573,8 @@ class PartyPage(QWizardPage):
         """Run on Next: reveal errors, focus the first invalid field, and block
         navigation while the page is incomplete."""
         self._touched = True
-        _set_status(self.msg_label, "\n".join(self.validate_parties()))
+        issues = _dedup_messages(self.validate_parties())
+        _set_status(self.msg_label, "\n".join(issues))
         self.focus_first_invalid()
         # ``isComplete`` keeps the standard QWizard button state responsive
         # once each side has a named party. A deliberately added but blank
@@ -612,7 +673,7 @@ class ContractClaimPage(QWizardPage):
 
         # On-page explanation for the conditional (scenario-dependent) requirement.
         self.cond_hint = QLabel("")
-        self.cond_hint.setObjectName(ERROR_LABEL)
+        self.cond_hint.setObjectName(WARNING_LABEL)
         self.cond_hint.setWordWrap(True)
         self.cond_hint.setVisible(False)
 
@@ -654,10 +715,12 @@ class ContractClaimPage(QWizardPage):
 
         self.calc_daily_btn = QPushButton("按日万五折算（辅助）")
         self.calc_daily_btn.setObjectName(SECONDARY_BUTTON)
+        self.calc_daily_btn.setAccessibleName("按日万五折算违约金")
         self.calc_daily_btn.clicked.connect(self.calc_penalty_daily_5_per_10k)
 
         self.calc_lpr_btn = QPushButton("按 LPR×倍数折算（辅助）")
         self.calc_lpr_btn.setObjectName(SECONDARY_BUTTON)
+        self.calc_lpr_btn.setAccessibleName("按LPR倍数折算违约金")
         self.calc_lpr_btn.clicked.connect(self.calc_penalty_by_lpr_multiple)
 
         calc_btn_layout = QHBoxLayout()
@@ -694,7 +757,7 @@ class ContractClaimPage(QWizardPage):
         self.court_name.setPlaceholderText("如: 广州市天河区人民法院")
         court.addRow("建议管辖法院:", self.court_name)
 
-        self.setLayout(root)
+        self.setLayout(_wrap_in_scroll(root))
 
         self.registerField("c_contract_date*", self.contract_date)
         self.registerField("c_contract_name*", self.contract_name)
@@ -731,6 +794,14 @@ class ContractClaimPage(QWizardPage):
         if not super().isComplete():
             return False
         return not self._conditional_issue()
+
+    def validatePage(self):
+        issue = self._conditional_issue()
+        if issue:
+            _set_status(self.cond_hint, issue)
+            self.delivery_date.setFocus()
+            return False
+        return True
 
     @staticmethod
     def _tri_state(group, yes_id=1, no_id=0):
@@ -898,7 +969,7 @@ class LoanClaimPage(QWizardPage):
 
         # On-page explanation for the conditional demand-information requirement.
         self.cond_hint = QLabel("")
-        self.cond_hint.setObjectName(ERROR_LABEL)
+        self.cond_hint.setObjectName(WARNING_LABEL)
         self.cond_hint.setWordWrap(True)
         self.cond_hint.setVisible(False)
 
@@ -913,7 +984,7 @@ class LoanClaimPage(QWizardPage):
         self.court_name.setPlaceholderText("如: 广州市天河区人民法院")
         court.addRow("建议管辖法院:", self.court_name)
 
-        self.setLayout(root)
+        self.setLayout(_wrap_in_scroll(root))
 
         # Register fields
         self.registerField("loan_date*", self.loan_date)
@@ -949,6 +1020,14 @@ class LoanClaimPage(QWizardPage):
         if not super().isComplete():
             return False
         return not self._conditional_issue()
+
+    def validatePage(self):
+        issue = self._conditional_issue()
+        if issue:
+            _set_status(self.cond_hint, issue)
+            self.demand_date.setFocus()
+            return False
+        return True
 
     def validate_rate(self):
         text = self.rate.text().strip()
@@ -1066,7 +1145,7 @@ class PropertyClaimPage(QWizardPage):
 
         court.addRow("建议管辖法院:", self.court_name)
 
-        self.setLayout(root)
+        self.setLayout(_wrap_in_scroll(root))
 
         for w in [self.house_area, self.fee_rate, self.period_start, self.period_end, self.total_input]:
             w.textChanged.connect(self.update_calc)
@@ -1174,8 +1253,10 @@ class EvidencePage(QWizardPage):
 
         btn_layout = QHBoxLayout()
         self.add_row_btn = QPushButton("[+] 添加证据")
+        self.add_row_btn.setAccessibleName("添加证据行")
         self.add_row_btn.clicked.connect(self.add_row)
         self.remove_row_btn = QPushButton("[-] 删除选中行")
+        self.remove_row_btn.setAccessibleName("删除选中的证据行")
         self.remove_row_btn.clicked.connect(self.remove_selected_rows)
         btn_layout.addWidget(self.add_row_btn)
         btn_layout.addWidget(self.remove_row_btn)
@@ -1185,6 +1266,8 @@ class EvidencePage(QWizardPage):
 
         self.table = QTableWidget(0, 2)
         self.table.setHorizontalHeaderLabels(["证据名称", "证明目的"])
+        self.table.setAccessibleName("证据清单表格")
+        self.table.setAccessibleDescription("可编辑表格，双击单元格编辑证据名称和证明目的")
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
@@ -1370,7 +1453,7 @@ class LaborClaimPage(QWizardPage):
 
         court.addRow("建议管辖法院:", self.court_name)
 
-        self.setLayout(root)
+        self.setLayout(_wrap_in_scroll(root))
 
         self.registerField("l_emp_join_date*", self.emp_join_date)
         self.registerField("l_job_title*", self.job_title)
@@ -1436,7 +1519,7 @@ class DivorceClaimPage(QWizardPage):
 
         # On-page explanation for the conditional child-information requirement.
         self.cond_hint = QLabel("")
-        self.cond_hint.setObjectName(ERROR_LABEL)
+        self.cond_hint.setObjectName(WARNING_LABEL)
         self.cond_hint.setWordWrap(True)
         self.cond_hint.setVisible(False)
 
@@ -1463,7 +1546,7 @@ class DivorceClaimPage(QWizardPage):
 
         court.addRow("建议管辖法院:", self.court_name)
 
-        self.setLayout(root)
+        self.setLayout(_wrap_in_scroll(root))
 
         self.registerField("d_marriage_date*", self.marriage_date)
         # Child information is optional: a childless divorce must be reachable.
@@ -1508,6 +1591,14 @@ class DivorceClaimPage(QWizardPage):
         if not super().isComplete():
             return False
         return not self._conditional_issue()
+
+    def validatePage(self):
+        issue = self._conditional_issue()
+        if issue:
+            _set_status(self.cond_hint, issue)
+            self.child_name.setFocus()
+            return False
+        return True
 
 class _PreviewDialog(QDialog):
     """A scrollable, read-only preview of the case text before export.
@@ -1583,11 +1674,13 @@ class ExportPage(QWizardPage):
         dir_btn_layout = QHBoxLayout()
         self.change_dir_btn = QPushButton("更改目录")
         self.change_dir_btn.setObjectName(SECONDARY_BUTTON)
+        self.change_dir_btn.setAccessibleName("更改输出目录")
         self.change_dir_btn.clicked.connect(self.change_directory)
         dir_btn_layout.addWidget(self.change_dir_btn)
 
         self.open_dir_btn = QPushButton("打开输出目录")
         self.open_dir_btn.setObjectName(SECONDARY_BUTTON)
+        self.open_dir_btn.setAccessibleName("打开输出目录")
         self.open_dir_btn.clicked.connect(self.open_output_directory)
         dir_btn_layout.addWidget(self.open_dir_btn)
         dir_btn_layout.addStretch()
@@ -1601,12 +1694,14 @@ class ExportPage(QWizardPage):
         # --- Preview -------------------------------------------------------
         self.preview_btn = QPushButton("预览关键信息")
         self.preview_btn.setObjectName(SECONDARY_BUTTON)
+        self.preview_btn.setAccessibleName("预览关键信息")
         self.preview_btn.clicked.connect(self.show_preview)
         layout.addWidget(self.preview_btn)
 
         # --- Exit (secondary, not destructive) ----------------------------
         self.secure_exit_btn = QPushButton("退出程序（不删除已生成文件）")
         self.secure_exit_btn.setObjectName(SECONDARY_BUTTON)
+        self.secure_exit_btn.setAccessibleName("退出程序")
         self.secure_exit_btn.clicked.connect(self.secure_exit)
         layout.addWidget(self.secure_exit_btn)
 
