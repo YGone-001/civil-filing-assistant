@@ -234,6 +234,20 @@ def test_address_form_includes_party_names(qapp, tmp_path, monkeypatch):
     assert "被告乙（测试）" in all_text, f"defendant name missing from address form: {all_text}"
 
 
+def test_address_form_uses_compact_table_format(qapp, tmp_path, monkeypatch):
+    """Two-party address forms should not create a signature-only overflow page."""
+    docs = _export_all(tmp_path, monkeypatch, "loan")
+    doc = Document(str(docs["address"]))
+
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                paragraph = cell.paragraphs[0]
+                assert paragraph.paragraph_format.line_spacing.pt == 20
+                fonts = _run_fonts(paragraph)
+                assert any(size == 14 for _, size, _ in fonts)
+
+
 # ---------------------------------------------------------------------------
 # 5. Party block in complaint — font and format
 # ---------------------------------------------------------------------------

@@ -94,11 +94,11 @@ class DocumentGenerator:
         self._add_text("具状人：", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
         self._add_text("年   月   日", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
 
-    def _set_cell_text(self, cell, text, font_name, font_size, bold):
+    def _set_cell_text(self, cell, text, font_name, font_size, bold, line_spacing=28):
         cell.text = ""
         p = cell.paragraphs[0] if cell.paragraphs else cell.add_paragraph()
         p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
-        p.paragraph_format.line_spacing = Pt(28)
+        p.paragraph_format.line_spacing = Pt(line_spacing)
         run = p.add_run(text)
         run.bold = bold
         run.font.size = Pt(font_size)
@@ -154,6 +154,11 @@ class DocumentGenerator:
         self.save(file_path)
 
     def export_address_form(self, model, file_path):
+        # Address blocks contain six fixed rows per party.  A compact table
+        # treatment keeps the common two-party form and its signature together
+        # on one page, without changing the readable body-text specification.
+        table_font_size = 14
+        table_line_spacing = 20
         self.reset()
         self.add_title("送 达 地 址 确 认 书")
         self.doc.add_paragraph()
@@ -214,9 +219,14 @@ class DocumentGenerator:
             ]
 
             for i in range(6):
-                self._set_cell_text(table.rows[i].cells[0], labels[i], "SimHei", 16, True)
-                self._set_cell_text(table.rows[i].cells[1], values[i], "FangSong_GB2312", 16, False)
-            self.doc.add_paragraph()
+                self._set_cell_text(
+                    table.rows[i].cells[0], labels[i], "SimHei", table_font_size, True,
+                    table_line_spacing,
+                )
+                self._set_cell_text(
+                    table.rows[i].cells[1], values[i], "FangSong_GB2312", table_font_size, False,
+                    table_line_spacing,
+                )
 
         self._add_text("确认人：", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
         self._add_text("年   月   日", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
