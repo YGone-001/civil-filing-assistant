@@ -509,13 +509,6 @@ def test_party_delete_button_has_danger_object_name(qapp):
     assert page.plaintiff_widgets[0]["delete_btn"].objectName() == DANGER_BUTTON
 
 
-def test_party_delete_button_has_danger_object_name(qapp):
-    wizard, _ = make_wizard()
-    page = wizard.party_page
-    set_parties(wizard)
-    assert page.plaintiff_widgets[0]["delete_btn"].objectName() == DANGER_BUTTON
-
-
 def test_wizard_next_and_finish_buttons_have_primary_object_name(qapp):
     wizard, _ = make_wizard()
     assert wizard.button(QWizard.NextButton).objectName() == PRIMARY_BUTTON
