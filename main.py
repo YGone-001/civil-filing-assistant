@@ -3,13 +3,22 @@
 # Encoding: UTF-8
 
 import argparse
+import os
 import sys
 
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMessageBox
 from views.main_window import LawsuitWizard
 from views.theme import apply_theme
 from presenters.main_presenter import MainPresenter
 from utils.security_check import SecurityGuard, NetworkStatus
+
+
+def _resource_path(relative_path):
+    """Get absolute path to a bundled resource (dev or PyInstaller)."""
+    base = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
+    return os.path.join(base, relative_path)
 
 
 def _show_network_notice(status):
@@ -19,7 +28,7 @@ def _show_network_notice(status):
         msg.setIcon(QMessageBox.Warning)
         msg.setWindowTitle("离线使用建议")
         msg.setText(
-            "检测到本机当前存在默认网络路由，可能处于联网状态。\n\n"
+            "检测到本机当前存在网络连接，可能处于联网状态。\n\n"
             "本工具本身不会主动上传案件数据，但在处理真实案件信息时，"
             "建议您在断开网络后使用，以降低数据外泄风险。"
         )
@@ -32,7 +41,7 @@ def _show_network_notice(status):
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("网络状态未知")
         msg.setText(
-            "无法确定本机当前的网络状态（路由检测未成功执行）。\n\n"
+            "无法确定本机当前的网络状态（网络检测未成功执行）。\n\n"
             "这并不代表设备已被确认离线。您可以正常继续使用；"
             "如需更高隐私保障，请手动确认网络已断开。"
         )
@@ -62,7 +71,15 @@ def main(argv=None):
     args = _parse_args(sys.argv[1:] if argv is None else argv)
 
     # Initialize the Qt Application
+    QApplication.setHighDpiScaleFactorRoundingPolicy(
+        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
+    )
     app = QApplication(sys.argv)
+
+    # Set the application window icon (shows in title bar and taskbar).
+    icon_path = _resource_path("assets/app_icon.png")
+    if os.path.isfile(icon_path):
+        app.setWindowIcon(QIcon(icon_path))
 
     # Use Fusion style for a cleaner look on Windows, then apply the app theme.
     app.setStyle("Fusion")
