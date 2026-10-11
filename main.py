@@ -2,9 +2,12 @@
 # Purpose: Application entry point
 # Encoding: UTF-8
 
+import argparse
 import sys
+
 from PySide6.QtWidgets import QApplication, QMessageBox
 from views.main_window import LawsuitWizard
+from views.theme import apply_theme
 from presenters.main_presenter import MainPresenter
 from utils.security_check import SecurityGuard, NetworkStatus
 
@@ -38,12 +41,32 @@ def _show_network_notice(status):
     # NetworkStatus.OFFLINE: no default route detected, no dialog needed.
 
 
-def main():
+def _parse_args(argv):
+    """Parse command-line arguments.
+
+    The demo/test-data entry points are hidden by default in production. They
+    are only enabled by an explicit ``--demo`` (or ``--dev``) launch argument.
+    """
+    parser = argparse.ArgumentParser(prog="civil-filing-assistant")
+    parser.add_argument(
+        "--demo",
+        "--dev",
+        dest="demo_mode",
+        action="store_true",
+        help="以演示模式启动，显示测试数据填充入口（仅用于开发与演示）。",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    args = _parse_args(sys.argv[1:] if argv is None else argv)
+
     # Initialize the Qt Application
     app = QApplication(sys.argv)
 
-    # Use Fusion style for a cleaner look on Windows
+    # Use Fusion style for a cleaner look on Windows, then apply the app theme.
     app.setStyle("Fusion")
+    apply_theme(app)
 
     # 1. Advisory network-route self-check (not a physical isolation guarantee)
     guard = SecurityGuard()
@@ -51,7 +74,7 @@ def main():
     _show_network_notice(status)
 
     # Create View and Presenter
-    wizard = LawsuitWizard()
+    wizard = LawsuitWizard(demo_mode=args.demo_mode)
     presenter = MainPresenter(wizard)
 
     # Show the Wizard

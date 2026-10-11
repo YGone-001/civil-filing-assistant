@@ -2,15 +2,41 @@
 # Purpose: Main application window integrating the Wizard
 # Encoding: UTF-8
 
-from PySide6.QtWidgets import QAbstractButton, QWizard
-from views.wizard_pages import WelcomePage, CaseSelectionPage, PartyPage, LoanClaimPage, ContractClaimPage, PropertyClaimPage, LaborClaimPage, DivorceClaimPage, EvidencePage, ExportPage
+from PySide6.QtWidgets import QAbstractButton, QFormLayout, QMessageBox, QVBoxLayout, QWizard
+
+from views.theme import PRIMARY_BUTTON
+from views.widgets import CASE_TYPE_LABELS, StepIndicator
+from views.wizard_pages import (
+    WelcomePage,
+    CaseSelectionPage,
+    PartyPage,
+    LoanClaimPage,
+    ContractClaimPage,
+    PropertyClaimPage,
+    LaborClaimPage,
+    DivorceClaimPage,
+    EvidencePage,
+    ExportPage,
+)
+
 
 class LawsuitWizard(QWizard):
-    def __init__(self):
+    def __init__(self, demo_mode=False):
         super().__init__()
+        self.setObjectName("wizardBody")
         self.setWindowTitle("民事立案文书助手（离线版）")
         self.resize(700, 650)
+        self.setMinimumSize(680, 560)
         self.setWizardStyle(QWizard.ModernStyle)
+
+        # Replace the stock English navigation labels with Chinese text. The
+        # Export page's primary action is phrased around the three Word drafts.
+        self.setButtonText(QWizard.BackButton, "上一步")
+        self.setButtonText(QWizard.NextButton, "下一步")
+        self.setButtonText(QWizard.FinishButton, "生成三份 Word 初稿")
+        self.setButtonText(QWizard.CancelButton, "退出")
+        self.button(QWizard.NextButton).setObjectName(PRIMARY_BUTTON)
+        self.button(QWizard.FinishButton).setObjectName(PRIMARY_BUTTON)
 
         # Qt's QWizard creates an internal, unnamed 32x32 QAbstractButton at the
         # top-left of the header area. On Windows it renders as a stray "back"
@@ -58,6 +84,38 @@ class LawsuitWizard(QWizard):
         self.setPage(self.PAGE_EVIDENCE, self.evidence_page)
         self.setPage(self.PAGE_EXPORT, self.export_page)
 
+        # The five-step indicator maps every wizard page to its step. The
+        # welcome page is a landing page and therefore shows no indicator.
+        self.STEP_OF_PAGE = {
+            self.PAGE_CASE_SELECTION: 1,
+            self.PAGE_PARTY: 2,
+            self.PAGE_LOAN_CLAIM: 3,
+            self.PAGE_CONTRACT_CLAIM: 3,
+            self.PAGE_PROPERTY_CLAIM: 3,
+            self.PAGE_LABOR_CLAIM: 3,
+            self.PAGE_DIVORCE_CLAIM: 3,
+            self.PAGE_EVIDENCE: 4,
+            self.PAGE_EXPORT: 5,
+        }
+        self._step_indicators = []
+        for page_id, page in (
+            (self.PAGE_CASE_SELECTION, self.case_selection_page),
+            (self.PAGE_PARTY, self.party_page),
+            (self.PAGE_LOAN_CLAIM, self.loan_claim_page),
+            (self.PAGE_CONTRACT_CLAIM, self.contract_claim_page),
+            (self.PAGE_PROPERTY_CLAIM, self.property_claim_page),
+            (self.PAGE_LABOR_CLAIM, self.labor_claim_page),
+            (self.PAGE_DIVORCE_CLAIM, self.divorce_claim_page),
+            (self.PAGE_EVIDENCE, self.evidence_page),
+            (self.PAGE_EXPORT, self.export_page),
+        ):
+            self._attach_step_indicator(page, self.STEP_OF_PAGE[page_id])
+
+        self.currentIdChanged.connect(self._update_step_indicators)
+        self.case_selection_page.case_combo.currentIndexChanged.connect(
+            self._update_step_indicators
+        )
+
         # Set start page
         self.setStartId(self.PAGE_WELCOME)
 
@@ -65,8 +123,45 @@ class LawsuitWizard(QWizard):
         # before the wizard commits to its accepted (closed) state.
         self.finish_handler = None
 
-        # Connect template fill button
-        self.welcome_page.fill_btn.clicked.connect(self.fill_template_data)
+        # Demo-mode plumbing: test-data entry points are hidden in production
+        # and only exposed by an explicit --demo launch argument.
+        self.demo_mode = bool(demo_mode)
+        self.welcome_page.set_demo_mode(self.demo_mode)
+        self.property_claim_page.set_demo_mode(self.demo_mode)
+
+        # Connect the (demo-only) welcome-page fill button to the guarded path.
+        self.welcome_page.fill_btn.clicked.connect(self._demo_fill)
+        self.property_claim_page.fill_btn.clicked.connect(self._demo_fill)
+        self._update_step_indicators()
+
+    # ------------------------------------------------------------------ #
+    # Step indicator
+    # ------------------------------------------------------------------ #
+
+    def _attach_step_indicator(self, page, step):
+        indicator = StepIndicator()
+        layout = page.layout()
+        if isinstance(layout, QFormLayout):
+            layout.insertRow(0, indicator)
+        elif isinstance(layout, QVBoxLayout):
+            layout.insertWidget(0, indicator)
+        else:
+            return None
+        self._step_indicators.append(indicator)
+        return indicator
+
+    def _update_step_indicators(self, *_):
+        current = self.currentId()
+        step = self.STEP_OF_PAGE.get(current, 0)
+        case_type = self.field("case_type")
+        case_label = CASE_TYPE_LABELS.get(case_type, "")
+        for indicator in self._step_indicators:
+            indicator.set_current(step)
+            indicator.set_case_label(case_label)
+
+    # ------------------------------------------------------------------ #
+    # Qt wizard plumbing
+    # ------------------------------------------------------------------ #
 
     def _hide_internal_wizard_buttons(self, *_):
         """Keep Qt's internal header button hidden across page changes."""
@@ -121,6 +216,82 @@ class LawsuitWizard(QWizard):
             return  # keep the wizard open so the user can correct and retry
         super().accept()
 
+    # ------------------------------------------------------------------ #
+    # Demo / test-data filling
+    # ------------------------------------------------------------------ #
+
+    def _has_entered_data(self):
+        if (
+            self.party_page._has_named_party(self.party_page.plaintiff_widgets)
+            or self.party_page._has_named_party(self.party_page.defendant_widgets)
+        ):
+            return True
+
+        # The property-page demo action is available after users may have
+        # entered case facts. Inspect the active branch too, without treating
+        # fixed defaults such as the contract LPR reference value as user data.
+        fields_by_case = {
+            "loan": (
+                self.loan_claim_page,
+                ("loan_date", "loan_reason", "principal", "payment_method", "rate",
+                 "start_date", "demand_date", "demand_method", "court_name"),
+            ),
+            "contract": (
+                self.contract_claim_page,
+                ("contract_date", "contract_name", "product_name", "total_amount",
+                 "delivery_date", "unpaid_amount", "penalty_amount", "overdue_start",
+                 "overdue_end", "court_name"),
+            ),
+            "property": (
+                self.property_claim_page,
+                ("property_addr", "house_area", "fee_rate", "period_start", "period_end",
+                 "late_fee_logic", "demand_record", "total_input", "court_name"),
+            ),
+            "labor": (
+                self.labor_claim_page,
+                ("emp_join_date", "job_title", "monthly_salary", "unpaid_months",
+                 "emp_term_date", "overtime_hours", "overtime_pay", "social_sec_info",
+                 "court_name"),
+            ),
+            "divorce": (
+                self.divorce_claim_page,
+                ("marriage_date", "child_name", "child_birthday", "custody_preference",
+                 "support_monthly", "divorce_reason", "separation_start_date",
+                 "asset_description", "court_name"),
+            ),
+        }
+        page_and_fields = fields_by_case.get(self.field("case_type"))
+        if not page_and_fields:
+            return False
+        page, field_names = page_and_fields
+        for name in field_names:
+            widget = getattr(page, name)
+            value = (
+                widget.toPlainText()
+                if hasattr(widget, "toPlainText")
+                else widget.text()
+            )
+            if value.strip():
+                return True
+        return False
+
+    def _demo_fill(self):
+        """Guard the test-data entry behind a confirmation before overwriting."""
+        if self._has_entered_data():
+            answer = QMessageBox.question(
+                self,
+                "覆盖确认",
+                "检测到已填写的案件信息。是否用演示数据覆盖当前内容？",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+            if answer != QMessageBox.Yes:
+                return
+        # Ensure a case type is selected so the fill covers a complete branch.
+        if not self.field("case_type"):
+            self.case_selection_page.case_combo.setCurrentIndex(0)
+        self.fill_template_data()
+
     def fill_template_data(self):
         """Auto-fill data for testing purposes"""
         # Get current case type
@@ -167,15 +338,10 @@ class LawsuitWizard(QWizard):
             self.contract_claim_page.court_name.setText("上海市徐汇区人民法院")
 
         elif case_type == "property":
-            self.property_claim_page.property_addr.setText("幸福里小区 3 栋 1201 室")
-            self.property_claim_page.house_area.setText("115.5")
-            self.property_claim_page.fee_rate.setText("2.8")
-            self.property_claim_page.period_start.setText("2024-01-01")
-            self.property_claim_page.period_end.setText("2025-12-31")
-            self.property_claim_page.late_fee_logic.setText("按合同约定计算")
-            self.property_claim_page.demand_record.setPlainText("2025年6月多次张贴催缴通知、发送短信。")
-            self.property_claim_page.total_input.setText("")
-            self.property_claim_page.court_name.setText("上海市徐汇区人民法院")
+            # The property page owns its own demo setter; reuse it so the two
+            # entry points cannot drift apart. Confirmation already happened in
+            # _demo_fill(), so fill silently here.
+            self.property_claim_page.fill_test_data(notify=False)
 
         elif case_type == "labor":
             self.labor_claim_page.emp_join_date.setText("2023-01-15")
@@ -202,6 +368,4 @@ class LawsuitWizard(QWizard):
         # Page 3: Evidence
         self.evidence_page.table.setRowCount(0)
 
-        # Show message
-        from PySide6.QtWidgets import QMessageBox
         QMessageBox.information(self, "提示", "测试数据已自动填入！您可以直接点击下一步查看并生成文档。")

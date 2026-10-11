@@ -8,6 +8,25 @@ from PySide6.QtCore import QRegularExpression
 from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QRadioButton, QButtonGroup, QTextEdit, QGroupBox, QHBoxLayout, QPushButton, QScrollArea, QWidget, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtGui import QRegularExpressionValidator
 
+from views.theme import (
+    DANGER_BUTTON,
+    DEMO_BADGE,
+    ERROR_LABEL,
+    INFO_LABEL,
+    PRIMARY_BUTTON,
+    WARNING_LABEL,
+)
+
+
+def _set_status(label, text):
+    """Set a status label's text and hide it when empty.
+
+    Status labels carry background/border styling, so an empty string would
+    otherwise render as a stray coloured box.
+    """
+    label.setText(text)
+    label.setVisible(bool(text))
+
 # Phone input accepts only digits and the common grouping/prefix characters so
 # that obviously invalid text (letters, brackets, etc.) cannot be entered. The
 # precise digit-count check happens in PartyPage.validate_parties() so that a
@@ -20,40 +39,57 @@ class WelcomePage(QWizardPage):
         self.setTitle("欢迎使用民事立案文书助手")
 
         layout = QVBoxLayout()
-        desc = ("本工具将引导您生成规范的民事起诉状。\n\n"
-                "【本地离线说明】\n"
-                "版本号：v1.0.0（离线版）\n"
-                "内置参考信息日期：2026年3月\n\n"
-                "软件特点：\n"
-                "- 本地运行：案件信息仅在本机处理，生成 Word 文书时不联网上传\n"
-                "- 启动时检测默认网络路由并给出提示，该提示只是辅助提醒，不等同于系统级网络隔离\n"
-                "- 生成完成后对内存中的敏感字段执行尽力清理（Python 无法保证彻底、不可恢复地销毁）\n\n"
-                "点击“下一步”开始填写。")
+
+        desc = (
+            "本工具引导您填写案情，一键生成民事立案所需的三份可编辑 Word 初稿："
+            "民事起诉状、证据清单与送达地址确认书。\n\n"
+            "【本地离线说明】\n"
+            "- 本地运行：案件信息仅在本机处理，生成 Word 文书时不联网上传。\n"
+            "- 启动时检测默认网络路由并给出提示，该提示只是辅助提醒，不等同于系统级网络隔离。\n"
+            "- 生成完成后对内存中的敏感字段执行尽力清理（Python 无法保证彻底、不可恢复地销毁）。\n\n"
+            "点击“下一步”开始填写。"
+        )
         label = QLabel(desc)
         label.setWordWrap(True)
         layout.addWidget(label)
 
-        warning_label = QLabel("【重要提示】劳动报酬/工资追索案件，在直接起诉前通常需先经过劳动仲裁程序。本工具生成的起诉状可直接用于劳动仲裁或法院诉讼。")
-        warning_label.setStyleSheet("color: #FF9800; font-weight: bold; padding: 10px; background-color: #FFF3E0; border: 1px solid #FF9800;")
-        warning_label.setWordWrap(True)
-        layout.addWidget(warning_label)
+        # Demo-mode badge, hidden in production.
+        self.demo_badge = QLabel("演示模式")
+        self.demo_badge.setObjectName(DEMO_BADGE)
+        self.demo_badge.setVisible(False)
+        layout.addWidget(self.demo_badge)
+
+        layout.addStretch()
+
+        # Test-data entry point, only shown in demo mode (see set_demo_mode).
+        self.fill_btn = QPushButton("一键填写测试数据")
+        self.fill_btn.setObjectName(PRIMARY_BUTTON)
+        self.fill_btn.setVisible(False)
+        layout.addWidget(self.fill_btn)
 
         self.setLayout(layout)
 
-        # 添加一键填写模板按钮
-        from PySide6.QtWidgets import QPushButton
-        self.fill_btn = QPushButton("一键填写测试数据")
-        self.fill_btn.setStyleSheet("background-color: #4CAF50; color: white; padding: 8px; font-weight: bold;")
-        layout.addWidget(self.fill_btn)
+    def set_demo_mode(self, enabled):
+        """Show or hide the demo-mode badge and test-data button."""
+        self.fill_btn.setVisible(enabled)
+        self.demo_badge.setVisible(enabled)
 
 class CaseSelectionPage(QWizardPage):
+    # One-line suitability notes shown under the dropdown for each choice.
+    CASE_DESCRIPTIONS = {
+        "loan": "适用于个人之间或自然人向他人出借资金的借款纠纷。",
+        "contract": "适用于买卖双方就货款、交付、验收等问题发生的合同纠纷。",
+        "property": "适用于业主与物业公司之间的物业费、服务合同纠纷。",
+        "labor": "适用于工资、加班费等劳动报酬追索（注意仲裁前置）。",
+        "divorce": "适用于离婚、子女抚养与财产分割等婚姻家庭纠纷。",
+    }
+
     def __init__(self):
         super().__init__()
-        self.setTitle("第 0 步：选择案件类型")
+        self.setTitle("选择案件类型")
 
         layout = QVBoxLayout()
-        label = QLabel("请选择您要生成的起诉状案由：")
-        layout.addWidget(label)
+        layout.addWidget(QLabel("请选择您要生成的起诉状案由："))
 
         from PySide6.QtWidgets import QComboBox
         self.case_combo = QComboBox()
@@ -62,44 +98,56 @@ class CaseSelectionPage(QWizardPage):
         self.case_combo.addItem("物业服务合同纠纷", "property")
         self.case_combo.addItem("劳动报酬/工资追索", "labor")
         self.case_combo.addItem("离婚纠纷", "divorce")
-
         layout.addWidget(self.case_combo)
 
-        warning_label = QLabel("注意：请根据实际情况选择案由，不同案由需要填写的表单不同。")
-        warning_label.setStyleSheet("color: gray;")
-        layout.addWidget(warning_label)
+        self.case_desc_label = QLabel("")
+        self.case_desc_label.setObjectName(INFO_LABEL)
+        self.case_desc_label.setWordWrap(True)
+        layout.addWidget(self.case_desc_label)
 
+        # Persistent labour-arbitration notice, shown only while "labor" is
+        # selected (replaces the previous blocking dialog).
+        self.labor_notice = QLabel("")
+        self.labor_notice.setObjectName(WARNING_LABEL)
+        self.labor_notice.setWordWrap(True)
+        self.labor_notice.setVisible(False)
+        layout.addWidget(self.labor_notice)
+
+        layout.addStretch()
         self.setLayout(layout)
-
-        self.labor_warning_shown = False
 
         from utils.labor_security import LaborProcedureGuard
         self.labor_guard = LaborProcedureGuard()
         self.case_combo.currentTextChanged.connect(self._on_case_type_changed)
+        self._refresh_case_context()
 
         self.registerField("case_type", self.case_combo, "currentData")
 
-    def _on_case_type_changed(self, text):
+    def _on_case_type_changed(self, _text):
+        self._refresh_case_context()
+
+    def _refresh_case_context(self):
         case_data = self.case_combo.currentData()
-        if case_data == "labor" and not self.labor_warning_shown:
-            from PySide6.QtWidgets import QMessageBox
-            msg = self.labor_guard.get_warning_text()
-            QMessageBox.warning(self, "法律程序风险提示", msg)
-            self.labor_warning_shown = True
-            return True
-        return False
+        self.case_desc_label.setText(self.CASE_DESCRIPTIONS.get(case_data, ""))
+        if case_data == "labor":
+            self.labor_notice.setText(self.labor_guard.get_warning_text())
+            self.labor_notice.setVisible(True)
+        else:
+            self.labor_notice.setText("")
+            self.labor_notice.setVisible(False)
 
 class PartyPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("第一步：填写当事人信息")
+        self.setTitle("填写当事人信息")
 
         main_layout = QVBoxLayout()
 
         # Live validation / guidance message for the party list.
         self.msg_label = QLabel("")
-        self.msg_label.setStyleSheet("color: #B00020;")
+        self.msg_label.setObjectName(ERROR_LABEL)
         self.msg_label.setWordWrap(True)
+        self.msg_label.setVisible(False)
         main_layout.addWidget(self.msg_label)
 
         # Setup Scroll Area for dynamic lists
@@ -211,7 +259,8 @@ class PartyPage(QWizardPage):
         if is_property_case and not is_plaintiff:
             from PySide6.QtWidgets import QLabel
             addr_hint = QLabel("提示：若被告搬家，请填写现居住满一年的地址，以便法院送达。")
-            addr_hint.setStyleSheet("color: #FF9800; font-size: 11px;")
+            addr_hint.setObjectName(WARNING_LABEL)
+            addr_hint.setWordWrap(True)
             layout.addRow("", addr_hint)
 
         layout.addRow("", is_company_check)
@@ -324,7 +373,7 @@ class PartyPage(QWizardPage):
 
     def _refresh_validation_message(self):
         issues = self.validate_parties()
-        self.msg_label.setText("\n".join(issues))
+        _set_status(self.msg_label, "\n".join(issues))
         # Notify the wizard so the "Next" button reflects the current state.
         self.completeChanged.emit()
 
@@ -356,7 +405,7 @@ class PartyPage(QWizardPage):
 class ContractClaimPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("第二步：填写事实与理由 (买卖合同)")
+        self.setTitle("填写案情与请求（买卖合同）")
 
         layout = QFormLayout()
 
@@ -412,7 +461,9 @@ class ContractClaimPage(QWizardPage):
         self.penalty_amount.setPlaceholderText("如: 5000 (留空表示无)")
 
         self.penalty_warning = QLabel("")
-        self.penalty_warning.setStyleSheet("color: red;")
+        self.penalty_warning.setObjectName(WARNING_LABEL)
+        self.penalty_warning.setWordWrap(True)
+        self.penalty_warning.setVisible(False)
         self.penalty_amount.textChanged.connect(self.update_penalty_warning)
 
         self.overdue_start = QLineEdit()
@@ -444,8 +495,9 @@ class ContractClaimPage(QWizardPage):
 
         # On-page explanation for the conditional (scenario-dependent) requirement.
         self.cond_hint = QLabel("")
-        self.cond_hint.setStyleSheet("color: #B00020;")
+        self.cond_hint.setObjectName(ERROR_LABEL)
         self.cond_hint.setWordWrap(True)
+        self.cond_hint.setVisible(False)
 
         layout.addRow("合同签订日期:", self.contract_date)
         layout.addRow("合同名称:", self.contract_name)
@@ -494,7 +546,7 @@ class ContractClaimPage(QWizardPage):
         return ""
 
     def _refresh_conditional(self):
-        self.cond_hint.setText(self._conditional_issue())
+        _set_status(self.cond_hint, self._conditional_issue())
         self.completeChanged.emit()
 
     def isComplete(self):
@@ -527,19 +579,20 @@ class ContractClaimPage(QWizardPage):
     def update_penalty_warning(self):
         text = self.penalty_amount.text().strip()
         if not text:
-            self.penalty_warning.setText("")
+            _set_status(self.penalty_warning, "")
             return
         try:
             float(text)
         except ValueError:
-            self.penalty_warning.setText("违约金/逾期利息应为数字，请核对。")
+            _set_status(self.penalty_warning, "违约金/逾期利息应为数字，请核对。")
             return
         # No fixed ratio is asserted as a legal ceiling; whether a penalty is
         # excessive is decided by the court in light of the contract and actual
         # loss, so only a neutral manual-review reminder is shown.
-        self.penalty_warning.setText(
+        _set_status(
+            self.penalty_warning,
             "提示：违约金（或逾期付款利息）是否过高、可否调整，由法院结合合同约定与实际损失判断，"
-            "本工具不作绝对判断，请在提交前人工核对。"
+            "本工具不作绝对判断，请在提交前人工核对。",
         )
 
     def _parse_date(self, text):
@@ -595,7 +648,7 @@ class ContractClaimPage(QWizardPage):
 class LoanClaimPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("第二步：填写事实与理由")
+        self.setTitle("填写案情与请求（民间借贷）")
 
         layout = QFormLayout()
 
@@ -643,13 +696,16 @@ class LoanClaimPage(QWizardPage):
 
         # Validation warning label
         self.rate_warning = QLabel("")
-        self.rate_warning.setStyleSheet("color: red;")
+        self.rate_warning.setObjectName(WARNING_LABEL)
+        self.rate_warning.setWordWrap(True)
+        self.rate_warning.setVisible(False)
         self.rate.textChanged.connect(self.validate_rate)
 
         # On-page explanation for the conditional demand-information requirement.
         self.cond_hint = QLabel("")
-        self.cond_hint.setStyleSheet("color: #B00020;")
+        self.cond_hint.setObjectName(ERROR_LABEL)
         self.cond_hint.setWordWrap(True)
+        self.cond_hint.setVisible(False)
 
         layout.addRow("借款发生日期:", self.loan_date)
         layout.addRow("借款理由:", self.loan_reason)
@@ -693,7 +749,7 @@ class LoanClaimPage(QWizardPage):
         return ""
 
     def _refresh_conditional(self):
-        self.cond_hint.setText(self._conditional_issue())
+        _set_status(self.cond_hint, self._conditional_issue())
         self.completeChanged.emit()
 
     def isComplete(self):
@@ -704,22 +760,23 @@ class LoanClaimPage(QWizardPage):
     def validate_rate(self):
         text = self.rate.text().strip()
         if not text:
-            self.rate_warning.setText("")
+            _set_status(self.rate_warning, "")
             return
         try:
             val = float(text)
         except ValueError:
-            self.rate_warning.setText("请输入有效的数字")
+            _set_status(self.rate_warning, "请输入有效的数字")
             return
         if val < 0:
-            self.rate_warning.setText("年利率不应为负数，请核对。")
+            _set_status(self.rate_warning, "年利率不应为负数，请核对。")
         else:
             # No fixed universal ceiling is asserted here: the applicable limit
             # depends on the latest judicial guidance and the specific case, so
             # the tool only reminds the user to verify it manually.
-            self.rate_warning.setText(
+            _set_status(
+                self.rate_warning,
                 "温馨提示：借款利率的可支持上限与适用规则会随最新司法口径、时间和地区变化，"
-                "本工具不代为判断是否超限，请在提交前人工核对。"
+                "本工具不代为判断是否超限，请在提交前人工核对。",
             )
 
     def get_has_iou(self):
@@ -734,13 +791,20 @@ class LoanClaimPage(QWizardPage):
 class PropertyClaimPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("第二步：填写事实与理由 (物业服务合同)")
+        self.setTitle("填写案情与请求（物业服务合同）")
 
         layout = QFormLayout()
 
+        # Demo-mode badge, hidden in production.
+        self.demo_badge = QLabel("演示模式")
+        self.demo_badge.setObjectName(DEMO_BADGE)
+        self.demo_badge.setVisible(False)
+        layout.addRow("", self.demo_badge)
+
+        # Test-data entry point, only shown in demo mode (see set_demo_mode).
         self.fill_btn = QPushButton("一键填写测试数据")
-        self.fill_btn.setStyleSheet("background-color: #4CAF50; color: white; padding: 6px; font-weight: bold;")
-        self.fill_btn.clicked.connect(self.fill_test_data)
+        self.fill_btn.setObjectName(PRIMARY_BUTTON)
+        self.fill_btn.setVisible(False)
         layout.addRow("", self.fill_btn)
 
         self.property_addr = QLineEdit()
@@ -769,9 +833,12 @@ class PropertyClaimPage(QWizardPage):
         self.total_input.setPlaceholderText("可选：用户自填总金额，用于比对提示")
 
         self.calc_label = QLabel("")
-        self.calc_label.setStyleSheet("color: gray;")
+        self.calc_label.setObjectName(INFO_LABEL)
+        self.calc_label.setWordWrap(True)
         self.warn_label = QLabel("")
-        self.warn_label.setStyleSheet("color: red;")
+        self.warn_label.setObjectName(WARNING_LABEL)
+        self.warn_label.setWordWrap(True)
+        self.warn_label.setVisible(False)
 
         self.court_name = QLineEdit()
         self.court_name.setPlaceholderText("如: 上海市徐汇区人民法院")
@@ -843,18 +910,19 @@ class PropertyClaimPage(QWizardPage):
                 if user_total != 0:
                     diff = (abs(user_total - total) / user_total)
                     if diff > Decimal("0.01"):
-                        self.warn_label.setText("提示：自填总金额与系统计算误差超过 1%，建议核对。")
+                        _set_status(self.warn_label, "提示：自填总金额与系统计算误差超过 1%，建议核对。")
                     else:
-                        self.warn_label.setText("")
+                        _set_status(self.warn_label, "")
                 else:
-                    self.warn_label.setText("")
+                    _set_status(self.warn_label, "")
             else:
-                self.warn_label.setText("")
+                _set_status(self.warn_label, "")
         except (InvalidOperation, ValueError):
             self.calc_label.setText("月数=0，总本金=0.00 元")
-            self.warn_label.setText("")
+            _set_status(self.warn_label, "")
 
-    def fill_test_data(self):
+    def fill_test_data(self, notify=True):
+        """Populate the property form with fictional data for demo mode."""
         self.property_addr.setText("幸福里小区 3 栋 1201 室")
         self.house_area.setText("115.5")
         self.fee_rate.setText("2.8")
@@ -865,13 +933,19 @@ class PropertyClaimPage(QWizardPage):
         self.total_input.setText("")
         self.court_name.setText("上海市徐汇区人民法院")
         self.update_calc()
-        from PySide6.QtWidgets import QMessageBox
-        QMessageBox.information(self, "提示", "物业纠纷测试数据已填入。")
+        if notify:
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.information(self, "提示", "物业纠纷测试数据已填入。")
+
+    def set_demo_mode(self, enabled):
+        """Show or hide the demo-mode badge and test-data button."""
+        self.fill_btn.setVisible(enabled)
+        self.demo_badge.setVisible(enabled)
 
 class EvidencePage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("第三步：证据清单 (选填)")
+        self.setTitle("证据清单（选填）")
 
         layout = QVBoxLayout()
         self.desc_label = QLabel("请列出您准备提交的证据。")
@@ -943,7 +1017,7 @@ class EvidencePage(QWizardPage):
 class LaborClaimPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("第二步：填写事实与理由 (劳动报酬/工资追索)")
+        self.setTitle("填写案情与请求（劳动报酬／工资追索）")
 
         layout = QFormLayout()
 
@@ -1013,7 +1087,7 @@ class LaborClaimPage(QWizardPage):
 class DivorceClaimPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("第二步：填写事实与理由 (离婚析产/抚养费纠纷)")
+        self.setTitle("填写案情与请求（离婚析产／抚养费纠纷）")
 
         layout = QFormLayout()
 
@@ -1046,8 +1120,9 @@ class DivorceClaimPage(QWizardPage):
 
         # On-page explanation for the conditional child-information requirement.
         self.cond_hint = QLabel("")
-        self.cond_hint.setStyleSheet("color: #B00020;")
+        self.cond_hint.setObjectName(ERROR_LABEL)
         self.cond_hint.setWordWrap(True)
+        self.cond_hint.setVisible(False)
 
         layout.addRow("登记结婚日期:", self.marriage_date)
         layout.addRow("子女姓名:", self.child_name)
@@ -1098,7 +1173,7 @@ class DivorceClaimPage(QWizardPage):
         return ""
 
     def _refresh_conditional(self):
-        self.cond_hint.setText(self._conditional_issue())
+        _set_status(self.cond_hint, self._conditional_issue())
         self.completeChanged.emit()
 
     def isComplete(self):
@@ -1109,7 +1184,7 @@ class DivorceClaimPage(QWizardPage):
 class ExportPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("第四步：完成与导出")
+        self.setTitle("核对与导出")
         # Ensure it acts as the final page
         self.setFinalPage(True)
 
@@ -1124,7 +1199,7 @@ class ExportPage(QWizardPage):
         layout.addWidget(label)
 
         self.secure_exit_btn = QPushButton("退出程序（不删除已生成文件）")
-        self.secure_exit_btn.setStyleSheet("background-color: #f44336; color: white;")
+        self.secure_exit_btn.setObjectName(DANGER_BUTTON)
         self.secure_exit_btn.clicked.connect(self.secure_exit)
         layout.addWidget(self.secure_exit_btn)
 
