@@ -10,8 +10,13 @@ from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QLabel, QLineEdit, QForm
 from PySide6.QtGui import QBrush, QColor, QRegularExpressionValidator
 
 from views.theme import (
+    CASE_CARD,
     DANGER_BUTTON,
     DEMO_BADGE,
+    DOC_CARD,
+    DOC_CARD_DESC,
+    DOC_CARD_ICON,
+    DOC_CARD_TITLE,
     ERROR_LABEL,
     INFO_LABEL,
     PRIMARY_BUTTON,
@@ -134,9 +139,9 @@ class WelcomePage(QWizardPage):
             "本工具引导您填写案情，一键生成民事立案所需的三份可编辑 Word 初稿："
             "民事起诉状、证据清单与送达地址确认书。\n\n"
             "【本地离线说明】\n"
-            "- 本地运行：案件信息仅在本机处理，生成 Word 文书时不联网上传。\n"
-            "- 启动时检测默认网络路由并给出提示，该提示只是辅助提醒，不等同于系统级网络隔离。\n"
-            "- 生成完成后对内存中的敏感字段执行尽力清理（Python 无法保证彻底、不可恢复地销毁）。\n\n"
+            "- 本地运行：案件信息仅在本机处理，生成文书时不联网上传。\n"
+            "- 启动时会检测网络状态并给出提示，该提示仅为辅助提醒，不等于系统级防火墙隔离。\n"
+            "- 生成完成后会尽力清理内存中的敏感信息，但无法保证彻底销毁。\n\n"
             "点击“下一步”开始填写。"
         )
         label = QLabel(desc)
@@ -174,6 +179,15 @@ class CaseSelectionPage(QWizardPage):
         "divorce": "适用于离婚、子女抚养与财产分割等婚姻家庭纠纷。",
     }
 
+    # Card icons for each case type.
+    CASE_ICONS = {
+        "loan": "💰",
+        "contract": "🛒",
+        "property": "🏠",
+        "labor": "👷",
+        "divorce": "⚖",
+    }
+
     def __init__(self):
         super().__init__()
         self.setTitle("选择案件类型")
@@ -190,7 +204,32 @@ class CaseSelectionPage(QWizardPage):
         self.case_combo.addItem("物业服务合同纠纷", "property")
         self.case_combo.addItem("劳动报酬/工资追索", "labor")
         self.case_combo.addItem("离婚纠纷", "divorce")
-        layout.addWidget(self.case_combo)
+        self.case_combo.setVisible(False)  # hidden backing store
+
+        # --- Card-style selector ------------------------------------------
+        from PySide6.QtWidgets import QGridLayout
+        self._case_cards = []
+        card_grid = QGridLayout()
+        card_grid.setSpacing(8)
+        cases = [
+            ("loan", "民间借贷纠纷"),
+            ("contract", "买卖合同纠纷"),
+            ("property", "物业服务合同纠纷"),
+            ("labor", "劳动报酬/工资追索"),
+            ("divorce", "离婚纠纷"),
+        ]
+        for idx, (key, label) in enumerate(cases):
+            card = QPushButton(f"  {self.CASE_ICONS.get(key, '')}  {label}")
+            card.setObjectName(CASE_CARD)
+            card.setCheckable(False)
+            card.setProperty("caseCardSelected", "false")
+            card.setAccessibleName(f"案由卡片：{label}")
+            card.clicked.connect(lambda _checked, k=key: self._select_case_by_key(k))
+            row, col = divmod(idx, 2)
+            card_grid.addWidget(card, row, col)
+            self._case_cards.append((key, card))
+        card_grid.setColumnStretch(1, 1)
+        layout.addLayout(card_grid)
 
         self.case_desc_label = QLabel("")
         self.case_desc_label.setObjectName(INFO_LABEL)
@@ -211,9 +250,28 @@ class CaseSelectionPage(QWizardPage):
         from utils.labor_security import LaborProcedureGuard
         self.labor_guard = LaborProcedureGuard()
         self.case_combo.currentTextChanged.connect(self._on_case_type_changed)
+        self.case_combo.currentIndexChanged.connect(self._sync_card_selection)
         self._refresh_case_context()
 
         self.registerField("case_type", self.case_combo, "currentData")
+
+    def _select_case_by_key(self, key):
+        """Update the hidden combo when a card is clicked."""
+        idx = self.case_combo.findData(key)
+        if idx >= 0:
+            self.case_combo.setCurrentIndex(idx)
+
+    def _sync_card_selection(self, _index):
+        """Highlight the card matching the combo's current selection."""
+        current_key = self.case_combo.currentData()
+        for key, card in self._case_cards:
+            selected = "true" if key == current_key else "false"
+            if card.property("caseCardSelected") != selected:
+                card.setProperty("caseCardSelected", selected)
+                style = card.style()
+                if style is not None:
+                    style.unpolish(card)
+                    style.polish(card)
 
     def _on_case_type_changed(self, _text):
         self._refresh_case_context()
@@ -1694,16 +1752,36 @@ class ExportPage(QWizardPage):
         intro.setWordWrap(True)
         layout.addWidget(intro)
 
-        # --- Three document descriptions ----------------------------------
+        # --- Three document cards -----------------------------------------
         doc_group = QGroupBox("将生成的文书")
         doc_layout = QVBoxLayout()
-        for name in (
-            "民事起诉状（可编辑 Word 初稿）",
-            "证据清单（可编辑 Word 初稿）",
-            "送达地址确认书（可编辑 Word 初稿）",
+        doc_layout.setSpacing(8)
+        for icon, title, desc in (
+            ("📄", "民事起诉状", "可编辑 Word 初稿"),
+            ("📋", "证据清单", "可编辑 Word 初稿"),
+            ("✉", "送达地址确认书", "可编辑 Word 初稿"),
         ):
-            doc_label = QLabel(name)
-            doc_layout.addWidget(doc_label)
+            card = QWidget()
+            card.setObjectName(DOC_CARD)
+            card_layout = QHBoxLayout(card)
+            card_layout.setSpacing(8)
+
+            icon_label = QLabel(icon)
+            icon_label.setObjectName(DOC_CARD_ICON)
+            card_layout.addWidget(icon_label)
+
+            text_layout = QVBoxLayout()
+            text_layout.setSpacing(2)
+            title_label = QLabel(title)
+            title_label.setObjectName(DOC_CARD_TITLE)
+            text_layout.addWidget(title_label)
+            desc_label = QLabel(desc)
+            desc_label.setObjectName(DOC_CARD_DESC)
+            text_layout.addWidget(desc_label)
+            card_layout.addLayout(text_layout)
+            card_layout.addStretch()
+
+            doc_layout.addWidget(card)
         doc_note = QLabel("以上文书均为辅助生成的可编辑初稿，请人工核对后再行使用。")
         doc_note.setObjectName(INFO_LABEL)
         doc_note.setWordWrap(True)

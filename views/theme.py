@@ -72,7 +72,14 @@ SUCCESS_LABEL = "successLabel"
 DEMO_BADGE = "demoBadge"
 STEP_INDICATOR = "stepIndicator"
 STEP_CHIP = "stepChip"
+STEP_CONNECTOR = "stepConnector"
 CASE_CONTEXT_LABEL = "caseContextLabel"
+DOC_CARD = "docCard"
+DOC_CARD_ICON = "docCardIcon"
+DOC_CARD_TITLE = "docCardTitle"
+DOC_CARD_DESC = "docCardDesc"
+CASE_CARD = "caseCard"
+CASE_CARD_SELECTED = "caseCardSelected"
 
 # --------------------------------------------------------------------------- #
 # Global stylesheet
@@ -98,14 +105,8 @@ QLineEdit, QComboBox, QTextEdit, QTableWidget {{
     color: {COLOR_TEXT};
 }}
 
-QLineEdit:focus, QComboBox:focus, QTextEdit:focus {{
+QLineEdit:focus, QComboBox:focus, QTextEdit:focus, QTableWidget:focus {{
     border: 1px solid {COLOR_PRIMARY};
-}}
-
-QRadioButton:focus {{
-    border: 1px solid {COLOR_PRIMARY};
-    border-radius: {RADIUS_SM}px;
-    padding: {SPACING_SM}px;
 }}
 
 QRadioButton:focus {{
@@ -270,10 +271,65 @@ QLabel#{STEP_CHIP}[stepState="done"] {{
     background-color: {COLOR_INFO_BG};
 }}
 
+QLabel#{STEP_CONNECTOR} {{
+    color: {COLOR_TEXT_MUTED};
+    font-size: {FONT_SIZE_CAPTION}px;
+    padding: 0 {SPACING_SM}px;
+}}
+
+QLabel#{STEP_CONNECTOR}[stepState="done"] {{
+    color: {COLOR_INFO};
+}}
+
 QLabel#{CASE_CONTEXT_LABEL} {{
     color: {COLOR_TEXT_MUTED};
     font-size: {FONT_SIZE_CAPTION}px;
     padding: 0 {SPACING_SM}px;
+}}
+
+/* ---- Document cards ---- */
+QWidget#{DOC_CARD} {{
+    background-color: {COLOR_WHITE};
+    border: 1px solid {COLOR_BORDER};
+    border-radius: {RADIUS_MD}px;
+    padding: {SPACING_MD}px;
+}}
+
+QLabel#{DOC_CARD_ICON} {{
+    font-size: 24px;
+    color: {COLOR_PRIMARY};
+}}
+
+QLabel#{DOC_CARD_TITLE} {{
+    font-weight: 600;
+    color: {COLOR_TEXT};
+}}
+
+QLabel#{DOC_CARD_DESC} {{
+    color: {COLOR_TEXT_MUTED};
+    font-size: {FONT_SIZE_CAPTION}px;
+}}
+
+/* ---- Case selection cards ---- */
+QPushButton#{CASE_CARD} {{
+    text-align: left;
+    background-color: {COLOR_WHITE};
+    border: 1px solid {COLOR_BORDER};
+    border-radius: {RADIUS_MD}px;
+    padding: {SPACING_MD}px {SPACING_LG}px;
+    color: {COLOR_TEXT};
+    font-weight: 600;
+}}
+
+QPushButton#{CASE_CARD}:hover {{
+    border-color: {COLOR_PRIMARY};
+    background-color: {COLOR_INFO_BG};
+}}
+
+QPushButton#{CASE_CARD}[caseCardSelected="true"] {{
+    border: 2px solid {COLOR_PRIMARY};
+    background-color: {COLOR_INFO_BG};
+    color: {COLOR_PRIMARY};
 }}
 
 /* ---- Tables ---- */

@@ -4,7 +4,7 @@
 
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from views.theme import CASE_CONTEXT_LABEL, STEP_CHIP, STEP_INDICATOR
+from views.theme import CASE_CONTEXT_LABEL, STEP_CHIP, STEP_CONNECTOR, STEP_INDICATOR
 
 # The five fixed wizard steps (1-based, shown to the user in Chinese).
 STEP_NAMES = ["选择案由", "当事人", "案情与请求", "证据", "核对与导出"]
@@ -46,7 +46,15 @@ class StepIndicator(QWidget):
         chips_layout.setSpacing(4)
 
         self._chips = []
+        self._connectors = []
         for index, name in enumerate(STEP_NAMES, start=1):
+            if index > 1:
+                connector = QLabel("→")
+                connector.setObjectName(STEP_CONNECTOR)
+                connector.setProperty("stepState", "todo")
+                chips_layout.addWidget(connector)
+                self._connectors.append(connector)
+
             chip = QLabel(f"{index} {name}")
             chip.setObjectName(STEP_CHIP)
             chip.setProperty("stepState", "todo")
@@ -80,6 +88,20 @@ class StepIndicator(QWidget):
             if chip.property("stepState") != state:
                 chip.setProperty("stepState", state)
                 _repolish(chip)
+
+        # Connector between step N and N+1 is "done" once step N is completed.
+        for position, connector in enumerate(self._connectors, start=1):
+            state = "done" if position < index else "todo"
+            if connector.property("stepState") != state:
+                connector.setProperty("stepState", state)
+                _repolish(connector)
+
+        # Connector between step N and N+1 is "done" once step N is completed.
+        for position, connector in enumerate(self._connectors, start=1):
+            state = "done" if position < index else "todo"
+            if connector.property("stepState") != state:
+                connector.setProperty("stepState", state)
+                _repolish(connector)
 
     def set_case_label(self, text):
         """Show the current case type, or hide it when empty."""

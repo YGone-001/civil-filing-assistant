@@ -25,8 +25,8 @@ class LawsuitWizard(QWizard):
         super().__init__()
         self.setObjectName("wizardBody")
         self.setWindowTitle("民事立案文书助手（离线版）")
-        self.resize(700, 650)
-        self.setMinimumSize(680, 560)
+        self.resize(820, 700)
+        self.setMinimumSize(760, 600)
         self.setWizardStyle(QWizard.ModernStyle)
 
         # Replace the stock English navigation labels with Chinese text. The
