@@ -2,9 +2,18 @@
 # Purpose: Small reusable view components shared across wizard pages
 # Encoding: UTF-8
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from views.theme import CASE_CONTEXT_LABEL, STEP_CHIP, STEP_CONNECTOR, STEP_INDICATOR
+from views.theme import (
+    CASE_CONTEXT_LABEL,
+    CONTENT_MAX_WIDTH,
+    PAGE_CONTENT_COLUMN,
+    PAGE_TITLE_LABEL,
+    STEP_CHIP,
+    STEP_CONNECTOR,
+    STEP_INDICATOR,
+)
 
 # The five fixed wizard steps (1-based, shown to the user in Chinese).
 STEP_NAMES = ["选择案由", "当事人", "案情与请求", "证据", "核对与导出"]
@@ -29,6 +38,44 @@ def _repolish(widget):
     style.polish(widget)
 
 
+def content_column(column_layout, max_width=CONTENT_MAX_WIDTH):
+    """Center *column_layout* in a single max-width column.
+
+    Returns the wizard page's top-level layout. That layout still fills the page
+    (so the scroll containers and the fixed navigation bar keep working); only
+    the inner content is capped, which keeps form line lengths readable on wide
+    windows instead of stretching every field edge to edge. The column widget is
+    tagged with ``PAGE_CONTENT_COLUMN`` so the wizard can place the step
+    indicator inside the same column.
+    """
+    holder = QWidget()
+    holder.setObjectName(PAGE_CONTENT_COLUMN)
+    holder.setLayout(column_layout)
+    holder.setMaximumWidth(max_width)
+
+    row = QHBoxLayout()
+    row.setContentsMargins(0, 0, 0, 0)
+    row.addStretch(1)
+    row.addWidget(holder)
+    row.addStretch(1)
+
+    outer = QVBoxLayout()
+    outer.setContentsMargins(0, 0, 0, 0)
+    outer.addLayout(row)
+    return outer
+
+
+def page_title(text):
+    """A wizard page heading rendered inside the centered content column.
+
+    Replaces Qt's full-width ModernStyle banner title so the heading shares the
+    same left edge as the form below it.
+    """
+    label = QLabel(text)
+    label.setObjectName(PAGE_TITLE_LABEL)
+    return label
+
+
 class StepIndicator(QWidget):
     """A persistent five-step progress strip with a case-context hint.
 
@@ -49,10 +96,11 @@ class StepIndicator(QWidget):
         self._connectors = []
         for index, name in enumerate(STEP_NAMES, start=1):
             if index > 1:
-                connector = QLabel("→")
+                connector = QLabel()
                 connector.setObjectName(STEP_CONNECTOR)
                 connector.setProperty("stepState", "todo")
-                chips_layout.addWidget(connector)
+                connector.setFixedSize(12, 2)
+                chips_layout.addWidget(connector, 0, Qt.AlignVCenter)
                 self._connectors.append(connector)
 
             chip = QLabel(f"{index} {name}")
@@ -75,6 +123,13 @@ class StepIndicator(QWidget):
 
         self._current = 0
 
+    @staticmethod
+    def _apply_state(widget, state):
+        """Set a widget's ``stepState`` and re-polish on change."""
+        if widget.property("stepState") != state:
+            widget.setProperty("stepState", state)
+            _repolish(widget)
+
     def set_current(self, index):
         """Highlight step ``index`` (1..5); ``0`` means "not started"."""
         self._current = index
@@ -85,23 +140,17 @@ class StepIndicator(QWidget):
                 state = "current"
             else:
                 state = "todo"
-            if chip.property("stepState") != state:
-                chip.setProperty("stepState", state)
-                _repolish(chip)
+            self._apply_state(chip, state)
+            # A completed step swaps its number for a check mark as a clear cue,
+            # while the step name stays present for accessibility and tests.
+            marker = "✓" if state == "done" else str(position)
+            text = f"{marker} {STEP_NAMES[position - 1]}"
+            if chip.text() != text:
+                chip.setText(text)
 
         # Connector between step N and N+1 is "done" once step N is completed.
         for position, connector in enumerate(self._connectors, start=1):
-            state = "done" if position < index else "todo"
-            if connector.property("stepState") != state:
-                connector.setProperty("stepState", state)
-                _repolish(connector)
-
-        # Connector between step N and N+1 is "done" once step N is completed.
-        for position, connector in enumerate(self._connectors, start=1):
-            state = "done" if position < index else "todo"
-            if connector.property("stepState") != state:
-                connector.setProperty("stepState", state)
-                _repolish(connector)
+            self._apply_state(connector, "done" if position < index else "todo")
 
     def set_case_label(self, text):
         """Show the current case type, or hide it when empty."""

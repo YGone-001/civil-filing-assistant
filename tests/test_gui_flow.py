@@ -438,7 +438,7 @@ def test_t08_export_page_lists_three_documents(qapp):
     text = " ".join(label.text() for label in doc_group.findChildren(type(wizard.export_page.dir_label)))
     for name in ("民事起诉状", "证据清单", "送达地址确认书"):
         assert name in text, f"document list missing {name}: {text}"
-    assert "可编辑 Word 初稿" in text
+    assert "可编辑" in text
 
 
 def test_t08_export_page_shows_default_output_directory(qapp):

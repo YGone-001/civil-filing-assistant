@@ -5,12 +5,16 @@
 import os
 import re
 
-from PySide6.QtCore import QRegularExpression
-from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QRadioButton, QButtonGroup, QTextEdit, QGroupBox, QHBoxLayout, QPushButton, QScrollArea, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QDialog, QPlainTextEdit, QFileDialog
+from PySide6.QtCore import QRegularExpression, Qt
+from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QRadioButton, QButtonGroup, QTextEdit, QGroupBox, QHBoxLayout, QGridLayout, QPushButton, QScrollArea, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QDialog, QPlainTextEdit, QFileDialog, QComboBox
 from PySide6.QtGui import QBrush, QColor, QRegularExpressionValidator
 
 from views.theme import (
     CASE_CARD,
+    CASE_CARD_BADGE,
+    CASE_CARD_DESC,
+    CASE_CARD_TITLE,
+    COLOR_SUGGESTED_ROW_BG,
     DANGER_BUTTON,
     DEMO_BADGE,
     DOC_CARD,
@@ -19,12 +23,19 @@ from views.theme import (
     DOC_CARD_TITLE,
     ERROR_LABEL,
     INFO_LABEL,
+    PAGE_LEAD,
     PRIMARY_BUTTON,
     REMINDER_LABEL,
     SECONDARY_BUTTON,
+    SECTION_BOX,
+    SECTION_LABEL,
     SUCCESS_LABEL,
+    SPACING_MD,
+    SPACING_SM,
+    SPACING_LG,
     WARNING_LABEL,
 )
+from views.widgets import content_column
 
 
 def _set_status(label, text):
@@ -66,40 +77,34 @@ def _decimal_validator(line_edit):
     line_edit.setValidator(QRegularExpressionValidator(_DECIMAL_INPUT_PATTERN, line_edit))
 
 
-def _section(root, title):
-    """Append a titled group box to ``root`` and return its inner form layout."""
-    box = QGroupBox(title)
-    form = QFormLayout(box)
-    root.addWidget(box)
-    return form
+def _set_label_field_accessibility(label, field, prefix=""):
+    """Give a labelled text input an explicit, screen-reader-friendly name.
+
+    Qt does not automatically expose a form label as an accessible name, so the
+    label text (without its trailing colon) is copied onto the input, prefixed
+    by the party number where applicable.  Shared by every form builder here so
+    the convention cannot drift between the party cards and the case-fact grids.
+    """
+    if not isinstance(label, QLabel) or not isinstance(
+        field, (QLineEdit, QTextEdit, QPlainTextEdit)
+    ):
+        return
+    label_text = label.text().replace(":", "").replace("：", "").strip()
+    if not label_text:
+        return
+    name = f"{prefix}{label_text}" if prefix else label_text
+    field.setAccessibleName(name)
+    field.setAccessibleDescription(f"填写{name}")
 
 
 def _set_form_accessibility(form, prefix=""):
-    """Give labelled text inputs explicit, screen-reader-friendly names.
-
-    Qt does not automatically expose a ``QFormLayout`` label as an accessible
-    name.  Keeping this close to the form-building helpers means every input
-    added through a labelled row receives both a name and a concise purpose,
-    without relying on placeholder text (which disappears as soon as users
-    start typing).
-    """
+    """Apply the labelled-input convention to every row of a ``QFormLayout``."""
     for row in range(form.rowCount()):
         label_item = form.itemAt(row, QFormLayout.ItemRole.LabelRole)
         field_item = form.itemAt(row, QFormLayout.ItemRole.FieldRole)
         if label_item is None or field_item is None:
             continue
-        label = label_item.widget()
-        field = field_item.widget()
-        if not isinstance(label, QLabel) or not isinstance(
-            field, (QLineEdit, QTextEdit, QPlainTextEdit)
-        ):
-            continue
-        label_text = label.text().replace(":", "").replace("：", "").strip()
-        if not label_text:
-            continue
-        name = f"{prefix}{label_text}" if prefix else label_text
-        field.setAccessibleName(name)
-        field.setAccessibleDescription(f"填写{name}")
+        _set_label_field_accessibility(label_item.widget(), field_item.widget(), prefix)
 
 
 def _set_page_form_accessibility(page):
@@ -108,45 +113,186 @@ def _set_page_form_accessibility(page):
         _set_form_accessibility(form)
 
 
+class _TwoColumnForm:
+    """A compact section form that pairs labelled fields two per row.
+
+    It mirrors the ``QFormLayout.addRow`` call pattern used across the case-fact
+    pages — ``addRow("标签:", 字段)``, ``addRow("", 说明标签)`` and
+    ``addRow(部件)`` all work — but lays two consecutive labelled fields side by
+    side so short inputs (dates, amounts, names) do not stretch edge to edge.
+    Full-width rows (hints, warnings, button strips) still span the whole grid.
+
+    ``QFormLayout`` cannot expose its label as Qt's accessible name, so this
+    grid assigns the accessible name/description itself, using the same
+    convention as :func:`_set_label_field_accessibility`.
+    """
+
+    _NAMEABLE = (QLineEdit, QTextEdit, QPlainTextEdit)
+
+    def __init__(self, box):
+        self.grid = QGridLayout(box)
+        self.grid.setContentsMargins(SPACING_MD, SPACING_SM, SPACING_MD, SPACING_MD)
+        self.grid.setHorizontalSpacing(SPACING_LG)
+        self.grid.setVerticalSpacing(SPACING_MD)
+        self.grid.setColumnStretch(1, 1)
+        self.grid.setColumnStretch(3, 1)
+        self._row = 0
+        self._slot = 0
+
+    @staticmethod
+    def _as_widget(obj):
+        """Return *obj* as a widget, wrapping a bare layout in a container."""
+        if isinstance(obj, QWidget):
+            return obj
+        holder = QWidget()
+        holder.setLayout(obj)
+        return holder
+
+    def _add_field(self, label_text, field):
+        column = self._slot * 2
+        label = QLabel(label_text)
+        label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self.grid.addWidget(label, self._row, column)
+        self.grid.addWidget(self._as_widget(field), self._row, column + 1)
+        if isinstance(field, self._NAMEABLE):
+            _set_label_field_accessibility(label, field)
+        if self._slot == 1:
+            self._row += 1
+            self._slot = 0
+        else:
+            self._slot = 1
+
+    def _add_full(self, widget):
+        if self._slot == 1:
+            self._row += 1
+            self._slot = 0
+        self.grid.addWidget(self._as_widget(widget), self._row, 0, 1, 4)
+        self._row += 1
+
+    def addRow(self, *args):
+        """Add a row, accepting ``(label, field)``, ``("", widget)`` or ``(widget)``."""
+        if len(args) == 1:
+            self._add_full(args[0])
+            return
+        label_text, field = args
+        if not label_text:
+            self._add_full(field)
+            return
+        self._add_field(label_text, field)
+
+
+def _section(root, title):
+    """Append a titled group box to ``root`` and return its two-column form."""
+    box = QGroupBox(title)
+    box.setObjectName(SECTION_BOX)
+    form = _TwoColumnForm(box)
+    root.addWidget(box)
+    return form
+
+
 def _wrap_in_scroll(root_layout):
-    """Wrap *root_layout* in a resizable QScrollArea and return the outer layout.
+    """Wrap *root_layout* in a resizable QScrollArea inside the content column.
 
     Callers do ``self.setLayout(_wrap_in_scroll(root))`` instead of
     ``self.setLayout(root)`` so that long forms stay usable on small screens
-    and high-DPI scaling factors.  The outer layout has zero margins so the
-    scroll area fills the page exactly as the original layout did.
+    and high-DPI scaling factors.  The scroll area is placed inside the shared
+    centered content column, so the form keeps a readable line length on wide
+    windows while still scrolling when the window is short.
     """
     scroll = QScrollArea()
     scroll.setWidgetResizable(True)
     scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+    # Keep the section boxes at their natural height: without a trailing
+    # stretch the last group box would grow to absorb the leftover space and
+    # render as a tall, mostly empty panel.
+    root_layout.addStretch(1)
     content = QWidget()
     content.setLayout(root_layout)
     scroll.setWidget(content)
-    outer = QVBoxLayout()
-    outer.setContentsMargins(0, 0, 0, 0)
-    outer.addWidget(scroll)
-    return outer
+
+    column = QVBoxLayout()
+    column.setContentsMargins(0, 0, 0, 0)
+    column.addWidget(scroll)
+    return content_column(column)
 
 
-class WelcomePage(QWizardPage):
+class _TitledPage(QWizardPage):
+    """A wizard page whose heading renders inside the centered content column.
+
+    Qt's ModernStyle draws the page ``title`` in a full-width banner pinned to
+    the window edge, which cannot be inset to align with the capped content
+    column. The Qt property is therefore left empty (no banner is drawn) and the
+    text is remembered here, so ``title()`` and the visible in-column heading
+    keep a single source of truth instead of drifting apart.
+    """
+
+    def set_page_title(self, text):
+        self._page_title = text
+
+    def title(self):
+        # QWizard reads the (empty) Qt property through the meta-object, so no
+        # banner appears; Python callers still get the real heading text here.
+        return getattr(self, "_page_title", "")
+
+
+class WelcomePage(_TitledPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("欢迎使用民事立案文书助手")
+        self.set_page_title("欢迎使用民事立案文书助手")
 
         layout = QVBoxLayout()
+        layout.setSpacing(12)
 
-        desc = (
-            "本工具引导您填写案情，一键生成民事立案所需的三份可编辑 Word 初稿："
-            "民事起诉状、证据清单与送达地址确认书。\n\n"
-            "【本地离线说明】\n"
-            "- 本地运行：案件信息仅在本机处理，生成文书时不联网上传。\n"
-            "- 启动时会检测网络状态并给出提示，该提示仅为辅助提醒，不等于系统级防火墙隔离。\n"
-            "- 生成完成后会尽力清理内存中的敏感信息，但无法保证彻底销毁。\n\n"
-            "点击“下一步”开始填写。"
+        # A single concise lead line describing what the tool does in one breath.
+        lead = QLabel("引导填写案情，一键生成民事立案所需的三份可编辑 Word 初稿。")
+        lead.setObjectName(PAGE_LEAD)
+        lead.setWordWrap(True)
+        layout.addWidget(lead)
+
+        # Three-document preview strip (reuses the export-page card styling).
+        docs_row = QHBoxLayout()
+        docs_row.setSpacing(8)
+        for icon, name, desc in (
+            ("诉", "民事起诉状", "当事人、请求与事实理由"),
+            ("证", "证据清单", "证据与证明目的"),
+            ("送", "送达地址确认书", "法院送达地址确认"),
+        ):
+            chip = QWidget()
+            chip.setObjectName(DOC_CARD)
+            chip_layout = QHBoxLayout(chip)
+            chip_layout.setContentsMargins(10, 10, 10, 10)
+            chip_layout.setSpacing(8)
+            icon_label = QLabel(icon)
+            icon_label.setObjectName(DOC_CARD_ICON)
+            icon_label.setFixedSize(32, 32)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            chip_layout.addWidget(icon_label)
+            text_layout = QVBoxLayout()
+            text_layout.setSpacing(2)
+            title_label = QLabel(name)
+            title_label.setObjectName(DOC_CARD_TITLE)
+            text_layout.addWidget(title_label)
+            desc_label = QLabel(desc)
+            desc_label.setObjectName(DOC_CARD_DESC)
+            text_layout.addWidget(desc_label)
+            chip_layout.addLayout(text_layout)
+            chip_layout.addStretch()
+            docs_row.addWidget(chip)
+        layout.addLayout(docs_row)
+
+        # Local / offline privacy notes, kept visibly distinct from the flow.
+        offline_note = QLabel(
+            "本地运行：案件信息仅在本机处理，生成文书时不联网上传。\n"
+            "启动时会检测网络状态并给出提示，该提示仅为辅助提醒，不等于系统级防火墙隔离。\n"
+            "生成完成后会尽力清理内存中的敏感信息，但无法保证彻底销毁。"
         )
-        label = QLabel(desc)
-        label.setWordWrap(True)
-        layout.addWidget(label)
+        offline_note.setObjectName(INFO_LABEL)
+        offline_note.setWordWrap(True)
+        layout.addWidget(offline_note)
+
+        next_hint = QLabel("点击“下一步”开始填写。")
+        next_hint.setWordWrap(True)
+        layout.addWidget(next_hint)
 
         # Demo-mode badge, hidden in production.
         self.demo_badge = QLabel("演示模式")
@@ -162,15 +308,15 @@ class WelcomePage(QWizardPage):
         self.fill_btn.setVisible(False)
         layout.addWidget(self.fill_btn)
 
-        self.setLayout(layout)
+        self.setLayout(content_column(layout))
 
     def set_demo_mode(self, enabled):
         """Show or hide the demo-mode badge and test-data button."""
         self.fill_btn.setVisible(enabled)
         self.demo_badge.setVisible(enabled)
 
-class CaseSelectionPage(QWizardPage):
-    # One-line suitability notes shown under the dropdown for each choice.
+class CaseSelectionPage(_TitledPage):
+    # One-line suitability notes shown under each choice.
     CASE_DESCRIPTIONS = {
         "loan": "适用于个人之间或自然人向他人出借资金的借款纠纷。",
         "contract": "适用于买卖双方就货款、交付、验收等问题发生的合同纠纷。",
@@ -179,23 +325,29 @@ class CaseSelectionPage(QWizardPage):
         "divorce": "适用于离婚、子女抚养与财产分割等婚姻家庭纠纷。",
     }
 
-    # Card icons for each case type.
-    CASE_ICONS = {
-        "loan": "💰",
-        "contract": "🛒",
-        "property": "🏠",
-        "labor": "👷",
-        "divorce": "⚖",
+    # Single-character badges rendered in each selection card.
+    CASE_MONOGRAMS = {
+        "loan": "借",
+        "contract": "买",
+        "property": "物",
+        "labor": "劳",
+        "divorce": "离",
     }
 
     def __init__(self):
         super().__init__()
-        self.setTitle("选择案件类型")
+        self.set_page_title("选择案件类型")
 
         layout = QVBoxLayout()
-        layout.addWidget(QLabel("请选择您要生成的起诉状案由："))
+        layout.setSpacing(12)
 
-        from PySide6.QtWidgets import QComboBox
+        lead = QLabel("请选择本次起诉的案由，系统将据此匹配文书模板与证据建议。")
+        lead.setObjectName(PAGE_LEAD)
+        lead.setWordWrap(True)
+        layout.addWidget(lead)
+
+        # Hidden backing store for the wizard field: kept out of sight but still
+        # bound to the form via registerField below.
         self.case_combo = QComboBox()
         self.case_combo.setAccessibleName("案由选择")
         self.case_combo.setAccessibleDescription("选择起诉状的案件类型")
@@ -204,13 +356,15 @@ class CaseSelectionPage(QWizardPage):
         self.case_combo.addItem("物业服务合同纠纷", "property")
         self.case_combo.addItem("劳动报酬/工资追索", "labor")
         self.case_combo.addItem("离婚纠纷", "divorce")
-        self.case_combo.setVisible(False)  # hidden backing store
+        self.case_combo.setVisible(False)
 
-        # --- Card-style selector ------------------------------------------
-        from PySide6.QtWidgets import QGridLayout
+        # --- Card-style selector (two-column grid) ------------------------
         self._case_cards = []
-        card_grid = QGridLayout()
-        card_grid.setSpacing(8)
+        cards_grid = QGridLayout()
+        cards_grid.setHorizontalSpacing(SPACING_MD)
+        cards_grid.setVerticalSpacing(SPACING_MD)
+        cards_grid.setColumnStretch(0, 1)
+        cards_grid.setColumnStretch(1, 1)
         cases = [
             ("loan", "民间借贷纠纷"),
             ("contract", "买卖合同纠纷"),
@@ -218,23 +372,45 @@ class CaseSelectionPage(QWizardPage):
             ("labor", "劳动报酬/工资追索"),
             ("divorce", "离婚纠纷"),
         ]
-        for idx, (key, label) in enumerate(cases):
-            card = QPushButton(f"  {self.CASE_ICONS.get(key, '')}  {label}")
+        for index, (key, label) in enumerate(cases):
+            card = QPushButton()
             card.setObjectName(CASE_CARD)
-            card.setCheckable(False)
             card.setProperty("caseCardSelected", "false")
+            card.setCursor(Qt.CursorShape.PointingHandCursor)
             card.setAccessibleName(f"案由卡片：{label}")
             card.clicked.connect(lambda _checked, k=key: self._select_case_by_key(k))
-            row, col = divmod(idx, 2)
-            card_grid.addWidget(card, row, col)
-            self._case_cards.append((key, card))
-        card_grid.setColumnStretch(1, 1)
-        layout.addLayout(card_grid)
 
-        self.case_desc_label = QLabel("")
-        self.case_desc_label.setObjectName(INFO_LABEL)
-        self.case_desc_label.setWordWrap(True)
-        layout.addWidget(self.case_desc_label)
+            card_layout = QHBoxLayout(card)
+            card_layout.setContentsMargins(12, 10, 12, 10)
+            card_layout.setSpacing(12)
+
+            badge = QLabel(self.CASE_MONOGRAMS.get(key, ""))
+            badge.setObjectName(CASE_CARD_BADGE)
+            badge.setFixedSize(36, 36)
+            badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            badge.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
+            card_layout.addWidget(badge)
+
+            text_layout = QVBoxLayout()
+            text_layout.setSpacing(2)
+
+            title = QLabel(label)
+            title.setObjectName(CASE_CARD_TITLE)
+            title.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
+
+            desc = QLabel(self.CASE_DESCRIPTIONS.get(key, ""))
+            desc.setObjectName(CASE_CARD_DESC)
+            desc.setWordWrap(True)
+            desc.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
+
+            text_layout.addWidget(title)
+            text_layout.addWidget(desc)
+            card_layout.addLayout(text_layout, 1)
+
+            cards_grid.addWidget(card, index // 2, index % 2)
+            self._case_cards.append((key, card))
+
+        layout.addLayout(cards_grid)
 
         # Persistent labour-arbitration notice, shown only while "labor" is
         # selected (replaces the previous blocking dialog).
@@ -245,13 +421,14 @@ class CaseSelectionPage(QWizardPage):
         layout.addWidget(self.labor_notice)
 
         layout.addStretch()
-        self.setLayout(layout)
+        self.setLayout(content_column(layout))
 
         from utils.labor_security import LaborProcedureGuard
         self.labor_guard = LaborProcedureGuard()
         self.case_combo.currentTextChanged.connect(self._on_case_type_changed)
         self.case_combo.currentIndexChanged.connect(self._sync_card_selection)
         self._refresh_case_context()
+        self._sync_card_selection(self.case_combo.currentIndex())
 
         self.registerField("case_type", self.case_combo, "currentData")
 
@@ -278,7 +455,6 @@ class CaseSelectionPage(QWizardPage):
 
     def _refresh_case_context(self):
         case_data = self.case_combo.currentData()
-        self.case_desc_label.setText(self.CASE_DESCRIPTIONS.get(case_data, ""))
         if case_data == "labor":
             self.labor_notice.setText(self.labor_guard.get_warning_text())
             self.labor_notice.setVisible(True)
@@ -286,10 +462,10 @@ class CaseSelectionPage(QWizardPage):
             self.labor_notice.setText("")
             self.labor_notice.setVisible(False)
 
-class PartyPage(QWizardPage):
+class PartyPage(_TitledPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("填写当事人信息")
+        self.set_page_title("填写当事人信息")
 
         main_layout = QVBoxLayout()
 
@@ -324,25 +500,40 @@ class PartyPage(QWizardPage):
         # (leaves a field or clicks Next); reset on each fresh entry.
         self._touched = False
 
-        # Add Plaintiff Button
-        self.add_p_btn = QPushButton("[+] 添加原告")
+        # Plaintiff section heading
+        self.plaintiff_section_label = QLabel("原告")
+        self.plaintiff_section_label.setObjectName(SECTION_LABEL)
+        self.scroll_layout.addWidget(self.plaintiff_section_label)
+
+        # Add Plaintiff Button (kept to its content width instead of stretching
+        # full width, so it reads as an inline action rather than a panel).
+        self.add_p_btn = QPushButton("添加原告")
+        self.add_p_btn.setObjectName(SECONDARY_BUTTON)
         self.add_p_btn.setAccessibleName("添加原告")
         self.add_p_btn.setAccessibleDescription("添加一名原告当事人卡片")
         self.add_p_btn.clicked.connect(lambda: self.add_party_ui(0))
-        self.scroll_layout.addWidget(self.add_p_btn)
+        self._add_p_row = self._button_row(self.add_p_btn)
+        self.scroll_layout.addWidget(self._add_p_row)
+
+        # Defendant section heading
+        self.defendant_section_label = QLabel("被告")
+        self.defendant_section_label.setObjectName(SECTION_LABEL)
+        self.scroll_layout.addWidget(self.defendant_section_label)
 
         # Add Defendant Button
-        self.add_d_btn = QPushButton("[+] 添加被告")
+        self.add_d_btn = QPushButton("添加被告")
+        self.add_d_btn.setObjectName(SECONDARY_BUTTON)
         self.add_d_btn.setAccessibleName("添加被告")
         self.add_d_btn.setAccessibleDescription("添加一名被告当事人卡片")
         self.add_d_btn.clicked.connect(lambda: self.add_party_ui(1))
-        self.scroll_layout.addWidget(self.add_d_btn)
+        self._add_d_row = self._button_row(self.add_d_btn)
+        self.scroll_layout.addWidget(self._add_d_row)
 
         self.scroll_layout.addStretch()
         self.scroll_area.setWidget(self.scroll_widget)
         main_layout.addWidget(self.scroll_area)
 
-        self.setLayout(main_layout)
+        self.setLayout(content_column(main_layout))
 
     def initializePage(self):
         """Called when the page is shown, recreate UI based on selected case type"""
@@ -373,20 +564,37 @@ class PartyPage(QWizardPage):
         self.add_party_ui(1)
         self._rebuild_party_tab_order()
 
+    @staticmethod
+    def _button_row(button):
+        """Wrap *button* in a left-aligned row so it keeps its content width."""
+        row = QWidget()
+        layout = QHBoxLayout(row)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(button)
+        layout.addStretch(1)
+        return row
+
+    @staticmethod
+    def _apply_field_names(name_fields, prefix):
+        """(Re)apply numbered accessible names to a card's labelled inputs."""
+        for label, field in name_fields:
+            _set_label_field_accessibility(label, field, prefix)
+
     def add_party_ui(self, party_type):
         is_plaintiff = (party_type == 0)
         kind = "原告" if is_plaintiff else "被告"
         number = (len(self.plaintiff_widgets) + 1) if is_plaintiff else (len(self.defendant_widgets) + 1)
+
         group = QGroupBox(f"{kind}{number}")
-        layout = QFormLayout()
-        layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
+        group_layout = QVBoxLayout(group)
+        group_layout.setSpacing(SPACING_MD)
 
         name_edit = QLineEdit()
         id_edit = QLineEdit()
         addr_edit = QLineEdit()
         phone_edit = QLineEdit()
 
-        from PySide6.QtWidgets import QCheckBox, QLabel
+        from PySide6.QtWidgets import QCheckBox
         is_company_check = QCheckBox("该当事人为单位/企业（非自然人）")
         is_company_check.setChecked(False)
 
@@ -401,22 +609,51 @@ class PartyPage(QWizardPage):
         legal_rep_edit.setPlaceholderText("法定代表人姓名")
         legal_rep_edit.setVisible(False)
 
-        # "身份证号" is the personal identity field; resuming a company toggles
-        # it away and reveals the credit-code/legal-representative fields, so no
-        # duplicate identity row is ever shown.
-        layout.addRow("姓名/名称:", name_edit)
-        layout.addRow("身份证号:", id_edit)
-        layout.addRow("统一社会信用代码:", credit_code_edit)
-        layout.addRow("法定代表人:", legal_rep_edit)
-        layout.addRow("住址/住所地:", addr_edit)
-        layout.addRow("电话:", phone_edit)
+        # Per-card delete action, pinned to the card's top-right corner so it is
+        # no longer a full-width click target sitting next to the input fields.
+        delete_btn = QPushButton("删除")
+        delete_btn.setObjectName(DANGER_BUTTON)
+        delete_btn.setAccessibleName(f"删除{kind}卡片")
 
-        # QFormLayout owns separate label widgets. Hide and show those labels
-        # together with their fields so switching party type never leaves a
-        # dangling identity-field caption behind.
-        id_label = layout.labelForField(id_edit)
-        credit_code_label = layout.labelForField(credit_code_edit)
-        legal_rep_label = layout.labelForField(legal_rep_edit)
+        header = QHBoxLayout()
+        header.addWidget(is_company_check)
+        header.addStretch(1)
+        header.addWidget(delete_btn)
+        group_layout.addLayout(header)
+
+        # Two-column field grid: the identity and contact pairs each share a row
+        # so the card stays compact instead of stacking six single-column rows.
+        name_label = QLabel("姓名/名称:")
+        id_label = QLabel("身份证号:")
+        credit_code_label = QLabel("统一社会信用代码:")
+        legal_rep_label = QLabel("法定代表人:")
+        addr_label = QLabel("住址/住所地:")
+        phone_label = QLabel("电话:")
+        for label in (name_label, id_label, credit_code_label, legal_rep_label,
+                      addr_label, phone_label):
+            label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(SPACING_LG)
+        grid.setVerticalSpacing(SPACING_MD)
+        grid.setColumnStretch(1, 1)
+        grid.setColumnStretch(3, 1)
+
+        # Personal mode: 姓名 | 身份证号, then 住址 | 电话.
+        grid.addWidget(name_label, 0, 0)
+        grid.addWidget(name_edit, 0, 1)
+        grid.addWidget(id_label, 0, 2)
+        grid.addWidget(id_edit, 0, 3)
+        grid.addWidget(addr_label, 1, 0)
+        grid.addWidget(addr_edit, 1, 1)
+        grid.addWidget(phone_label, 1, 2)
+        grid.addWidget(phone_edit, 1, 3)
+        # Company mode adds a third row that collapses while every cell is hidden.
+        grid.addWidget(credit_code_label, 2, 0)
+        grid.addWidget(credit_code_edit, 2, 1)
+        grid.addWidget(legal_rep_label, 2, 2)
+        grid.addWidget(legal_rep_edit, 2, 3)
+        group_layout.addLayout(grid)
 
         phone_validator = QRegularExpressionValidator(_PHONE_INPUT_PATTERN)
         phone_edit.setValidator(phone_validator)
@@ -429,10 +666,11 @@ class PartyPage(QWizardPage):
             addr_hint = QLabel("提示：若被告搬家，请填写现居住满一年的地址，以便法院送达。")
             addr_hint.setObjectName(REMINDER_LABEL)
             addr_hint.setWordWrap(True)
-            layout.addRow(addr_hint)
+            group_layout.addWidget(addr_hint)
 
-        # 个人/企业 toggle, full-width. Toggling swaps the personal ID field for
-        # the company credit-code/legal-representative fields.
+        # 个人/企业 toggle. Toggling swaps the personal ID field for the company
+        # credit-code / legal-representative fields; each caption travels with
+        # its field so no dangling identity label is ever left behind.
         is_company_check.toggled.connect(
             lambda checked: self._toggle_company_fields(
                 checked,
@@ -444,15 +682,15 @@ class PartyPage(QWizardPage):
                 legal_rep_label,
             )
         )
-        layout.addRow(is_company_check)
 
-        # Per-card delete action.
-        delete_btn = QPushButton("删除")
-        delete_btn.setObjectName(DANGER_BUTTON)
-        delete_btn.setAccessibleName(f"删除{kind}卡片")
-        layout.addRow(delete_btn)
-
-        group.setLayout(layout)
+        name_fields = [
+            (name_label, name_edit),
+            (id_label, id_edit),
+            (credit_code_label, credit_code_edit),
+            (legal_rep_label, legal_rep_edit),
+            (addr_label, addr_edit),
+            (phone_label, phone_edit),
+        ]
 
         widget = {
             "group": group,
@@ -467,17 +705,17 @@ class PartyPage(QWizardPage):
             "credit_code_label": credit_code_label,
             "legal_rep_label": legal_rep_label,
             "delete_btn": delete_btn,
-            "form": layout,
+            "name_fields": name_fields,
         }
         delete_btn.clicked.connect(lambda _=False, t=party_type, d=widget: self._remove_party(t, d))
 
-        # Insert before the add buttons or stretch
+        # Insert the card above its side's add button.
         if is_plaintiff:
-            insert_idx = self.scroll_layout.indexOf(self.add_p_btn)
+            insert_idx = self.scroll_layout.indexOf(self._add_p_row)
             self.scroll_layout.insertWidget(insert_idx, group)
             self.plaintiff_widgets.append(widget)
         else:
-            insert_idx = self.scroll_layout.indexOf(self.add_d_btn)
+            insert_idx = self.scroll_layout.indexOf(self._add_d_row)
             self.scroll_layout.insertWidget(insert_idx, group)
             self.defendant_widgets.append(widget)
 
@@ -491,7 +729,7 @@ class PartyPage(QWizardPage):
             credit_code_label,
             legal_rep_label,
         )
-        _set_form_accessibility(layout, f"{kind}{number}")
+        self._apply_field_names(name_fields, f"{kind}{number}")
 
         # Keep the live guidance and the wizard "Next" button state in sync, and
         # mark the page as touched when the user leaves a field.
@@ -530,10 +768,10 @@ class PartyPage(QWizardPage):
         """Keep card numbers contiguous after additions/removals."""
         for idx, w in enumerate(self.plaintiff_widgets, 1):
             w["group"].setTitle(f"原告{idx}")
-            _set_form_accessibility(w["form"], f"原告{idx}")
+            self._apply_field_names(w["name_fields"], f"原告{idx}")
         for idx, w in enumerate(self.defendant_widgets, 1):
             w["group"].setTitle(f"被告{idx}")
-            _set_form_accessibility(w["form"], f"被告{idx}")
+            self._apply_field_names(w["name_fields"], f"被告{idx}")
 
     def _rebuild_party_tab_order(self):
         """Keep keyboard traversal aligned with the visible party-card order."""
@@ -707,10 +945,10 @@ class PartyPage(QWizardPage):
             "defendants": build(self.defendant_widgets),
         }
 
-class ContractClaimPage(QWizardPage):
+class ContractClaimPage(_TitledPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("填写案情与请求（买卖合同）")
+        self.set_page_title("填写案情与请求（买卖合同）")
 
         root = QVBoxLayout()
 
@@ -994,10 +1232,10 @@ class ContractClaimPage(QWizardPage):
         except Exception:
             QMessageBox.warning(self, "提示", "请先填写有效的本金、LPR、倍数与日期(YYYY-MM-DD)。")
 
-class LoanClaimPage(QWizardPage):
+class LoanClaimPage(_TitledPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("填写案情与请求（民间借贷）")
+        self.set_page_title("填写案情与请求（民间借贷）")
 
         root = QVBoxLayout()
 
@@ -1162,10 +1400,10 @@ class LoanClaimPage(QWizardPage):
             return False
         return None
 
-class PropertyClaimPage(QWizardPage):
+class PropertyClaimPage(_TitledPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("填写案情与请求（物业服务合同）")
+        self.set_page_title("填写案情与请求（物业服务合同）")
 
         root = QVBoxLayout()
 
@@ -1335,15 +1573,15 @@ class PropertyClaimPage(QWizardPage):
         self.fill_btn.setVisible(enabled)
         self.demo_badge.setVisible(enabled)
 
-class EvidencePage(QWizardPage):
+class EvidencePage(_TitledPage):
     # A faint background tint for rows loaded from EvidenceLibrary so the user
     # can tell suggested evidence apart from rows they added themselves.  The
     # tint is purely visual — get_evidence_items() returns the same structure.
-    _SUGGESTED_TINT = QBrush(QColor(245, 248, 252))
+    _SUGGESTED_TINT = QBrush(QColor(COLOR_SUGGESTED_ROW_BG))
 
     def __init__(self):
         super().__init__()
-        self.setTitle("证据清单（选填）")
+        self.set_page_title("证据清单（选填）")
 
         layout = QVBoxLayout()
         self.desc_label = QLabel("请列出您准备提交的证据。")
@@ -1355,14 +1593,17 @@ class EvidencePage(QWizardPage):
         layout.addWidget(self.edit_hint)
 
         btn_layout = QHBoxLayout()
-        self.add_row_btn = QPushButton("[+] 添加证据")
+        self.add_row_btn = QPushButton("添加证据")
+        self.add_row_btn.setObjectName(SECONDARY_BUTTON)
         self.add_row_btn.setAccessibleName("添加证据行")
         self.add_row_btn.clicked.connect(self.add_row)
-        self.remove_row_btn = QPushButton("[-] 删除选中行")
+        self.remove_row_btn = QPushButton("删除选中行")
+        self.remove_row_btn.setObjectName(DANGER_BUTTON)
         self.remove_row_btn.setAccessibleName("删除选中的证据行")
         self.remove_row_btn.clicked.connect(self.remove_selected_rows)
         btn_layout.addWidget(self.add_row_btn)
         btn_layout.addWidget(self.remove_row_btn)
+        btn_layout.addStretch(1)
         btn_widget = QWidget()
         btn_widget.setLayout(btn_layout)
         layout.addWidget(btn_widget)
@@ -1381,7 +1622,7 @@ class EvidencePage(QWizardPage):
         # this count were added by the user and are not tinted.
         self._suggested_count = 0
 
-        self.setLayout(layout)
+        self.setLayout(content_column(layout))
 
     def initializePage(self):
         super().initializePage()
@@ -1475,10 +1716,10 @@ class EvidencePage(QWizardPage):
                 items.append((name, target))
         return items
 
-class LaborClaimPage(QWizardPage):
+class LaborClaimPage(_TitledPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("填写案情与请求（劳动报酬／工资追索）")
+        self.set_page_title("填写案情与请求（劳动报酬／工资追索）")
 
         root = QVBoxLayout()
 
@@ -1572,10 +1813,10 @@ class LaborClaimPage(QWizardPage):
     def get_has_no_contract(self):
         return self.is_no_contract_group.checkedId() == 1
 
-class DivorceClaimPage(QWizardPage):
+class DivorceClaimPage(_TitledPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("填写案情与请求（离婚析产／抚养费纠纷）")
+        self.set_page_title("填写案情与请求（离婚析产／抚养费纠纷）")
 
         root = QVBoxLayout()
 
@@ -1736,10 +1977,10 @@ class _PreviewDialog(QDialog):
         layout.addWidget(close_btn)
 
 
-class ExportPage(QWizardPage):
+class ExportPage(_TitledPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("核对与导出")
+        self.set_page_title("核对与导出")
         # Ensure it acts as the final page
         self.setFinalPage(True)
 
@@ -1752,14 +1993,16 @@ class ExportPage(QWizardPage):
         intro.setWordWrap(True)
         layout.addWidget(intro)
 
-        # --- Three document cards -----------------------------------------
+        # --- Three document cards (horizontal strip) ----------------------
         doc_group = QGroupBox("将生成的文书")
-        doc_layout = QVBoxLayout()
-        doc_layout.setSpacing(8)
+        doc_outer = QVBoxLayout()
+        doc_outer.setSpacing(SPACING_MD)
+        doc_cards = QHBoxLayout()
+        doc_cards.setSpacing(SPACING_MD)
         for icon, title, desc in (
-            ("📄", "民事起诉状", "可编辑 Word 初稿"),
-            ("📋", "证据清单", "可编辑 Word 初稿"),
-            ("✉", "送达地址确认书", "可编辑 Word 初稿"),
+            ("诉", "民事起诉状", "当事人、请求与理由"),
+            ("证", "证据清单", "证据与证明目的"),
+            ("送", "送达地址确认书", "法院送达地址确认"),
         ):
             card = QWidget()
             card.setObjectName(DOC_CARD)
@@ -1768,6 +2011,8 @@ class ExportPage(QWizardPage):
 
             icon_label = QLabel(icon)
             icon_label.setObjectName(DOC_CARD_ICON)
+            icon_label.setFixedSize(32, 32)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             card_layout.addWidget(icon_label)
 
             text_layout = QVBoxLayout()
@@ -1777,16 +2022,19 @@ class ExportPage(QWizardPage):
             text_layout.addWidget(title_label)
             desc_label = QLabel(desc)
             desc_label.setObjectName(DOC_CARD_DESC)
+            desc_label.setWordWrap(True)
             text_layout.addWidget(desc_label)
             card_layout.addLayout(text_layout)
             card_layout.addStretch()
 
-            doc_layout.addWidget(card)
+            doc_cards.addWidget(card, 1)
+
+        doc_outer.addLayout(doc_cards)
         doc_note = QLabel("以上文书均为辅助生成的可编辑初稿，请人工核对后再行使用。")
         doc_note.setObjectName(INFO_LABEL)
         doc_note.setWordWrap(True)
-        doc_layout.addWidget(doc_note)
-        doc_group.setLayout(doc_layout)
+        doc_outer.addWidget(doc_note)
+        doc_group.setLayout(doc_outer)
         layout.addWidget(doc_group)
 
         # --- Output directory ---------------------------------------------
@@ -1816,21 +2064,28 @@ class ExportPage(QWizardPage):
         dir_group.setLayout(dir_layout)
         layout.addWidget(dir_group)
 
-        # --- Preview -------------------------------------------------------
+        # --- Actions (content-width, right-aligned single row) ------------
+        action_group = QGroupBox("操作")
+        action_row = QHBoxLayout()
+        action_row.addStretch(1)
+
         self.preview_btn = QPushButton("预览关键信息")
         self.preview_btn.setObjectName(SECONDARY_BUTTON)
         self.preview_btn.setAccessibleName("预览关键信息")
         self.preview_btn.clicked.connect(self.show_preview)
-        layout.addWidget(self.preview_btn)
+        action_row.addWidget(self.preview_btn)
 
-        # --- Exit (secondary, not destructive) ----------------------------
+        # Exit (secondary, not destructive) ----------------------------
         self.secure_exit_btn = QPushButton("退出程序（不删除已生成文件）")
         self.secure_exit_btn.setObjectName(SECONDARY_BUTTON)
         self.secure_exit_btn.setAccessibleName("退出程序")
         self.secure_exit_btn.clicked.connect(self.secure_exit)
-        layout.addWidget(self.secure_exit_btn)
+        action_row.addWidget(self.secure_exit_btn)
 
-        self.setLayout(layout)
+        action_group.setLayout(action_row)
+        layout.addWidget(action_group)
+
+        self.setLayout(content_column(layout))
 
     # ------------------------------------------------------------------ #
     # Output directory

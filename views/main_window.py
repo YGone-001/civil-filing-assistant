@@ -2,10 +2,17 @@
 # Purpose: Main application window integrating the Wizard
 # Encoding: UTF-8
 
-from PySide6.QtWidgets import QAbstractButton, QFormLayout, QMessageBox, QVBoxLayout, QWizard
+from PySide6.QtWidgets import (
+    QAbstractButton,
+    QFormLayout,
+    QMessageBox,
+    QVBoxLayout,
+    QWidget,
+    QWizard,
+)
 
-from views.theme import PRIMARY_BUTTON
-from views.widgets import CASE_TYPE_LABELS, StepIndicator
+from views.theme import PAGE_CONTENT_COLUMN, PRIMARY_BUTTON
+from views.widgets import CASE_TYPE_LABELS, StepIndicator, page_title
 from views.wizard_pages import (
     WelcomePage,
     CaseSelectionPage,
@@ -25,8 +32,11 @@ class LawsuitWizard(QWizard):
         super().__init__()
         self.setObjectName("wizardBody")
         self.setWindowTitle("民事立案文书助手（离线版）")
-        self.resize(820, 700)
-        self.setMinimumSize(760, 600)
+        # A ~5:4 form-oriented ratio: wide enough for two-column form pages and
+        # the case-selection list, tall enough to keep claim/fact pages readable
+        # with minimal scrolling.
+        self.resize(1200, 960)
+        self.setMinimumSize(1000, 760)
         self.setWizardStyle(QWizard.ModernStyle)
 
         # Replace the stock English navigation labels with Chinese text. The
@@ -111,6 +121,24 @@ class LawsuitWizard(QWizard):
         ):
             self._attach_step_indicator(page, self.STEP_OF_PAGE[page_id])
 
+        # Render each page's heading inside its centered content column so it
+        # shares the form's left edge, replacing the full-width ModernStyle
+        # banner that could not be inset. Done after the step strip so the
+        # heading lands above it in the column.
+        for page in (
+            self.welcome_page,
+            self.case_selection_page,
+            self.party_page,
+            self.loan_claim_page,
+            self.contract_claim_page,
+            self.property_claim_page,
+            self.labor_claim_page,
+            self.divorce_claim_page,
+            self.evidence_page,
+            self.export_page,
+        ):
+            self._attach_page_title(page)
+
         self.currentIdChanged.connect(self._update_step_indicators)
         self.case_selection_page.case_combo.currentIndexChanged.connect(
             self._update_step_indicators
@@ -140,7 +168,10 @@ class LawsuitWizard(QWizard):
 
     def _attach_step_indicator(self, page, step):
         indicator = StepIndicator()
-        layout = page.layout()
+        # Prefer the page's centered content column so the step strip shares the
+        # same left edge as the form; fall back to the raw page layout.
+        holder = page.findChild(QWidget, PAGE_CONTENT_COLUMN)
+        layout = holder.layout() if holder is not None else page.layout()
         if isinstance(layout, QFormLayout):
             layout.insertRow(0, indicator)
         elif isinstance(layout, QVBoxLayout):
@@ -149,6 +180,20 @@ class LawsuitWizard(QWizard):
             return None
         self._step_indicators.append(indicator)
         return indicator
+
+    def _attach_page_title(self, page):
+        """Insert the page heading at the top of its centered content column.
+
+        Mirrors :meth:`_attach_step_indicator`'s column lookup so the visible
+        heading and the step strip share one left edge.
+        """
+        holder = page.findChild(QWidget, PAGE_CONTENT_COLUMN)
+        layout = holder.layout() if holder is not None else page.layout()
+        heading = page_title(page.title())
+        if isinstance(layout, QFormLayout):
+            layout.insertRow(0, heading)
+        elif isinstance(layout, QVBoxLayout):
+            layout.insertWidget(0, heading)
 
     def _update_step_indicators(self, *_):
         current = self.currentId()

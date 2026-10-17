@@ -88,10 +88,10 @@ def test_demo_mode_propagates_to_welcome_and_property_pages(qapp):
 # ---------------------------------------------------------------------------
 
 EXPECTED_BUTTON_TEXTS = {
-    "add_p_btn": "[+] 添加原告",
-    "add_d_btn": "[+] 添加被告",
-    "add_row_btn": "[+] 添加证据",
-    "remove_row_btn": "[-] 删除选中行",
+    "add_p_btn": "添加原告",
+    "add_d_btn": "添加被告",
+    "add_row_btn": "添加证据",
+    "remove_row_btn": "删除选中行",
     "change_dir_btn": "更改目录",
     "open_dir_btn": "打开输出目录",
     "preview_btn": "预览关键信息",
@@ -101,15 +101,15 @@ EXPECTED_BUTTON_TEXTS = {
 def test_party_page_button_texts_are_chinese(qapp):
     wizard, _ = make_wizard()
     page = wizard.party_page
-    assert page.add_p_btn.text() == "[+] 添加原告"
-    assert page.add_d_btn.text() == "[+] 添加被告"
+    assert page.add_p_btn.text() == "添加原告"
+    assert page.add_d_btn.text() == "添加被告"
 
 
 def test_evidence_page_button_texts_are_chinese(qapp):
     wizard, _ = make_wizard()
     page = wizard.evidence_page
-    assert page.add_row_btn.text() == "[+] 添加证据"
-    assert page.remove_row_btn.text() == "[-] 删除选中行"
+    assert page.add_row_btn.text() == "添加证据"
+    assert page.remove_row_btn.text() == "删除选中行"
 
 
 def test_export_page_button_texts_are_chinese(qapp):
