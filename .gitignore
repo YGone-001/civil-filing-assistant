@@ -38,3 +38,6 @@ Desktop.ini
 /test_samples/
 /*.docx
 /*_vs_*/
+
+# Local audit/quality reports (kept out of the repository per project policy)
+/reports/

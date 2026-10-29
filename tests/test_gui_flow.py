@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QAbstractButton, QWizard
 
 from helpers import (
     CASE_TYPES,
+    fill_case_facts,
     make_wizard,
     navigate_to_export,
     prepare_case,
@@ -27,37 +28,68 @@ EXPECTED_ROUTE_PAGE = {
 
 
 def _internal_wizard_buttons(wizard):
-    """Qt's QWizard creates one unnamed internal button as a direct child."""
+    """Unnamed direct-child buttons Qt may create inside QWizard.
+
+    Whether this internal button exists is a Qt/platform implementation
+    detail (observed on Windows, absent elsewhere), so tests must accept
+    its absence and only assert the observable hiding contract.
+    """
     return [c for c in wizard.children()
             if isinstance(c, QAbstractButton) and not c.text() and not c.objectName()]
 
 
 def test_internal_wizard_header_button_is_hidden(qapp):
-    """Qt's QWizard creates an unnamed 32x32 internal button at the top-left of the
-    header area; on Windows it renders as a stray back arrow over the page title.
-    Navigation is provided by the standard Back/Next/Cancel bar, so the internal
-    button must stay hidden on every page while the real buttons keep working."""
+    """QWizard may create an unnamed 32x32 internal button at the top-left of the
+    header area; on Windows it renders as a stray back arrow over the page title,
+    while other platforms never create it. The contract is behavioral: any such
+    unnamed button must stay hidden on every page, its absence is equally valid,
+    and the real Back/Next/Finish/Cancel controls must keep working."""
     wizard, _ = make_wizard()
-    internal = _internal_wizard_buttons(wizard)
-    assert len(internal) == 1
-    # only the internal header button is explicitly hidden by the fix
-    assert internal[0].isHidden() is True
+    wizard.show()
+    qapp.processEvents()
 
-    wizard.restart()
+    assert len(_internal_wizard_buttons(wizard)) <= 1
+    # only the internal header button is explicitly hidden by the fix
+    for button in _internal_wizard_buttons(wizard):
+        assert button.isHidden() is True
+
+    # The real navigation buttons must never be swept into the hiding fix.
+    back = wizard.button(QWizard.BackButton)
+    next_btn = wizard.button(QWizard.NextButton)
+    finish = wizard.button(QWizard.FinishButton)
+    cancel = wizard.button(QWizard.CancelButton)
+    assert all(btn not in _internal_wizard_buttons(wizard)
+               for btn in (back, next_btn, finish, cancel))
+    assert next_btn.isVisible(), "Next must stay usable on the welcome page"
+    assert cancel.isVisible(), "Cancel must stay usable"
+
     wizard.next()  # welcome -> case selection
     select_case(wizard, "loan")
     wizard.next()  # -> party
     set_parties(wizard)
     wizard.next()  # -> loan claim
     assert wizard.currentId() == wizard.PAGE_LOAN_CLAIM
-    assert internal[0].isHidden() is True
+    # The real Next button stays disabled while mandatory fields are empty;
+    # fill the claim facts so the button clicks below can actually navigate.
+    fill_case_facts(wizard, "loan")
+    for button in _internal_wizard_buttons(wizard):
+        assert button.isHidden() is True
 
-    wizard.back()  # -> party
-    wizard.next()  # -> loan claim
-    wizard.next()  # -> evidence
-    wizard.next()  # -> export
+    back.click()  # the real Back button must still navigate
+    assert wizard.currentId() == wizard.PAGE_PARTY
+    next_btn.click()
+    assert wizard.currentId() == wizard.PAGE_LOAN_CLAIM
+    # Qt's default cleanupPage() resets registered fields when navigating back,
+    # so the mandatory fields are empty again; re-fill them to re-enable Next.
+    fill_case_facts(wizard, "loan")
+    next_btn.click()  # -> evidence
+    assert wizard.currentId() == wizard.PAGE_EVIDENCE
+    next_btn.click()  # -> export
     assert wizard.currentId() == wizard.PAGE_EXPORT
-    assert internal[0].isHidden() is True
+    for button in _internal_wizard_buttons(wizard):
+        assert button.isHidden() is True
+    assert finish.isVisible(), "Finish must stay usable on the export page"
+    assert cancel.isVisible(), "Cancel must stay usable on the export page"
 
 
 def _redirect_desktop(monkeypatch, base):
