@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QWizard,
 )
 
+from presenters.model_builder import SUPPORTED_CASE_TYPES
 from views.theme import PAGE_CONTENT_COLUMN, PRIMARY_BUTTON
 from views.widgets import CASE_TYPE_LABELS, StepIndicator, page_title
 from views.wizard_pages import (
@@ -224,6 +225,11 @@ class LawsuitWizard(QWizard):
 
         elif current == self.PAGE_PARTY:
             case_type = self.field("case_type")
+            if case_type not in SUPPORTED_CASE_TYPES:
+                # Fail closed: an unknown identifier must never fall through to
+                # the loan claim page; send the user back to the case selection
+                # page so they can pick a supported category again.
+                return self.PAGE_CASE_SELECTION
             if case_type == "contract":
                 return self.PAGE_CONTRACT_CLAIM
             elif case_type == "property":
@@ -410,7 +416,8 @@ class LawsuitWizard(QWizard):
             self.divorce_claim_page.asset_description.setText("房产归原告，车辆归被告")
             self.divorce_claim_page.court_name.setText("北京市朝阳区人民法院")
 
-        # Page 3: Evidence
-        self.evidence_page.table.setRowCount(0)
+        # Page 3: Evidence (cleared through the page's own state tracking so a
+        # demo fill counts as an explicit clear, not a "reload suggestions" cue).
+        self.evidence_page.clear_all_rows()
 
         QMessageBox.information(self, "提示", "测试数据已自动填入！您可以直接点击下一步查看并生成文档。")

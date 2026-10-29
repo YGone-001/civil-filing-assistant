@@ -79,9 +79,9 @@ def test_internal_wizard_header_button_is_hidden(qapp):
     assert wizard.currentId() == wizard.PAGE_PARTY
     next_btn.click()
     assert wizard.currentId() == wizard.PAGE_LOAN_CLAIM
-    # Qt's default cleanupPage() resets registered fields when navigating back,
-    # so the mandatory fields are empty again; re-fill them to re-enable Next.
-    fill_case_facts(wizard, "loan")
+    # Entered case facts survive Back/Next (fields are no longer reset), so
+    # the Next button stays enabled without re-entering anything.
+    assert wizard.loan_claim_page.principal.text() == "50000"
     next_btn.click()  # -> evidence
     assert wizard.currentId() == wizard.PAGE_EVIDENCE
     next_btn.click()  # -> export

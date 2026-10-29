@@ -4,7 +4,11 @@
 
 from PySide6.QtWidgets import QMessageBox
 
-from presenters.model_builder import build_case_model
+from presenters.model_builder import (
+    SUPPORTED_CASE_TYPES,
+    UnsupportedCaseTypeError,
+    build_case_model,
+)
 from utils.doc_generator import DocumentGenerator
 from utils.security_check import SecurityGuard
 from utils.batch_manager import BatchExportManager
@@ -60,6 +64,17 @@ class MainPresenter:
         """
         case_type = self.view.field("case_type")
 
+        # Fail closed on unsupported case identifiers: no fallback model, no
+        # document for a different category, no unhandled exception.
+        if case_type not in SUPPORTED_CASE_TYPES:
+            QMessageBox.warning(
+                self.view,
+                "案由无效",
+                "当前案由选择无效，无法生成文书。\n"
+                "请返回“选择案件类型”页面重新选择后再试；本次未导出任何文件。",
+            )
+            return self.FINISH_VALIDATION_FAILED
+
         # Never silently drop incomplete parties and then produce a document
         # that misrepresents the case; block export instead.
         if not self.view.party_page.isComplete():
@@ -71,7 +86,16 @@ class MainPresenter:
             )
             return self.FINISH_VALIDATION_FAILED
 
-        model = build_case_model(self.view)
+        try:
+            model = build_case_model(self.view)
+        except UnsupportedCaseTypeError:
+            QMessageBox.warning(
+                self.view,
+                "案由无效",
+                "当前案由选择无效，无法生成文书。\n"
+                "请返回“选择案件类型”页面重新选择后再试；本次未导出任何文件。",
+            )
+            return self.FINISH_VALIDATION_FAILED
 
         # Explicitly confirmed facts that contradict each other must block export
         # so that no self-contradictory document is published; the wizard stays

@@ -20,15 +20,30 @@ from models.case_model import (
 )
 
 _MODEL_BY_CASE_TYPE = {
+    "loan": LoanCaseModel,
     "contract": ContractCaseModel,
     "property": PropertyCaseModel,
     "labor": LaborCaseModel,
     "divorce": DivorceCaseModel,
 }
 
+# Single supported-case registry shared by model building, wizard routing and
+# presenter validation. Unknown identifiers must fail closed everywhere: they
+# may never silently become a loan case.
+SUPPORTED_CASE_TYPES = frozenset(_MODEL_BY_CASE_TYPE)
+
+
+class UnsupportedCaseTypeError(ValueError):
+    """Raised when the wizard reports a case type outside the supported registry."""
+
 
 def _model_for(case_type):
-    return _MODEL_BY_CASE_TYPE.get(case_type, LoanCaseModel)()
+    """Return the model instance for a supported case type; fail closed otherwise."""
+    try:
+        model_cls = _MODEL_BY_CASE_TYPE[case_type]
+    except (KeyError, TypeError):
+        raise UnsupportedCaseTypeError(f"不支持的案由类型：{case_type!r}")
+    return model_cls()
 
 
 def _text(value):
@@ -75,6 +90,7 @@ def _fill_contract(view, model):
     model.unpaid_amount = view.field("c_unpaid_amount")
     model.penalty_amount = view.field("c_penalty_amount")
     model.penalty_start_date = view.field("c_overdue_start")
+    model.penalty_cutoff_date = view.field("c_overdue_end")
 
     lpr_value = _text(view.field("c_lpr_value"))
     lpr_multiple = _text(view.field("c_lpr_multiple"))
@@ -84,6 +100,17 @@ def _fill_contract(view, model):
         model.penalty_calc_standard = f"{lpr_value}%×{lpr_multiple}"
     else:
         model.penalty_calc_standard = ""
+
+    # The penalty amount may only be described as "calculated" (with its actual
+    # cutoff) while it is the untouched result of an auxiliary calculator run
+    # with unchanged inputs; a manually typed amount carries no such basis.
+    basis = view.contract_claim_page.get_penalty_calc_basis()
+    if basis is not None:
+        model.penalty_calc_method = basis["method"]
+        model.penalty_calc_cutoff = basis["cutoff"]
+    else:
+        model.penalty_calc_method = ""
+        model.penalty_calc_cutoff = ""
 
     model.court_name = view.field("c_court_name")
 
@@ -131,6 +158,7 @@ def _fill_divorce(view, model):
 
 
 _FILLERS = {
+    "loan": _fill_loan,
     "contract": _fill_contract,
     "property": _fill_property,
     "labor": _fill_labor,
@@ -145,8 +173,7 @@ def build_case_model(view):
 
     _add_parties(model, view.party_page.get_party_data())
 
-    filler = _FILLERS.get(case_type, _fill_loan)
-    filler(view, model)
+    _FILLERS[case_type](view, model)
 
     for name, target in view.evidence_page.get_evidence_items():
         model.evidences.append(EvidenceItem(name, target))

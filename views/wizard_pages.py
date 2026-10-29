@@ -234,6 +234,19 @@ class _TitledPage(QWizardPage):
         # banner appears; Python callers still get the real heading text here.
         return getattr(self, "_page_title", "")
 
+    def cleanupPage(self):
+        """Keep entered values when the user navigates back.
+
+        ``QWizardPage``'s default ``cleanupPage()`` resets every field
+        registered with ``registerField()`` to its initial value, which
+        silently erased entered case facts whenever the user pressed 上一步
+        and moved forward again. All wizard state lives in the page widgets
+        themselves, so leaving it untouched is safe; case-type switches are
+        re-handled by ``PartyPage.initializePage()`` and the per-category
+        evidence state in ``EvidencePage``.
+        """
+        return None
+
 
 class WelcomePage(_TitledPage):
     def __init__(self):
@@ -1044,7 +1057,7 @@ class ContractClaimPage(_TitledPage):
         self.overdue_end.setPlaceholderText("格式 YYYY-MM-DD（留空默认今天）")
 
         self.lpr_value = QLineEdit("3.45")
-        self.lpr_value.setPlaceholderText("LPR(%)，手动维护")
+        self.lpr_value.setPlaceholderText("LPR(%)，示例值需自行核实")
         _decimal_validator(self.lpr_value)
 
         self.lpr_multiple = QLineEdit("4")
@@ -1074,6 +1087,8 @@ class ContractClaimPage(_TitledPage):
         self.calc_help = QLabel(
             "辅助计算仅依据上方填写的本金、逾期起止日与 LPR 估算，结果自动填入"
             "“违约金/逾期利息”框，可手动修改；最终是否支持及其数额由法院认定。"
+            "LPR 与倍数是本工具内置的示例参数（不联网更新），不代表当前适用的"
+            "官方利率，请在提交前自行核实后再使用。"
         )
         self.calc_help.setObjectName(INFO_LABEL)
         self.calc_help.setWordWrap(True)
@@ -1117,6 +1132,17 @@ class ContractClaimPage(_TitledPage):
         # Keep the Next-button state in sync with the conditional requirement.
         self.delivery_date.textChanged.connect(lambda *_: self._refresh_conditional())
         self.is_delivered_group.buttonToggled.connect(lambda *_: self._refresh_conditional())
+
+        # Auxiliary-calculation provenance: the generated claim may only state
+        # a cutoff date while the penalty amount is the untouched result of a
+        # calculator run with unchanged inputs. Any later manual edit (of the
+        # amount or of a calculation input) clears the recorded basis.
+        self._penalty_calc_basis = None
+        self._applying_penalty_calc = False
+        for widget in (self.unpaid_amount, self.overdue_start, self.overdue_end,
+                       self.lpr_value, self.lpr_multiple):
+            widget.textChanged.connect(self._invalidate_penalty_basis)
+        self.penalty_amount.textChanged.connect(self._on_penalty_amount_edited)
 
     def _conditional_issue(self):
         """Return a message when a scenario-specific requirement is unmet."""
@@ -1192,26 +1218,76 @@ class ContractClaimPage(_TitledPage):
             return None
         return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
 
-    def _get_overdue_days(self):
+    def _resolve_overdue_cutoff(self):
+        """Resolve the penalty calculators' date interval explicitly.
+
+        Returns ``(start, cutoff, error_message)``. An unparseable explicit
+        cutoff is reported as an error instead of silently falling back to
+        today's date; a blank cutoff uses the current date and is recorded as
+        the calculation-day fallback.
+        """
         import datetime
-        d1 = self._parse_date(self.overdue_start.text())
-        d2 = self._parse_date(self.overdue_end.text()) or datetime.date.today()
-        if not d1:
-            return None, None, None
-        days = (d2 - d1).days
-        return d1, d2, days
+        start = self._parse_date(self.overdue_start.text())
+        if start is None:
+            return None, None, "请填写正确的逾期起算日（格式 YYYY-MM-DD）。"
+        end_text = self.overdue_end.text().strip()
+        if end_text:
+            cutoff = self._parse_date(end_text)
+            if cutoff is None:
+                return None, None, "违约金计算截止日格式无法识别（格式 YYYY-MM-DD），请修正后再计算。"
+        else:
+            cutoff = datetime.date.today()
+        if cutoff < start:
+            return None, None, "违约金计算截止日早于起算日，请核对后重新填写。"
+        return start, cutoff, ""
+
+    def _invalidate_penalty_basis(self, *_):
+        """A manual edit of a calculation input invalidates the recorded basis."""
+        if self._applying_penalty_calc:
+            return
+        self._penalty_calc_basis = None
+
+    def _on_penalty_amount_edited(self, *_):
+        self.update_penalty_warning()
+        if not self._applying_penalty_calc:
+            self._penalty_calc_basis = None
+
+    def _apply_calculated_penalty(self, text, method, cutoff):
+        """Fill the penalty box from an auxiliary calculator and record its basis."""
+        self._applying_penalty_calc = True
+        try:
+            self.penalty_amount.setText(text)
+        finally:
+            self._applying_penalty_calc = False
+        self._penalty_calc_basis = {"method": method, "cutoff": cutoff.isoformat()}
+        self.update_penalty_warning()
+
+    def get_penalty_calc_basis(self):
+        """Return the recorded auxiliary-calculation basis, or ``None``.
+
+        The basis exists only while the penalty amount is the untouched result
+        of a calculator run with unchanged inputs; it carries the calculation
+        method and the cutoff date that computation actually used, so the
+        exported claim can describe it truthfully.
+        """
+        if not self._penalty_calc_basis:
+            return None
+        return dict(self._penalty_calc_basis)
 
     def calc_penalty_daily_5_per_10k(self):
         from PySide6.QtWidgets import QMessageBox
         try:
             unpaid = float(self.unpaid_amount.text().strip())
-            d1, d2, days = self._get_overdue_days()
-            if days is None or days <= 0:
+            start, cutoff, error = self._resolve_overdue_cutoff()
+            if error:
+                QMessageBox.warning(self, "提示", error)
+                return
+            days = (cutoff - start).days
+            if days <= 0:
                 QMessageBox.warning(self, "提示", "请填写正确的逾期起算日，且截止日应晚于起算日。")
                 return
             penalty = unpaid * 0.0005 * days
-            self.penalty_amount.setText(f"{penalty:.2f}")
-            self.update_penalty_warning()
+            self._apply_calculated_penalty(f"{penalty:.2f}", "daily_5_per_10k", cutoff)
         except Exception:
             QMessageBox.warning(self, "提示", "请先填写有效的“尚欠货款本金(元)”与日期(YYYY-MM-DD)。")
 
@@ -1221,14 +1297,17 @@ class ContractClaimPage(_TitledPage):
             unpaid = float(self.unpaid_amount.text().strip())
             lpr = float(self.lpr_value.text().strip())
             mult = float(self.lpr_multiple.text().strip())
-            d1, d2, days = self._get_overdue_days()
-            if days is None or days <= 0:
+            start, cutoff, error = self._resolve_overdue_cutoff()
+            if error:
+                QMessageBox.warning(self, "提示", error)
+                return
+            days = (cutoff - start).days
+            if days <= 0:
                 QMessageBox.warning(self, "提示", "请填写正确的逾期起算日，且截止日应晚于起算日。")
                 return
             annual_rate = (lpr * mult) / 100.0
             penalty = unpaid * annual_rate * (days / 365.0)
-            self.penalty_amount.setText(f"{penalty:.2f}")
-            self.update_penalty_warning()
+            self._apply_calculated_penalty(f"{penalty:.2f}", "lpr_multiple", cutoff)
         except Exception:
             QMessageBox.warning(self, "提示", "请先填写有效的本金、LPR、倍数与日期(YYYY-MM-DD)。")
 
@@ -1296,6 +1375,17 @@ class LoanClaimPage(_TitledPage):
         amounts.addRow("约定年利率(%):", self.rate)
         amounts.addRow("", self.rate_warning)
         amounts.addRow("利息起算日:", self.start_date)
+
+        # Neutral limitation note (no legal conclusion): the current model
+        # claims the full principal and has no repayment-history fields, so
+        # users with partial repayments must adjust the amount themselves.
+        self.repayment_hint = QLabel(
+            "说明：当前版本按出借本金全额主张，暂不支持登记已还款记录；"
+            "如存在部分还款，请自行调整本金金额并在诉讼中如实说明。"
+        )
+        self.repayment_hint.setObjectName(INFO_LABEL)
+        self.repayment_hint.setWordWrap(True)
+        amounts.addRow("", self.repayment_hint)
 
         # --- 三、催款情况（选填） -------------------------------------------
         demand = _section(root, "三、催款情况（选填）")
@@ -1619,49 +1709,148 @@ class EvidencePage(_TitledPage):
         layout.addWidget(self.table)
 
         # Number of rows that came from EvidenceLibrary suggestions.  Rows beyond
-        # this count were added by the user and are not tinted.
+        # this count were added by the user and are not tinted.  The count is
+        # maintained from per-item suggested flags, so it stays correct after
+        # arbitrary deletion and insertion.
         self._suggested_count = 0
+
+        # Per-category evidence state.  Rows are stashed when the user switches
+        # category and restored verbatim when they switch back, all in memory:
+        #   NOT_INITIALIZED              -> the category was never shown
+        #   INITIALIZED_WITH_SUGGESTIONS -> only library suggestions are present
+        #   USER_MODIFIED                -> the user kept/edited/added rows
+        #   USER_EXPLICITLY_CLEARED      -> the user deleted every row
+        self.NOT_INITIALIZED = "NOT_INITIALIZED"
+        self.INITIALIZED_WITH_SUGGESTIONS = "INITIALIZED_WITH_SUGGESTIONS"
+        self.USER_MODIFIED = "USER_MODIFIED"
+        self.USER_EXPLICITLY_CLEARED = "USER_EXPLICITLY_CLEARED"
+        self._loaded_case_type = None
+        self._stashed_rows = {}
+        self._case_state = {}
+        self._loading_rows = False
+        self.table.itemChanged.connect(self._on_item_changed)
 
         self.setLayout(content_column(layout))
 
     def initializePage(self):
         super().initializePage()
         try:
-            from utils.evidence_library import EvidenceLibrary
             case_type = self.wizard().field("case_type")
-            items = EvidenceLibrary.get_default_evidence(case_type)
-            if case_type == "contract":
-                self.desc_label.setText("买卖合同纠纷常见证据（可按需修改/增删）：")
-            elif case_type == "loan":
-                self.desc_label.setText("民间借贷纠纷常见证据（可按需修改/增删）：")
-            elif case_type == "property":
-                self.desc_label.setText("物业服务合同纠纷常见证据（可按需修改/增删）：")
-            elif case_type == "labor":
-                self.desc_label.setText("劳动报酬/工资追索常见证据（可按需修改/增删）：")
-            elif case_type == "divorce":
-                self.desc_label.setText("离婚纠纷常见证据（可按需修改/增删）：")
-            else:
-                self.desc_label.setText("常见证据（可按需修改/增删）：")
-            if self.table.rowCount() == 0:
-                self._suggested_count = 0
-                for name, target in items:
-                    self.add_row(name, target, suggested=True)
+            if case_type == self._loaded_case_type:
+                # Same-category re-entry (e.g. Back then Next): keep the rows
+                # exactly as they are, so a deliberately emptied list stays
+                # empty and user edits are never restored over.
+                return
+            if self._loaded_case_type is not None:
+                # Switching category: stash the current rows under their own
+                # category so nothing leaks into the new one and edits remain
+                # recoverable when the user switches back this session.
+                self._stashed_rows[self._loaded_case_type] = self._collect_rows()
+            self._load_case_evidence(case_type)
         except Exception:
             return
+
+    def _set_case_description(self, case_type):
+        if case_type == "contract":
+            self.desc_label.setText("买卖合同纠纷常见证据（可按需修改/增删）：")
+        elif case_type == "loan":
+            self.desc_label.setText("民间借贷纠纷常见证据（可按需修改/增删）：")
+        elif case_type == "property":
+            self.desc_label.setText("物业服务合同纠纷常见证据（可按需修改/增删）：")
+        elif case_type == "labor":
+            self.desc_label.setText("劳动报酬/工资追索常见证据（可按需修改/增删）：")
+        elif case_type == "divorce":
+            self.desc_label.setText("离婚纠纷常见证据（可按需修改/增删）：")
+        else:
+            self.desc_label.setText("常见证据（可按需修改/增删）：")
+
+    def _load_case_evidence(self, case_type):
+        """(Re)load the evidence table for *case_type*.
+
+        Previously stashed rows for the category are restored verbatim
+        (including their suggested/user markers); on first visit the category's
+        library suggestions are loaded. Rows from another category are never
+        carried over.
+        """
+        from utils.evidence_library import EvidenceLibrary
+
+        self._loading_rows = True
+        try:
+            self._loaded_case_type = case_type
+            self.table.setRowCount(0)
+            self._suggested_count = 0
+            self._set_case_description(case_type)
+            stashed = self._stashed_rows.get(case_type)
+            if stashed is not None:
+                for name, target, suggested in stashed:
+                    self.add_row(name, target, suggested=suggested, auto_edit=False)
+                self._case_state[case_type] = (
+                    self.USER_EXPLICITLY_CLEARED if not stashed else self.USER_MODIFIED
+                )
+                return
+            for name, target in EvidenceLibrary.get_default_evidence(case_type):
+                self.add_row(name, target, suggested=True, auto_edit=False)
+            self._case_state[case_type] = (
+                self.INITIALIZED_WITH_SUGGESTIONS if self.table.rowCount() else self.NOT_INITIALIZED
+            )
+        finally:
+            self._loading_rows = False
+
+    def _is_suggested_row(self, row):
+        item = self.table.item(row, 0)
+        return bool(item is not None and item.data(Qt.ItemDataRole.UserRole))
+
+    def _collect_rows(self):
+        """Snapshot the table as ``(name, target, suggested)`` tuples."""
+        rows = []
+        for r in range(self.table.rowCount()):
+            name_item = self.table.item(r, 0)
+            target_item = self.table.item(r, 1)
+            name = name_item.text() if name_item else ""
+            target = target_item.text() if target_item else ""
+            rows.append((name, target, self._is_suggested_row(r)))
+        return rows
+
+    def _on_item_changed(self, *_):
+        if self._loading_rows:
+            return
+        self._refresh_state_after_edit()
+
+    def _refresh_state_after_edit(self):
+        """Record user interaction with the current category's evidence list."""
+        if self._loaded_case_type is None:
+            return
+        if self.table.rowCount() == 0:
+            self._case_state[self._loaded_case_type] = self.USER_EXPLICITLY_CLEARED
+        else:
+            self._case_state[self._loaded_case_type] = self.USER_MODIFIED
+
+    def get_case_state(self, case_type=None):
+        """Return the recorded evidence state for a category (tests/introspection)."""
+        return self._case_state.get(case_type or self._loaded_case_type)
+
+    def clear_all_rows(self):
+        """Remove every row (new-case/demo entry) and record the cleared state."""
+        self.table.setRowCount(0)
+        self._suggested_count = 0
+        if self._loaded_case_type is not None:
+            self._case_state[self._loaded_case_type] = self.USER_EXPLICITLY_CLEARED
 
     def add_row(self, name="", target="", suggested=False, auto_edit=True):
         """Append a row and optionally start editing the first cell.
 
-        ``suggested=True`` tints the row so the user can distinguish
-        EvidenceLibrary defaults from rows they added.  ``auto_edit=True``
-        puts the cursor straight into the first cell so the user can type
-        without a second click.
+        ``suggested=True`` tints the row (and flags it as suggested via item
+        data, so the marker survives arbitrary deletions) so the user can
+        distinguish EvidenceLibrary defaults from rows they added.
+        ``auto_edit=True`` puts the cursor straight into the first cell so the
+        user can type without a second click.
         """
         row = self.table.rowCount()
         self.table.insertRow(row)
         name_item = QTableWidgetItem(str(name))
         target_item = QTableWidgetItem(str(target))
         if suggested:
+            name_item.setData(Qt.ItemDataRole.UserRole, True)
             name_item.setBackground(self._SUGGESTED_TINT)
             target_item.setBackground(self._SUGGESTED_TINT)
             self._suggested_count += 1
@@ -1670,6 +1859,8 @@ class EvidencePage(_TitledPage):
         if auto_edit and not suggested:
             self.table.setCurrentItem(name_item)
             self.table.editItem(name_item)
+        if not self._loading_rows:
+            self._refresh_state_after_edit()
 
     def remove_selected_rows(self):
         """Remove selected rows, confirming only when content would be lost."""
@@ -1700,10 +1891,14 @@ class EvidencePage(_TitledPage):
             if reply != QMessageBox.StandardButton.Yes:
                 return
 
+        removed_suggested = 0
         for r in rows:
+            if self._is_suggested_row(r):
+                removed_suggested += 1
             self.table.removeRow(r)
-            if r < self._suggested_count:
-                self._suggested_count = max(0, self._suggested_count - 1)
+        self._suggested_count = max(0, self._suggested_count - removed_suggested)
+        if not self._loading_rows:
+            self._refresh_state_after_edit()
 
     def get_evidence_items(self):
         items = []

@@ -285,21 +285,36 @@ class ContractCaseModel(CaseTemplate):
         self.unpaid_amount = ""
         self.penalty_amount = ""
         self.penalty_start_date = ""
+        # Explicit user-entered cutoff for the penalty calculation. Kept on the
+        # model so the calculation basis cannot drift between UI and document.
+        self.penalty_cutoff_date = ""
+        # Provenance of penalty_amount: set only while it is the untouched
+        # result of an auxiliary calculator run ("daily_5_per_10k" or
+        # "lpr_multiple") with unchanged inputs; a manually typed amount
+        # carries no calculation basis and no cutoff may be claimed for it.
+        self.penalty_calc_method = ""
+        self.penalty_calc_cutoff = ""
         self.penalty_calc_standard = ""
+        # Legacy placeholder kept for compatibility; never populated or read.
         self.liquidated_damages_formula = ""
 
     def render_claims(self):
         claims = []
         claims.append(f"判令被告向原告支付货款本金人民币 {self.unpaid_amount} 元；")
         if self.penalty_amount:
-            if self.penalty_start_date and self.penalty_calc_standard:
+            if (self.penalty_calc_method and self.penalty_calc_cutoff
+                    and self.penalty_start_date and self.penalty_calc_standard):
+                # The amount is the untouched result of an auxiliary calculator
+                # run, so the claim may state the cutoff that computation
+                # actually used instead of falsely asserting "起诉之日".
                 claims.append(
                     f"判令被告向原告支付逾期付款违约金（以 {self.unpaid_amount} 元为基数，"
                     f"自 {self.penalty_start_date} 起按 {self.penalty_calc_standard} 计算至实际清偿之日止，"
-                    f"暂计至起诉之日为 {self.penalty_amount} 元；上述计算标准由当事人填写，"
+                    f"暂计至 {self.penalty_calc_cutoff} 为 {self.penalty_amount} 元；上述计算标准由当事人填写，"
                     f"具体适用请结合合同约定与法律规定人工核对）；"
                 )
             else:
+                # No verified calculation basis: no cutoff date may be asserted.
                 claims.append(f"判令被告向原告支付违约金（或逾期付款利息）人民币 {self.penalty_amount} 元；")
         claims.append("本案诉讼费由被告承担。")
         return claims
