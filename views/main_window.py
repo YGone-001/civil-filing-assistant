@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
     QWizard,
 )
 
-from presenters.model_builder import SUPPORTED_CASE_TYPES
+from presenters.model_builder import is_supported_case_type
 from views.theme import PAGE_CONTENT_COLUMN, PRIMARY_BUTTON
 from views.widgets import CASE_TYPE_LABELS, StepIndicator, page_title
 from views.wizard_pages import (
@@ -200,7 +200,9 @@ class LawsuitWizard(QWizard):
         current = self.currentId()
         step = self.STEP_OF_PAGE.get(current, 0)
         case_type = self.field("case_type")
-        case_label = CASE_TYPE_LABELS.get(case_type, "")
+        # Guard against non-string/unhashable field values: this slot runs on
+        # every currentIdChanged and must never raise inside the Qt callback.
+        case_label = CASE_TYPE_LABELS.get(case_type, "") if is_supported_case_type(case_type) else ""
         for indicator in self._step_indicators:
             indicator.set_current(step)
             indicator.set_case_label(case_label)
@@ -225,10 +227,11 @@ class LawsuitWizard(QWizard):
 
         elif current == self.PAGE_PARTY:
             case_type = self.field("case_type")
-            if case_type not in SUPPORTED_CASE_TYPES:
-                # Fail closed: an unknown identifier must never fall through to
-                # the loan claim page; send the user back to the case selection
-                # page so they can pick a supported category again.
+            if not is_supported_case_type(case_type):
+                # Fail closed: an unknown (or unhashable) identifier must never
+                # fall through to the loan claim page; send the user back to
+                # the case selection page so they can pick a supported
+                # category again.
                 return self.PAGE_CASE_SELECTION
             if case_type == "contract":
                 return self.PAGE_CONTRACT_CLAIM

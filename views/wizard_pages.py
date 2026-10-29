@@ -2330,7 +2330,10 @@ class ExportPage(_TitledPage):
 
         wizard = self.wizard()
         case_type = wizard.field("case_type")
-        label = CASE_TYPE_LABELS.get(case_type, "未知案由")
+        label = (
+            CASE_TYPE_LABELS.get(case_type, "未知案由")
+            if isinstance(case_type, str) else "未知案由"
+        )
 
         try:
             from presenters.model_builder import build_case_model

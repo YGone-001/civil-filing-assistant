@@ -304,14 +304,18 @@ class ContractCaseModel(CaseTemplate):
         if self.penalty_amount:
             if (self.penalty_calc_method and self.penalty_calc_cutoff
                     and self.penalty_start_date and self.penalty_calc_standard):
-                # The amount is the untouched result of an auxiliary calculator
-                # run, so the claim may state the cutoff that computation
-                # actually used instead of falsely asserting "起诉之日".
+                # The description must match the calculator that actually
+                # produced the amount: the daily 万五 convention is the tool's
+                # own auxiliary standard, while the LPR standard comes from
+                # user-entered parameters.
+                if self.penalty_calc_method == "daily_5_per_10k":
+                    basis_note = "该折算口径为本工具的辅助约定，具体适用请结合合同约定与法律规定人工核对"
+                else:
+                    basis_note = "上述计算标准由当事人填写，具体适用请结合合同约定与法律规定人工核对"
                 claims.append(
                     f"判令被告向原告支付逾期付款违约金（以 {self.unpaid_amount} 元为基数，"
                     f"自 {self.penalty_start_date} 起按 {self.penalty_calc_standard} 计算至实际清偿之日止，"
-                    f"暂计至 {self.penalty_calc_cutoff} 为 {self.penalty_amount} 元；上述计算标准由当事人填写，"
-                    f"具体适用请结合合同约定与法律规定人工核对）；"
+                    f"暂计至 {self.penalty_calc_cutoff} 为 {self.penalty_amount} 元；{basis_note}）；"
                 )
             else:
                 # No verified calculation basis: no cutoff date may be asserted.

@@ -5,9 +5,9 @@
 from PySide6.QtWidgets import QMessageBox
 
 from presenters.model_builder import (
-    SUPPORTED_CASE_TYPES,
     UnsupportedCaseTypeError,
     build_case_model,
+    is_supported_case_type,
 )
 from utils.doc_generator import DocumentGenerator
 from utils.security_check import SecurityGuard
@@ -64,9 +64,10 @@ class MainPresenter:
         """
         case_type = self.view.field("case_type")
 
-        # Fail closed on unsupported case identifiers: no fallback model, no
-        # document for a different category, no unhandled exception.
-        if case_type not in SUPPORTED_CASE_TYPES:
+        # Fail closed on unsupported case identifiers (including unhashable
+        # values a frozenset membership test would choke on): no fallback
+        # model, no document for a different category, no uncaught exception.
+        if not is_supported_case_type(case_type):
             QMessageBox.warning(
                 self.view,
                 "案由无效",

@@ -26,6 +26,7 @@ from presenters.model_builder import (
     UnsupportedCaseTypeError,
     _model_for,
     build_case_model,
+    is_supported_case_type,
 )
 
 
@@ -64,12 +65,82 @@ def test_valid_case_types_build_their_own_model(case_type, cls):
     assert isinstance(build_case_model(_fake_view(case_type)), cls)
 
 
-@pytest.mark.parametrize("bad", ["unknown", "", "LOAN", " loan", "loan ", None, 123, ["loan"]])
+@pytest.mark.parametrize("bad", ["unknown", "", "LOAN", " loan", "loan ", None, 123, ["loan"], {"type": "loan"}])
 def test_unknown_case_type_fails_closed_in_model_builder(bad):
     with pytest.raises(UnsupportedCaseTypeError):
         _model_for(bad)
     with pytest.raises(UnsupportedCaseTypeError):
         build_case_model(_fake_view(bad))
+
+
+# --- C-02: every entry point must fail closed for unhashable values too -----
+
+INVALID_CASE_TYPES = [None, "", "unknown", "LOAN", " loan", 123, ["loan"], {"type": "loan"}]
+
+
+def test_supported_case_type_validator_accepts_exactly_five_identifiers():
+    for valid in ("loan", "contract", "property", "labor", "divorce"):
+        assert is_supported_case_type(valid) is True
+
+
+@pytest.mark.parametrize("bad", INVALID_CASE_TYPES)
+def test_supported_case_type_validator_rejects_without_raising(bad):
+    assert is_supported_case_type(bad) is False
+
+
+@pytest.mark.parametrize("bad", INVALID_CASE_TYPES)
+def test_presenter_finish_fail_closed_for_every_invalid_type(
+    qapp, monkeypatch, tmp_path, dialog_recorder, bad
+):
+    desktop = _redirect_desktop(monkeypatch, tmp_path)
+    wizard, presenter = make_wizard()
+    monkeypatch.setattr(
+        wizard, "field", lambda name, _v=bad: _v if name == "case_type" else ""
+    )
+    set_parties(wizard)
+
+    result = presenter.attempt_finish()  # must not raise (incl. unhashable)
+
+    assert result == presenter.FINISH_VALIDATION_FAILED
+    assert any(entry["kind"] == "warning" for entry in dialog_recorder)
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+    assert not wizard.result(), "the wizard must not close as if export succeeded"
+
+
+@pytest.mark.parametrize("bad", INVALID_CASE_TYPES)
+def test_wizard_routing_fail_closed_for_every_invalid_type(qapp, monkeypatch, bad):
+    wizard, _ = make_wizard()
+    monkeypatch.setattr(
+        wizard, "field", lambda name, _v=bad: _v if name == "case_type" else ""
+    )
+    wizard.restart()
+    wizard.next()  # welcome -> case selection
+    wizard.next()  # -> party
+    set_parties(wizard)
+
+    target = wizard.nextId()  # must not raise (incl. unhashable)
+
+    assert target == wizard.PAGE_CASE_SELECTION
+    assert target not in (
+        wizard.PAGE_LOAN_CLAIM,
+        wizard.PAGE_CONTRACT_CLAIM,
+        wizard.PAGE_PROPERTY_CLAIM,
+        wizard.PAGE_LABOR_CLAIM,
+        wizard.PAGE_DIVORCE_CLAIM,
+    )
+
+
+@pytest.mark.parametrize("bad", INVALID_CASE_TYPES)
+def test_preview_fail_closed_for_every_invalid_type(qapp, monkeypatch, dialog_recorder, bad):
+    wizard, _ = make_wizard()
+    monkeypatch.setattr(
+        wizard, "field", lambda name, _v=bad: _v if name == "case_type" else ""
+    )
+
+    wizard.export_page.show_preview()  # must not raise (incl. unhashable)
+
+    assert any(entry["kind"] == "warning" for entry in dialog_recorder)
+    assert not any(entry["kind"] == "critical" for entry in dialog_recorder)
 
 
 def test_wizard_routing_never_reaches_a_claim_page_for_unknown_type(qapp, monkeypatch):

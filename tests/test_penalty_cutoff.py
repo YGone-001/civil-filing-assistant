@@ -10,8 +10,9 @@ may only state a cutoff while that basis is intact. All data is fictional.
 """
 
 import datetime
+import os
 
-from helpers import make_wizard, prepare_case
+from helpers import docx_all_text, make_wizard, prepare_case
 from presenters.model_builder import build_case_model
 
 
@@ -35,18 +36,18 @@ def _penalty_claim(model):
 
 
 def _prepared_page():
-    wizard, _ = make_wizard()
+    wizard, presenter = make_wizard()
     prepare_case(wizard, "contract")
     page = wizard.contract_claim_page
     page.unpaid_amount.setText("30000")
     page.overdue_start.setText("2023-03-01")
     page.lpr_value.setText("3.45")
     page.lpr_multiple.setText("4")
-    return wizard, page
+    return wizard, presenter, page
 
 
 def test_explicit_cutoff_is_recorded_end_to_end(qapp):
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     page.overdue_end.setText("2023-06-30")
     page.calc_penalty_by_lpr_multiple()
 
@@ -69,7 +70,7 @@ def test_explicit_cutoff_is_recorded_end_to_end(qapp):
 
 def test_blank_cutoff_uses_the_calculation_day_and_is_recorded(qapp, monkeypatch):
     frozen = _freeze_today(monkeypatch, 2026, 3, 15)
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     page.overdue_end.setText("")  # blank -> calculation-day fallback
     page.calc_penalty_by_lpr_multiple()
 
@@ -84,7 +85,7 @@ def test_blank_cutoff_uses_the_calculation_day_and_is_recorded(qapp, monkeypatch
 
 def test_manual_amount_gets_flat_claim_without_cutoff_claim(qapp):
     """A hand-typed amount must not be described as app-calculated."""
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     page.penalty_amount.setText("5000")  # manual entry, no calculator run
 
     assert page.get_penalty_calc_basis() is None
@@ -98,7 +99,7 @@ def test_manual_amount_gets_flat_claim_without_cutoff_claim(qapp):
 
 
 def test_invalid_explicit_cutoff_blocks_the_calculator(qapp, dialog_recorder):
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     page.penalty_amount.setText("")
     page.overdue_end.setText("不是日期")
 
@@ -110,7 +111,7 @@ def test_invalid_explicit_cutoff_blocks_the_calculator(qapp, dialog_recorder):
 
 
 def test_reversed_cutoff_blocks_the_calculator(qapp, dialog_recorder):
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     page.penalty_amount.setText("")
     page.overdue_end.setText("2023-02-01")  # before the start date
 
@@ -122,7 +123,7 @@ def test_reversed_cutoff_blocks_the_calculator(qapp, dialog_recorder):
 
 
 def test_daily_calculator_records_its_basis(qapp):
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     page.overdue_end.setText("2023-03-08")
     page.calc_penalty_daily_5_per_10k()
 
@@ -134,7 +135,7 @@ def test_daily_calculator_records_its_basis(qapp):
 
 
 def test_editing_calculation_inputs_invalidates_the_basis(qapp):
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     page.overdue_end.setText("2023-06-30")
     page.calc_penalty_by_lpr_multiple()
     assert page.get_penalty_calc_basis() is not None
@@ -149,7 +150,7 @@ def test_editing_calculation_inputs_invalidates_the_basis(qapp):
 
 
 def test_manual_override_after_calculation_invalidates_the_basis(qapp):
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     page.overdue_end.setText("2023-06-30")
     page.calc_penalty_by_lpr_multiple()
     assert page.get_penalty_calc_basis() is not None
@@ -162,7 +163,7 @@ def test_manual_override_after_calculation_invalidates_the_basis(qapp):
 
 
 def test_calculation_basis_survives_back_next_navigation(qapp):
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     page.overdue_end.setText("2023-06-30")
     page.calc_penalty_by_lpr_multiple()
 
@@ -184,9 +185,165 @@ def test_calculation_basis_survives_back_next_navigation(qapp):
 
 def test_provenance_hints_present_on_contract_page(qapp):
     """The LPR defaults must be presented as unverified examples (P1-07)."""
-    wizard, page = _prepared_page()
+    wizard, presenter, page = _prepared_page()
     help_text = page.calc_help.text()
     assert "示例" in help_text
     assert "不代表" in help_text
     assert "核实" in help_text
     assert "核实" in page.lpr_value.placeholderText()
+
+
+# --- C-01: the claimed standard must name the calculator actually used ------
+
+
+def _redirect_home(monkeypatch, tmp_path):
+    """Redirect expanduser BEFORE wizard creation: ExportPage captures its
+    default output directory at construction time."""
+    home = tmp_path / "home"
+    home.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(os.path, "expanduser", lambda *a, **k: str(home))
+    return home / "Desktop"
+
+
+def _export_complaint(desktop, wizard, presenter):
+    """Run a real export and return the generated complaint's full text."""
+    assert presenter.attempt_finish() == presenter.FINISH_SUCCESS
+    docs = sorted(desktop.rglob("*.docx"))
+    assert len(docs) == 3
+    complaint = next(d for d in docs if "民事起诉状" in d.name)
+    return docx_all_text(complaint)
+
+
+def test_daily_calculation_describes_daily_standard_not_lpr(qapp):
+    """C-01 repro (deterministic): a daily 万五 amount must never be described
+    with the LPR-multiple standard, even when the LPR fields hold values."""
+    wizard, presenter, page = _prepared_page()  # LPR fields carry the 3.45 / 4 defaults
+    page.overdue_end.setText("2023-03-08")
+    page.calc_penalty_daily_5_per_10k()
+
+    assert page.penalty_amount.text() == "105.00"
+    assert page.get_penalty_calc_basis() == {
+        "method": "daily_5_per_10k",
+        "cutoff": "2023-03-08",
+    }
+
+    claim = _penalty_claim(build_case_model(wizard))
+    assert "3.45%×4" not in claim, claim
+    assert "日万分之五" in claim, claim
+
+
+def test_daily_method_docx_names_daily_standard(qapp, monkeypatch, tmp_path, dialog_recorder):
+    """The exported complaint must state the method that produced the amount."""
+    desktop = _redirect_home(monkeypatch, tmp_path)
+    wizard, presenter, page = _prepared_page()
+    page.overdue_end.setText("2023-03-08")
+    page.calc_penalty_daily_5_per_10k()
+
+    text = _export_complaint(desktop, wizard, presenter)
+
+    assert "105.00" in text
+    assert "日万分之五" in text
+    assert "3.45%×4" not in text
+    assert "起诉之日" not in text
+    assert "30000" in text  # the outstanding-principal claim is unchanged
+
+
+def test_daily_basis_valid_without_lpr_inputs(qapp):
+    """The daily calculator must not require LPR inputs to keep its basis."""
+    wizard, presenter, page = _prepared_page()
+    page.lpr_value.setText("")
+    page.lpr_multiple.setText("")
+    page.overdue_end.setText("2023-03-08")
+    page.calc_penalty_daily_5_per_10k()
+
+    assert page.penalty_amount.text() == "105.00"
+    assert page.get_penalty_calc_basis()["method"] == "daily_5_per_10k"
+
+    claim = _penalty_claim(build_case_model(wizard))
+    assert "日万分之五" in claim
+    assert "3.45%×4" not in claim
+
+
+def test_editing_lpr_after_daily_calc_conservatively_invalidates(qapp):
+    """Editing any recorded-relevant input clears the basis (no false facts)."""
+    wizard, presenter, page = _prepared_page()
+    page.overdue_end.setText("2023-03-08")
+    page.calc_penalty_daily_5_per_10k()
+    assert page.get_penalty_calc_basis() is not None
+
+    page.lpr_value.setText("3.65")
+
+    assert page.get_penalty_calc_basis() is None
+    claim = _penalty_claim(build_case_model(wizard))
+    assert "日万分之五" not in claim and "3.45%×4" not in claim
+
+
+def test_lpr_method_does_not_mention_daily_standard(qapp):
+    wizard, presenter, page = _prepared_page()
+    page.overdue_end.setText("2023-06-30")
+    page.calc_penalty_by_lpr_multiple()
+
+    claim = _penalty_claim(build_case_model(wizard))
+    assert "3.45%×4" in claim
+    assert "万分之五" not in claim
+    assert "日万分之五" not in claim
+
+
+def test_switching_daily_then_lpr_updates_recorded_method(qapp):
+    wizard, presenter, page = _prepared_page()
+    page.overdue_end.setText("2023-03-08")
+    page.calc_penalty_daily_5_per_10k()
+    page.calc_penalty_by_lpr_multiple()
+
+    basis = page.get_penalty_calc_basis()
+    assert basis["method"] == "lpr_multiple"
+    claim = _penalty_claim(build_case_model(wizard))
+    assert "3.45%×4" in claim
+    assert "日万分之五" not in claim
+
+
+def test_switching_lpr_then_daily_updates_recorded_method(qapp):
+    wizard, presenter, page = _prepared_page()
+    page.overdue_end.setText("2023-03-08")
+    page.calc_penalty_by_lpr_multiple()
+    page.calc_penalty_daily_5_per_10k()
+
+    basis = page.get_penalty_calc_basis()
+    assert basis["method"] == "daily_5_per_10k"
+    assert page.penalty_amount.text() == "105.00"
+    claim = _penalty_claim(build_case_model(wizard))
+    assert "日万分之五" in claim
+    assert "3.45%×4" not in claim
+
+
+def test_editing_cutoff_invalidates_basis(qapp):
+    wizard, presenter, page = _prepared_page()
+    page.overdue_end.setText("2023-06-30")
+    page.calc_penalty_by_lpr_multiple()
+    assert page.get_penalty_calc_basis() is not None
+
+    page.overdue_end.setText("2023-07-31")
+
+    assert page.get_penalty_calc_basis() is None
+    claim = _penalty_claim(build_case_model(wizard))
+    assert "暂计至" not in claim
+
+
+def test_preview_and_docx_agree_on_daily_method(qapp, monkeypatch, tmp_path, dialog_recorder):
+    """Preview and the exported DOCX must use the same calculation description."""
+    desktop = _redirect_home(monkeypatch, tmp_path)
+    wizard, presenter, page = _prepared_page()
+    page.overdue_end.setText("2023-03-08")
+    page.calc_penalty_daily_5_per_10k()
+
+    dialog_recorder.clear()
+    wizard.export_page.show_preview()
+    preview = getattr(wizard.export_page, "_last_preview_text", "")
+    assert preview, "no preview produced"
+    assert "日万分之五" in preview
+    assert "3.45%×4" not in preview
+
+    text = _export_complaint(desktop, wizard, presenter)
+    assert "日万分之五" in text
+    assert "3.45%×4" not in text
+    assert "105.00" in text

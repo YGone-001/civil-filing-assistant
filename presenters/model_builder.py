@@ -33,17 +33,27 @@ _MODEL_BY_CASE_TYPE = {
 SUPPORTED_CASE_TYPES = frozenset(_MODEL_BY_CASE_TYPE)
 
 
+def is_supported_case_type(case_type):
+    """Return ``True`` only for the five supported identifiers; never raises.
+
+    This is the one validation contract shared by model construction, wizard
+    routing, preview and Finish/export. Malformed strings, unsupported
+    strings, missing values, non-string values and unhashable values (which
+    would raise ``TypeError`` on a frozenset membership test) are all rejected
+    without raising, and nothing is coerced into a valid identifier.
+    """
+    return isinstance(case_type, str) and case_type in _MODEL_BY_CASE_TYPE
+
+
 class UnsupportedCaseTypeError(ValueError):
     """Raised when the wizard reports a case type outside the supported registry."""
 
 
 def _model_for(case_type):
     """Return the model instance for a supported case type; fail closed otherwise."""
-    try:
-        model_cls = _MODEL_BY_CASE_TYPE[case_type]
-    except (KeyError, TypeError):
+    if not is_supported_case_type(case_type):
         raise UnsupportedCaseTypeError(f"不支持的案由类型：{case_type!r}")
-    return model_cls()
+    return _MODEL_BY_CASE_TYPE[case_type]()
 
 
 def _text(value):
@@ -81,6 +91,22 @@ def _fill_loan(view, model):
     model.court_name = view.field("court_name")
 
 
+def _penalty_calc_standard_for(method, lpr_value, lpr_multiple):
+    """Map a verified calculator method to the standard it actually used.
+
+    Explicit method-to-standard contract: a daily 万五 calculation is
+    described by its own convention, never by the LPR parameters, and an LPR
+    calculation is described only by the parameters in effect. Any unknown
+    method (or missing LPR parameters for the LPR method) yields an empty
+    standard so the claim falls back to the neutral manual-amount wording.
+    """
+    if method == "daily_5_per_10k":
+        return "日万分之五"
+    if method == "lpr_multiple" and lpr_value and lpr_multiple:
+        return f"{lpr_value}%×{lpr_multiple}"
+    return ""
+
+
 def _fill_contract(view, model):
     model.contract_date = view.field("c_contract_date")
     model.contract_name = view.field("c_contract_name")
@@ -94,23 +120,25 @@ def _fill_contract(view, model):
 
     lpr_value = _text(view.field("c_lpr_value"))
     lpr_multiple = _text(view.field("c_lpr_multiple"))
-    # Only describe a calculation standard when the user actually supplied both
-    # parameters; otherwise leave it empty so no misleading "%%×" text is drawn.
-    if lpr_value and lpr_multiple:
-        model.penalty_calc_standard = f"{lpr_value}%×{lpr_multiple}"
-    else:
-        model.penalty_calc_standard = ""
 
-    # The penalty amount may only be described as "calculated" (with its actual
-    # cutoff) while it is the untouched result of an auxiliary calculator run
-    # with unchanged inputs; a manually typed amount carries no such basis.
+    # The calculation description is derived from the verified provenance
+    # (which calculator actually produced the amount) and only from the
+    # parameters that calculator uses; a manually typed amount carries no
+    # calculation description at all.
     basis = view.contract_claim_page.get_penalty_calc_basis()
-    if basis is not None:
+    standard = _penalty_calc_standard_for(
+        basis["method"] if basis else None, lpr_value, lpr_multiple
+    )
+    if basis is not None and standard:
         model.penalty_calc_method = basis["method"]
         model.penalty_calc_cutoff = basis["cutoff"]
+        model.penalty_calc_standard = standard
     else:
+        # No valid provenance: fail closed to the neutral description instead
+        # of risking a mismatched calculation standard.
         model.penalty_calc_method = ""
         model.penalty_calc_cutoff = ""
+        model.penalty_calc_standard = ""
 
     model.court_name = view.field("c_court_name")
 
