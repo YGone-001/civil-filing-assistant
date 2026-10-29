@@ -1,118 +1,31 @@
 # File: models/case_model.py
 # Purpose: Data models for the lawsuit
 # Encoding: UTF-8
+"""Case models for the five supported categories.
+
+Numeric parsing, money formatting and the reusable calculations live in
+:mod:`models.calculations`; full-date parsing and the structured validation
+contract live in :mod:`models.validation`. The historical module-level names
+(``CalculationError``, ``_to_decimal``, ``_format_money``, ``parse_month_range``)
+are re-exported here so existing callers keep working unchanged.
+"""
 
 import datetime
 import re
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation
 
-
-class CalculationError(ValueError):
-    """Raised when an input cannot be parsed or a calculation is not applicable.
-
-    Callers must treat this as "the value shown to the user is not authoritative"
-    and fall back to an explicit, editable placeholder rather than inventing a
-    number or silently returning zero.
-    """
-
-
-def _to_decimal(value, field_name):
-    """Parse *value* into a finite :class:`~decimal.Decimal` or return ``None``.
-
-    Empty input yields ``None``. Invalid input raises :class:`CalculationError`.
-    """
-    text = "" if value is None else str(value).strip()
-    if not text:
-        return None
-    try:
-        result = Decimal(text)
-    except (InvalidOperation, ValueError):
-        raise CalculationError(f"{field_name}不是有效数字：{text!r}")
-    if not result.is_finite():
-        raise CalculationError(f"{field_name}不是有限数字：{text!r}")
-    return result
-
-
-def _format_money(value):
-    """Quantize a Decimal to two places and render it deterministically."""
-    return f"{value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)}"
-
-
-_MONTH_TOKEN = re.compile(r"(\d{4})?\s*[年/\-.]?\s*(\d{1,2})")
-_RANGE_SEPARATOR = re.compile(r"[至到~—–～]|\s-\s")
-
-
-def parse_month_range(text):
-    """Parse a month range into an inclusive month count.
-
-    Returns a ``(months, is_partial)`` tuple. Supported inputs include::
-
-        2023年12月至2024年2月   -> (3, False)
-        2023-12 至 2024-02      -> (3, False)
-        2023年12月              -> (1, False)
-        2023年12月至2月         -> (3, True)   # end year inferred
-
-    ``is_partial`` is ``True`` when the range depends on an inferred year or
-    contains explicit day components, i.e. it may not be a whole number of
-    fully specified monthly periods.
-
-    Invalid or reversed ranges raise :class:`CalculationError`. Empty input also
-    raises so that callers never treat "unknown" as zero.
-    """
-    raw = "" if text is None else str(text).strip()
-    if not raw:
-        raise CalculationError("未填写欠薪月份或时间段")
-
-    # Detect explicit day components (three numeric groups in one segment).
-    has_day = bool(re.search(r"\d{4}\s*[年/\-.]\s*\d{1,2}\s*[月/\-.]\s*\d{1,2}", raw))
-
-    normalised = raw
-    for ch in "年月日":
-        normalised = normalised.replace(ch, "-")
-    segments = [s for s in _RANGE_SEPARATOR.split(normalised) if s.strip()]
-    if not segments:
-        raise CalculationError(f"无法解析欠薪月份：{raw!r}")
-
-    def parse_segment(seg):
-        match = re.search(r"(\d{4})\D*(\d{1,2})", seg)
-        if match:
-            return int(match.group(1)), int(match.group(2))
-        match = re.search(r"(\d{1,2})", seg)
-        if match:
-            return None, int(match.group(1))
-        return None, None
-
-    start_year, start_month = parse_segment(segments[0])
-    if start_month is None or not (1 <= start_month <= 12):
-        raise CalculationError(f"无法解析起始月份：{raw!r}")
-
-    if len(segments) == 1:
-        if has_day:
-            return 1, True
-        return 1, False
-
-    end_year, end_month = parse_segment(segments[1])
-    if end_month is None or not (1 <= end_month <= 12):
-        raise CalculationError(f"无法解析结束月份：{raw!r}")
-
-    partial = has_day
-    if end_year is None:
-        # The end month omits its year; assume the same year, rolling over when
-        # the end month precedes the start month. This is flagged as partial.
-        partial = True
-        end_year = start_year
-        if end_month < start_month:
-            end_year += 1
-
-    if start_year is None or not (1900 <= start_year <= 2100) or not (1900 <= end_year <= 2100):
-        raise CalculationError(f"年份超出合理范围：{raw!r}")
-
-    start_index = start_year * 12 + start_month
-    end_index = end_year * 12 + end_month
-    if end_index < start_index:
-        raise CalculationError(f"结束月份早于起始月份：{raw!r}")
-
-    return end_index - start_index + 1, partial
+from models.calculations import (  # noqa: F401  (compatibility re-exports)
+    CalculationError,
+    calculate_property_fee,
+    format_money as _format_money,
+    inclusive_month_count,
+    is_whole_month_span,
+    parse_decimal as _to_decimal,
+    parse_month_range,  # noqa: F401  (compatibility re-export)
+    quantize_money,
+    validate_month_range_text,
+)
+from models.validation import DateStatus, parse_full_date
 
 
 class PartyInfo:
@@ -257,17 +170,9 @@ class LoanCaseModel(CaseTemplate):
 
     @staticmethod
     def _parse_date(text):
-        s = (text or "").strip()
-        if not s:
-            return None
-        s2 = re.sub(r"[^\d]", "-", s).strip("-")
-        parts = s2.split("-")
-        if len(parts) < 3:
-            return None
-        try:
-            return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-        except ValueError:
-            return None
+        """Delegate to the shared full-date validation (never raises)."""
+        result = parse_full_date(text)
+        return result.value if result.status == DateStatus.VALID else None
 
 class ContractCaseModel(CaseTemplate):
     def __init__(self):
@@ -382,61 +287,33 @@ class PropertyCaseModel(CaseTemplate):
         self.months = 0
         self.is_partial_billing = False
 
-    def _parse_date(self, text):
-        s = (text or "").strip()
-        if not s:
-            return None
-        s2 = re.sub(r"[^\d]", "-", s).strip("-")
-        parts = s2.split("-")
-        if len(parts) < 3:
-            return None
-        try:
-            return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-        except ValueError:
-            return None
-
     def _calc_months_detail(self):
         """Return ``(months, is_partial)`` for the billing period.
 
         ``is_partial`` is ``True`` when the period does not start on the first
         day and end on the last day of a month, i.e. the whole-calendar-month
         assumption may not hold. Reversed or unparseable periods return
-        ``(0, False)``.
+        ``(0, False)``. Dates are parsed by the shared full-date validation in
+        :mod:`models.validation`; the month arithmetic comes from the shared
+        helpers in :mod:`models.calculations`.
         """
-        d1 = self._parse_date(self.period_start)
-        d2 = self._parse_date(self.period_end)
-        if not d1 or not d2:
+        start_result = parse_full_date(self.period_start)
+        end_result = parse_full_date(self.period_end)
+        if start_result.status != DateStatus.VALID or end_result.status != DateStatus.VALID:
             return 0, False
-        if d2 < d1:
+        start, end = start_result.value, end_result.value
+        if end < start:
             return 0, False
-        months = (d2.year - d1.year) * 12 + (d2.month - d1.month) + 1
-        partial = not (d1.day == 1 and d2.day == self._last_day_of_month(d2))
-        return months, partial
-
-    @staticmethod
-    def _last_day_of_month(day):
-        if day.month == 12:
-            nxt = datetime.date(day.year + 1, 1, 1)
-        else:
-            nxt = datetime.date(day.year, day.month + 1, 1)
-        return (nxt - datetime.timedelta(days=1)).day
+        return inclusive_month_count(start, end), not is_whole_month_span(start, end)
 
     def _calc_months(self):
         return self._calc_months_detail()[0]
 
     def _calc_total(self):
-        try:
-            area = _to_decimal(self.house_area, "房屋面积")
-            rate = _to_decimal(self.fee_rate, "计费标准")
-            months = Decimal(str(self.months))
-            if area is None or rate is None:
-                return None
-            if area < 0 or rate < 0 or months < 0:
-                return None
-            total = (area * rate * months).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-            return total
-        except (CalculationError, InvalidOperation, ValueError):
-            return None
+        """Delegate to the single authoritative property-fee calculation."""
+        return calculate_property_fee(
+            self.house_area, self.fee_rate, self.period_start, self.period_end
+        ).total
 
     def _resolved_principal(self):
         """Return the principal string to print without discarding user input."""
@@ -592,19 +469,6 @@ class LaborCaseModel(CaseTemplate):
         self.total_unpaid_amount = ""
         self.overtime_hours = ""
 
-    def _parse_date(self, text):
-        s = (text or "").strip()
-        if not s:
-            return None
-        s2 = re.sub(r"[^\d]", "-", s).strip("-")
-        parts = s2.split("-")
-        if len(parts) < 3:
-            return None
-        try:
-            return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-        except ValueError:
-            return None
-
     def resolve_unpaid_month_count(self):
         """Return ``(months, is_partial)`` for the unpaid-salary period.
 
@@ -612,6 +476,15 @@ class LaborCaseModel(CaseTemplate):
         instead of returning a misleading zero.
         """
         return parse_month_range(self.unpaid_months)
+
+    def _unpaid_period_result(self):
+        """Structured validation of the unpaid-period input (shared contract).
+
+        Consumed by :meth:`_ensure_unpaid_total` so the model's neutral
+        fallback branches on the same validation contract the rest of the
+        application uses.
+        """
+        return validate_month_range_text(self.unpaid_months, field="l_unpaid_months")
 
     def _calc_unpaid_amount(self):
         """Return the unpaid total as a Decimal, or raise ``CalculationError``."""
@@ -621,11 +494,12 @@ class LaborCaseModel(CaseTemplate):
         if salary < 0:
             raise CalculationError("月工资标准为负数")
         months, is_partial = self.resolve_unpaid_month_count()
-        total = (salary * Decimal(months)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        total = quantize_money(salary * Decimal(months))
         return total, months, is_partial
-
     def _ensure_unpaid_total(self):
         """Populate ``total_unpaid_amount`` when the inputs are fully specified."""
+        if not self._unpaid_period_result().is_valid:
+            return None
         try:
             total, months, is_partial = self._calc_unpaid_amount()
         except CalculationError:

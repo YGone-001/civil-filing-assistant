@@ -4,11 +4,26 @@
 
 import os
 import re
+from decimal import Decimal
 
 from PySide6.QtCore import QRegularExpression, Qt
 from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QLabel, QLineEdit, QFormLayout, QRadioButton, QButtonGroup, QTextEdit, QGroupBox, QHBoxLayout, QGridLayout, QPushButton, QScrollArea, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QDialog, QPlainTextEdit, QFileDialog, QComboBox
 from PySide6.QtGui import QBrush, QColor, QRegularExpressionValidator
 
+from models.calculations import (
+    CalculationError,
+    calculate_daily_penalty,
+    calculate_lpr_penalty,
+    calculate_property_fee,
+    format_money,
+    validate_rate_text,
+)
+from models.validation import (
+    DateStatus,
+    ValidationStatus,
+    ValidationResult,
+    parse_full_date,
+)
 from views.theme import (
     CASE_CARD,
     CASE_CARD_BADGE,
@@ -1208,38 +1223,46 @@ class ContractClaimPage(_TitledPage):
             "本工具不作绝对判断，请在提交前人工核对。",
         )
 
-    def _parse_date(self, text):
-        import datetime
-        s = (text or "").strip()
-        if not s:
-            return None
-        parts = s.split("-")
-        if len(parts) != 3:
-            return None
-        return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-
     def _resolve_overdue_cutoff(self):
         """Resolve the penalty calculators' date interval explicitly.
 
-        Returns ``(start, cutoff, error_message)``. An unparseable explicit
-        cutoff is reported as an error instead of silently falling back to
-        today's date; a blank cutoff uses the current date and is recorded as
-        the calculation-day fallback.
+        Returns ``(start, cutoff, error_result)``. Dates go through the shared
+        full-date validation, so malformed input is distinguished from blank
+        input: an unparseable explicit cutoff is reported as an error instead
+        of silently falling back to today's date, while a blank cutoff keeps
+        the existing calculation-day contract. Never raises.
         """
         import datetime
-        start = self._parse_date(self.overdue_start.text())
-        if start is None:
-            return None, None, "请填写正确的逾期起算日（格式 YYYY-MM-DD）。"
-        end_text = self.overdue_end.text().strip()
-        if end_text:
-            cutoff = self._parse_date(end_text)
-            if cutoff is None:
-                return None, None, "违约金计算截止日格式无法识别（格式 YYYY-MM-DD），请修正后再计算。"
-        else:
+
+        start_result = parse_full_date(self.overdue_start.text())
+        if start_result.status != DateStatus.VALID:
+            status = (
+                ValidationStatus.REQUIRED_MISSING
+                if start_result.status == DateStatus.EMPTY
+                else ValidationStatus.INVALID_FORMAT
+            )
+            return None, None, ValidationResult(
+                "c_overdue_start", status, "OVERDUE_START_INVALID",
+                "请填写正确的逾期起算日（格式 YYYY-MM-DD）。",
+            )
+        start = start_result.value
+
+        end_result = parse_full_date(self.overdue_end.text())
+        if end_result.status == DateStatus.EMPTY:
             cutoff = datetime.date.today()
+        elif end_result.status == DateStatus.VALID:
+            cutoff = end_result.value
+        else:
+            return None, None, ValidationResult(
+                "c_overdue_end", ValidationStatus.INVALID_FORMAT, "OVERDUE_END_INVALID",
+                "违约金计算截止日格式无法识别（格式 YYYY-MM-DD），请修正后再计算。",
+            )
         if cutoff < start:
-            return None, None, "违约金计算截止日早于起算日，请核对后重新填写。"
-        return start, cutoff, ""
+            return None, None, ValidationResult(
+                "c_overdue_end", ValidationStatus.INVALID_RANGE, "OVERDUE_REVERSED",
+                "违约金计算截止日早于起算日，请核对后重新填写。",
+            )
+        return start, cutoff, None
 
     def _invalidate_penalty_basis(self, *_):
         """A manual edit of a calculation input invalidates the recorded basis."""
@@ -1275,41 +1298,44 @@ class ContractClaimPage(_TitledPage):
         return dict(self._penalty_calc_basis)
 
     def calc_penalty_daily_5_per_10k(self):
+        """Thin adapter: read inputs, call the pure calculator, show or record."""
         from PySide6.QtWidgets import QMessageBox
         try:
-            unpaid = float(self.unpaid_amount.text().strip())
             start, cutoff, error = self._resolve_overdue_cutoff()
-            if error:
-                QMessageBox.warning(self, "提示", error)
+            if error is not None:
+                QMessageBox.warning(self, "提示", error.message)
                 return
-            days = (cutoff - start).days
-            if days <= 0:
-                QMessageBox.warning(self, "提示", "请填写正确的逾期起算日，且截止日应晚于起算日。")
-                return
-            penalty = unpaid * 0.0005 * days
-            self._apply_calculated_penalty(f"{penalty:.2f}", "daily_5_per_10k", cutoff)
+            result = calculate_daily_penalty(self.unpaid_amount.text(), start, cutoff)
+        except CalculationError as exc:
+            QMessageBox.warning(self, "提示", str(exc))
+            return
         except Exception:
             QMessageBox.warning(self, "提示", "请先填写有效的“尚欠货款本金(元)”与日期(YYYY-MM-DD)。")
+            return
+        self._apply_calculated_penalty(format_money(result.amount), result.method, result.cutoff)
 
     def calc_penalty_by_lpr_multiple(self):
+        """Thin adapter: read inputs, call the pure calculator, show or record."""
         from PySide6.QtWidgets import QMessageBox
         try:
-            unpaid = float(self.unpaid_amount.text().strip())
-            lpr = float(self.lpr_value.text().strip())
-            mult = float(self.lpr_multiple.text().strip())
             start, cutoff, error = self._resolve_overdue_cutoff()
-            if error:
-                QMessageBox.warning(self, "提示", error)
+            if error is not None:
+                QMessageBox.warning(self, "提示", error.message)
                 return
-            days = (cutoff - start).days
-            if days <= 0:
-                QMessageBox.warning(self, "提示", "请填写正确的逾期起算日，且截止日应晚于起算日。")
-                return
-            annual_rate = (lpr * mult) / 100.0
-            penalty = unpaid * annual_rate * (days / 365.0)
-            self._apply_calculated_penalty(f"{penalty:.2f}", "lpr_multiple", cutoff)
+            result = calculate_lpr_penalty(
+                self.unpaid_amount.text(),
+                self.lpr_value.text(),
+                self.lpr_multiple.text(),
+                start,
+                cutoff,
+            )
+        except CalculationError as exc:
+            QMessageBox.warning(self, "提示", str(exc))
+            return
         except Exception:
             QMessageBox.warning(self, "提示", "请先填写有效的本金、LPR、倍数与日期(YYYY-MM-DD)。")
+            return
+        self._apply_calculated_penalty(format_money(result.amount), result.method, result.cutoff)
 
 class LoanClaimPage(_TitledPage):
     def __init__(self):
@@ -1460,26 +1486,25 @@ class LoanClaimPage(_TitledPage):
         return True
 
     def validate_rate(self):
-        text = self.rate.text().strip()
-        if not text:
+        """Validate the rate through the shared structured validation contract."""
+        result = validate_rate_text(self.rate.text())
+        if result.status == ValidationStatus.INVALID_FORMAT:
+            _set_status(self.rate_warning, result.message)
+            return
+        if result.status == ValidationStatus.INVALID_RANGE:
+            _set_status(self.rate_warning, result.message)
+            return
+        if result.status == ValidationStatus.EMPTY_ALLOWED:
             _set_status(self.rate_warning, "")
             return
-        try:
-            val = float(text)
-        except ValueError:
-            _set_status(self.rate_warning, "请输入有效的数字")
-            return
-        if val < 0:
-            _set_status(self.rate_warning, "年利率不应为负数，请核对。")
-        else:
-            # No fixed universal ceiling is asserted here: the applicable limit
-            # depends on the latest judicial guidance and the specific case, so
-            # the tool only reminds the user to verify it manually.
-            _set_status(
-                self.rate_warning,
-                "温馨提示：借款利率的可支持上限与适用规则会随最新司法口径、时间和地区变化，"
-                "本工具不代为判断是否超限，请在提交前人工核对。",
-            )
+        # VALID: no fixed universal ceiling is asserted here: the applicable limit
+        # depends on the latest judicial guidance and the specific case, so
+        # the tool only reminds the user to verify it manually.
+        _set_status(
+            self.rate_warning,
+            "温馨提示：借款利率的可支持上限与适用规则会随最新司法口径、时间和地区变化，"
+            "本工具不代为判断是否超限，请在提交前人工核对。",
+        )
 
     def get_has_iou(self):
         """Return ``True`` / ``False`` / ``None`` (unconfirmed) IOU status."""
@@ -1595,51 +1620,39 @@ class PropertyClaimPage(_TitledPage):
         super().initializePage()
         self.update_calc()
 
-    def _parse_date(self, s):
-        import datetime
-        import re
-        t = (s or "").strip()
-        if not t:
-            return None
-        t2 = re.sub(r"[^\d]", "-", t).strip("-")
-        parts = t2.split("-")
-        if len(parts) < 3:
-            return None
-        return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-
-    def _calc_months(self, d1, d2):
-        if not d1 or not d2:
-            return 0
-        if d2 < d1:
-            return 0
-        return (d2.year - d1.year) * 12 + (d2.month - d1.month) + 1
-
     def update_calc(self):
-        from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
-        try:
-            d1 = self._parse_date(self.period_start.text())
-            d2 = self._parse_date(self.period_end.text())
-            months = self._calc_months(d1, d2)
-            area = Decimal(self.house_area.text().strip())
-            rate = Decimal(self.fee_rate.text().strip())
-            total = (area * rate * Decimal(str(months))).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-            self.calc_label.setText(f"月数={months}，总本金={total} 元")
+        """Refresh the on-screen estimate via the shared property-fee calculation.
 
-            user_total_text = self.total_input.text().strip()
-            if user_total_text:
-                user_total = Decimal(user_total_text)
-                if user_total != 0:
-                    diff = (abs(user_total - total) / user_total)
-                    if diff > Decimal("0.01"):
-                        _set_status(self.warn_label, "提示：自填总金额与系统计算误差超过 1%，建议核对。")
-                    else:
-                        _set_status(self.warn_label, "")
-                else:
-                    _set_status(self.warn_label, "")
-            else:
-                _set_status(self.warn_label, "")
-        except (InvalidOperation, ValueError):
-            self.calc_label.setText("月数=0，总本金=0.00 元")
+        The exact same pure function feeds ``PropertyCaseModel``, so the label,
+        the preview and the exported document can never disagree. Insufficient
+        or invalid input shows a neutral message instead of a fabricated
+        valid-looking zero total.
+        """
+        estimate = calculate_property_fee(
+            self.house_area.text(),
+            self.fee_rate.text(),
+            self.period_start.text(),
+            self.period_end.text(),
+        )
+        if estimate.total is None:
+            self.calc_label.setText("尚无法计算，请检查面积、计费标准及起止日期。")
+            _set_status(self.warn_label, "")
+            return
+
+        self.calc_label.setText(f"月数={estimate.months}，总本金={estimate.total} 元")
+
+        user_total_text = (self.total_input.text() or "").strip()
+        if not user_total_text:
+            _set_status(self.warn_label, "")
+            return
+        user_total = parse_decimal(user_total_text, "自填总金额")
+        if user_total is None or user_total == 0:
+            _set_status(self.warn_label, "")
+            return
+        deviation = abs(user_total - estimate.total) / user_total
+        if deviation > Decimal("0.01"):
+            _set_status(self.warn_label, "提示：自填总金额与系统计算误差超过 1%，建议核对。")
+        else:
             _set_status(self.warn_label, "")
 
     def fill_test_data(self, notify=True):
