@@ -22,6 +22,7 @@ from models.calculations import (
     inclusive_month_count,
     is_whole_month_span,
     parse_decimal,
+    quantize_money,
     validate_month_range_text,
     validate_rate_text,
 )
@@ -297,7 +298,76 @@ def build_property_model(wizard):
     return build_case_model(wizard)
 
 
+# --- C-05: extreme operands and quantization precision -----------------------
+
+
+def test_property_fee_extreme_ui_sized_operands_are_deterministic():
+    """12-integral-digit operands (the UI input contract) over the longest
+    supported period quantize exactly instead of raising InvalidOperation."""
+    estimate = calculate_property_fee("999999999999", "999999999999", "1900-01-01", "2100-12-31")
+    expected = quantize_money(Decimal("999999999999") * Decimal("999999999999") * 2412)
+    assert estimate.total == expected
+    assert estimate.reason == ""
+    repeat = calculate_property_fee("999999999999", "999999999999", "1900-01-01", "2100-12-31")
+    assert repeat.total == estimate.total  # deterministic under repetition
+
+
+def test_property_fee_beyond_ui_magnitude_fails_controlled():
+    """Operands beyond the documented 12-integral-digit contract fail with an
+    explicit reason — no clamping, no float conversion, no fabricated zero."""
+    estimate = calculate_property_fee("9999999999999", "2.8", "2024-01-01", "2024-12-31")
+    assert estimate.total is None
+    assert estimate.reason == "OPERAND_OUT_OF_RANGE"
+    estimate = calculate_property_fee("115.5", "9999999999999", "2024-01-01", "2024-12-31")
+    assert estimate.total is None
+    assert estimate.reason == "OPERAND_OUT_OF_RANGE"
+
+
+def test_penalty_extreme_inputs_fail_controlled():
+    with pytest.raises(CalculationError):
+        calculate_daily_penalty("9999999999999", D1, D3)
+    with pytest.raises(CalculationError):
+        calculate_lpr_penalty("30000", "9999999999999", "4", D1, D3)
+    with pytest.raises(CalculationError):
+        calculate_lpr_penalty("30000", "3.45", "9999999999999", D1, D3)
+
+
+def test_penalty_at_operand_bound_quantizes_exactly():
+    """At (not beyond) the documented bound both calculators stay exact."""
+    start = datetime.date(1900, 1, 1)
+    end = datetime.date(2100, 12, 31)
+    days = (end - start).days  # 73413
+    daily = calculate_daily_penalty("999999999999", start, end)
+    assert daily.days == days
+    assert daily.amount == quantize_money(Decimal("999999999999") * Decimal("0.0005") * days)
+    lpr = calculate_lpr_penalty("999999999999", "3.45", "4", start, end)
+    assert lpr.amount == quantize_money(
+        Decimal("999999999999") * (Decimal("3.45") * 4 / Decimal("100")) * days / Decimal("365")
+    )
+
+
+# --- C-06: contract numeric validation consistency ---------------------------
+
+
+def test_lpr_penalty_rejects_negative_rate_inputs():
+    with pytest.raises(CalculationError):
+        calculate_lpr_penalty("30000", "-3.45", "4", D1, D3)
+    with pytest.raises(CalculationError):
+        calculate_lpr_penalty("30000", "3.45", "-4", D1, D3)
+
+
+def test_lpr_penalty_zero_inputs_explicitly_compute_zero():
+    """Zero LPR or multiplier is accepted and computes a true 0.00 (no legal
+    special-casing); the daily method stays independent of LPR inputs."""
+    assert calculate_lpr_penalty("30000", "0", "4", D1, D3).amount == Decimal("0.00")
+    assert calculate_lpr_penalty("30000", "3.45", "0", D1, D3).amount == Decimal("0.00")
+    daily = calculate_daily_penalty("30000", D1, D3)
+    assert daily.method == "daily_5_per_10k"
+    assert daily.amount > 0
+
+
 # --- Labor month-range validation -------------------------------------------
+
 
 
 def test_month_range_validation_whole_and_partial():

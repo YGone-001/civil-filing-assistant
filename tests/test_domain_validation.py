@@ -78,6 +78,108 @@ def test_full_date_leap_year_february_29_variants():
     assert parse_full_date("2100-02-29").status == DateStatus.INVALID_CALENDAR_DATE
 
 
+# --- C-03: extra components and surrounding text must be rejected -----------
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "2023-01-31-99",            # extra numeric component
+        "2023-01-31-01",
+        "2023年01月31日-extra-99",   # trailing material after a Chinese date
+        "2023/01/31/99",
+        "abc2023-01-31",            # textual prefix
+        "2023-01-31备注",            # textual suffix
+    ],
+)
+def test_full_date_rejects_extra_components_and_surrounding_text(raw):
+    result = parse_full_date(raw)
+    assert result.status == DateStatus.INVALID_FORMAT
+    assert result.value is None
+
+
+def test_full_date_preserved_historical_forms():
+    """The strict grammar keeps every documented valid representation."""
+    for raw, expected in (
+        ("2023-01-31", datetime.date(2023, 1, 31)),
+        ("2023/1/31", datetime.date(2023, 1, 31)),
+        ("2023.1.31", datetime.date(2023, 1, 31)),
+        ("2023年1月31日", datetime.date(2023, 1, 31)),
+        ("2023年1月31", datetime.date(2023, 1, 31)),  # trailing 日 optional
+        ("2023-1-3", datetime.date(2023, 1, 3)),
+    ):
+        result = parse_full_date(raw)
+        assert result.status == DateStatus.VALID, raw
+        assert result.value == expected, raw
+
+
+# --- C-04: property user-total validation must be callback-safe -------------
+
+
+def test_property_user_total_malformed_is_controlled(qapp):
+    """Malformed comparison amounts must not escape update_calc (direct or via
+    a Qt signal) and must not erase the valid system estimate."""
+    from helpers import make_wizard, prepare_case
+
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "property")
+    page = wizard.property_claim_page
+    assert "7761.60" in page.calc_label.text()  # valid estimate established
+
+    for raw in ("abc", "NaN", "Infinity", "1.2.3"):
+        page.total_input.setText(raw)
+        page.update_calc()  # must not raise
+        assert "7761.60" in page.calc_label.text(), raw  # estimate preserved
+        assert page.warn_label.text(), raw  # a correction hint is shown
+
+    # Empty / zero: no warning (historically non-errors).
+    page.total_input.setText("")
+    page.update_calc()
+    assert page.warn_label.text() == ""
+    page.total_input.setText("0")
+    page.update_calc()
+    assert page.warn_label.text() == ""
+
+    # Negative and matching/mismatched values must not raise either.
+    for raw in ("-100", "7761.60", "9000"):
+        page.total_input.setText(raw)
+        page.update_calc()
+        assert "7761.60" in page.calc_label.text()
+
+
+def test_property_user_total_malformed_is_safe_via_qt_signal(qapp):
+    from helpers import make_wizard, prepare_case
+
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "property")
+    page = wizard.property_claim_page
+    page.total_input.setText("NaN")
+    page.total_input.textChanged.emit("NaN")  # connected slot must not raise
+    assert "7761.60" in page.calc_label.text()
+
+
+# --- C-06: the manual penalty warning consumes the shared Decimal contract ---
+
+
+def test_penalty_amount_warning_uses_decimal_validation(qapp):
+    page = _contract_page()
+
+    page.penalty_amount.setText("NaN")
+    assert "数字" in page.penalty_warning.text()
+
+    page.penalty_amount.setText("Infinity")
+    assert "数字" in page.penalty_warning.text()
+
+    page.penalty_amount.setText("-5")
+    assert "负数" in page.penalty_warning.text()
+
+    page.penalty_amount.setText("5000")
+    assert "人工核对" in page.penalty_warning.text()
+
+    page.penalty_amount.setText("")
+    assert page.penalty_warning.text() == ""
+
+
 # --- ValidationResult contract -----------------------------------------------
 
 

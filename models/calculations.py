@@ -20,7 +20,7 @@ and ``parse_month_range`` so existing callers keep working unchanged.
 import datetime
 import re
 from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, localcontext
 
 from models.validation import DateStatus, ValidationStatus, ValidationResult, parse_full_date
 
@@ -31,6 +31,12 @@ DAYS_PER_YEAR = Decimal("365")
 # The daily 万五 convention of the auxiliary penalty calculator: 0.0005 per
 # overdue day. This describes the software calculation, not a legal rate.
 DAILY_RATE_5_PER_10K = Decimal("0.0005")
+
+# Supported magnitude of one monetary operand: at most 12 integral digits and
+# 2 fraction digits — exactly what the UI input validators admit. This is a
+# computational limit of the calculation contract (it keeps every intermediate
+# product exactly quantizable), not a legal cap on any claim.
+MAX_MONETARY_OPERAND = Decimal("999999999999.99")
 
 
 class CalculationError(ValueError):
@@ -70,8 +76,29 @@ def format_money(value):
 
 
 def quantize_money(value):
-    """Quantize to the money quantum (ROUND_HALF_UP); returns a Decimal."""
-    return value.quantize(MONEY_QUANTUM, rounding=ROUND_HALF_UP)
+    """Quantize to the money quantum (ROUND_HALF_UP); returns a Decimal.
+
+    A local high-precision context makes quantization exact and deterministic
+    for every product the supported operand bound can produce (near 30
+    significant digits); the default 28-digit context would raise
+    ``InvalidOperation`` there. No truncation, clamping or float conversion.
+    """
+    with localcontext() as ctx:
+        ctx.prec = 64
+        return value.quantize(MONEY_QUANTUM, rounding=ROUND_HALF_UP)
+
+
+def _parse_bounded_decimal(text, field_name):
+    """Parse a monetary operand and enforce the supported input magnitude.
+
+    Beyond :data:`MAX_MONETARY_OPERAND` the calculators fail with an explicit
+    :class:`CalculationError` instead of truncating, clamping, converting to
+    float, or overflowing quantization.
+    """
+    value = parse_decimal(text, field_name)
+    if value is not None and abs(value) > MAX_MONETARY_OPERAND:
+        raise CalculationError(f"{field_name}超出可支持的数值范围（最多12位整数）")
+    return value
 
 
 def validate_rate_text(text, field="rate"):
@@ -215,7 +242,7 @@ class PenaltyCalculation:
 
 
 def _parse_penalty_principal(principal_text):
-    principal = parse_decimal(principal_text, "尚欠货款本金")
+    principal = _parse_bounded_decimal(principal_text, "尚欠货款本金")
     if principal is None:
         raise CalculationError("未填写尚欠货款本金")
     if principal < 0:
@@ -236,26 +263,26 @@ def calculate_daily_penalty(principal_text, start, cutoff):
     """Daily 万五 convention: ``principal × 0.0005 × days`` (Decimal)."""
     principal = _parse_penalty_principal(principal_text)
     days = _penalty_days(start, cutoff)
-    amount = (principal * DAILY_RATE_5_PER_10K * days).quantize(
-        MONEY_QUANTUM, rounding=ROUND_HALF_UP
-    )
+    amount = quantize_money(principal * DAILY_RATE_5_PER_10K * days)
     return PenaltyCalculation("daily_5_per_10k", principal, start, cutoff, days, amount)
 
 
 def calculate_lpr_penalty(principal_text, lpr_text, multiple_text, start, cutoff):
     """LPR-multiple convention: ``principal × (LPR × multiple / 100) × days / 365``."""
     principal = _parse_penalty_principal(principal_text)
-    lpr = parse_decimal(lpr_text, "LPR")
+    lpr = _parse_bounded_decimal(lpr_text, "LPR")
     if lpr is None:
         raise CalculationError("未填写LPR")
-    multiple = parse_decimal(multiple_text, "LPR倍数")
+    if lpr < 0:
+        raise CalculationError("LPR不应为负数")
+    multiple = _parse_bounded_decimal(multiple_text, "LPR倍数")
     if multiple is None:
         raise CalculationError("未填写LPR倍数")
+    if multiple < 0:
+        raise CalculationError("LPR倍数不应为负数")
     days = _penalty_days(start, cutoff)
     annual_rate = (lpr * multiple) / Decimal("100")
-    amount = (principal * annual_rate * days / DAYS_PER_YEAR).quantize(
-        MONEY_QUANTUM, rounding=ROUND_HALF_UP
-    )
+    amount = quantize_money(principal * annual_rate * days / DAYS_PER_YEAR)
     return PenaltyCalculation("lpr_multiple", principal, start, cutoff, days, amount)
 
 
@@ -327,6 +354,8 @@ def calculate_property_fee(area_text, rate_text, start_text, end_text):
         return PropertyFeeEstimate(months, partial, None, "AREA_OR_RATE_MISSING")
     if area < 0 or rate < 0:
         return PropertyFeeEstimate(months, partial, None, "AREA_OR_RATE_NEGATIVE")
+    if abs(area) > MAX_MONETARY_OPERAND or abs(rate) > MAX_MONETARY_OPERAND:
+        return PropertyFeeEstimate(months, partial, None, "OPERAND_OUT_OF_RANGE")
 
-    total = (area * rate * months).quantize(MONEY_QUANTUM, rounding=ROUND_HALF_UP)
+    total = quantize_money(area * rate * months)
     return PropertyFeeEstimate(months, partial, total)

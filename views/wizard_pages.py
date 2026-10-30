@@ -16,6 +16,7 @@ from models.calculations import (
     calculate_lpr_penalty,
     calculate_property_fee,
     format_money,
+    parse_decimal,
     validate_rate_text,
 )
 from models.validation import (
@@ -1209,10 +1210,15 @@ class ContractClaimPage(_TitledPage):
         if not text:
             _set_status(self.penalty_warning, "")
             return
+        # Shared finite-Decimal validation: NaN/Infinity/negative never read as
+        # a valid monetary value; the text stays visible and editable.
         try:
-            float(text)
-        except ValueError:
+            value = parse_decimal(text, "违约金/逾期利息")
+        except CalculationError:
             _set_status(self.penalty_warning, "违约金/逾期利息应为数字，请核对。")
+            return
+        if value < 0:
+            _set_status(self.penalty_warning, "违约金/逾期利息不应为负数，请核对。")
             return
         # No fixed ratio is asserted as a legal ceiling; whether a penalty is
         # excessive is decided by the court in light of the contract and actual
@@ -1645,7 +1651,14 @@ class PropertyClaimPage(_TitledPage):
         if not user_total_text:
             _set_status(self.warn_label, "")
             return
-        user_total = parse_decimal(user_total_text, "自填总金额")
+        try:
+            user_total = parse_decimal(user_total_text, "自填总金额")
+        except CalculationError:
+            # The optional comparison amount is malformed (programmatic setText
+            # bypasses the input validator): the valid system estimate stays on
+            # screen and the label asks for a correctable value. Never zero.
+            _set_status(self.warn_label, "自填总金额格式有误，请修正后再比对。")
+            return
         if user_total is None or user_total == 0:
             _set_status(self.warn_label, "")
             return
