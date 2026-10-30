@@ -9,7 +9,9 @@ document calculation equivalence (P2-04 §6.6). No Qt is involved here.
 """
 
 import datetime
+import decimal
 from decimal import Decimal
+from fractions import Fraction
 
 import pytest
 
@@ -31,6 +33,24 @@ from models.validation import ValidationStatus
 D1 = datetime.date(2023, 3, 1)
 D2 = datetime.date(2023, 3, 8)
 D3 = datetime.date(2023, 6, 30)
+EXTREME_START = datetime.date(1900, 1, 1)
+EXTREME_END = datetime.date(2100, 12, 31)
+
+
+def _fraction_cents_half_up(value):
+    """Exact rational-to-cent oracle (ROUND_HALF_UP).
+
+    Independent of the production code path AND of the process Decimal
+    context: ``fractions.Fraction`` arithmetic is exact, and the result is
+    constructed from an integer string, which ``Decimal`` always accepts
+    exactly regardless of ambient precision.
+    """
+    cents = value * 100 if isinstance(value, Fraction) else Fraction(value) * 100
+    if cents >= 0:
+        whole = (cents + Fraction(1, 2)) // 1
+    else:
+        whole = -((-cents + Fraction(1, 2)) // 1)
+    return Decimal(f"{whole}e-2")
 
 
 # --- parse_decimal ----------------------------------------------------------
@@ -364,6 +384,79 @@ def test_lpr_penalty_zero_inputs_explicitly_compute_zero():
     daily = calculate_daily_penalty("30000", D1, D3)
     assert daily.method == "daily_5_per_10k"
     assert daily.amount > 0
+
+
+# --- C-07: intermediate precision must cover the whole expression ------------
+
+
+def test_property_fee_max_two_decimal_operands_exact_cents():
+    """C-07 reproduction: with 28-digit ambient arithmetic the intermediate
+    product loses the fractional tail before quantization; the exact
+    mathematical cent (from the task's documented example) is expected."""
+    estimate = calculate_property_fee(
+        "999999999999.99", "999999999999.99", EXTREME_START, EXTREME_END
+    )
+    assert estimate.total == Decimal("2411999999999951760000000000.24")
+
+
+def test_property_fee_operands_just_below_maximum_are_exact():
+    estimate = calculate_property_fee(
+        "999999999999.98", "999999999999.98", EXTREME_START, EXTREME_END
+    )
+    oracle = _fraction_cents_half_up(
+        Fraction("999999999999.98") * Fraction("999999999999.98") * 2412
+    )
+    assert estimate.total == oracle
+
+
+def test_lpr_penalty_extreme_matches_fraction_oracle():
+    """Computational stress test (not a realistic or endorsed rate): the result
+    must match an exact rational oracle to the final cent.
+
+    Formula: principal × (LPR × multiplier / 100) × days / 365 — the oracle
+    divides the exact rational product by 100 × 365 only.
+    """
+    principal = lpr = multiple = "999999999999.99"
+    days = (EXTREME_END - EXTREME_START).days
+    result = calculate_lpr_penalty(principal, lpr, multiple, EXTREME_START, EXTREME_END)
+    oracle = _fraction_cents_half_up(
+        Fraction(principal) * Fraction(lpr) * Fraction(multiple) * days / (100 * 365)
+    )
+    assert result.amount == oracle
+
+
+def test_daily_penalty_extreme_matches_fraction_oracle():
+    days = (EXTREME_END - EXTREME_START).days
+    result = calculate_daily_penalty("999999999999.99", EXTREME_START, EXTREME_END)
+    oracle = _fraction_cents_half_up(Fraction("999999999999.99") * Fraction(5, 10000) * days)
+    assert result.amount == oracle
+
+
+@pytest.mark.parametrize("ambient_prec", [2, 5, 28, 64])
+def test_results_independent_of_ambient_decimal_context(ambient_prec):
+    """Results must not depend on insufficient ambient context precision;
+    the original context is restored after the check."""
+    original = decimal.getcontext().prec
+    try:
+        decimal.getcontext().prec = ambient_prec
+        assert calculate_property_fee(
+            "115.5", "2.8", "2024-01-01", "2025-12-31"
+        ).total == Decimal("7761.60")
+        assert calculate_daily_penalty("30000", D1, D2).amount == Decimal("105.00")
+        assert calculate_lpr_penalty("30000", "3.45", "4", D1, D3).amount == Decimal("1372.44")
+        extreme = calculate_property_fee(
+            "999999999999.99", "999999999999.99", EXTREME_START, EXTREME_END
+        )
+        assert extreme.total == Decimal("2411999999999951760000000000.24")
+    finally:
+        decimal.getcontext().prec = original
+
+
+def test_operand_just_above_supported_maximum_fails_controlled():
+    with pytest.raises(CalculationError):
+        calculate_daily_penalty("1000000000000.00", D1, D2)
+    with pytest.raises(CalculationError):
+        calculate_lpr_penalty("999999999999.99", "1000000000000.00", "4", D1, D3)
 
 
 # --- Labor month-range validation -------------------------------------------
