@@ -58,6 +58,10 @@ class EvidencePage(_TitledPage):
 
         self.table = QTableWidget(0, 2)
         self.table.setHorizontalHeaderLabels(["证据名称", "证明目的"])
+        # Comfortable row density and zebra striping keep multi-row evidence
+        # lists scannable; both are presentation-only.
+        self.table.verticalHeader().setDefaultSectionSize(34)
+        self.table.setAlternatingRowColors(True)
         self.table.setAccessibleName("证据清单表格")
         self.table.setAccessibleDescription("可编辑表格，双击单元格编辑证据名称和证明目的")
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)

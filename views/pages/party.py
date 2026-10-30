@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
 from views.theme import (
     DANGER_BUTTON,
     ERROR_LABEL,
+    PARTY_CARD,
     REMINDER_LABEL,
     SECONDARY_BUTTON,
     SECTION_LABEL,
@@ -160,6 +161,9 @@ class PartyPage(_TitledPage):
         number = (len(self.plaintiff_widgets) + 1) if is_plaintiff else (len(self.defendant_widgets) + 1)
 
         group = QGroupBox(f"{kind}{number}")
+        # PARTY_CARD gives the card its rounded, primary-accented treatment in
+        # the global stylesheet without changing any behaviour.
+        group.setObjectName(PARTY_CARD)
         group_layout = QVBoxLayout(group)
         group_layout.setSpacing(SPACING_MD)
 

@@ -64,6 +64,13 @@ class WelcomePage(_TitledPage):
             docs_row.addWidget(chip)
         layout.addLayout(docs_row)
 
+        # The five supported case types, so first-time users know what the
+        # wizard can produce before they commit to any entry work.
+        capability = QLabel("支持五类常见案由：民间借贷 · 买卖合同 · 物业服务 · 劳动报酬 · 离婚析产")
+        capability.setObjectName(PAGE_LEAD)
+        capability.setWordWrap(True)
+        layout.addWidget(capability)
+
         # Local / offline privacy notes, kept visibly distinct from the flow.
         offline_note = QLabel(
             "本地运行：案件信息仅在本机处理，生成文书时不联网上传。\n"

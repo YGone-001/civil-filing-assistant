@@ -49,6 +49,11 @@ COLOR_BACKGROUND = "#F7F9FB"
 COLOR_SUGGESTED_ROW_BG = "#F5F8FC"
 COLOR_WHITE = "#FFFFFF"
 
+# Keyboard focus ring: a 2px primary outline applied consistently to inputs,
+# buttons and selectable cards so keyboard users never lose their place.
+COLOR_FOCUS = COLOR_PRIMARY
+FOCUS_BORDER_WIDTH = 2
+
 # --------------------------------------------------------------------------- #
 # Typography / spacing / radius tokens
 # --------------------------------------------------------------------------- #
@@ -106,6 +111,7 @@ CASE_CARD_SELECTED = "caseCardSelected"
 CASE_CARD_BADGE = "caseCardBadge"
 CASE_CARD_TITLE = "caseCardTitle"
 CASE_CARD_DESC = "caseCardDesc"
+PARTY_CARD = "partyCard"
 PAGE_LEAD = "pageLead"
 SECTION_LABEL = "sectionLabel"
 SECTION_BOX = "sectionBox"
@@ -172,12 +178,9 @@ QTableWidget:hover {{
 
 QLineEdit:focus, QComboBox:focus, QTextEdit:focus, QPlainTextEdit:focus,
 QTableWidget:focus {{
-    border: 1px solid {COLOR_PRIMARY};
+    border: {FOCUS_BORDER_WIDTH}px solid {COLOR_FOCUS};
     background-color: {COLOR_WHITE};
-}}
-
-QLineEdit:focus, QComboBox:focus, QTextEdit:focus, QPlainTextEdit:focus {{
-    background-color: {COLOR_PRIMARY_SOFT};
+    padding: {SPACING_MD - 1}px {SPACING_MD - 1}px;
 }}
 
 QLineEdit:disabled, QComboBox:disabled, QTextEdit:disabled, QPlainTextEdit:disabled {{
@@ -289,7 +292,8 @@ QPushButton:hover {{
 }}
 
 QPushButton:focus {{
-    border: 1px solid {COLOR_PRIMARY};
+    border: {FOCUS_BORDER_WIDTH}px solid {COLOR_FOCUS};
+    padding: {SPACING_MD - 1}px {SPACING_LG - 1}px;
 }}
 
 QPushButton:pressed {{
@@ -477,7 +481,11 @@ QLabel#{SECTION_LABEL} {{
     color: {COLOR_PRIMARY};
 }}
 
-/* ---- Case selection cards ---- */
+/* ---- Case selection cards ----
+   Hover, keyboard focus and selection are deliberately distinct: hover only
+   tints the left accent, keyboard focus draws the 2px focus ring, and the
+   selected card combines a 2px primary border, a tinted surface and a bold
+   title so selection never relies on colour alone. */
 QPushButton#{CASE_CARD} {{
     text-align: left;
     background-color: {COLOR_WHITE};
@@ -490,15 +498,27 @@ QPushButton#{CASE_CARD} {{
 }}
 
 QPushButton#{CASE_CARD}:hover {{
-    border-color: {COLOR_PRIMARY};
+    background-color: {COLOR_WHITE};
+    border: 1px solid {COLOR_PRIMARY};
     border-left: 4px solid {COLOR_PRIMARY};
-    background-color: {COLOR_PRIMARY_SOFT};
+    padding: {SPACING_MD}px {SPACING_LG - 1}px;
+}}
+
+QPushButton#{CASE_CARD}:focus {{
+    border: {FOCUS_BORDER_WIDTH}px solid {COLOR_FOCUS};
+    background-color: {COLOR_WHITE};
+    padding: {SPACING_MD - 1}px {SPACING_LG - 1}px;
 }}
 
 QPushButton#{CASE_CARD}[caseCardSelected="true"] {{
-    border: 1px solid {COLOR_PRIMARY};
-    border-left: 4px solid {COLOR_PRIMARY};
+    border: {FOCUS_BORDER_WIDTH}px solid {COLOR_PRIMARY};
     background-color: {COLOR_PRIMARY_SOFT};
+    padding: {SPACING_MD - 1}px {SPACING_LG - 1}px;
+    font-weight: 600;
+}}
+
+QPushButton#{CASE_CARD}[caseCardSelected="true"]:focus {{
+    border: {FOCUS_BORDER_WIDTH}px solid {COLOR_PRIMARY_HOVER};
 }}
 
 QLabel#{CASE_CARD_BADGE} {{
@@ -516,6 +536,30 @@ QPushButton#{CASE_CARD}[caseCardSelected="true"] QLabel#{CASE_CARD_BADGE} {{
     color: {COLOR_WHITE};
 }}
 
+QPushButton#{CASE_CARD}[caseCardSelected="true"] QLabel#{CASE_CARD_TITLE} {{
+    font-weight: 700;
+    color: {COLOR_PRIMARY};
+}}
+
+/* ---- Dynamic party cards (plaintiff/defendant group boxes) ---- */
+QGroupBox#{PARTY_CARD} {{
+    border: 1px solid {COLOR_BORDER};
+    border-left: 3px solid {COLOR_PRIMARY};
+    border-radius: {RADIUS_MD}px;
+    margin-top: {SPACING_LG}px;
+    padding-top: {SPACING_MD}px;
+    background-color: {COLOR_WHITE};
+    font-weight: 600;
+}}
+
+QGroupBox#{PARTY_CARD}::title {{
+    subcontrol-origin: margin;
+    left: {SPACING_LG}px;
+    padding: 0 {SPACING_SM}px;
+    color: {COLOR_PRIMARY};
+    font-weight: 700;
+}}
+
 QLabel#{CASE_CARD_TITLE} {{
     font-weight: 600;
     color: {COLOR_TEXT};
@@ -530,6 +574,10 @@ QLabel#{CASE_CARD_DESC} {{
 QTableWidget {{
     gridline-color: {COLOR_DIVIDER};
     alternate-background-color: {COLOR_BACKGROUND};
+}}
+
+QTableWidget::item {{
+    padding: {SPACING_SM}px {SPACING_MD}px;
 }}
 
 QHeaderView::section {{

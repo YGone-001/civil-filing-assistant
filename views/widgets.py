@@ -42,11 +42,13 @@ def content_column(column_layout, max_width=CONTENT_MAX_WIDTH):
     """Center *column_layout* in a single max-width column.
 
     Returns the wizard page's top-level layout. That layout still fills the page
-    (so the scroll containers and the fixed navigation bar keep working); only
-    the inner content is capped, which keeps form line lengths readable on wide
-    windows instead of stretching every field edge to edge. The column widget is
-    tagged with ``PAGE_CONTENT_COLUMN`` so the wizard can place the step
-    indicator inside the same column.
+    (so the scroll containers and the fixed navigation bar keep working); the
+    inner content column takes roughly four fifths of the window width
+    (stretch 8 versus 1 for each side stretch) and is capped at ``max_width``.
+    This keeps form line lengths readable on wide windows, gives the long claim
+    forms enough width at the minimum window size, and keeps the column
+    centered. The column widget is tagged with ``PAGE_CONTENT_COLUMN`` so the
+    wizard can place the step indicator inside the same column.
     """
     holder = QWidget()
     holder.setObjectName(PAGE_CONTENT_COLUMN)
@@ -56,7 +58,7 @@ def content_column(column_layout, max_width=CONTENT_MAX_WIDTH):
     row = QHBoxLayout()
     row.setContentsMargins(0, 0, 0, 0)
     row.addStretch(1)
-    row.addWidget(holder)
+    row.addWidget(holder, 8)
     row.addStretch(1)
 
     outer = QVBoxLayout()

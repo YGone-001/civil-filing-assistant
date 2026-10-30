@@ -8,6 +8,7 @@ selection, the read-only text preview (built from the shared
 import os
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QApplication,
     QDialog,
     QFileDialog,
     QGroupBox,
@@ -59,6 +60,19 @@ class _PreviewDialog(QDialog):
         close_btn = QPushButton("关闭")
         close_btn.clicked.connect(self.accept)
         layout.addWidget(close_btn)
+
+        # Cap the dialog to the available screen area so long previews stay
+        # fully visible (including the close button) on small or high-DPI
+        # displays instead of opening taller than the screen.
+        screen = self.screen() or QApplication.primaryScreen()
+        available = screen.availableGeometry() if screen is not None else None
+        if available is not None and available.isValid():
+            self.resize(
+                min(760, int(available.width() * 0.8)),
+                min(680, int(available.height() * 0.8)),
+            )
+        else:
+            self.resize(720, 560)
 
 
 class ExportPage(_TitledPage):

@@ -4,15 +4,17 @@
 
 from PySide6.QtWidgets import (
     QAbstractButton,
+    QApplication,
     QFormLayout,
     QMessageBox,
+    QPushButton,
     QVBoxLayout,
     QWidget,
     QWizard,
 )
 
 from presenters.model_builder import is_supported_case_type
-from views.theme import PAGE_CONTENT_COLUMN, PRIMARY_BUTTON
+from views.theme import PAGE_CONTENT_COLUMN, PRIMARY_BUTTON, SECONDARY_BUTTON
 from views.widgets import CASE_TYPE_LABELS, StepIndicator, page_title
 from views.wizard_pages import (
     WelcomePage,
@@ -36,18 +38,35 @@ class LawsuitWizard(QWizard):
         # A ~5:4 form-oriented ratio: wide enough for two-column form pages and
         # the case-selection list, tall enough to keep claim/fact pages readable
         # with minimal scrolling.
-        self.resize(1200, 960)
-        self.setMinimumSize(1000, 760)
+        # Responsive default geometry: fit comfortably on 1366x768 laptops
+        # (taskbar and title bar leave roughly 1366x700 usable) and grow on
+        # larger displays instead of opening taller than the screen. Pages
+        # scroll vertically, so a smaller window stays fully usable.
+        screen = self.screen() or QApplication.primaryScreen()
+        available = screen.availableGeometry() if screen is not None else None
+        default_width, default_height = 1180, 800
+        if available is not None and available.isValid():
+            default_width = min(default_width, int(available.width() * 0.92))
+            default_height = min(default_height, int(available.height() * 0.9))
+        self.resize(default_width, default_height)
+        self.setMinimumSize(960, 620)
         self.setWizardStyle(QWizard.ModernStyle)
 
         # Replace the stock English navigation labels with Chinese text. The
         # Export page's primary action is phrased around the three Word drafts.
-        self.setButtonText(QWizard.BackButton, "上一步")
-        self.setButtonText(QWizard.NextButton, "下一步")
-        self.setButtonText(QWizard.FinishButton, "生成三份 Word 初稿")
-        self.setButtonText(QWizard.CancelButton, "退出")
-        self.button(QWizard.NextButton).setObjectName(PRIMARY_BUTTON)
-        self.button(QWizard.FinishButton).setObjectName(PRIMARY_BUTTON)
+        # QWizard's built-in navigation buttons ignore application QSS on
+        # Windows, so each built-in role is replaced with an ordinary styled
+        # QPushButton (theme objectNames); setButton() re-wires the built-in
+        # behaviour for these roles (Back/Next/Finish/Cancel).
+        for role, text, object_name in (
+            (QWizard.BackButton, "上一步", SECONDARY_BUTTON),
+            (QWizard.NextButton, "下一步", PRIMARY_BUTTON),
+            (QWizard.FinishButton, "生成三份 Word 初稿", PRIMARY_BUTTON),
+            (QWizard.CancelButton, "退出", SECONDARY_BUTTON),
+        ):
+            button = QPushButton(text)
+            button.setObjectName(object_name)
+            self.setButton(role, button)
 
         # Qt's QWizard creates an internal, unnamed 32x32 QAbstractButton at the
         # top-left of the header area. On Windows it renders as a stray "back"
