@@ -60,8 +60,18 @@ jobs:
             python tools/check_commit_message.py --range "$base..HEAD"
           }
 
+      # A failing test must be identifiable from the run's annotations, not only
+      # from the (permission-protected) step log: the JUnit report is turned
+      # into one ::error annotation per failing test.
       - name: Pytest suite
-        run: python -m pytest -q
+        shell: pwsh
+        run: |
+          python -m pytest -q --junitxml=pytest-report.xml
+          $code = $LASTEXITCODE
+          if ($code -ne 0 -and (Test-Path pytest-report.xml)) {
+            python -c "import xml.etree.ElementTree as ET; root = ET.parse('pytest-report.xml').getroot(); [print('::error title=' + (case.get('classname') or '?') + '::' + (case.get('name') or '?')) for case in root.iter('testcase') if case.find('failure') is not None or case.find('error') is not None]"
+          }
+          exit $code
 
       - name: Smoke test
         run: python test_generator.py
