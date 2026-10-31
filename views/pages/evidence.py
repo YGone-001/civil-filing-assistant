@@ -277,6 +277,26 @@ class EvidencePage(_TitledPage):
     # Draft snapshot / restore
     # ------------------------------------------------------------------ #
 
+    def has_user_evidence(self):
+        """Read-only: does any category hold user-modified evidence state?
+
+        Every mutation path (``add_row``, ``remove_selected_rows``,
+        ``itemChanged``) already records ``USER_MODIFIED`` or
+        ``USER_EXPLICITLY_CLEARED`` for the category it happened in, and the
+        record survives a category switch. Reading those records answers "has
+        the user touched evidence at all?" without loading, initialising or
+        re-stashing anything - a plain library-suggestion page stays
+        ``INITIALIZED_WITH_SUGGESTIONS`` and is not user input.
+
+        Deliberately does not consult ``_stashed_rows``: rows are only stashed
+        when a category is left, and the state they belong to was recorded when
+        they were edited.
+        """
+        for state in self._case_state.values():
+            if state in (self.USER_MODIFIED, self.USER_EXPLICITLY_CLEARED):
+                return True
+        return False
+
     def snapshot_evidence(self, case_type):
         """Return the ``{state, rows}`` record to persist for *case_type*.
 

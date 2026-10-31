@@ -53,6 +53,34 @@ CLAIM_PAGE_ATTR_BY_CASE = {
     "divorce": "divorce_claim_page",
 }
 
+#: Registered text inputs whose widget starts *non-empty*. Everything else in
+#: ``drafts.schema.TEXT_FIELDS`` starts blank, so "text differs from this
+#: table" is exactly "the user edited it". Kept narrow (two calculator
+#: parameters) and pinned to the real page constructors by tests.
+INITIAL_FIELD_VALUES = {
+    "c_lpr_value": "3.45",
+    "c_lpr_multiple": "4",
+}
+
+#: Initial state of every persisted confirmation. ``None`` is the tri-state
+#: "未确认" default; the labour control is binary and starts unchecked, which is
+#: why ``False`` is only meaningful for the fields whose default is ``None``.
+INITIAL_FLAG_VALUES = {
+    "has_iou": None,
+    "is_delivered": None,
+    "is_signed": None,
+    "is_no_contract": False,
+}
+
+#: Party-card widget keys that hold user-editable text. ``is_company`` is the
+#: seventh user-editable attribute and is checked separately because it is a
+#: checkbox, not a text field.
+PARTY_TEXT_WIDGET_KEYS = ("name", "id", "addr", "phone", "credit_code", "legal_rep")
+
+#: Cards the wizard creates per side when the party page is first shown. An
+#: additional card is a user-created entry even while it is still blank.
+PRISTINE_PARTY_CARDS = 1
+
 #: Pages that only make sense once both sides have a named party. Resuming
 #: directly onto one of them with an incomplete party list would drop the user
 #: into a page whose prerequisites are unmet, so the restore falls back.
@@ -67,11 +95,16 @@ _CLAIM_DEPENDENT_PAGES = frozenset({"evidence", "export"})
 
 __all__ = [
     "CLAIM_PAGE_ATTR_BY_CASE",
+    "INITIAL_FIELD_VALUES",
+    "INITIAL_FLAG_VALUES",
     "PAGE_ATTR_BY_NAME",
+    "PARTY_TEXT_WIDGET_KEYS",
+    "PRISTINE_PARTY_CARDS",
     "RestoreResult",
     "apply_draft",
     "capture_draft",
     "claim_page",
+    "has_meaningful_session",
     "page_id",
     "page_name",
     "resolve_resume_page",
@@ -130,6 +163,92 @@ def page_name(wizard):
     # ``currentId()`` is -1 before the wizard has started; treat that as the
     # landing page instead of inventing a page id.
     return "welcome"
+
+
+# --------------------------------------------------------------------------- #
+# Meaningful-session detection
+# --------------------------------------------------------------------------- #
+
+
+def _has_party_input(page):
+    """Return whether any party card holds user input or a user-added card.
+
+    A party counts even when its name is blank: an identity number, an address
+    or a phone number typed into an unnamed card is exactly the data the
+    replacement guard used to lose. A card the wizard created itself stays
+    blank, so the pristine page (one blank card per side) reports nothing.
+    """
+    for kind in (0, 1):
+        cards = _side_widgets(page, kind)
+        if len(cards) > PRISTINE_PARTY_CARDS:
+            # The user added a card; it is their entry even before it is typed.
+            return True
+        for card in cards:
+            if card["is_company"].isChecked():
+                return True
+            if any(_read_text(card[key]).strip() for key in PARTY_TEXT_WIDGET_KEYS):
+                return True
+    return False
+
+
+def _has_edited_fields(page, case_type):
+    """Return whether any registered text input differs from its initial text."""
+    for spec in TEXT_FIELDS[case_type]:
+        value = _read_text(getattr(page, spec.widget))
+        if value != INITIAL_FIELD_VALUES.get(spec.key, ""):
+            return True
+    return False
+
+
+def _has_edited_flags(page, case_type):
+    """Return whether any confirmation differs from its initial state.
+
+    The comparison keeps ``None`` distinct from ``False``: for the tri-state
+    controls ``None`` is "未确认", so a confirmed "否" is a real user decision,
+    while the labour control's own default really is ``False``.
+    """
+    for name, value in _capture_flags(page, case_type).items():
+        if value != INITIAL_FLAG_VALUES[name]:
+            return True
+    return False
+
+
+def has_meaningful_session(wizard):
+    """Return whether the current wizard holds state a replacement would lose.
+
+    This is the contract behind "ask before opening another draft". It is
+    deliberately observational - it never initialises a page, creates or
+    renumbers a party card, or loads evidence - so calling it cannot itself
+    change the session.
+
+    A session is meaningful when any of the following is true:
+
+    * a party card holds any user-editable value, or the user added a card;
+    * a registered case input differs from the value the page starts with
+      (blank, except the contract LPR reference and multiplier);
+    * a factual confirmation differs from its initial state;
+    * evidence was edited or explicitly cleared in *any* category, including
+      one the user has since switched away from.
+
+    Selecting a case category without entering anything is not treated as
+    meaningful: nothing typed is lost, and prompting there would be a false
+    positive on a brand-new wizard.
+    """
+    if _has_party_input(wizard.party_page):
+        return True
+
+    case_type = wizard.field("case_type")
+    if not is_supported_case_type(case_type):
+        # An unknown category cannot own case-specific input; party content
+        # above is already accounted for.
+        return False
+
+    page = claim_page(wizard, case_type)
+    if _has_edited_fields(page, case_type):
+        return True
+    if _has_edited_flags(page, case_type):
+        return True
+    return wizard.evidence_page.has_user_evidence()
 
 
 # --------------------------------------------------------------------------- #

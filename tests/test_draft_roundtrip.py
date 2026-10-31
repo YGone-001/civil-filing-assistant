@@ -31,7 +31,16 @@ from helpers import (
     set_parties,
 )
 from presenters.model_builder import build_case_model
-from views.draft_io import CLAIM_PAGE_ATTR_BY_CASE, apply_draft, capture_draft
+from views.draft_io import (
+    CLAIM_PAGE_ATTR_BY_CASE,
+    INITIAL_FIELD_VALUES,
+    INITIAL_FLAG_VALUES,
+    PARTY_TEXT_WIDGET_KEYS,
+    _capture_flags,
+    apply_draft,
+    capture_draft,
+    has_meaningful_session,
+)
 
 
 def _read(widget):
@@ -776,3 +785,85 @@ def test_capture_rejects_an_unsupported_case_type(qapp, monkeypatch):
     monkeypatch.setattr(wizard, "field", _fake_field)
     with pytest.raises(ValueError):
         capture_draft(wizard)
+
+
+# --------------------------------------------------------------------------- #
+# C-08 — the meaningful-session contract and its initial-value metadata
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize("case_type", CASE_TYPES)
+def test_registered_field_initial_values_match_the_real_pages(qapp, case_type):
+    """The "initial value" table must describe what the pages really start with."""
+    wizard, _ = make_wizard()
+    select_case(wizard, case_type)
+    page = getattr(wizard, CLAIM_PAGE_ATTR_BY_CASE[case_type])
+    for spec in schema.TEXT_FIELDS[case_type]:
+        expected = INITIAL_FIELD_VALUES.get(spec.key, "")
+        assert _read(getattr(page, spec.widget)) == expected, spec.key
+
+
+@pytest.mark.parametrize("case_type", CASE_TYPES)
+def test_confirmation_initial_values_match_the_real_pages(qapp, case_type):
+    """Every confirmation starts at its declared initial state, including False."""
+    wizard, _ = make_wizard()
+    select_case(wizard, case_type)
+    page = getattr(wizard, CLAIM_PAGE_ATTR_BY_CASE[case_type])
+    for name, value in _capture_flags(page, case_type).items():
+        assert value == INITIAL_FLAG_VALUES[name], name
+
+
+def test_initial_value_table_covers_every_persisted_confirmation():
+    declared = set(schema.TRI_STATE_FLAGS) | set(schema.BINARY_FLAGS)
+    assert set(INITIAL_FLAG_VALUES) == declared
+    # Only the two contract calculator inputs start non-empty.
+    assert set(INITIAL_FIELD_VALUES) == {"c_lpr_value", "c_lpr_multiple"}
+
+
+def test_party_text_keys_cover_every_text_widget_on_a_card(qapp):
+    """A new party text field must not slip past the detection contract."""
+    wizard, _ = make_wizard()
+    wizard.party_page.initializePage()
+    card = wizard.party_page.plaintiff_widgets[0]
+    text_widgets = {key for key, value in card.items() if isinstance(value, QLineEdit)}
+    assert text_widgets == set(PARTY_TEXT_WIDGET_KEYS)
+
+
+@pytest.mark.parametrize("case_type", CASE_TYPES)
+def test_pristine_wizard_has_no_meaningful_session(qapp, case_type):
+    """A brand-new wizard (even after picking a category) holds no user data."""
+    wizard, _ = make_wizard()
+    select_case(wizard, case_type)
+    assert has_meaningful_session(wizard) is False
+
+
+def test_session_detection_is_observational(qapp):
+    """Inspecting the session must not initialize, load or mutate anything."""
+    wizard, _ = make_wizard()
+    assert wizard.party_page.plaintiff_widgets == []
+    assert wizard.party_page.is_initialized is False
+    assert wizard.evidence_page._loaded_case_type is None
+
+    assert has_meaningful_session(wizard) is False
+
+    assert wizard.party_page.plaintiff_widgets == []
+    assert wizard.party_page.defendant_widgets == []
+    assert wizard.party_page.is_initialized is False
+    assert wizard.evidence_page._loaded_case_type is None
+    assert wizard.evidence_page.table.rowCount() == 0
+
+
+def test_detection_reports_true_for_a_populated_case(qapp):
+    """Sanity check the other direction: a filled case is meaningful."""
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "loan")
+    assert has_meaningful_session(wizard) is True
+
+
+def test_defaults_only_contract_session_is_not_meaningful(qapp):
+    """LPR 3.45 and multiplier 4 alone must not look like user input."""
+    wizard, _ = make_wizard()
+    select_case(wizard, "contract")
+    assert wizard.contract_claim_page.lpr_value.text() == "3.45"
+    assert wizard.contract_claim_page.lpr_multiple.text() == "4"
+    assert has_meaningful_session(wizard) is False

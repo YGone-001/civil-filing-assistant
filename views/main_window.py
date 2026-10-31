@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 from presenters.model_builder import is_supported_case_type
+from views.draft_io import has_meaningful_session
 from views.theme import PAGE_CONTENT_COLUMN, PRIMARY_BUTTON, SECONDARY_BUTTON
 from views.widgets import CASE_TYPE_LABELS, DraftActionBar, StepIndicator, page_title
 from views.wizard_pages import (
@@ -345,59 +346,14 @@ class LawsuitWizard(QWizard):
     # ------------------------------------------------------------------ #
 
     def _has_entered_data(self):
-        if (
-            self.party_page._has_named_party(self.party_page.plaintiff_widgets)
-            or self.party_page._has_named_party(self.party_page.defendant_widgets)
-        ):
-            return True
+        """Return whether the wizard holds user input worth warning about.
 
-        # The property-page demo action is available after users may have
-        # entered case facts. Inspect the active branch too, without treating
-        # fixed defaults such as the contract LPR reference value as user data.
-        fields_by_case = {
-            "loan": (
-                self.loan_claim_page,
-                ("loan_date", "loan_reason", "principal", "payment_method", "rate",
-                 "start_date", "demand_date", "demand_method", "court_name"),
-            ),
-            "contract": (
-                self.contract_claim_page,
-                ("contract_date", "contract_name", "product_name", "total_amount",
-                 "delivery_date", "unpaid_amount", "penalty_amount", "overdue_start",
-                 "overdue_end", "court_name"),
-            ),
-            "property": (
-                self.property_claim_page,
-                ("property_addr", "house_area", "fee_rate", "period_start", "period_end",
-                 "late_fee_logic", "demand_record", "total_input", "court_name"),
-            ),
-            "labor": (
-                self.labor_claim_page,
-                ("emp_join_date", "job_title", "monthly_salary", "unpaid_months",
-                 "emp_term_date", "overtime_hours", "overtime_pay", "social_sec_info",
-                 "court_name"),
-            ),
-            "divorce": (
-                self.divorce_claim_page,
-                ("marriage_date", "child_name", "child_birthday", "custody_preference",
-                 "support_monthly", "divorce_reason", "separation_start_date",
-                 "asset_description", "court_name"),
-            ),
-        }
-        page_and_fields = fields_by_case.get(self.field("case_type"))
-        if not page_and_fields:
-            return False
-        page, field_names = page_and_fields
-        for name in field_names:
-            widget = getattr(page, name)
-            value = (
-                widget.toPlainText()
-                if hasattr(widget, "toPlainText")
-                else widget.text()
-            )
-            if value.strip():
-                return True
-        return False
+        Shares one contract with the draft replacement guard
+        (:func:`views.draft_io.has_meaningful_session`) so the two cannot drift
+        apart about what "the user typed something" means - including party
+        fields without a name, factual confirmations and evidence edits.
+        """
+        return has_meaningful_session(self)
 
     def _demo_fill(self):
         """Guard the test-data entry behind a confirmation before overwriting."""

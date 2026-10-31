@@ -32,7 +32,12 @@ from drafts import (
     validate_document,
 )
 from presenters.model_builder import is_supported_case_type
-from views.draft_io import apply_draft, capture_draft, page_name
+from views.draft_io import (
+    apply_draft,
+    capture_draft,
+    has_meaningful_session,
+    page_name,
+)
 from views.widgets import CASE_TYPE_LABELS
 
 
@@ -269,28 +274,26 @@ class DraftPresenter:
         old_wizard.close()
 
     def _has_unsaved_session(self):
-        """Return whether the current session holds input worth protecting."""
-        wizard = self.wizard
-        has_entered = getattr(wizard, "_has_entered_data", None)
-        if callable(has_entered) and has_entered():
-            return True
+        """Return whether the current session holds state worth protecting.
 
-        case_type = wizard.field("case_type")
-        if not is_supported_case_type(case_type):
-            return False
-        page = wizard.evidence_page
-        snapshot = page.snapshot_evidence(case_type)
-        return snapshot["state"] in (
-            page.USER_MODIFIED,
-            page.USER_EXPLICITLY_CLEARED,
-        )
+        The contract lives in :func:`views.draft_io.has_meaningful_session` so
+        the draft guard and the demo-fill guard cannot disagree about what
+        counts as user input. An inspection failure is reported as "has data":
+        refusing to warn is a data-loss risk, warning needlessly is not.
+        """
+        try:
+            return has_meaningful_session(self.wizard)
+        except Exception:
+            return True
 
     def _confirm_replace_session(self):
         answer = QMessageBox.question(
             self.wizard,
             "替换当前内容",
-            "打开草稿会替换当前正在填写的内容，且当前内容尚未保存为草稿。\n\n"
-            "是否继续打开草稿？",
+            "当前窗口包含已填写或已修改的案件信息。\n"
+            "打开其他草稿将替换当前窗口中的内容。\n"
+            "如需保留当前修改，请先保存草稿。\n\n"
+            "是否继续？",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,
         )
