@@ -730,10 +730,13 @@ def test_draft_opens_in_a_separate_process(qapp, tmp_path):
         "import json\n"
         "from drafts import load_draft\n"
         f"document = load_draft({str(tmp_path / 'draft.cfdraft')!r})\n"
+        # ASCII-only output: the child's stdout is a pipe whose encoding follows
+        # the host console code page, so raw CJK text would raise
+        # UnicodeEncodeError on an English-locale runner.
         "print(json.dumps({'case_type': document.case_type,"
         " 'loan_date': document.fields['loan_date'],"
         " 'principal': document.fields['principal'],"
-        " 'parties': document.party_count()}, ensure_ascii=False))\n"
+        " 'parties': document.party_count()}, ensure_ascii=True))\n"
     )
     result = subprocess.run(
         [sys.executable, "-c", script],
