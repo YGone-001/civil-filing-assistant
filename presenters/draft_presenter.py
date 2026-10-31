@@ -20,7 +20,6 @@ close, or on navigation; an application that is closed without pressing
 import datetime
 import os
 
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from drafts import (
@@ -62,15 +61,19 @@ class DraftPresenter:
         """Connect the draft actions of *wizard* (idempotent per wizard).
 
         The wizard re-emits the per-page button clicks as two signals, so one
-        connection covers every page. ``UniqueConnection`` makes re-attaching
-        the same wizard a no-op, which keeps the swap path from stacking
-        duplicate handlers on a replacement window.
+        connection covers every page. Uniqueness is enforced by identity rather
+        than ``Qt.UniqueConnection``: PySide6 silently drops a UniqueConnection
+        to a Python bound method, which left the 保存草稿 / 打开草稿 buttons
+        wired to nothing. Re-attaching the same wizard is a no-op; a
+        replacement wizard gets its own fresh connection.
         """
+        if wizard is self.wizard:
+            return
         for signal, slot in (
             (wizard.save_draft_requested, self.save_draft),
             (wizard.open_draft_requested, self.open_draft),
         ):
-            signal.connect(slot, Qt.ConnectionType.UniqueConnection)
+            signal.connect(slot)
         self.wizard = wizard
 
     @staticmethod

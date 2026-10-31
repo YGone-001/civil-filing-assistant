@@ -23,7 +23,14 @@ from drafts import save_draft, schema, validate_document
 from drafts.errors import ProtectionUnavailable
 from helpers import make_wizard, prepare_case, navigate_to_export, select_case, set_parties
 from presenters.draft_presenter import DraftPresenter
-from views.draft_io import capture_draft, claim_page
+from views.draft_io import (
+    CLAIM_PAGE_ATTR_BY_CASE,
+    _capture_flags,
+    capture_draft,
+    claim_page,
+    has_meaningful_session,
+    page_id,
+)
 from views.theme import SECONDARY_BUTTON
 
 SECRET_NAME = "机密姓名测试甲"
@@ -153,6 +160,47 @@ def test_draft_actions_reach_the_presenter_from_every_page(qapp):
     assert calls.count("save") == len(wizard._draft_bars)
     assert calls.count("open") == len(wizard._draft_bars)
     assert draft.wizard is wizard
+
+
+def test_draft_action_buttons_invoke_the_presenter_exactly_once(qapp, monkeypatch):
+    """A real click must reach the presenter once - not zero, not twice."""
+    wizard, presenter = make_wizard()
+    draft = DraftPresenter(wizard, presenter)
+    saves, opens = [], []
+    monkeypatch.setattr(
+        QFileDialog,
+        "getSaveFileName",
+        staticmethod(lambda *a, **kw: saves.append(1) or ("", "")),
+    )
+    monkeypatch.setattr(
+        QFileDialog,
+        "getOpenFileName",
+        staticmethod(lambda *a, **kw: opens.append(1) or ("", "")),
+    )
+
+    wizard.save_draft_button.click()
+    wizard.open_draft_button.click()
+
+    assert saves == [1]
+    assert opens == [1]
+
+
+def test_re_attaching_the_same_wizard_does_not_duplicate_handlers(qapp, monkeypatch):
+    """Idempotent wiring: repeated attach calls still produce one handler."""
+    wizard, presenter = make_wizard()
+    draft = DraftPresenter(wizard, presenter)
+    draft.attach(wizard)
+    draft.attach(wizard)
+    saves = []
+    monkeypatch.setattr(
+        QFileDialog,
+        "getSaveFileName",
+        staticmethod(lambda *a, **kw: saves.append(1) or ("", "")),
+    )
+
+    wizard.save_draft_button.click()
+
+    assert saves == [1]
 
 
 def test_draft_actions_have_accessible_names(qapp):
@@ -477,16 +525,33 @@ def _read_text(widget):
     return widget.toPlainText() if hasattr(widget, "toPlainText") else widget.text()
 
 
-def _wizard_snapshot(wizard):
-    """Everything a replacement would discard, as one comparable value."""
-    case_type = wizard.field("case_type")
+def _claim_page_state(wizard, case_type):
+    """Text inputs and factual confirmations owned by one claim page."""
     page = claim_page(wizard, case_type)
-    snapshot = {
-        "current_id": wizard.currentId(),
-        "case_type": case_type,
+    return {
         "fields": {
             spec.key: _read_text(getattr(page, spec.widget))
             for spec in schema.TEXT_FIELDS[case_type]
+        },
+        "flags": dict(_capture_flags(page, case_type)),
+    }
+
+
+def _wizard_snapshot(wizard):
+    """Everything a replacement would discard, as one comparable value.
+
+    Every claim page is captured, not only the selected one. Switching the case
+    category preserves the previous page's widgets (``cleanupPage()`` is a
+    deliberate no-op), so a replacement discards retained work on inactive
+    pages just as surely as on the visible one.
+    """
+    case_type = wizard.field("case_type")
+    return {
+        "current_id": wizard.currentId(),
+        "case_type": case_type,
+        "claim_pages": {
+            other: _claim_page_state(wizard, other)
+            for other in CLAIM_PAGE_ATTR_BY_CASE
         },
         "parties": wizard.party_page.get_party_data(),
         "party_titles": [
@@ -497,17 +562,6 @@ def _wizard_snapshot(wizard):
         "evidence": wizard.evidence_page.snapshot_evidence(case_type),
         "evidence_states": dict(wizard.evidence_page._case_state),
     }
-    if case_type == "loan":
-        snapshot["flags"] = {"has_iou": wizard.loan_claim_page.get_has_iou()}
-    elif case_type == "contract":
-        snapshot["flags"] = dict(wizard.contract_claim_page.get_flags())
-    elif case_type == "labor":
-        snapshot["flags"] = {
-            "is_no_contract": wizard.labor_claim_page.get_has_no_contract()
-        }
-    else:
-        snapshot["flags"] = {}
-    return snapshot
 
 
 def _decline_open(qapp, tmp_path, monkeypatch, dialog_recorder, prepare):
@@ -540,7 +594,7 @@ def _decline_open(qapp, tmp_path, monkeypatch, dialog_recorder, prepare):
     assert draft.wizard is wizard
     assert presenter.view is wizard
     assert _wizard_snapshot(wizard) == before
-    return wizard, draft
+    return wizard, draft, before
 
 
 def _init_party_page(wizard, case_type="loan"):
@@ -732,3 +786,321 @@ def test_opening_a_draft_installs_exactly_one_save_handler(
 
     titles = [call["args"][1] for call in dialog_recorder if call["kind"] == "question"]
     assert titles.count("保存草稿") == 1
+
+# --------------------------------------------------------------------------- #
+# C-09 — retained data on an inactive case page must also be protected
+# --------------------------------------------------------------------------- #
+#
+# Selecting another category does not clear the claim page the user just left:
+# ``_TitledPage.cleanupPage()`` deliberately preserves its widgets. The guard
+# therefore has to inspect every claim page, not only the selected one. These
+# tests enter data, switch categories, and then drive the real Open Draft action
+# with the replacement confirmation answered No.
+
+
+def _open_source_page(wizard, case_type):
+    """Select *case_type* and stand on its claim page, as a user would."""
+    select_case(wizard, case_type)
+    wizard.setCurrentId(page_id(wizard, f"{case_type}_claim"))
+
+
+def _switch_to_case(wizard, case_type):
+    """Return to case selection, pick *case_type*, and open its claim page."""
+    wizard.setCurrentId(wizard.PAGE_CASE_SELECTION)
+    select_case(wizard, case_type)
+    wizard.setCurrentId(page_id(wizard, f"{case_type}_claim"))
+
+
+def _cross_case_prepare(source, targets, edit):
+    """Build a prepare step: edit *source*, then switch through *targets*."""
+
+    def prepare(wizard):
+        _open_source_page(wizard, source)
+        edit(wizard)
+        for target in targets:
+            _switch_to_case(wizard, target)
+
+    return prepare
+
+
+def _field(key, value):
+    return ("fields", key, value)
+
+
+def _flag(name, value):
+    return ("flags", name, value)
+
+
+def _set_loan_principal(wizard):
+    wizard.loan_claim_page.principal.setText("12345")
+
+
+def _set_contract_unpaid(wizard):
+    wizard.contract_claim_page.unpaid_amount.setText("4321.50")
+
+
+def _set_property_address(wizard):
+    wizard.property_claim_page.property_addr.setText("示例小区9栋101室")
+
+
+def _set_labor_salary(wizard):
+    wizard.labor_claim_page.monthly_salary.setText("7500")
+
+
+def _set_divorce_reason(wizard):
+    wizard.divorce_claim_page.divorce_reason.setText("示例原因：长期分居")
+
+
+def _loan_iou(value):
+    return lambda wizard: (
+        wizard.loan_claim_page.iou_yes
+        if value
+        else wizard.loan_claim_page.iou_no
+    ).setChecked(True)
+
+
+def _contract_delivery(value):
+    return lambda wizard: (
+        wizard.contract_claim_page.del_yes
+        if value
+        else wizard.contract_claim_page.del_no
+    ).setChecked(True)
+
+
+def _contract_receipt(value):
+    return lambda wizard: (
+        wizard.contract_claim_page.sign_yes
+        if value
+        else wizard.contract_claim_page.sign_no
+    ).setChecked(True)
+
+
+def _set_labor_no_contract(wizard):
+    wizard.labor_claim_page.no_contract_yes.setChecked(True)
+
+
+def _set_lpr_value(wizard):
+    wizard.contract_claim_page.lpr_value.setText("3.5")
+
+
+def _set_lpr_multiple(wizard):
+    wizard.contract_claim_page.lpr_multiple.setText("3")
+
+
+def _set_penalty_amount(wizard):
+    wizard.contract_claim_page.penalty_amount.setText("888.88")
+
+
+CROSS_CASE_CASES = [
+    ("loan", ("contract",), _set_loan_principal, _field("principal", "12345"),
+     "loan principal after loan -> contract"),
+    ("contract", ("property",), _set_contract_unpaid,
+     _field("c_unpaid_amount", "4321.50"),
+     "contract unpaid amount after contract -> property"),
+    ("property", ("labor",), _set_property_address,
+     _field("p_property_addr", "示例小区9栋101室"),
+     "property address after property -> labor"),
+    ("labor", ("divorce",), _set_labor_salary,
+     _field("l_monthly_salary", "7500"),
+     "labor monthly salary after labor -> divorce"),
+    ("divorce", ("loan",), _set_divorce_reason,
+     _field("d_divorce_reason", "示例原因：长期分居"),
+     "divorce reason after divorce -> loan"),
+    ("loan", ("contract", "divorce"), _set_loan_principal,
+     _field("principal", "12345"),
+     "loan principal after loan -> contract -> divorce"),
+    ("loan", ("contract",), _loan_iou(True),
+     _flag("has_iou", True),
+     "loan iou true after loan -> contract"),
+    ("loan", ("contract",), _loan_iou(False),
+     _flag("has_iou", False),
+     "loan iou false after loan -> contract"),
+    ("contract", ("property",), _contract_delivery(True),
+     _flag("is_delivered", True),
+     "contract delivery true after contract -> property"),
+    ("contract", ("property",), _contract_delivery(False),
+     _flag("is_delivered", False),
+     "contract delivery false after contract -> property"),
+    ("contract", ("property",), _contract_receipt(True),
+     _flag("is_signed", True),
+     "contract receipt true after contract -> property"),
+    ("contract", ("property",), _contract_receipt(False),
+     _flag("is_signed", False),
+     "contract receipt false after contract -> property"),
+    ("labor", ("divorce",), _set_labor_no_contract,
+     _flag("is_no_contract", True),
+     "labor no-contract flag after labor -> divorce"),
+    ("contract", ("property",), _set_lpr_value,
+     _field("c_lpr_value", "3.5"),
+     "modified lpr value after contract -> property"),
+    ("contract", ("property",), _set_lpr_multiple,
+     _field("c_lpr_multiple", "3"),
+     "modified lpr multiplier after contract -> property"),
+    ("contract", ("property",), _set_penalty_amount,
+     _field("c_penalty_amount", "888.88"),
+     "manual penalty amount after contract -> property"),
+]
+
+
+@pytest.mark.parametrize(
+    "source,targets,edit,expectation,label",
+    CROSS_CASE_CASES,
+    ids=[case[-1] for case in CROSS_CASE_CASES],
+)
+def test_inactive_case_input_is_protected_before_opening_a_draft(
+    qapp, tmp_path, monkeypatch, dialog_recorder, source, targets, edit, expectation, label
+):
+    """C-09: a retained value on an inactive case page blocks silent replacement."""
+    kind, key, expected = expectation
+    wizard, draft, before = _decline_open(
+        qapp, tmp_path, monkeypatch, dialog_recorder,
+        _cross_case_prepare(source, targets, edit),
+    )
+
+    assert wizard.field("case_type") == targets[-1]
+    assert before["claim_pages"][source][kind][key] == expected, label
+    assert _wizard_snapshot(wizard) == before
+    # The only file on disk is the draft the test wrote before opening.
+    assert sorted(os.listdir(tmp_path)) == ["other.cfdraft"]
+
+
+def test_cross_case_matrix_covers_every_required_transition():
+    """The matrix must include all five transitions plus a double switch."""
+    transitions = {(source, targets[0]) for source, targets, _edit, _exp, _label in CROSS_CASE_CASES}
+    assert {
+        ("loan", "contract"),
+        ("contract", "property"),
+        ("property", "labor"),
+        ("labor", "divorce"),
+        ("divorce", "loan"),
+    } <= transitions
+    assert any(len(targets) > 1 for _source, targets, _edit, _exp, _label in CROSS_CASE_CASES)
+
+
+def test_inactive_contract_defaults_do_not_trigger_a_replacement_prompt(
+    qapp, tmp_path, monkeypatch, dialog_recorder
+):
+    """The LPR defaults exist even when contract was never selected."""
+    target = _draft_on_disk(tmp_path / "other.cfdraft")
+    wizard, presenter = make_wizard()
+    draft = DraftPresenter(wizard, presenter)
+    wizard.show()
+    qapp.processEvents()
+
+    # Loan is selected; the untouched contract page still holds 3.45 and 4.
+    select_case(wizard, "loan")
+    wizard.setCurrentId(wizard.PAGE_LOAN_CLAIM)
+    assert wizard.contract_claim_page.lpr_value.text() == "3.45"
+    assert wizard.contract_claim_page.lpr_multiple.text() == "4"
+    assert has_meaningful_session(wizard) is False
+
+    _open_dialog_to(monkeypatch, str(target))
+    _answer_questions(monkeypatch, QMessageBox.No, dialog_recorder)
+    dialog_recorder.clear()
+
+    assert draft.open_draft() is True
+    titles = [call["args"][1] for call in dialog_recorder if call["kind"] == "question"]
+    assert "替换当前内容" not in titles
+
+
+def test_case_selection_alone_is_not_a_meaningful_session(
+    qapp, tmp_path, monkeypatch, dialog_recorder
+):
+    """Picking a category without entering anything must not prompt."""
+    target = _draft_on_disk(tmp_path / "other.cfdraft")
+    wizard, presenter = make_wizard()
+    draft = DraftPresenter(wizard, presenter)
+    wizard.show()
+    select_case(wizard, "contract")
+    qapp.processEvents()
+    assert has_meaningful_session(wizard) is False
+
+    _open_dialog_to(monkeypatch, str(target))
+    _answer_questions(monkeypatch, QMessageBox.No, dialog_recorder)
+    dialog_recorder.clear()
+
+    assert draft.open_draft() is True
+    titles = [call["args"][1] for call in dialog_recorder if call["kind"] == "question"]
+    assert "替换当前内容" not in titles
+
+
+def test_inspection_does_not_mutate_inactive_case_pages(qapp):
+    """C-09 inspection is read-only: it never initialises, clears or navigates."""
+    wizard, _ = make_wizard()
+    wizard.show()
+    qapp.processEvents()
+    _open_source_page(wizard, "loan")
+    wizard.loan_claim_page.principal.setText("12345")
+    _switch_to_case(wizard, "contract")
+
+    before = _wizard_snapshot(wizard)
+    assert has_meaningful_session(wizard) is True
+
+    assert _wizard_snapshot(wizard) == before
+    assert wizard.field("case_type") == "contract"
+    assert wizard.currentId() == wizard.PAGE_CONTRACT_CLAIM
+    assert wizard.party_page.is_initialized is False
+    assert wizard.evidence_page._loaded_case_type is None
+    assert wizard.evidence_page.table.rowCount() == 0
+
+
+def test_confirming_replacement_still_restores_the_new_draft(
+    qapp, tmp_path, monkeypatch, dialog_recorder
+):
+    """The guard must not make opening another draft impossible."""
+    home = tmp_path / "home"
+    home.mkdir()
+    monkeypatch.setattr(os.path, "expanduser", lambda *a, **k: str(home))
+    desktop = home / "Desktop"
+
+    target = tmp_path / "contract.cfdraft"
+    source, _ = make_wizard()
+    prepare_case(source, "contract")
+    source.contract_claim_page.unpaid_amount.setText("24680")
+    save_draft(str(target), validate_document(capture_draft(source, "contract_claim")))
+
+    wizard, presenter = make_wizard()
+    draft = DraftPresenter(wizard, presenter)
+    wizard.show()
+    qapp.processEvents()
+    _open_source_page(wizard, "loan")
+    wizard.loan_claim_page.principal.setText("12345")
+    _switch_to_case(wizard, "contract")
+
+    _open_dialog_to(monkeypatch, str(target))
+    _answer_questions(monkeypatch, QMessageBox.Yes, dialog_recorder)
+    assert draft.open_draft() is True
+
+    restored = draft.wizard
+    assert restored is not wizard
+    assert not wizard.isVisible(), "the replaced wizard must be retired"
+    assert restored.field("case_type") == "contract"
+    assert restored.currentId() == restored.PAGE_CONTRACT_CLAIM
+    assert restored.contract_claim_page.unpaid_amount.text() == "24680"
+    assert restored.contract_claim_page.lpr_value.text() == "3.45"
+    # The retained loan input belonged to the old wizard and must not leak.
+    assert restored.loan_claim_page.principal.text() == ""
+    assert presenter.view is restored
+    assert restored.finish_handler is not None
+
+    # Exactly one save handler after the swap: one confirmation per attempt.
+    _save_dialog_to(monkeypatch, str(tmp_path / "after.cfdraft"))
+    dialog_recorder.clear()
+    assert draft.save_draft() is True
+    titles = [call["args"][1] for call in dialog_recorder if call["kind"] == "question"]
+    assert titles.count("保存草稿") == 1
+
+    # Exactly one open handler after the swap: one file dialog per request.
+    opened = []
+    monkeypatch.setattr(
+        QFileDialog,
+        "getOpenFileName",
+        staticmethod(lambda *a, **kw: opened.append(1) or ("", "")),
+    )
+    restored.open_draft_requested.emit()
+    assert len(opened) == 1
+
+    finish = navigate_to_export(restored)
+    finish.click()
+    qapp.processEvents()
+    assert len(sorted(desktop.rglob("*.docx"))) == 3

@@ -867,3 +867,130 @@ def test_defaults_only_contract_session_is_not_meaningful(qapp):
     assert wizard.contract_claim_page.lpr_value.text() == "3.45"
     assert wizard.contract_claim_page.lpr_multiple.text() == "4"
     assert has_meaningful_session(wizard) is False
+
+# --------------------------------------------------------------------------- #
+# C-09 — inactive case pages are part of the protected session
+# --------------------------------------------------------------------------- #
+#
+# A case-category switch preserves the claim page the user just left. These
+# tests check the contract directly (the end-to-end Open Draft path lives in
+# ``test_draft_ui.py``).
+
+INACTIVE_TEXT_EDITS = [
+    ("divorce", "loan", "principal", "12345"),
+    ("loan", "contract", "unpaid_amount", "4321.50"),
+    ("loan", "property", "property_addr", "示例小区9栋101室"),
+    ("loan", "labor", "monthly_salary", "7500"),
+    ("loan", "divorce", "divorce_reason", "示例原因：长期分居"),
+]
+
+
+@pytest.mark.parametrize("selected,edited,widget,value", INACTIVE_TEXT_EDITS)
+def test_inactive_case_text_edit_is_a_meaningful_session(qapp, selected, edited, widget, value):
+    wizard, _ = make_wizard()
+    select_case(wizard, selected)
+    page = getattr(wizard, CLAIM_PAGE_ATTR_BY_CASE[edited])
+    getattr(page, widget).setText(value)
+
+    assert has_meaningful_session(wizard) is True
+
+
+INACTIVE_FLAG_EDITS = [
+    ("contract", "loan", lambda w: w.loan_claim_page.iou_yes.setChecked(True), "has_iou", True),
+    ("contract", "loan", lambda w: w.loan_claim_page.iou_no.setChecked(True), "has_iou", False),
+    (
+        "property", "contract",
+        lambda w: w.contract_claim_page.del_yes.setChecked(True),
+        "is_delivered", True,
+    ),
+    (
+        "property", "contract",
+        lambda w: w.contract_claim_page.del_no.setChecked(True),
+        "is_delivered", False,
+    ),
+    (
+        "property", "contract",
+        lambda w: w.contract_claim_page.sign_yes.setChecked(True),
+        "is_signed", True,
+    ),
+    (
+        "property", "contract",
+        lambda w: w.contract_claim_page.sign_no.setChecked(True),
+        "is_signed", False,
+    ),
+    (
+        "divorce", "labor",
+        lambda w: w.labor_claim_page.no_contract_yes.setChecked(True),
+        "is_no_contract", True,
+    ),
+]
+
+
+@pytest.mark.parametrize("selected,edited,edit,flag,value", INACTIVE_FLAG_EDITS)
+def test_inactive_case_confirmation_is_a_meaningful_session(
+    qapp, selected, edited, edit, flag, value
+):
+    wizard, _ = make_wizard()
+    select_case(wizard, selected)
+    edit(wizard)
+    page = getattr(wizard, CLAIM_PAGE_ATTR_BY_CASE[edited])
+
+    assert dict(_capture_flags(page, edited))[flag] is value
+    assert has_meaningful_session(wizard) is True
+
+
+def test_inactive_contract_defaults_are_not_user_input(qapp):
+    """The LPR defaults exist before contract is selected and must stay inert."""
+    wizard, _ = make_wizard()
+    select_case(wizard, "loan")
+    assert wizard.contract_claim_page.lpr_value.text() == INITIAL_FIELD_VALUES["c_lpr_value"]
+    assert wizard.contract_claim_page.lpr_multiple.text() == INITIAL_FIELD_VALUES["c_lpr_multiple"]
+
+    assert has_meaningful_session(wizard) is False
+
+
+def test_unknown_case_type_cannot_hide_retained_case_input(qapp, monkeypatch):
+    """Fail closed: an unknown active category must not suppress the warning."""
+    wizard, _ = make_wizard()
+    wizard.loan_claim_page.principal.setText("12345")
+    original_field = wizard.field
+
+    monkeypatch.setattr(
+        wizard,
+        "field",
+        lambda name: "traffic" if name == "case_type" else original_field(name),
+    )
+
+    assert has_meaningful_session(wizard) is True
+
+
+def test_session_inspection_reads_every_case_page_without_mutation(qapp):
+    """Detection inspects all five pages and changes none of them."""
+    wizard, _ = make_wizard()
+    wizard.restart()
+    select_case(wizard, "loan")
+    wizard.setCurrentId(wizard.PAGE_LOAN_CLAIM)
+    wizard.loan_claim_page.principal.setText("12345")
+    wizard.setCurrentId(wizard.PAGE_CASE_SELECTION)
+    select_case(wizard, "contract")
+    wizard.setCurrentId(wizard.PAGE_CONTRACT_CLAIM)
+
+    before_fields = {case: _field_texts(wizard, case) for case in CASE_TYPES}
+    before_flags = {
+        case: dict(_capture_flags(getattr(wizard, CLAIM_PAGE_ATTR_BY_CASE[case]), case))
+        for case in CASE_TYPES
+    }
+    before_page = wizard.currentId()
+
+    assert has_meaningful_session(wizard) is True
+
+    assert wizard.currentId() == before_page
+    assert wizard.field("case_type") == "contract"
+    assert {case: _field_texts(wizard, case) for case in CASE_TYPES} == before_fields
+    assert {
+        case: dict(_capture_flags(getattr(wizard, CLAIM_PAGE_ATTR_BY_CASE[case]), case))
+        for case in CASE_TYPES
+    } == before_flags
+    assert wizard.party_page.plaintiff_widgets == []
+    assert wizard.party_page.is_initialized is False
+    assert wizard.evidence_page._loaded_case_type is None

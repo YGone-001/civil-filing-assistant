@@ -224,30 +224,35 @@ def has_meaningful_session(wizard):
     A session is meaningful when any of the following is true:
 
     * a party card holds any user-editable value, or the user added a card;
-    * a registered case input differs from the value the page starts with
-      (blank, except the contract LPR reference and multiplier);
-    * a factual confirmation differs from its initial state;
+    * *any* of the five case pages holds a registered input that differs from
+      the value its page starts with (blank, except the contract LPR reference
+      and multiplier), or a factual confirmation that differs from its initial
+      state;
     * evidence was edited or explicitly cleared in *any* category, including
       one the user has since switched away from.
 
+    Every claim page is inspected, not only the selected case's page. Switching
+    the case category leaves the previous page's widgets untouched (the page's
+    ``cleanupPage()`` deliberately preserves them), so data entered under an
+    earlier category stays in memory even though it is no longer visible. That
+    retained state is still the user's work and must not be replaced silently.
+
     Selecting a case category without entering anything is not treated as
     meaningful: nothing typed is lost, and prompting there would be a false
-    positive on a brand-new wizard.
+    positive on a brand-new wizard. The registered default values
+    (``INITIAL_FIELD_VALUES`` / ``INITIAL_FLAG_VALUES``) are likewise not
+    treated as user input.
     """
     if _has_party_input(wizard.party_page):
         return True
 
-    case_type = wizard.field("case_type")
-    if not is_supported_case_type(case_type):
-        # An unknown category cannot own case-specific input; party content
-        # above is already accounted for.
-        return False
+    for case_type in CLAIM_PAGE_ATTR_BY_CASE:
+        page = claim_page(wizard, case_type)
+        if _has_edited_fields(page, case_type):
+            return True
+        if _has_edited_flags(page, case_type):
+            return True
 
-    page = claim_page(wizard, case_type)
-    if _has_edited_fields(page, case_type):
-        return True
-    if _has_edited_flags(page, case_type):
-        return True
     return wizard.evidence_page.has_user_evidence()
 
 
