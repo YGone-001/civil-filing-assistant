@@ -39,5 +39,11 @@ Desktop.ini
 /*.docx
 /*_vs_*/
 
+# Local encrypted case drafts and their same-directory write artifacts.
+# Drafts contain personal case data and are protected with the Windows user
+# key, so they are never portable between machines and never belong in Git.
+*.cfdraft
+.cfadraft-*
+
 # Local audit/quality reports (kept out of the repository per project policy)
 /reports/

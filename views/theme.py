@@ -117,6 +117,7 @@ SECTION_LABEL = "sectionLabel"
 SECTION_BOX = "sectionBox"
 PAGE_CONTENT_COLUMN = "pageContentColumn"
 PAGE_TITLE_LABEL = "pageTitleLabel"
+DRAFT_ACTION_BAR = "draftActionBar"
 
 # --------------------------------------------------------------------------- #
 # Global stylesheet

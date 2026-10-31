@@ -2,6 +2,7 @@
 # Purpose: Main application window integrating the Wizard
 # Encoding: UTF-8
 
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QAbstractButton,
     QApplication,
@@ -15,7 +16,7 @@ from PySide6.QtWidgets import (
 
 from presenters.model_builder import is_supported_case_type
 from views.theme import PAGE_CONTENT_COLUMN, PRIMARY_BUTTON, SECONDARY_BUTTON
-from views.widgets import CASE_TYPE_LABELS, StepIndicator, page_title
+from views.widgets import CASE_TYPE_LABELS, DraftActionBar, StepIndicator, page_title
 from views.wizard_pages import (
     WelcomePage,
     CaseSelectionPage,
@@ -31,6 +32,11 @@ from views.wizard_pages import (
 
 
 class LawsuitWizard(QWizard):
+    #: Emitted when the user clicks 保存草稿 on any page's action bar.
+    save_draft_requested = Signal()
+    #: Emitted when the user clicks 打开草稿 on any page's action bar.
+    open_draft_requested = Signal()
+
     def __init__(self, demo_mode=False):
         super().__init__()
         self.setObjectName("wizardBody")
@@ -144,7 +150,9 @@ class LawsuitWizard(QWizard):
         # Render each page's heading inside its centered content column so it
         # shares the form's left edge, replacing the full-width ModernStyle
         # banner that could not be inset. Done after the step strip so the
-        # heading lands above it in the column.
+        # heading lands above it in the column. The draft action bar is
+        # appended to the same column, under the page content.
+        self._draft_bars = []
         for page in (
             self.welcome_page,
             self.case_selection_page,
@@ -158,6 +166,7 @@ class LawsuitWizard(QWizard):
             self.export_page,
         ):
             self._attach_page_title(page)
+            self._attach_draft_bar(page)
 
         self.currentIdChanged.connect(self._update_step_indicators)
         self.case_selection_page.case_combo.currentIndexChanged.connect(
@@ -214,6 +223,48 @@ class LawsuitWizard(QWizard):
             layout.insertRow(0, heading)
         elif isinstance(layout, QVBoxLayout):
             layout.insertWidget(0, heading)
+
+    def _attach_draft_bar(self, page):
+        """Append the 保存草稿 / 打开草稿 actions to *page*'s content column.
+
+        One bar per page (rather than one global button in QWizard's button
+        box) keeps the actions visible on every step while leaving their
+        ownership to the ordinary layout rules used everywhere else in the
+        application.
+        """
+        holder = page.findChild(QWidget, PAGE_CONTENT_COLUMN)
+        layout = holder.layout() if holder is not None else page.layout()
+        if not isinstance(layout, (QVBoxLayout, QFormLayout)):
+            return None
+        bar = DraftActionBar()
+        bar.save_button.clicked.connect(self.save_draft_requested.emit)
+        bar.open_button.clicked.connect(self.open_draft_requested.emit)
+        if isinstance(layout, QFormLayout):
+            layout.addRow(bar)
+        else:
+            layout.addWidget(bar)
+        self._draft_bars.append((page, bar))
+        return bar
+
+    def _current_draft_bar(self):
+        """Return the draft action bar of the page currently shown."""
+        current = self.currentPage()
+        for page, bar in self._draft_bars:
+            if page is current:
+                return bar
+        return self._draft_bars[0][1] if self._draft_bars else None
+
+    @property
+    def save_draft_button(self):
+        """The 保存草稿 button on the current page."""
+        bar = self._current_draft_bar()
+        return bar.save_button if bar is not None else None
+
+    @property
+    def open_draft_button(self):
+        """The 打开草稿 button on the current page."""
+        bar = self._current_draft_bar()
+        return bar.open_button if bar is not None else None
 
     def _update_step_indicators(self, *_):
         current = self.currentId()

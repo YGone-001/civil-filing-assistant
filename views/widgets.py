@@ -3,13 +3,15 @@
 # Encoding: UTF-8
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from views.theme import (
     CASE_CONTEXT_LABEL,
     CONTENT_MAX_WIDTH,
+    DRAFT_ACTION_BAR,
     PAGE_CONTENT_COLUMN,
     PAGE_TITLE_LABEL,
+    SECONDARY_BUTTON,
     STEP_CHIP,
     STEP_CONNECTOR,
     STEP_INDICATOR,
@@ -76,6 +78,45 @@ def page_title(text):
     label = QLabel(text)
     label.setObjectName(PAGE_TITLE_LABEL)
     return label
+
+
+class DraftActionBar(QWidget):
+    """The 保存草稿 / 打开草稿 actions shown under every wizard page.
+
+    The buttons live in the page's own content column rather than in
+    ``QWizard``'s button box: a custom wizard button is owned by an internal
+    container that Qt rebuilds on style changes, and holding on to such a
+    widget across a window swap corrupted the widget tree in testing. An
+    ordinary layout-owned widget follows the same ownership rules as every
+    other control in this application.
+
+    The bar carries no behaviour of its own; the wizard re-emits the clicks as
+    ``save_draft_requested`` / ``open_draft_requested`` so the presenter only
+    has to listen to one pair of signals no matter how many pages exist.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName(DRAFT_ACTION_BAR)
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
+
+        self.save_button = QPushButton("保存草稿")
+        self.save_button.setObjectName(SECONDARY_BUTTON)
+        self.save_button.setAccessibleName("保存草稿")
+        self.save_button.setAccessibleDescription(
+            "将当前填写内容加密保存为本地草稿文件，可稍后继续填写"
+        )
+        self.open_button = QPushButton("打开草稿")
+        self.open_button.setObjectName(SECONDARY_BUTTON)
+        self.open_button.setAccessibleName("打开草稿")
+        self.open_button.setAccessibleDescription("打开此前保存的本地草稿并继续填写")
+
+        layout.addWidget(self.save_button)
+        layout.addWidget(self.open_button)
+        layout.addStretch(1)
 
 
 class StepIndicator(QWidget):

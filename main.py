@@ -11,6 +11,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMessageBox
 from views.main_window import LawsuitWizard
 from views.theme import apply_theme
+from presenters.draft_presenter import DraftPresenter
 from presenters.main_presenter import MainPresenter
 from utils.security_check import SecurityGuard, NetworkStatus
 
@@ -93,6 +94,9 @@ def main(argv=None):
     # Create View and Presenter
     wizard = LawsuitWizard(demo_mode=args.demo_mode)
     presenter = MainPresenter(wizard)
+    # Explicit, user-initiated draft actions (保存草稿 / 打开草稿). The draft
+    # presenter keeps working after it swaps in a restored wizard.
+    draft_presenter = DraftPresenter(wizard, presenter)
 
     # Show the Wizard
     wizard.show()

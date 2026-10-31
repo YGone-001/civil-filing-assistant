@@ -89,7 +89,7 @@
 改动至少执行与范围相称的检查：
 
 ```powershell
-python -m compileall -q main.py models presenters utils views test_generator.py
+python -m compileall -q main.py models presenters utils views drafts test_generator.py tools tests
 python test_generator.py
 git diff --check
 ```

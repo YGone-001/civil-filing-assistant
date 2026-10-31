@@ -66,6 +66,15 @@ def dialog_recorder(monkeypatch, qapp):
         lambda *a, **kw: ""
     ))
 
+    # Same for the draft file dialogs: an empty answer means "the user
+    # cancelled". Draft tests override these with a concrete path.
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", staticmethod(
+        lambda *a, **kw: ("", "")
+    ))
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", staticmethod(
+        lambda *a, **kw: ("", "")
+    ))
+
     return recorded
 
 

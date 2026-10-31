@@ -30,6 +30,17 @@ class MainPresenter:
         # export step succeeded before committing to accept.
         self.view.set_finish_handler(self._on_finish_requested)
 
+    def rebind_view(self, view):
+        """Adopt a replacement wizard and re-register the Finish handler.
+
+        Opening a draft builds and validates a new wizard instead of mutating
+        the live one, so the presenter must follow the swap; otherwise the
+        replacement's Finish button would export nothing (or the old, closed
+        wizard would keep the handler).
+        """
+        self.view = view
+        self.view.set_finish_handler(self._on_finish_requested)
+
     def _on_finish_requested(self):
         """Return True only when the wizard may advance to its accepted state."""
         return self.attempt_finish() == self.FINISH_SUCCESS

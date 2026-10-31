@@ -272,3 +272,63 @@ class EvidencePage(_TitledPage):
             if name or target:
                 items.append((name, target))
         return items
+
+    # ------------------------------------------------------------------ #
+    # Draft snapshot / restore
+    # ------------------------------------------------------------------ #
+
+    def snapshot_evidence(self, case_type):
+        """Return the ``{state, rows}`` record to persist for *case_type*.
+
+        The state label is persisted alongside the rows because "no rows" is
+        ambiguous on its own: a deliberately emptied list, an untouched page
+        and a page that still holds its library suggestions all render as an
+        empty table in some situations but must be restored differently.
+
+        Rows belonging to a *different* category are never reported: switching
+        the case type without visiting this page again leaves the previous
+        category's rows in the table, and those must not travel into the new
+        case's draft.
+        """
+        if self._loaded_case_type != case_type:
+            return {"state": self.NOT_INITIALIZED, "rows": []}
+        rows = [
+            {"name": name, "target": target, "suggested": suggested}
+            for name, target, suggested in self._collect_rows()
+        ]
+        return {
+            "state": self._case_state.get(case_type, self.NOT_INITIALIZED),
+            "rows": rows,
+        }
+
+    def restore_evidence(self, case_type, state, rows):
+        """Replace the table with a restored snapshot.
+
+        This is the inverse of :meth:`snapshot_evidence` and deliberately does
+        *not* go through :meth:`initializePage`: a restored empty list must stay
+        empty instead of being repopulated with library suggestions. Recording
+        ``_loaded_case_type`` makes the next ``initializePage()`` a no-op for
+        the restored category, exactly like a same-category re-entry.
+
+        The one exception is the "never opened" state: a page the user never
+        visited is left unloaded, so opening it for the first time still shows
+        that category's suggestions, exactly as in a fresh session.
+        """
+        self._loading_rows = True
+        try:
+            self._stashed_rows = {}
+            self.table.setRowCount(0)
+            self._suggested_count = 0
+            self._set_case_description(case_type)
+            if state == self.NOT_INITIALIZED and not rows:
+                self._loaded_case_type = None
+                self._case_state.pop(case_type, None)
+                return
+            self._loaded_case_type = case_type
+            for row in rows:
+                self.add_row(
+                    row["name"], row["target"], suggested=row["suggested"], auto_edit=False
+                )
+            self._case_state[case_type] = state
+        finally:
+            self._loading_rows = False
