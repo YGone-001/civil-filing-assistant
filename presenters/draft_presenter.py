@@ -274,7 +274,9 @@ class DraftPresenter:
         self.presenter.rebind_view(new_wizard)
         self.attach(new_wizard)
         new_wizard.show()
-        old_wizard.close()
+        # The old session was explicitly replaced (the user already confirmed),
+        # so retiring its window must not ask a second time.
+        old_wizard.close_without_prompt()
 
     def _has_unsaved_session(self):
         """Return whether the current session holds state worth protecting.

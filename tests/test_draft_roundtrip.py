@@ -814,7 +814,7 @@ def test_confirmation_initial_values_match_the_real_pages(qapp, case_type):
 
 
 def test_initial_value_table_covers_every_persisted_confirmation():
-    declared = set(schema.TRI_STATE_FLAGS) | set(schema.BINARY_FLAGS)
+    declared = set(schema.TRI_STATE_FLAGS)
     assert set(INITIAL_FLAG_VALUES) == declared
     # Only the two contract calculator inputs start non-empty.
     assert set(INITIAL_FIELD_VALUES) == {"c_lpr_value", "c_lpr_multiple"}

@@ -31,6 +31,13 @@ def make_wizard():
     return wizard, presenter
 
 
+def set_labor_arbitrated(page):
+    """Record a completed (fictional) arbitration, the gate for a labour complaint."""
+    page.arbitrated_yes.setChecked(True)
+    page.arb_commission.setText("示例劳动人事争议仲裁委员会")
+    page.arb_receipt_date.setText("2024-06-01")
+
+
 def select_case(wizard, case_type):
     wizard.case_selection_page.case_combo.setCurrentIndex(CASE_INDEX[case_type])
     assert wizard.field("case_type") == case_type
@@ -131,6 +138,7 @@ def fill_case_facts(wizard, case_type, confirm_flags=True):
         p.update_calc()
     elif case_type == "labor":
         p = wizard.labor_claim_page
+        set_labor_arbitrated(p)
         p.emp_join_date.setText("2023-01-15")
         p.job_title.setText("测试工程师")
         p.monthly_salary.setText("8000")
@@ -203,6 +211,7 @@ def fill_minimal_case(wizard, case_type, plaintiffs=None, defendants=None):
         p.court_name.setText("示例人民法院")
     elif case_type == "labor":
         p = wizard.labor_claim_page
+        set_labor_arbitrated(p)
         p.emp_join_date.setText("2023-01-15")
         p.job_title.setText("示例岗位")
         p.monthly_salary.setText("6000")

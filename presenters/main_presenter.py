@@ -122,6 +122,15 @@ class MainPresenter:
             )
             return self.FINISH_VALIDATION_FAILED
 
+        if case_type == "labor" and getattr(model, "has_arbitrated", None) is not True:
+            QMessageBox.warning(
+                self.view,
+                "尚不能生成起诉状",
+                "劳动争议须先经劳动仲裁，本工具只生成仲裁之后向法院起诉所用的起诉状。\n"
+                "请在“仲裁情况”中确认已经仲裁并填写仲裁机构与收到裁决日期；本次未导出任何文件。",
+            )
+            return self.FINISH_VALIDATION_FAILED
+
         if case_type == "property":
             self._warn_property_mismatch(model)
 
@@ -137,7 +146,7 @@ class MainPresenter:
                 "生成失败",
                 "生成文档时发生错误：\n"
                 f"{exc}\n\n"
-                "未生成完整的文书文件。您可以修改信息后重新点击“完成”重试。",
+                "未生成完整的文书文件。您可以修改信息后重新点击“生成三份 Word 初稿”重试。",
             )
             return self.FINISH_EXPORT_FAILED
 
@@ -146,12 +155,13 @@ class MainPresenter:
         # and this does not delete any file already written to disk.
         SecurityGuard.wipe_memory(model)
 
+        self.view.export_page.show_export_result(target_dir, files)
         QMessageBox.information(
             self.view,
             "生成成功",
             "立案材料已生成完成（起诉状 / 证据清单 / 送达地址确认书）。\n\n"
             f"文件夹位置：\n{target_dir}\n\n"
-            f"本次共生成 {len(files)} 份文件。\n\n"
+            f"本次共生成 {len(files)} 份文件。窗口保持打开，可修改后再次生成。\n\n"
             "说明：程序仅对内存中的字段做了尽力清理，不会自动删除已生成的文件，"
             "请自行妥善保存或销毁。",
         )

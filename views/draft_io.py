@@ -62,14 +62,14 @@ INITIAL_FIELD_VALUES = {
     "c_lpr_multiple": "4",
 }
 
-#: Initial state of every persisted confirmation. ``None`` is the tri-state
-#: "未确认" default; the labour control is binary and starts unchecked, which is
-#: why ``False`` is only meaningful for the fields whose default is ``None``.
+#: Initial state of every persisted confirmation: ``None`` is the tri-state
+#: "未确认" default of every control.
 INITIAL_FLAG_VALUES = {
     "has_iou": None,
     "is_delivered": None,
     "is_signed": None,
-    "is_no_contract": False,
+    "has_arbitrated": None,
+    "is_no_contract": None,
 }
 
 #: Party-card widget keys that hold user-editable text. ``is_company`` is the
@@ -203,9 +203,8 @@ def _has_edited_fields(page, case_type):
 def _has_edited_flags(page, case_type):
     """Return whether any confirmation differs from its initial state.
 
-    The comparison keeps ``None`` distinct from ``False``: for the tri-state
-    controls ``None`` is "未确认", so a confirmed "否" is a real user decision,
-    while the labour control's own default really is ``False``.
+    The comparison keeps ``None`` distinct from ``False``: ``None`` is
+    "未确认", so a confirmed "否" is a real user decision.
     """
     for name, value in _capture_flags(page, case_type).items():
         if value != INITIAL_FLAG_VALUES[name]:
@@ -272,7 +271,10 @@ def _capture_flags(page, case_type):
         flags = page.get_flags()
         return {"is_delivered": flags["is_delivered"], "is_signed": flags["is_signed"]}
     if case_type == "labor":
-        return {"is_no_contract": bool(page.get_has_no_contract())}
+        return {
+            "has_arbitrated": page.get_has_arbitrated(),
+            "is_no_contract": page.get_has_no_contract(),
+        }
     raise AssertionError(f"未登记的事实确认项：{case_type}")
 
 
@@ -392,11 +394,14 @@ def _apply_flags(page, document):
         _set_tri_state(page.del_yes, page.del_no, page.del_unknown, flags["is_delivered"])
         _set_tri_state(page.sign_yes, page.sign_no, page.sign_unknown, flags["is_signed"])
     elif case_type == "labor":
-        # Binary control: there is no "unknown" option, so the stored boolean is
-        # applied directly and never inferred from a missing value.
-        is_no_contract = bool(flags["is_no_contract"])
-        page.no_contract_yes.setChecked(is_no_contract)
-        page.no_contract_no.setChecked(not is_no_contract)
+        _set_tri_state(
+            page.arbitrated_yes, page.arbitrated_no, page.arbitrated_unknown,
+            flags["has_arbitrated"],
+        )
+        _set_tri_state(
+            page.no_contract_yes, page.no_contract_no, page.no_contract_unknown,
+            flags["is_no_contract"],
+        )
 
     # Re-evaluate the page's conditional requirement for the restored state so
     # the on-screen hint and the Next button tell the truth immediately.

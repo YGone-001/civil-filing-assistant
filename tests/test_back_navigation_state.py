@@ -241,3 +241,31 @@ def test_case_switch_does_not_cross_contaminate_claim_pages(qapp):
 
     # The loan page keeps its own (same-category) data for this session.
     assert _page_values(wizard.loan_claim_page, ALL_FIELD_NAMES["loan"]) == loan_values
+
+
+def test_switching_case_type_keeps_entered_parties(qapp):
+    """Parties do not depend on the category, so a switch must not erase them."""
+    wizard, _ = make_wizard()
+    wizard.restart()
+    wizard.next()  # -> case selection
+    select_case(wizard, "loan")
+    wizard.next()  # -> party
+    set_parties(wizard)
+    wizard.party_page.add_party_ui(1)
+    wizard.party_page.defendant_widgets[1]["name"].setText("被告丙（测试）")
+
+    wizard.back()  # -> case selection
+    select_case(wizard, "property")
+    wizard.next()  # -> party again
+
+    page = wizard.party_page
+    assert page.plaintiff_widgets[0]["name"].text() == "原告甲（测试）"
+    assert [w["name"].text() for w in page.defendant_widgets] == [
+        "被告乙（测试）", "被告丙（测试）",
+    ]
+    assert all(not w["addr_hint"].isHidden() for w in page.defendant_widgets)
+
+    wizard.back()
+    select_case(wizard, "loan")
+    wizard.next()
+    assert all(w["addr_hint"].isHidden() for w in wizard.party_page.defendant_widgets)

@@ -3,7 +3,7 @@
 # Encoding: UTF-8
 """Export and preview: the three-document card strip, output-directory
 selection, the read-only text preview (built from the shared
-``build_case_model`` path) and the exit notice."""
+``build_case_model`` path) and the result of the latest export."""
 
 import os
 from PySide6.QtCore import Qt
@@ -27,9 +27,10 @@ from views.theme import (
     INFO_LABEL,
     SECONDARY_BUTTON,
     SPACING_MD,
+    SUCCESS_LABEL,
 )
-from views.widgets import content_column
 from views.pages.base import _TitledPage
+from views.pages.common import _wrap_in_scroll
 
 class _PreviewDialog(QDialog):
     """A scrollable, read-only preview of the case text before export.
@@ -87,9 +88,16 @@ class ExportPage(_TitledPage):
 
         layout = QVBoxLayout()
 
-        intro = QLabel("信息收集完毕，请核对以下内容后生成文书。")
+        intro_row = QHBoxLayout()
+        intro = QLabel("信息收集完毕，建议先预览诉讼请求与事实理由，核对无误后再生成文书。")
         intro.setWordWrap(True)
-        layout.addWidget(intro)
+        intro_row.addWidget(intro, 1)
+        self.preview_btn = QPushButton("预览关键信息")
+        self.preview_btn.setObjectName(SECONDARY_BUTTON)
+        self.preview_btn.setAccessibleName("预览关键信息")
+        self.preview_btn.clicked.connect(self.show_preview)
+        intro_row.addWidget(self.preview_btn)
+        layout.addLayout(intro_row)
 
         # --- Three document cards (horizontal strip) ----------------------
         doc_group = QGroupBox("将生成的文书")
@@ -162,28 +170,31 @@ class ExportPage(_TitledPage):
         dir_group.setLayout(dir_layout)
         layout.addWidget(dir_group)
 
-        # --- Actions (content-width, right-aligned single row) ------------
-        action_group = QGroupBox("操作")
-        action_row = QHBoxLayout()
-        action_row.addStretch(1)
+        # --- Latest export result (hidden until a successful export) ------
+        self.result_group = QGroupBox("本次生成结果")
+        result_layout = QVBoxLayout()
+        self.result_label = QLabel("")
+        self.result_label.setObjectName(SUCCESS_LABEL)
+        self.result_label.setWordWrap(True)
+        self.result_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        result_layout.addWidget(self.result_label)
 
-        self.preview_btn = QPushButton("预览关键信息")
-        self.preview_btn.setObjectName(SECONDARY_BUTTON)
-        self.preview_btn.setAccessibleName("预览关键信息")
-        self.preview_btn.clicked.connect(self.show_preview)
-        action_row.addWidget(self.preview_btn)
+        result_btn_layout = QHBoxLayout()
+        self.open_result_btn = QPushButton("打开本次生成的文件夹")
+        self.open_result_btn.setObjectName(SECONDARY_BUTTON)
+        self.open_result_btn.setAccessibleName("打开本次生成的文件夹")
+        self.open_result_btn.clicked.connect(self.open_last_export_directory)
+        result_btn_layout.addWidget(self.open_result_btn)
+        result_btn_layout.addStretch()
+        result_layout.addLayout(result_btn_layout)
 
-        # Exit (secondary, not destructive) ----------------------------
-        self.secure_exit_btn = QPushButton("退出程序（不删除已生成文件）")
-        self.secure_exit_btn.setObjectName(SECONDARY_BUTTON)
-        self.secure_exit_btn.setAccessibleName("退出程序")
-        self.secure_exit_btn.clicked.connect(self.secure_exit)
-        action_row.addWidget(self.secure_exit_btn)
+        self.result_group.setLayout(result_layout)
+        self.result_group.setVisible(False)
+        layout.addWidget(self.result_group)
 
-        action_group.setLayout(action_row)
-        layout.addWidget(action_group)
+        self.last_export_dir = None
 
-        self.setLayout(content_column(layout))
+        self.setLayout(_wrap_in_scroll(layout))
 
     # ------------------------------------------------------------------ #
     # Output directory
@@ -204,9 +215,27 @@ class ExportPage(_TitledPage):
             self.output_dir = new_dir
             self.dir_label.setText(new_dir)
 
+    def show_export_result(self, target_dir, files):
+        """Show where the latest successful export was written."""
+        self.last_export_dir = target_dir
+        self.result_label.setText(
+            f"已生成 {len(files)} 份文件（起诉状、证据清单、送达地址确认书）。\n"
+            f"文件夹：{target_dir}\n"
+            "如需修改，可返回前面的步骤调整后再次生成；新结果另存为新文件夹，不覆盖本次文件。"
+        )
+        self.result_group.setVisible(True)
+
+    def open_last_export_directory(self):
+        """Open the folder of the latest successful export."""
+        if self.last_export_dir:
+            self._open_folder(self.last_export_dir)
+
     def open_output_directory(self):
         """Open the configured output directory in the system file explorer."""
-        path = self.output_dir
+        self._open_folder(self.output_dir)
+
+    @staticmethod
+    def _open_folder(path):
         if not os.path.isdir(path):
             try:
                 os.makedirs(path, exist_ok=True)
@@ -271,18 +300,3 @@ class ExportPage(_TitledPage):
 
         dialog = _PreviewDialog("关键信息预览", preview_text, self)
         dialog.exec()
-
-    # ------------------------------------------------------------------ #
-    # Exit
-    # ------------------------------------------------------------------ #
-
-    def secure_exit(self):
-        """Close the wizard without claiming that files or memory were destroyed."""
-        from PySide6.QtWidgets import QMessageBox
-        QMessageBox.information(
-            self,
-            "退出",
-            "程序将关闭。案件信息存在于本机内存与已生成的 Word 文件中；"
-            "关闭程序不会自动删除已生成的文件，请按需自行妥善保存或销毁。",
-        )
-        self.wizard().close()

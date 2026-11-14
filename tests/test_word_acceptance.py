@@ -178,20 +178,16 @@ def test_evidence_list_table_has_at_least_one_data_row(qapp, tmp_path, monkeypat
         f"evidence table should have header + data rows, got {len(table.rows)}"
 
 
-def test_evidence_list_remark_column_is_case_aware(qapp, tmp_path, monkeypatch):
-    """Property and labor cases should have case-specific remark text."""
-    for case_type, expected_remark in [
-        ("property", "计算公式"),
-        ("labor", "欠薪计算"),
-    ]:
+def test_evidence_list_remark_never_claims_an_absent_formula(qapp, tmp_path, monkeypatch):
+    """The complaint states no calculation formula, so the remark must not claim one."""
+    for case_type in ("property", "labor"):
         sub = tmp_path / case_type
         docs = _export_all(sub, monkeypatch, case_type)
         doc = Document(str(docs["evidence"]))
         table = doc.tables[0]
-        # Remark is in column 3 of the first data row.
         remark = table.rows[1].cells[3].text
-        assert expected_remark in remark, \
-            f"{case_type} remark should mention {expected_remark!r}, got {remark!r}"
+        assert remark == "原件核对", f"{case_type} remark changed unexpectedly: {remark!r}"
+        assert "公式" not in remark
 
 
 # ---------------------------------------------------------------------------
@@ -550,3 +546,13 @@ def test_evidence_table_data_cells_use_fangsong(qapp, tmp_path, monkeypatch, cas
                     assert run.font.size == Pt(16), \
                         f"data cell ({row_idx},{col_idx}) should be 16pt, got {run.font.size}"
                     break
+
+
+def test_party_line_omits_blank_details():
+    from models.case_model import PartyInfo
+    from utils.doc_generator import DocumentGenerator
+
+    person = PartyInfo("原告甲（测试）", "", "示例地址", "")
+    assert DocumentGenerator._party_line(person) == "原告甲（测试），住址：示例地址。"
+    company = PartyInfo("示例公司（测试）", is_company=True, address="示例住所")
+    assert DocumentGenerator._party_line(company) == "示例公司（测试），住所地：示例住所。"

@@ -170,6 +170,10 @@ def _fill_labor(view, model):
     model.is_no_contract = view.labor_claim_page.get_has_no_contract()
     model.social_sec_info = view.field("l_social_sec_info")
     model.court_name = view.field("l_court_name")
+    model.has_arbitrated = view.labor_claim_page.get_has_arbitrated()
+    model.arb_commission = view.field("l_arb_commission")
+    model.arb_case_no = view.field("l_arb_case_no")
+    model.arb_receipt_date = view.field("l_arb_receipt_date")
 
 
 def _fill_divorce(view, model):

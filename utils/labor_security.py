@@ -1,5 +1,5 @@
 # File: utils/labor_security.py
-# Purpose: Safety checks for labor dispute procedures
+# Purpose: Procedural notices for labor dispute cases
 # Encoding: UTF-8
 
 # Last review time of the arbitration-precondition wording against the cited
@@ -7,37 +7,22 @@
 # current conclusion without a basis time.
 ARBITRATION_NOTICE_BASIS = (
     "依据：《劳动争议调解仲裁法》关于“先裁后审”的规定；"
-    "整理时间：2026-10，请以最新法律及当地仲裁/法院实践为准。"
+    "整理时间：2026-11，请以最新法律及当地仲裁/法院实践为准。"
 )
 
 
 class LaborProcedureGuard:
-    def __init__(self):
-        self.LABOR_CASE_ID = 4
-
-    def check_arbitration_precondition(self, case_type_id):
-        """
-        Triggers a warning if user selects labor dispute.
-        Must be called before rendering the first data entry step.
-        """
-        if case_type_id == self.LABOR_CASE_ID:
-            return True
-        return False
-
     def get_warning_text(self):
-        """
-        Returns Chinese warning text in UTF-8.
-        Note: ASCII code only, Chinese in strings for UI rendering.
-        """
-        msg = (
+        """Full procedural notice shown on the case-selection page."""
+        return (
             "【法律程序风险提示】\n\n"
-            "1. 先裁后审原则：根据《劳动争议调解仲裁法》，劳动争议案件必须先向劳动争议仲裁委员会申请仲裁。"
-            "未经仲裁直接向法院提起诉讼的，法院通常不予受理。\n\n"
-            "2. 特例情况：若被告（用人单位）已向原告出具明确的工资欠条/债务凭证，且原告仅以该欠条为证据主张权利，"
-            "可尝试直接按普通民间借贷或合同纠纷起诉。\n\n"
-            "3. 建议操作：若您尚未经过仲裁程序，建议先咨询当地劳动监察大队或申请劳动仲裁。"
+            "1. 先裁后审：劳动争议一般须先向劳动人事争议仲裁委员会申请仲裁，对仲裁裁决不服的，"
+            "方可在收到裁决书之日起 15 日内向人民法院起诉；未经仲裁直接起诉的，法院通常不予受理。\n\n"
+            "2. 例外情形：劳动者仅以用人单位出具的工资欠条为证据直接起诉，且诉讼请求不涉及劳动关系"
+            "其他争议的，法院可按普通民事纠纷受理（参见最高人民法院劳动争议司法解释（一）第十五条）。\n\n"
+            "3. 本工具当前只生成仲裁之后向法院起诉所用的起诉状；尚未申请仲裁的，"
+            "请先向当地劳动人事争议仲裁委员会申请仲裁。"
         )
-        return msg
 
     def get_persistent_notice(self):
         """Concise arbitration-precondition notice with an explicit basis time.
@@ -51,26 +36,10 @@ class LaborProcedureGuard:
             + ARBITRATION_NOTICE_BASIS
         )
 
-    def get_special_case_text(self):
-        """
-        Returns text for special case exception.
-        """
-        msg = (
-            "【特例说明】\n\n"
-            "若被告已出具工资欠条/债务凭证，且您仅以该欠条为证据主张权利，"
-            "可尝试直接按普通民间借贷或合同纠纷起诉，不受先裁后审原则限制。"
+    def get_not_arbitrated_text(self):
+        """Blocking guidance shown when the user has not applied for arbitration."""
+        return (
+            "您选择了“尚未申请劳动仲裁”。本工具当前只能生成仲裁之后向法院起诉所用的起诉状，"
+            "不能为本阶段生成文书。请先向用人单位所在地或劳动合同履行地的劳动人事争议仲裁委员会"
+            "申请仲裁；劳动仲裁申请书的生成将在后续版本提供。"
         )
-        return msg
-
-    def get_arbitration_guide_text(self):
-        """
-        Returns brief guide on how to apply for labor arbitration.
-        """
-        msg = (
-            "【劳动仲裁申请指引】\n\n"
-            "1. 准备材料：劳动合同、工资条/银行流水、考勤记录、解除劳动关系证明等。\n"
-            "2. 申请途径：前往当地劳动人事争议仲裁委员会或劳动监察大队。\n"
-            "3. 办理流程：提交申请 → 等待受理 → 仲裁开庭 → 等待裁决。\n"
-            "4. 获得裁决后：如对裁决不服，可在收到裁决书之日起15日内向人民法院提起诉讼。"
-        )
-        return msg

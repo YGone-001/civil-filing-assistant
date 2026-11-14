@@ -17,7 +17,7 @@ import zipfile
 
 from models.case_model import LoanCaseModel
 from models.case_model import PartyInfo
-from utils.doc_generator import DocGenerator
+from utils.doc_generator import DocumentGenerator
 
 
 def run_test():
@@ -50,7 +50,7 @@ def run_test():
         model.court_name = "测试人民法院"
 
         print(f"Attempting to generate smoke-test document at: {output_path}")
-        DocGenerator.generate_loan_lawsuit(model, output_path)
+        DocumentGenerator().export_complaint(model, output_path)
 
         if not os.path.exists(output_path):
             print("FAIL: output file was not created.")

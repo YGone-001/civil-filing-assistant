@@ -74,7 +74,8 @@ def _module_assign_names(module_filename):
 @pytest.mark.parametrize(
     "name",
     [
-        "test_finish_button_success_exports_and_accepts",
+        "test_finish_button_success_exports_and_stays_open",
+        "test_finish_button_can_regenerate_without_overwriting",
         "test_finish_button_failure_keeps_wizard_open",
         "test_finish_button_retry_after_failure",
         "test_finish_button_blocks_on_incomplete_parties",

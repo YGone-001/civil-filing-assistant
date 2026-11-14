@@ -14,6 +14,7 @@ from helpers import (
     navigate_to_export,
     prepare_case,
     select_case,
+    set_labor_arbitrated,
     set_parties,
 )
 from utils.doc_generator import DocumentGenerator
@@ -113,6 +114,8 @@ def test_wizard_routes_and_initializes(qapp, case_type):
     assert wizard.nextId() == claim_page_id
     wizard.next()
     assert wizard.currentId() == claim_page_id
+    if case_type == "labor":
+        set_labor_arbitrated(wizard.labor_claim_page)
 
     wizard.next()  # -> evidence
     assert wizard.currentId() == wizard.PAGE_EVIDENCE
@@ -243,11 +246,12 @@ def test_evidence_add_edit_remove(qapp):
 
 
 # --- Real QWizard "Finish" button lifecycle (C1) ---------------------------
-# These tests click the actual Finish button (not presenter.on_wizard_accepted)
-# and assert the export happens before the wizard reaches its accepted state.
+# These tests click the actual Finish button (not presenter.on_wizard_accepted).
+# The window never closes on Finish: success shows the result on the export
+# page so the user can open the folder, correct a detail and regenerate.
 
 
-def test_finish_button_success_exports_and_accepts(qapp, monkeypatch, tmp_path, dialog_recorder):
+def test_finish_button_success_exports_and_stays_open(qapp, monkeypatch, tmp_path, dialog_recorder):
     desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
     wizard, presenter = make_wizard()
     prepare_case(wizard, "loan")
@@ -261,10 +265,34 @@ def test_finish_button_success_exports_and_accepts(qapp, monkeypatch, tmp_path, 
     finish.click()
     qapp.processEvents()
 
-    assert accepted, "Finish button did not reach the accepted state"
-    assert wizard.result() != 0
+    assert not accepted, "a successful export must not close the window"
+    assert wizard.isVisible()
+    assert wizard.currentId() == wizard.PAGE_EXPORT
     docs = sorted(desktop.rglob("*.docx"))
     assert len(docs) == 3, [d.name for d in docs]
+    page = wizard.export_page
+    assert not page.result_group.isHidden()
+    assert page.last_export_dir == str(docs[0].parent)
+    assert docs[0].parent.name in page.result_label.text()
+
+
+def test_finish_button_can_regenerate_without_overwriting(qapp, monkeypatch, tmp_path, dialog_recorder):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    finish = navigate_to_export(wizard)
+    wizard.show()
+    qapp.processEvents()
+
+    finish.click()
+    qapp.processEvents()
+    first_dir = wizard.export_page.last_export_dir
+    finish.click()
+    qapp.processEvents()
+
+    assert wizard.isVisible()
+    assert wizard.export_page.last_export_dir != first_dir
+    assert len(sorted(desktop.rglob("*.docx"))) == 6
     assert any(entry["kind"] == "information" for entry in dialog_recorder)
 
 
@@ -517,13 +545,10 @@ def test_t08_export_page_preview_clarifies_not_final_layout(qapp):
         f"preview dialog should clarify it is not final layout, got: {disclaimer_text}"
 
 
-def test_t08_export_page_exit_is_secondary_button(qapp):
-    from views.theme import SECONDARY_BUTTON
-
+def test_t08_export_page_has_no_second_exit_button(qapp):
+    """Exiting is the wizard's own 退出 action; the export page has no duplicate."""
     wizard, _ = make_wizard()
-    btn = wizard.export_page.secure_exit_btn
-    assert btn.objectName() == SECONDARY_BUTTON, \
-        f"exit button should be secondary, got {btn.objectName()!r}"
+    assert not hasattr(wizard.export_page, "secure_exit_btn")
 
 
 def test_t08_presenter_reads_directory_from_export_page(qapp, monkeypatch, tmp_path):
@@ -537,3 +562,105 @@ def test_t08_presenter_reads_directory_from_export_page(qapp, monkeypatch, tmp_p
     presenter.attempt_finish()
     docs = sorted(custom_dir.rglob("*.docx"))
     assert len(docs) == 3, f"presenter should export to the custom dir, got {len(docs)} files"
+
+
+# --- Exit confirmation ------------------------------------------------------
+
+
+def test_exit_with_entered_input_asks_and_can_be_cancelled(qapp, monkeypatch, dialog_recorder):
+    from PySide6.QtWidgets import QMessageBox
+
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "loan")
+    wizard.show()
+    qapp.processEvents()
+    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.No)
+
+    wizard.button(QWizard.CancelButton).click()
+    qapp.processEvents()
+    assert wizard.isVisible(), "answering 否 must keep the session"
+    assert wizard.loan_claim_page.principal.text() == "50000"
+
+    wizard.close()
+    qapp.processEvents()
+    assert wizard.isVisible(), "the title-bar close goes through the same check"
+
+
+def test_exit_with_entered_input_closes_after_confirmation(qapp, dialog_recorder):
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "loan")
+    wizard.show()
+    qapp.processEvents()
+
+    wizard.button(QWizard.CancelButton).click()
+    qapp.processEvents()
+    assert not wizard.isVisible()
+    assert any(entry["kind"] == "question" for entry in dialog_recorder)
+
+
+def test_exit_of_a_pristine_wizard_does_not_ask(qapp, dialog_recorder):
+    wizard, _ = make_wizard()
+    wizard.show()
+    qapp.processEvents()
+
+    wizard.close()
+    qapp.processEvents()
+    assert not wizard.isVisible()
+    assert not any(entry["kind"] == "question" for entry in dialog_recorder)
+
+
+def test_close_without_prompt_skips_the_confirmation(qapp, dialog_recorder):
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "loan")
+    wizard.show()
+    qapp.processEvents()
+
+    wizard.close_without_prompt()
+    qapp.processEvents()
+    assert not wizard.isVisible()
+    assert not any(entry["kind"] == "question" for entry in dialog_recorder)
+
+
+# --- Labour arbitration gate --------------------------------------------------
+
+
+def _labor_without_posture(wizard):
+    prepare_case(wizard, "labor")
+    page = wizard.labor_claim_page
+    page.arbitrated_unknown.setChecked(True)
+    return page
+
+
+def test_labor_page_blocks_until_arbitration_is_confirmed(qapp):
+    wizard, _ = make_wizard()
+    page = _labor_without_posture(wizard)
+    assert not page.isComplete()
+    assert "确认是否已经申请劳动仲裁" in page.arbitration_hint.text()
+
+    page.arbitrated_no.setChecked(True)
+    assert not page.isComplete()
+    assert "尚未申请劳动仲裁" in page.arbitration_hint.text()
+    assert page.validatePage() is False
+
+    page.arbitrated_yes.setChecked(True)
+    page.arb_commission.setText("")
+    assert not page.isComplete()
+    assert "仲裁机构" in page.arbitration_hint.text()
+
+    page.arb_commission.setText("示例劳动人事争议仲裁委员会")
+    assert page.isComplete()
+    assert page.arbitration_hint.isHidden()
+
+
+def test_presenter_refuses_labor_export_without_arbitration(qapp, monkeypatch, tmp_path, dialog_recorder):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    page = _labor_without_posture(wizard)
+    page.arbitrated_no.setChecked(True)
+
+    assert presenter.attempt_finish() == presenter.FINISH_VALIDATION_FAILED
+    assert any(entry["kind"] == "warning" for entry in dialog_recorder)
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+
+    page.arbitrated_yes.setChecked(True)
+    assert presenter.attempt_finish() == presenter.FINISH_SUCCESS

@@ -26,9 +26,11 @@ provenance is a security decision, not an omission: a restored amount has not
 been recomputed, so it must fall back to the neutral "manual amount" wording
 (see :mod:`views.draft_io`).
 
-Validation is strict and one-way. Unknown keys, missing keys, unknown case
-types, unknown schema versions and out-of-range collections are all rejected;
-nothing is coerced, defaulted or migrated.
+Validation is strict. Unknown keys, missing keys, unknown case types,
+unknown schema versions and out-of-range collections are all rejected; nothing
+is coerced or defaulted. The single exception is the explicit, versioned
+migration of an older schema (see :func:`_migrate`), which runs before the
+strict validation of the current version.
 """
 
 import json
@@ -38,7 +40,10 @@ from drafts.errors import DraftFileTooLargeError, DraftValidationError
 from drafts.storage import MAX_PLAINTEXT_BYTES
 
 #: Version of the *inner* JSON document (independent of the envelope version).
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+
+#: Older inner-document versions that :func:`_migrate` can upgrade.
+MIGRATABLE_VERSIONS = (1,)
 
 #: Case categories this build can restore. Mirrors
 #: ``presenters.model_builder.SUPPORTED_CASE_TYPES`` and is asserted equal there.
@@ -106,11 +111,7 @@ _PARTY_GROUP_KEYS = ("plaintiffs", "defendants")
 _EVIDENCE_KEYS = ("state", "rows")
 
 #: Confirmations whose third state (``None`` = 未确认) is meaningful.
-TRI_STATE_FLAGS = ("has_iou", "is_delivered", "is_signed")
-
-#: Confirmations that are genuinely binary in the current UI (no unknown
-#: option exists), so a null value is structurally invalid for them.
-BINARY_FLAGS = ("is_no_contract",)
+TRI_STATE_FLAGS = ("has_iou", "is_delivered", "is_signed", "has_arbitrated", "is_no_contract")
 
 #: Case type -> the page name that owns its claim inputs.
 CLAIM_PAGE_NAMES_BY_CASE = {
@@ -211,6 +212,9 @@ TEXT_FIELDS = {
         ("l_overtime_pay", "overtime_pay", NUMERIC_LIMIT, True),
         ("l_social_sec_info", "social_sec_info", TEXT_LIMIT, False),
         ("l_court_name", "court_name", TEXT_LIMIT, False),
+        ("l_arb_commission", "arb_commission", TEXT_LIMIT, False),
+        ("l_arb_case_no", "arb_case_no", TEXT_LIMIT, False),
+        ("l_arb_receipt_date", "arb_receipt_date", TEXT_LIMIT, False),
     )),
     "divorce": _specs((
         ("d_marriage_date", "marriage_date", TEXT_LIMIT, False),
@@ -230,7 +234,7 @@ FLAG_FIELDS = {
     "loan": ("has_iou",),
     "contract": ("is_delivered", "is_signed"),
     "property": (),
-    "labor": ("is_no_contract",),
+    "labor": ("has_arbitrated", "is_no_contract"),
     "divorce": (),
 }
 
@@ -372,10 +376,7 @@ def _validate_flags(case_type, value):
     validated = {}
     for name in names:
         raw = mapping[name]
-        if name in BINARY_FLAGS:
-            if not isinstance(raw, bool):
-                raise DraftValidationError(f"factual_flags.{name} 必须是布尔值。")
-        elif raw is not None and not isinstance(raw, bool):
+        if raw is not None and not isinstance(raw, bool):
             # ``None`` is the "unconfirmed" state and must survive as such; a
             # missing or malformed value is never interpreted as a negative.
             raise DraftValidationError(
@@ -419,12 +420,45 @@ def _validate_evidence(value):
     return state, tuple(validated_rows)
 
 
+def _migrate(mapping):
+    """Return a current-version copy of an older document; never mutates input.
+
+    Version 1 -> 2: the labour case gained the arbitration posture
+    (``has_arbitrated`` and three text fields) and its no-contract flag became
+    tri-state. A version-1 ``False`` was the binary control's untouched
+    default, so it is migrated to ``None`` ("未确认") rather than to a
+    confirmed "否"; ``True`` was always an explicit choice and is kept.
+    """
+    upgraded = dict(mapping)
+    upgraded["schema_version"] = SCHEMA_VERSION
+    if upgraded.get("case_type") == "labor":
+        fields = upgraded.get("fields")
+        if isinstance(fields, dict):
+            fields = dict(fields)
+            for key in ("l_arb_commission", "l_arb_case_no", "l_arb_receipt_date"):
+                if key in fields:
+                    raise DraftValidationError("fields 的字段集合不符合草稿格式。")
+                fields[key] = ""
+            upgraded["fields"] = fields
+        flags = upgraded.get("factual_flags")
+        if isinstance(flags, dict):
+            if "has_arbitrated" in flags:
+                raise DraftValidationError("factual_flags 的字段集合不符合草稿格式。")
+            flags = dict(flags)
+            if flags.get("is_no_contract") is False:
+                flags["is_no_contract"] = None
+            flags["has_arbitrated"] = None
+            upgraded["factual_flags"] = flags
+    return upgraded
+
+
 def validate_document(payload):
     """Validate *payload* and return a :class:`DraftDocument`.
 
     Raises :class:`DraftValidationError` for every structural problem. The
     function never mutates the input and never returns a partially valid
-    document.
+    document. A supported older version is migrated first and then validated
+    exactly like a current document.
     """
     mapping = _require_mapping(payload, "草稿文档")
     _require_exact_keys(mapping, _DOCUMENT_KEYS, "草稿文档")
@@ -432,6 +466,9 @@ def validate_document(payload):
     version = mapping["schema_version"]
     if isinstance(version, bool) or not isinstance(version, int):
         raise DraftValidationError("schema_version 必须是整数。")
+    if version in MIGRATABLE_VERSIONS:
+        mapping = _migrate(mapping)
+        version = SCHEMA_VERSION
     if version != SCHEMA_VERSION:
         raise DraftValidationError(
             f"草稿文档版本不受支持（文档版本 {version}，当前支持 {SCHEMA_VERSION}）。"

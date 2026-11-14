@@ -65,18 +65,33 @@ class DocumentGenerator:
             run1.font.size = Pt(16)
             run1.bold = False
 
-            if getattr(party, 'is_company', False):
-                company_info = f"{party.name}，统一社会信用代码：{party.credit_code}，"
-                if party.legal_representative:
-                    company_info += f"法定代表人：{party.legal_representative}，"
-                company_info += f"住所地：{party.address}，联系电话：{party.phone}。"
-                run2 = p.add_run(company_info)
-            else:
-                run2 = p.add_run(f"{party.name}，身份证号：{party.id_number}，住址：{party.address}，联系电话：{party.phone}。")
+            run2 = p.add_run(self._party_line(party))
 
             run2.font.name = "FangSong_GB2312"
             run2._element.rPr.rFonts.set(qn('w:eastAsia'), "FangSong_GB2312")
             run2.font.size = Pt(16)
+
+    @staticmethod
+    def _party_line(party):
+        """Join the supplied party details, omitting blank labelled segments."""
+        def text(attr):
+            return (getattr(party, attr, "") or "").strip()
+
+        if getattr(party, "is_company", False):
+            segments = [
+                ("统一社会信用代码", text("credit_code")),
+                ("法定代表人", text("legal_representative")),
+                ("住所地", text("address")),
+                ("联系电话", text("phone")),
+            ]
+        else:
+            segments = [
+                ("身份证号", text("id_number")),
+                ("住址", text("address")),
+                ("联系电话", text("phone")),
+            ]
+        parts = [text("name")] + [f"{label}：{value}" for label, value in segments if value]
+        return "，".join(part for part in parts if part) + "。"
 
     def add_claims(self, claims):
         self.add_heading("诉讼请求：")
@@ -105,6 +120,37 @@ class DocumentGenerator:
         run.font.name = font_name
         run._element.rPr.rFonts.set(qn('w:eastAsia'), font_name)
 
+    @staticmethod
+    def _add_pagination(doc):
+        from docx.oxml import OxmlElement
+
+        for section in doc.sections:
+            footer = section.footer
+            para = footer.paragraphs[0] if footer.paragraphs else footer.add_paragraph()
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+
+            run = para.add_run("- ")
+
+            fldChar1 = OxmlElement('w:fldChar')
+            fldChar1.set(qn('w:fldCharType'), 'begin')
+
+            instrText = OxmlElement('w:instrText')
+            instrText.set(qn('xml:space'), 'preserve')
+            instrText.text = " PAGE "
+
+            fldChar2 = OxmlElement('w:fldChar')
+            fldChar2.set(qn('w:fldCharType'), 'separate')
+
+            fldChar3 = OxmlElement('w:fldChar')
+            fldChar3.set(qn('w:fldCharType'), 'end')
+
+            run._r.append(fldChar1)
+            run._r.append(instrText)
+            run._r.append(fldChar2)
+            run._r.append(fldChar3)
+
+            para.add_run(" -")
+
     def save(self, output_path):
         self.doc.save(output_path)
 
@@ -121,7 +167,7 @@ class DocumentGenerator:
         self.doc.add_paragraph()
         self.doc.add_paragraph()
         self.add_footer(model.court_name)
-        DocGenerator._add_pagination(self.doc)
+        self._add_pagination(self.doc)
         self.save(file_path)
 
     def export_evidence_list(self, model, file_path):
@@ -144,12 +190,7 @@ class DocumentGenerator:
             self._set_cell_text(row[1], str(ev.name or ""), "FangSong_GB2312", 16, False)
             self._set_cell_text(row[2], str(ev.target or ""), "FangSong_GB2312", 16, False)
 
-            remark = "原件核对"
-            if getattr(model, 'case_type_name', '') == "物业服务合同纠纷":
-                remark = "原件核对；计算公式已在起诉状中载明"
-            elif getattr(model, 'case_type_name', '') == "劳动争议":
-                remark = "原件核对；欠薪计算公式已在起诉状中载明"
-            self._set_cell_text(row[3], remark, "FangSong_GB2312", 16, False)
+            self._set_cell_text(row[3], "原件核对", "FangSong_GB2312", 16, False)
 
         self.save(file_path)
 
@@ -231,92 +272,5 @@ class DocumentGenerator:
         self._add_text("确认人：", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
         self._add_text("年   月   日", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
 
-        DocGenerator._add_pagination(self.doc)
+        self._add_pagination(self.doc)
         self.save(file_path)
-
-class DocGenerator:
-    @staticmethod
-    def _set_paragraph_format(paragraph, font_name='FangSong_GB2312', font_size=16, bold=False, align=WD_PARAGRAPH_ALIGNMENT.LEFT, first_line_indent=0):
-        paragraph.alignment = align
-        paragraph.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
-        paragraph.paragraph_format.line_spacing = Pt(28)
-        if first_line_indent > 0:
-            paragraph.paragraph_format.first_line_indent = Pt(first_line_indent)
-
-        for run in paragraph.runs:
-            run.font.name = font_name
-            run._element.rPr.rFonts.set(qn('w:eastAsia'), font_name)
-            run.font.size = Pt(font_size)
-            run.bold = bold
-
-    @staticmethod
-    def _add_party_block(doc, title, parties, body_font):
-        if len(parties) == 1:
-            prefixes = [f"{title}："]
-        else:
-            prefixes = [f"{title}{i}：" for i in range(1, len(parties) + 1)]
-
-        for i, party in enumerate(parties):
-            para = doc.add_paragraph()
-            run = para.add_run(prefixes[i])
-            run.font.name = 'SimHei'
-            run._element.rPr.rFonts.set(qn('w:eastAsia'), 'SimHei')
-            run.font.size = Pt(16) # 三号黑体
-
-            content_run = para.add_run(f"{party.name}，身份证号：{party.id_number}，住址：{party.address}，联系电话：{party.phone}。")
-            content_run.font.name = body_font
-            content_run._element.rPr.rFonts.set(qn('w:eastAsia'), body_font)
-            content_run.font.size = Pt(16)
-
-            para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
-            para.paragraph_format.line_spacing = Pt(28)
-
-    @staticmethod
-    def _add_pagination(doc):
-        from docx.oxml import OxmlElement
-
-        for section in doc.sections:
-            footer = section.footer
-            para = footer.paragraphs[0] if footer.paragraphs else footer.add_paragraph()
-            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-
-            run = para.add_run("- ")
-
-            fldChar1 = OxmlElement('w:fldChar')
-            fldChar1.set(qn('w:fldCharType'), 'begin')
-
-            instrText = OxmlElement('w:instrText')
-            instrText.set(qn('xml:space'), 'preserve')
-            instrText.text = " PAGE "
-
-            fldChar2 = OxmlElement('w:fldChar')
-            fldChar2.set(qn('w:fldCharType'), 'separate')
-
-            fldChar3 = OxmlElement('w:fldChar')
-            fldChar3.set(qn('w:fldCharType'), 'end')
-
-            run._r.append(fldChar1)
-            run._r.append(instrText)
-            run._r.append(fldChar2)
-            run._r.append(fldChar3)
-
-            para.add_run(" -")
-
-    @staticmethod
-    def generate_loan_lawsuit(model, output_path):
-        gen = DocumentGenerator()
-        gen.export_complaint(model, output_path)
-
-    @staticmethod
-    def generate_complaint(model, output_path):
-        DocGenerator.generate_loan_lawsuit(model, output_path)
-
-    @staticmethod
-    def generate_evidence_list(model, output_path):
-        gen = DocumentGenerator()
-        gen.export_evidence_list(model, output_path)
-
-    @staticmethod
-    def generate_address_confirmation(model, output_path):
-        gen = DocumentGenerator()
-        gen.export_address_form(model, output_path)

@@ -305,3 +305,103 @@ def test_property_view_total_computes(qapp):
     # 115.5 × 2.8 × 24 months = 7761.60
     assert "7761.60" in page.calc_label.text()
     assert "月数=24" in page.calc_label.text()
+
+
+# --- Generated wording regressions (fictional data) -----------------------
+
+
+def _divorce(custody, support="3000"):
+    model = DivorceCaseModel()
+    model.marriage_date = "2018-05-20"
+    model.child_name = "测试子女"
+    model.custody_preference = custody
+    model.support_monthly = support
+    return model
+
+
+@pytest.mark.parametrize("custody", ["由原告抚养", "原告抚养", "由原告直接抚养", "原告"])
+def test_divorce_custody_wording_is_not_duplicated(custody):
+    model = _divorce(custody)
+    text = "\n".join(model.render_claims()) + model.render_facts()
+    assert "抚养抚养" not in text
+    assert "判令婚生子女测试子女由原告抚养；" in model.render_claims()
+    assert any(c.startswith("判令被告按月支付抚养费人民币3000元") for c in model.render_claims())
+
+
+def test_divorce_defendant_custody_never_claims_support_from_defendant():
+    model = _divorce("由被告抚养")
+    claims = model.render_claims()
+    facts = model.render_facts()
+    assert not any("被告按月支付" in c for c in claims)
+    assert "判令婚生子女测试子女由被告抚养，原告按月支付抚养费人民币3000元，至子女年满18周岁止；" in claims
+    assert "被告应按月支付" not in facts
+    assert "原告愿按月支付抚养费3000元。" in facts
+
+
+def test_divorce_reason_is_stated_without_tautology():
+    model = _divorce("由原告抚养")
+    model.divorce_reason = "感情不和"
+    facts = model.render_facts()
+    assert "原告主张的离婚原因：感情不和。" in facts
+    assert "日益淡漠" not in facts
+
+
+@pytest.mark.parametrize("record, expected", [
+    ("2025年6月多次张贴催缴通知并发送短信。", "催缴情况如下：2025年6月多次张贴催缴通知并发送短信。但被告至今未缴纳。"),
+    ("发送短信", "催缴情况如下：发送短信。但被告至今未缴纳。"),
+])
+def test_property_demand_record_reads_as_a_sentence(record, expected):
+    model = PropertyCaseModel()
+    model.demand_record = record
+    facts = model.render_facts()
+    assert expected in facts
+    assert "曾通过" not in facts
+
+
+def _labor():
+    model = LaborCaseModel()
+    model.emp_join_date = "2023-01-15"
+    model.job_title = "测试岗位"
+    model.monthly_salary = "8000"
+    model.unpaid_months = "2023年12月至2024年2月"
+    return model
+
+
+def test_labor_facts_use_neutral_party_wording():
+    model = _labor()
+    model.is_no_contract = True
+    facts = model.render_facts()
+    for phrase in ("另查", "被告单位", "严重侵害"):
+        assert phrase not in facts
+    assert "入职被告处" in facts
+    assert "第八十二条" in facts
+
+
+def test_labor_unconfirmed_contract_status_asserts_nothing():
+    model = _labor()
+    assert model.is_no_contract is None
+    text = "\n".join(model.render_claims()) + model.render_facts()
+    assert "二倍工资" not in text
+    assert "书面劳动合同" not in text
+
+
+def test_labor_without_end_date_still_reads_cleanly():
+    facts = _labor().render_facts()
+    assert "截至" not in facts and "截止" not in facts
+    assert "被告共计欠付原告工资24000.00元。" in facts
+
+
+def test_labor_arbitration_is_stated_from_supplied_details_only():
+    model = _labor()
+    model.has_arbitrated = True
+    model.arb_commission = "示例劳动人事争议仲裁委员会"
+    model.arb_receipt_date = "2024-06-01"
+    facts = model.render_facts()
+    assert "向示例劳动人事争议仲裁委员会申请劳动仲裁，并于2024-06-01收到仲裁裁决书" in facts
+    assert "案号" not in facts
+
+    model.arb_case_no = "示例仲裁案号-001"
+    assert "（案号：示例仲裁案号-001）" in model.render_facts()
+
+    model.has_arbitrated = None
+    assert "仲裁" not in model.render_facts()

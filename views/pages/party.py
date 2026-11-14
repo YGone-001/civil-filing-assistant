@@ -111,24 +111,18 @@ class PartyPage(_TitledPage):
         self.setLayout(content_column(main_layout))
 
     def initializePage(self):
-        """Called when the page is shown, recreate UI based on selected case type"""
+        """Create the first cards once; later visits keep every entered party.
+
+        Parties do not depend on the case category, so switching the category
+        and coming back must never discard them. Only the property-specific
+        defendant address hint follows the current category.
+        """
         case_type = self.field("case_type")
-
-        # Only recreate UI if case type has changed or not initialized yet
-        if self.is_initialized and self.current_case_type == case_type:
-            return
-
-        # Clear existing widgets if they exist
-        for widget in self.plaintiff_widgets:
-            widget["group"].deleteLater()
-        for widget in self.defendant_widgets:
-            widget["group"].deleteLater()
-
-        self.plaintiff_widgets.clear()
-        self.defendant_widgets.clear()
-
-        # Update current case type
         self.current_case_type = case_type
+        self._update_case_hints()
+
+        if self.is_initialized:
+            return
         self.is_initialized = True
 
         # Fresh entry: hide any previously shown errors until interaction.
@@ -138,6 +132,12 @@ class PartyPage(_TitledPage):
         self.add_party_ui(0)
         self.add_party_ui(1)
         self._rebuild_party_tab_order()
+
+    def _update_case_hints(self):
+        """Show the moved-defendant address hint only for property cases."""
+        show = self.current_case_type == "property"
+        for widget in self.defendant_widgets:
+            widget["addr_hint"].setVisible(show)
 
     @staticmethod
     def _button_row(button):
@@ -236,14 +236,14 @@ class PartyPage(_TitledPage):
         phone_validator = QRegularExpressionValidator(_PHONE_INPUT_PATTERN)
         phone_edit.setValidator(phone_validator)
 
-        case_type = self.field("case_type")
-        is_property_case = (case_type == "property")
-
-        # Only create addr_hint for property cases
-        if is_property_case and not is_plaintiff:
+        # Defendant cards carry the property-case address hint; its visibility
+        # follows the current category so a category switch keeps the card.
+        addr_hint = None
+        if not is_plaintiff:
             addr_hint = QLabel("提示：若被告搬家，请填写现居住满一年的地址，以便法院送达。")
             addr_hint.setObjectName(REMINDER_LABEL)
             addr_hint.setWordWrap(True)
+            addr_hint.setVisible(self.field("case_type") == "property")
             group_layout.addWidget(addr_hint)
 
         # 个人/企业 toggle. Toggling swaps the personal ID field for the company
@@ -284,6 +284,7 @@ class PartyPage(_TitledPage):
             "legal_rep_label": legal_rep_label,
             "delete_btn": delete_btn,
             "name_fields": name_fields,
+            "addr_hint": addr_hint,
         }
         delete_btn.clicked.connect(lambda _=False, t=party_type, d=widget: self._remove_party(t, d))
 

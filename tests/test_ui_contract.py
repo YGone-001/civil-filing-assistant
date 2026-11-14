@@ -35,6 +35,7 @@ from helpers import (
     navigate_to_export,
     prepare_case,
     select_case,
+    set_labor_arbitrated,
     set_parties,
 )
 from views.theme import (
@@ -118,7 +119,7 @@ def test_export_page_button_texts_are_chinese(qapp):
     assert page.change_dir_btn.text() == "更改目录"
     assert page.open_dir_btn.text() == "打开输出目录"
     assert page.preview_btn.text() == "预览关键信息"
-    assert "退出程序" in page.secure_exit_btn.text()
+    assert page.open_result_btn.text() == "打开本次生成的文件夹"
 
 
 def test_contract_calc_buttons_are_auxiliary_and_chinese(qapp):
@@ -203,6 +204,8 @@ def test_step_indicators_update_through_full_navigation(qapp, case_type):
     qapp.processEvents()
     for ind in _all_indicators(wizard):
         assert ind.current() == 3
+    if case_type == "labor":
+        set_labor_arbitrated(wizard.labor_claim_page)
 
     wizard.next()  # -> evidence (step 4)
     qapp.processEvents()
@@ -472,7 +475,7 @@ def test_export_buttons_have_accessible_names(qapp):
     assert page.change_dir_btn.accessibleName() == "更改输出目录"
     assert page.open_dir_btn.accessibleName() == "打开输出目录"
     assert page.preview_btn.accessibleName() == "预览关键信息"
-    assert page.secure_exit_btn.accessibleName() == "退出程序"
+    assert page.open_result_btn.accessibleName() == "打开本次生成的文件夹"
 
 
 def test_contract_calc_buttons_have_accessible_names(qapp):
@@ -623,7 +626,7 @@ def test_export_buttons_have_correct_object_names(qapp):
     assert page.change_dir_btn.objectName() == SECONDARY_BUTTON
     assert page.open_dir_btn.objectName() == SECONDARY_BUTTON
     assert page.preview_btn.objectName() == SECONDARY_BUTTON
-    assert page.secure_exit_btn.objectName() == SECONDARY_BUTTON
+    assert page.open_result_btn.objectName() == SECONDARY_BUTTON
 
 
 def test_party_delete_button_has_danger_object_name(qapp):

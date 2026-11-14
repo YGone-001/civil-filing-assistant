@@ -229,7 +229,8 @@ def test_c2_t07b_finish_button_blocks_contradiction_then_retry_succeeds(qapp, mo
     wizard.contract_claim_page.del_yes.setChecked(True)
     finish.click()
     qapp.processEvents()
-    assert accepted
+    assert not accepted, "success keeps the window open on the export page"
+    assert wizard.isVisible()
     docs = sorted(desktop.rglob("*.docx"))
     assert len(docs) == 3, [d.name for d in docs]
 

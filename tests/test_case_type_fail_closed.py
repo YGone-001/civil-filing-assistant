@@ -40,7 +40,10 @@ def _fake_view(case_type):
             get_flags=lambda: {"is_delivered": None, "is_signed": None},
             get_penalty_calc_basis=lambda: None,
         ),
-        labor_claim_page=SimpleNamespace(get_has_no_contract=lambda: False),
+        labor_claim_page=SimpleNamespace(
+            get_has_no_contract=lambda: None,
+            get_has_arbitrated=lambda: None,
+        ),
     )
 
 

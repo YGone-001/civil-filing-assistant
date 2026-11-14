@@ -27,11 +27,8 @@ from views.draft_io import CLAIM_PAGE_ATTR_BY_CASE, capture_draft
 
 def _blank_payload(case_type):
     """A minimal but structurally complete payload for *case_type*."""
-    flags = {}
-    for name in schema.FLAG_FIELDS[case_type]:
-        # Binary confirmations have no "unknown" option in the UI, so their
-        # neutral value is False; tri-state ones start unconfirmed.
-        flags[name] = False if name in schema.BINARY_FLAGS else None
+    # Every confirmation is tri-state and starts unconfirmed.
+    flags = {name: None for name in schema.FLAG_FIELDS[case_type]}
     return {
         "schema_version": schema.SCHEMA_VERSION,
         "case_type": case_type,
@@ -100,10 +97,9 @@ def test_captured_flags_match_the_declared_registry(qapp, case_type):
     assert set(payload["factual_flags"]) == set(schema.FLAG_FIELDS[case_type])
 
 
-def test_tri_state_and_binary_flags_are_disjoint():
-    assert set(schema.TRI_STATE_FLAGS).isdisjoint(schema.BINARY_FLAGS)
+def test_every_declared_flag_is_tri_state():
     declared = {name for names in schema.FLAG_FIELDS.values() for name in names}
-    assert declared == set(schema.TRI_STATE_FLAGS) | set(schema.BINARY_FLAGS)
+    assert declared == set(schema.TRI_STATE_FLAGS)
 
 
 def test_resume_pages_match_the_wizard_page_names():
@@ -162,7 +158,7 @@ def test_unknown_case_type_is_rejected():
 
 
 def test_unknown_schema_version_is_rejected():
-    payload = _loan_payload(schema_version=2)
+    payload = _loan_payload(schema_version=schema.SCHEMA_VERSION + 1)
     with pytest.raises(DraftValidationError):
         schema.validate_document(payload)
 
@@ -300,11 +296,56 @@ def test_tri_state_flag_rejects_a_non_boolean_value():
         schema.validate_document(payload)
 
 
-def test_binary_flag_rejects_null():
+def test_labor_flags_accept_the_unconfirmed_state():
     payload = _blank_payload("labor")
-    payload["factual_flags"]["is_no_contract"] = None
+    document = schema.validate_document(payload)
+    assert document.factual_flags == {"has_arbitrated": None, "is_no_contract": None}
+
+
+def _version_one_labor_payload(is_no_contract):
+    payload = _blank_payload("labor")
+    payload["schema_version"] = 1
+    for key in ("l_arb_commission", "l_arb_case_no", "l_arb_receipt_date"):
+        del payload["fields"][key]
+    payload["factual_flags"] = {"is_no_contract": is_no_contract}
+    payload["fields"]["l_job_title"] = "示例岗位"
+    return payload
+
+
+def test_version_one_labor_draft_is_migrated():
+    document = schema.validate_document(_version_one_labor_payload(True))
+    assert document.schema_version == schema.SCHEMA_VERSION
+    assert document.fields["l_job_title"] == "示例岗位"
+    assert document.fields["l_arb_commission"] == ""
+    assert document.factual_flags == {"has_arbitrated": None, "is_no_contract": True}
+
+
+def test_version_one_binary_default_becomes_unconfirmed():
+    """A v1 ``False`` was the binary control's untouched default, not a choice."""
+    document = schema.validate_document(_version_one_labor_payload(False))
+    assert document.factual_flags["is_no_contract"] is None
+
+
+def test_version_one_migration_does_not_mutate_the_input():
+    payload = _version_one_labor_payload(True)
+    snapshot = json.dumps(payload, sort_keys=True)
+    schema.validate_document(payload)
+    assert json.dumps(payload, sort_keys=True) == snapshot
+
+
+def test_version_one_document_already_carrying_new_keys_is_rejected():
+    payload = _version_one_labor_payload(True)
+    payload["factual_flags"]["has_arbitrated"] = True
     with pytest.raises(DraftValidationError):
         schema.validate_document(payload)
+
+
+def test_version_one_non_labor_draft_is_migrated_unchanged():
+    payload = _loan_payload(schema_version=1)
+    document = schema.validate_document(payload)
+    assert document.schema_version == schema.SCHEMA_VERSION
+    assert document.fields["loan_date"] == "2023年1月1日"
+    assert document.factual_flags == {"has_iou": True}
 
 
 def test_unknown_resume_page_is_rejected():

@@ -66,15 +66,6 @@ class CaseTemplate:
         self.court_name = ""
         self.evidences = [] # List of EvidenceItem
 
-    def generate_loan_claim(self):
-        return self.render_claims()
-
-    def generate_sales_contract(self):
-        return self.render_claims()
-
-    def generate_property_claim(self):
-        return self.render_claims()
-
     def render_claims(self):
         """Return a list of string claims."""
         return []
@@ -364,8 +355,11 @@ class PropertyCaseModel(CaseTemplate):
         if self.is_partial_billing:
             fact_str += "（上述金额按整月计费估算，欠费期间存在不足整月或分段计费的情形，具体金额以双方核对及缴费记录为准。）"
 
-        if self.demand_record:
-            fact_str += f"原告曾通过{self.demand_record}向被告催缴，但被告至今未缴纳。"
+        demand = (self.demand_record or "").strip()
+        if demand:
+            if demand[-1] not in "。！？.!?":
+                demand += "。"
+            fact_str += f"原告曾向被告催缴，催缴情况如下：{demand}但被告至今未缴纳。"
         # When no demand record is supplied, no demand frequency ("多次"),
         # bad-faith ("无故") or legal-conclusion ("已构成违约") assertion is
         # fabricated; the demand statement is simply omitted.
@@ -388,10 +382,23 @@ class DivorceCaseModel(CaseTemplate):
         self.asset_description = ""
 
     def _custody_phrase(self):
-        preference = (self.custody_preference or "").strip()
-        if not preference:
-            return ""
-        return preference[1:] if preference.startswith("由") else preference
+        """Return the custodian wording without a leading "由" or trailing "抚养"."""
+        phrase = (self.custody_preference or "").strip().rstrip("。；;，,")
+        if phrase.startswith("由"):
+            phrase = phrase[1:]
+        for suffix in ("直接抚养", "抚养"):
+            if phrase.endswith(suffix):
+                phrase = phrase[: -len(suffix)]
+                break
+        return phrase.strip()
+
+    def _custodian(self):
+        """Return "原告" / "被告" when the custodian is unambiguous, else ``""``."""
+        phrase = self._custody_phrase()
+        for role in ("原告", "被告"):
+            if phrase == role:
+                return role
+        return ""
 
     def render_claims(self):
         claims = []
@@ -400,14 +407,27 @@ class DivorceCaseModel(CaseTemplate):
         # divorce complaint.
         claims.append("判令原告与被告离婚；")
 
-        if self.child_name.strip() and self.custody_preference.strip():
-            claims.append(f"判令婚生子女{self.child_name}由{self._custody_phrase()}抚养；")
+        child = self.child_name.strip()
+        support = self.support_monthly.strip()
+        has_custody = bool(child and self._custody_phrase())
 
-        # A child-support claim requires an identified child: an amount entered
-        # without a child identity is not a supportable claim and must not be
-        # turned into one.
-        if self.support_monthly.strip() and self.child_name.strip():
-            claims.append(f"判令被告按月支付抚养费人民币{self.support_monthly}元，至子女年满18周岁止；")
+        # When the defendant raises the child, the support amount is what the
+        # plaintiff offers to pay; it must never be claimed against the
+        # defendant who would be raising the child.
+        if has_custody and self._custodian() == "被告" and support:
+            claims.append(
+                f"判令婚生子女{child}由被告抚养，原告按月支付抚养费人民币{support}元，"
+                f"至子女年满18周岁止；"
+            )
+        else:
+            if has_custody:
+                claims.append(f"判令婚生子女{child}由{self._custody_phrase()}抚养；")
+
+            # A child-support claim requires an identified child: an amount
+            # entered without a child identity is not a supportable claim and
+            # must not be turned into one.
+            if support and child:
+                claims.append(f"判令被告按月支付抚养费人民币{support}元，至子女年满18周岁止；")
 
         if self.asset_description.strip():
             claims.append(f"判令依法分割夫妻共同财产：{self.asset_description}；")
@@ -426,7 +446,7 @@ class DivorceCaseModel(CaseTemplate):
             fact_str += f"双方自{self.separation_start_date}起分居至今。"
 
         if self.divorce_reason.strip():
-            fact_str += f"婚后因{self.divorce_reason}，导致夫妻感情日益淡漠。"
+            fact_str += f"原告主张的离婚原因：{self.divorce_reason.strip().rstrip('。')}。"
 
         # When no divorce reason is supplied, no marital-dissension fact (such
         # as "生活琐事产生矛盾") is invented; the reason is simply omitted and
@@ -434,12 +454,18 @@ class DivorceCaseModel(CaseTemplate):
 
         fact_str += "原告认为，双方感情确已破裂，已无和好可能。"
 
-        if self.child_name.strip() and self.custody_preference.strip():
-            fact_str += f"关于子女抚养：原告认为由{self._custody_phrase()}抚养更有利于子女健康成长。"
-            if self.support_monthly.strip():
-                fact_str += f"被告应按月支付抚养费{self.support_monthly}元。"
-        elif self.child_name.strip() and self.support_monthly.strip():
-            fact_str += f"关于子女抚养：被告应按月支付抚养费{self.support_monthly}元。"
+        child = self.child_name.strip()
+        support = self.support_monthly.strip()
+        if child and self._custody_phrase():
+            custody = self._custody_phrase()
+            fact_str += f"关于子女抚养：原告认为由{custody}抚养更有利于子女健康成长。"
+            if support:
+                if self._custodian() == "被告":
+                    fact_str += f"原告愿按月支付抚养费{support}元。"
+                else:
+                    fact_str += f"被告应按月支付抚养费{support}元。"
+        elif child and support:
+            fact_str += f"关于子女抚养：被告应按月支付抚养费{support}元。"
         # A support amount without an identified child produces no child-support
         # assertion (the wizard blocks that incomplete combination).
 
@@ -464,10 +490,17 @@ class LaborCaseModel(CaseTemplate):
         self.monthly_salary = ""
         self.unpaid_months = ""
         self.overtime_pay = ""
-        self.is_no_contract = False
+        # Tri-state: None = 未确认, True = 未签订书面劳动合同, False = 已签订.
+        self.is_no_contract = None
         self.social_sec_info = ""
         self.total_unpaid_amount = ""
         self.overtime_hours = ""
+        # Procedural posture. A complaint is only generated after arbitration;
+        # None = 未确认, False = 尚未申请仲裁.
+        self.has_arbitrated = None
+        self.arb_commission = ""
+        self.arb_case_no = ""
+        self.arb_receipt_date = ""
 
     def resolve_unpaid_month_count(self):
         """Return ``(months, is_partial)`` for the unpaid-salary period.
@@ -523,32 +556,53 @@ class LaborCaseModel(CaseTemplate):
         if self.overtime_pay:
             claims.append(f"判令被告向原告支付加班费人民币 {self.overtime_pay} 元；")
 
-        if self.is_no_contract:
+        if self.is_no_contract is True:
             claims.append("判令被告向原告支付未签订书面劳动合同的二倍工资差额；")
 
         claims.append("本案诉讼费由被告承担。")
         return claims
 
+    def _arbitration_sentence(self):
+        """State the prior arbitration only from the details the user supplied."""
+        if self.has_arbitrated is not True:
+            return ""
+        commission = (self.arb_commission or "").strip()
+        case_no = (self.arb_case_no or "").strip()
+        receipt = (self.arb_receipt_date or "").strip()
+        sentence = f"原告曾就上述争议向{commission or '劳动人事争议仲裁委员会'}申请劳动仲裁"
+        if case_no:
+            sentence += f"（案号：{case_no}）"
+        if receipt:
+            sentence += f"，并于{receipt}收到仲裁裁决书（或不予受理通知书）"
+        return sentence + "。原告对此不服，现依法向人民法院提起诉讼。"
+
     def render_facts(self):
         summary = self._ensure_unpaid_total()
         if summary is not None:
-            months, _is_partial = summary
-            amount_text = f"共计欠付原告基本工资{self.total_unpaid_amount}元"
+            amount_text = f"共计欠付原告工资{self.total_unpaid_amount}元"
         else:
             amount_text = "存在欠付工资情形，具体金额以工资条、银行流水等证据为准"
 
         fact_str = (
-            f"原告于{self.emp_join_date}入职被告单位，岗位为{self.job_title}，"
+            f"原告于{self.emp_join_date}入职被告处，岗位为{self.job_title}，"
             f"双方约定月工资标准为{self.monthly_salary}元。"
             f"被告未按时足额支付原告{self.unpaid_months}期间的工资。"
-            f"截止{self.emp_term_date}，被告{amount_text}。"
         )
+        term = (self.emp_term_date or "").strip()
+        if term:
+            fact_str += f"截至{term}，被告{amount_text}。"
+        else:
+            fact_str += f"被告{amount_text}。"
 
         if self.overtime_pay and self.overtime_hours:
             fact_str += f"此外，原告在职期间存在{self.overtime_hours}小时的加班，被告亦未支付加班费{self.overtime_pay}元。"
 
-        if self.is_no_contract:
-            fact_str += "另查，入职以来被告从未与原告签订书面劳动合同，根据《劳动合同法》第82条规定，被告应当向原告每月支付二倍的工资。"
+        if self.is_no_contract is True:
+            fact_str += (
+                "原告入职后，被告未与原告订立书面劳动合同。原告依据《中华人民共和国劳动合同法》"
+                "第八十二条的规定，主张被告支付未订立书面劳动合同的二倍工资差额。"
+            )
 
-        fact_str += "综上，被告的行为严重侵害了劳动者的合法权益。现原告根据《劳动法》及《劳动合同法》之规定，请求法院判令被告支付欠薪及相关补偿。"
+        fact_str += self._arbitration_sentence()
+        fact_str += "为维护原告合法权益，特诉至贵院，请依法支持原告的诉讼请求。"
         return fact_str

@@ -177,9 +177,9 @@ class LawsuitWizard(QWizard):
         # Set start page
         self.setStartId(self.PAGE_WELCOME)
 
-        # The presenter registers a Finish handler that performs the export
-        # before the wizard commits to its accepted (closed) state.
+        # The presenter registers the Finish handler that runs the export.
         self.finish_handler = None
+        self._discard_confirmed = False
 
         # Demo-mode plumbing: test-data entry points are hidden in production
         # and only exposed by an explicit --demo launch argument.
@@ -331,15 +331,52 @@ class LawsuitWizard(QWizard):
         self.finish_handler = handler
 
     def accept(self):
-        """Run the export before accepting, so a failure keeps the wizard open.
+        """Run the export from the real Finish button without closing the window.
 
-        The real QWizard "Finish" button routes through this method. Only a
-        successful export advances to Qt's normal accepted (closed) state.
+        A successful export leaves the user on the export page with the result
+        shown, so they can open the folder, correct a detail and regenerate; a
+        failed export keeps every input for correction and retry. Only 退出 or
+        closing the window ends the session.
         """
         handler = getattr(self, "finish_handler", None)
-        if callable(handler) and not handler():
-            return  # keep the wizard open so the user can correct and retry
+        if callable(handler):
+            handler()
+            return
         super().accept()
+
+    def reject(self):
+        """退出, Esc and the window's close button: confirm before discarding input.
+
+        ``QDialog.closeEvent`` routes the title-bar close through here as well,
+        so one check covers every way a user can end the session. Drafts are
+        manual-only, which is why losing typed input must never be silent.
+        """
+        if self._discard_confirmed or self._confirm_discard():
+            super().reject()
+
+    def close_without_prompt(self):
+        """Close after the session was handed over (e.g. replaced by a restored draft)."""
+        self._discard_confirmed = True
+        return self.close()
+
+    def _confirm_discard(self):
+        try:
+            meaningful = has_meaningful_session(self)
+        except Exception:
+            meaningful = True
+        if not meaningful:
+            return True
+        answer = QMessageBox.question(
+            self,
+            "退出确认",
+            "退出后，当前窗口中填写的案件信息将不会保留"
+            "（已保存的草稿和已生成的 Word 文件不受影响）。\n\n"
+            "如需稍后继续填写，请选择“否”，然后点击“保存草稿”。\n\n"
+            "确定退出吗？",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        return answer == QMessageBox.Yes
 
     # ------------------------------------------------------------------ #
     # Demo / test-data filling
@@ -424,6 +461,10 @@ class LawsuitWizard(QWizard):
             self.property_claim_page.fill_test_data(notify=False)
 
         elif case_type == "labor":
+            self.labor_claim_page.arbitrated_yes.setChecked(True)
+            self.labor_claim_page.arb_commission.setText("北京市朝阳区劳动人事争议仲裁委员会")
+            self.labor_claim_page.arb_case_no.setText("示例仲裁案号-001")
+            self.labor_claim_page.arb_receipt_date.setText("2024-06-01")
             self.labor_claim_page.emp_join_date.setText("2023-01-15")
             self.labor_claim_page.job_title.setText("软件工程师")
             self.labor_claim_page.monthly_salary.setText("8000")
