@@ -15,15 +15,17 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QGridLayout,
     QGroupBox,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QPlainTextEdit,
+    QPushButton,
     QScrollArea,
     QTextEdit,
     QVBoxLayout,
     QWidget,
 )
-from views.theme import SECTION_BOX, SPACING_LG, SPACING_MD, SPACING_SM
+from views.theme import SECTION_BOX, SECONDARY_BUTTON, SPACING_LG, SPACING_MD, SPACING_SM
 from views.widgets import content_column
 
 def _set_status(label, text):
@@ -181,6 +183,30 @@ def _section(root, title):
     form = _TwoColumnForm(box)
     root.addWidget(box)
     return form
+
+
+def add_facts_examples_button(page, form):
+    """Append a left-aligned "范例参考" action row to *form*.
+
+    The row opens the shared read-only exemplar dialog for the wizard's current
+    case category. The button is never a registered wizard field, so drafts and
+    page routing are unaffected by it.
+    """
+    from views.facts_examples_dialog import FactsExamplesDialog
+
+    button = QPushButton("范例参考")
+    button.setObjectName(SECONDARY_BUTTON)
+    button.setAccessibleName("事实与理由范例参考")
+    button.setAccessibleDescription("查看同类案由的事实与理由写作范例")
+    button.clicked.connect(
+        lambda: FactsExamplesDialog(page.field("case_type"), page).exec()
+    )
+    row = QWidget()
+    row_layout = QHBoxLayout(row)
+    row_layout.setContentsMargins(0, 0, 0, 0)
+    row_layout.addWidget(button)
+    row_layout.addStretch(1)
+    form.addRow("", row)
 
 
 def _wrap_in_scroll(root_layout):

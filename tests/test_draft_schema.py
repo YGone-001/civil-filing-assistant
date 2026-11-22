@@ -37,6 +37,7 @@ def _blank_payload(case_type):
         "factual_flags": flags,
         "evidence": {"state": "NOT_INITIALIZED", "rows": []},
         "resume_page": "welcome",
+        "agent": None,
     }
 
 
@@ -156,6 +157,11 @@ def test_empty_strings_and_blank_parties_are_valid_content():
             "is_company": False,
             "credit_code": "",
             "legal_representative": "",
+            "gender": "",
+            "birth_date": "",
+            "ethnicity": "",
+            "ethnicity_other": "",
+            "occupation": "",
         }
     ]
     document = schema.validate_document(payload)
@@ -413,6 +419,9 @@ def test_version_two_labor_payload_missing_the_posture_flag_is_rejected():
 def _version_one_labor_payload(is_no_contract):
     payload = _blank_payload("labor")
     payload["schema_version"] = 1
+    # A true legacy document predates the v4 agent key; carrying it would be
+    # structural drift and must be rejected (pinned by its own test).
+    del payload["agent"]
     for key in (
         "l_arb_commission",
         "l_arb_case_no",
@@ -459,10 +468,90 @@ def test_version_one_document_already_carrying_new_keys_is_rejected():
 
 def test_version_one_non_labor_draft_is_migrated_unchanged():
     payload = _loan_payload(schema_version=1)
+    del payload["agent"]  # legacy documents predate the v4 agent key
     document = schema.validate_document(payload)
     assert document.schema_version == schema.SCHEMA_VERSION
     assert document.fields["loan_date"] == "2023年1月1日"
     assert document.factual_flags == {"has_iou": True}
+
+
+# --------------------------------------------------------------------------- #
+# Version 3 -> 4: party detail keys and the optional agent record
+# --------------------------------------------------------------------------- #
+
+
+def test_version_three_draft_gains_party_details_and_blank_agent():
+    """A v3 draft migrates: every party record fills the detail keys blank and
+    the agent record starts as ``None`` (section closed). No value is guessed."""
+    payload = _blank_payload("loan")
+    payload["schema_version"] = 3
+    del payload["agent"]
+    payload["parties"]["plaintiffs"] = [
+        {
+            "name": "张三（测试）",
+            "id_number": "",
+            "address": "",
+            "phone": "",
+            "credit_code": "",
+            "legal_representative": "",
+            "is_company": False,
+        }
+    ]
+    document = schema.validate_document(payload)
+    assert document.schema_version == schema.SCHEMA_VERSION
+    record = document.plaintiffs[0]
+    for key in ("gender", "birth_date", "ethnicity", "ethnicity_other", "occupation"):
+        assert record[key] == ""
+    assert document.agent is None
+    # The legacy record's own content is untouched.
+    assert record["name"] == "张三（测试）"
+    assert record["is_company"] is False
+
+
+def test_version_three_document_already_carrying_agent_is_rejected():
+    payload = _blank_payload("loan")
+    payload["schema_version"] = 3
+    del payload["agent"]
+    payload["agent"] = None
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
+
+
+def test_agent_record_survives_validation_and_round_trip():
+    payload = _loan_payload()
+    payload["agent"] = {"name": "王五（测试）", "type": "律师", "org": "示例律所", "phone": ""}
+    document = schema.validate_document(payload)
+    assert document.agent == {"name": "王五（测试）", "type": "律师", "org": "示例律所", "phone": ""}
+    restored = schema.from_json_bytes(schema.to_json_bytes(document))
+    assert restored.agent == document.agent
+
+
+def test_agent_without_a_stated_role_is_valid():
+    payload = _loan_payload()
+    payload["agent"] = {"name": "王五（测试）", "type": "", "org": "", "phone": ""}
+    document = schema.validate_document(payload)
+    assert document.agent["type"] == ""
+
+
+def test_agent_with_unknown_role_is_rejected():
+    payload = _loan_payload()
+    payload["agent"] = {"name": "王五（测试）", "type": "顾问", "org": "", "phone": ""}
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
+
+
+def test_agent_with_extra_key_is_rejected():
+    payload = _loan_payload()
+    payload["agent"] = {"name": "", "type": "", "org": "", "phone": "", "id": ""}
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
+
+
+def test_current_document_missing_agent_is_rejected():
+    payload = _loan_payload()
+    del payload["agent"]
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
 
 
 def test_unknown_resume_page_is_rejected():

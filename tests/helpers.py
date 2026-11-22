@@ -67,6 +67,11 @@ def _set_party(widget, spec):
     widget["is_company"].setChecked(spec.get("is_company", False))
     widget["credit_code"].setText(spec.get("credit_code", ""))
     widget["legal_rep"].setText(spec.get("legal_rep", ""))
+    widget["gender"].setCurrentText(spec.get("gender", ""))
+    widget["birth"].setText(spec.get("birth_date", ""))
+    widget["ethnicity"].setCurrentText(spec.get("ethnicity", ""))
+    widget["ethnicity_other"].setText(spec.get("ethnicity_other", ""))
+    widget["occupation"].setText(spec.get("occupation", ""))
 
 
 def _set_party_list(page, kind, specs):

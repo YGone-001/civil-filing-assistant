@@ -17,7 +17,9 @@ The document is therefore a flat, explicit, versioned record:
 * ``parties``       - ordered plaintiff/defendant records, blank cards included;
 * ``factual_flags`` - tri-state confirmations where ``None`` means "unconfirmed";
 * ``evidence``      - the row list plus the page's own state label;
-* ``resume_page``   - a stable *page name*, never a numeric Qt page id.
+* ``resume_page``   - a stable *page name*, never a numeric Qt page id;
+* ``agent``         - the optional litigation agent record, ``None`` while the
+                      party page's agent section stays closed.
 
 Deliberately excluded: generated DOCX content, rendered claims/facts, derived
 calculation results, the contract calculator provenance, temporary paths,
@@ -35,9 +37,11 @@ strict validation of the current version.
 
 import json
 from dataclasses import dataclass
+from typing import Optional
 
 from drafts.errors import DraftFileTooLargeError, DraftValidationError
 from drafts.storage import MAX_PLAINTEXT_BYTES
+from models.case_model import AGENT_TYPES
 from utils.labor_security import (
     LABOR_PROCEDURES,
     LABOR_REFUSAL_GROUNDS,
@@ -45,10 +49,10 @@ from utils.labor_security import (
 )
 
 #: Version of the *inner* JSON document (independent of the envelope version).
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 #: Older inner-document versions that :func:`_migrate` can upgrade.
-MIGRATABLE_VERSIONS = (1, 2)
+MIGRATABLE_VERSIONS = (1, 2, 3)
 
 #: Case categories this build can restore. Mirrors
 #: ``presenters.model_builder.SUPPORTED_CASE_TYPES`` and is asserted equal there.
@@ -97,12 +101,28 @@ PARTY_TEXT_LIMITS = {
     "phone": 50,
     "credit_code": 100,
     "legal_representative": 100,
+    # Natural-person detail fields added in schema version 4. The party page
+    # keeps the raw combo selection (``ethnicity`` may literally be "其他")
+    # and the free-text companion; the presenter resolves the pair into the
+    # model's final ethnicity, so the draft must store both verbatim.
+    "gender": 10,
+    "birth_date": 20,
+    "ethnicity": 30,
+    "ethnicity_other": 30,
+    "occupation": 100,
 }
 PARTY_KEYS = tuple(PARTY_TEXT_LIMITS) + ("is_company",)
 
+#: Party record keys that schema version 4 introduced; migration fills them
+#: blank instead of guessing any value.
+_PARTY_KEYS_ADDED_IN_V4 = ("gender", "birth_date", "ethnicity", "ethnicity_other", "occupation")
+
 EVIDENCE_TEXT_LIMITS = {"name": 500, "target": 1000}
 
-_DOCUMENT_KEYS = (
+#: Top-level keys up to version 3. Version 4 appended ``agent``; the strict
+#: top-level key check must run against the document's own version so legacy
+#: drafts reach :func:`_migrate` instead of being rejected up front.
+_DOCUMENT_KEYS_V3 = (
     "schema_version",
     "case_type",
     "fields",
@@ -111,6 +131,13 @@ _DOCUMENT_KEYS = (
     "evidence",
     "resume_page",
 )
+
+_DOCUMENT_KEYS = _DOCUMENT_KEYS_V3 + ("agent",)
+
+#: Agent record contract: ``None`` (section never opened) or a complete
+#: four-key record. An empty string for ``type`` means "no role stated".
+_AGENT_KEYS = ("name", "type", "org", "phone")
+_AGENT_TEXT_LIMITS = {"name": 100, "type": 20, "org": 200, "phone": 50}
 
 _PARTY_GROUP_KEYS = ("plaintiffs", "defendants")
 _EVIDENCE_KEYS = ("state", "rows")
@@ -289,6 +316,7 @@ class DraftDocument:
     evidence_state: str
     evidence_rows: tuple
     resume_page: str
+    agent: Optional[dict] = None
     schema_version: int = SCHEMA_VERSION
 
     def to_payload(self):
@@ -307,6 +335,7 @@ class DraftDocument:
                 "rows": [dict(row) for row in self.evidence_rows],
             },
             "resume_page": self.resume_page,
+            "agent": dict(self.agent) if self.agent is not None else None,
         }
 
     def party_count(self):
@@ -402,6 +431,25 @@ def _validate_party_group(value, label):
     return groups
 
 
+def _validate_agent(value):
+    """Validate the optional agent record; ``None`` means "section closed".
+
+    Every field stays optional text (an opened-but-blank section is a real
+    user state), but a stated role must come from the shared vocabulary the
+    party page's combo offers.
+    """
+    if value is None:
+        return None
+    mapping = _require_mapping(value, "agent")
+    _require_exact_keys(mapping, _AGENT_KEYS, "agent")
+    validated = {}
+    for key, limit in _AGENT_TEXT_LIMITS.items():
+        validated[key] = _require_text(mapping[key], f"agent.{key}", limit)
+    if validated["type"] and validated["type"] not in AGENT_TYPES:
+        raise DraftValidationError("agent.type 不是受支持的取值。")
+    return validated
+
+
 def _validate_flags(case_type, value):
     mapping = _require_mapping(value, "factual_flags")
     names = FLAG_FIELDS[case_type]
@@ -479,12 +527,19 @@ def _migrate(mapping):
     refusal ground, party role and delay exception start unconfirmed, and the
     two new date fields start blank; the legacy receipt date is preserved
     verbatim. Non-labour drafts only move to the new version number.
+
+    Version 3 -> 4: every party record gained the natural-person detail keys
+    (gender, birth date, ethnicity and its free-text companion, occupation),
+    filled blank because the legacy draft simply did not ask for them, and
+    the document gained the optional ``agent`` record as ``None``.
     """
     upgraded = dict(mapping)
     if upgraded.get("schema_version") == 1:
         upgraded = _migrate_v1_to_v2(upgraded)
     if upgraded.get("schema_version") == 2:
         upgraded = _migrate_v2_to_v3(upgraded)
+    if upgraded.get("schema_version") == 3:
+        upgraded = _migrate_v3_to_v4(upgraded)
     upgraded["schema_version"] = SCHEMA_VERSION
     return upgraded
 
@@ -550,6 +605,36 @@ def _migrate_v2_to_v3(mapping):
     return upgraded
 
 
+def _migrate_v3_to_v4(mapping):
+    """Version 3 -> 4 shape: party detail keys and the optional agent record."""
+    upgraded = dict(mapping)
+    parties = upgraded.get("parties")
+    if isinstance(parties, dict):
+        upgraded["parties"] = {
+            group: [
+                _complete_party_record_v4(record)
+                if isinstance(record, dict) else record
+                for record in rows
+            ] if isinstance(rows, list) else rows
+            for group, rows in parties.items()
+        }
+    if "agent" in upgraded:
+        raise DraftValidationError("草稿文档的字段集合不符合草稿格式。")
+    upgraded["agent"] = None
+    upgraded["schema_version"] = 4
+    return upgraded
+
+
+def _complete_party_record_v4(record):
+    """Return a copy of *record* with the v4 detail keys filled blank."""
+    completed = dict(record)
+    for key in _PARTY_KEYS_ADDED_IN_V4:
+        if key in completed:
+            raise DraftValidationError("parties 的当事人记录不符合草稿格式。")
+        completed[key] = ""
+    return completed
+
+
 def validate_document(payload):
     """Validate *payload* and return a :class:`DraftDocument`.
 
@@ -559,14 +644,18 @@ def validate_document(payload):
     exactly like a current document.
     """
     mapping = _require_mapping(payload, "草稿文档")
-    _require_exact_keys(mapping, _DOCUMENT_KEYS, "草稿文档")
 
-    version = mapping["schema_version"]
+    version = mapping.get("schema_version")
     if isinstance(version, bool) or not isinstance(version, int):
         raise DraftValidationError("schema_version 必须是整数。")
     if version in MIGRATABLE_VERSIONS:
+        # Legacy documents carry the pre-4 top-level key set; the strict check
+        # must run against that set so they reach migration instead of being
+        # rejected for lacking ``agent``.
+        _require_exact_keys(mapping, _DOCUMENT_KEYS_V3, "草稿文档")
         mapping = _migrate(mapping)
         version = SCHEMA_VERSION
+    _require_exact_keys(mapping, _DOCUMENT_KEYS, "草稿文档")
     if version != SCHEMA_VERSION:
         raise DraftValidationError(
             f"草稿文档版本不受支持（文档版本 {version}，当前支持 {SCHEMA_VERSION}）。"
@@ -584,6 +673,7 @@ def validate_document(payload):
     parties = _validate_party_group(mapping["parties"], "parties")
     flags = _validate_flags(case_type, mapping["factual_flags"])
     state, rows = _validate_evidence(mapping["evidence"])
+    agent = _validate_agent(mapping["agent"])
 
     return DraftDocument(
         case_type=case_type,
@@ -594,6 +684,7 @@ def validate_document(payload):
         evidence_state=state,
         evidence_rows=rows,
         resume_page=resume_page,
+        agent=agent,
         schema_version=version,
     )
 

@@ -31,6 +31,7 @@ from views.pages.common import (
     _set_page_form_accessibility,
     _set_status,
     _wrap_in_scroll,
+    add_facts_examples_button,
 )
 
 class ContractClaimPage(_TitledPage):
@@ -177,6 +178,7 @@ class ContractClaimPage(_TitledPage):
         amounts.addRow("LPR倍数：", self.lpr_multiple)
         amounts.addRow("", calc_btn_widget)
         amounts.addRow(self.calc_help)
+        add_facts_examples_button(self, amounts)
 
         # --- 四、建议管辖法院 ------------------------------------------------
         court = _section(root, "四、建议管辖法院")

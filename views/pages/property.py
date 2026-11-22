@@ -16,6 +16,7 @@ from views.pages.common import (
     _set_page_form_accessibility,
     _set_status,
     _wrap_in_scroll,
+    add_facts_examples_button,
 )
 
 class PropertyClaimPage(_TitledPage):
@@ -75,6 +76,7 @@ class PropertyClaimPage(_TitledPage):
 
         demand.addRow("违约金/滞纳金计算:", self.late_fee_logic)
         demand.addRow("催缴方式:", self.demand_record)
+        add_facts_examples_button(self, demand)
 
         # --- 三、金额核对（系统计算） ---------------------------------------
         amount = _section(root, "三、金额核对（系统计算）")

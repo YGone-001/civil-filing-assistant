@@ -10,6 +10,7 @@ drift apart.
 """
 
 from models.case_model import (
+    AgentInfo,
     ContractCaseModel,
     DivorceCaseModel,
     EvidenceItem,
@@ -60,6 +61,19 @@ def _text(value):
     return (value or "").strip()
 
 
+def _resolve_ethnicity(p_data):
+    """Resolve the raw combo choice plus free-text companion into the final value.
+
+    The party page stores ``ethnicity`` verbatim (it may literally be "其他")
+    so a draft can restore the combo state; only here does "其他" become the
+    user's typed name.
+    """
+    ethnicity = _text(p_data.get("ethnicity"))
+    if ethnicity == "其他":
+        return _text(p_data.get("ethnicity_other"))
+    return ethnicity
+
+
 def _add_parties(model, party_data):
     for party_type, key in ((0, "plaintiffs"), (1, "defendants")):
         for p_data in party_data.get(key, []):
@@ -67,15 +81,38 @@ def _add_parties(model, party_data):
                 # Incomplete parties are skipped here, but the presenter blocks
                 # export entirely when a required party is missing.
                 continue
+            # Keyword arguments: PartyInfo's parameter list keeps growing with
+            # the document conventions, and positional order is a trap.
             model.party_manager.add_party(party_type, PartyInfo(
-                p_data["name"],
-                p_data["id_number"],
-                p_data["address"],
-                p_data["phone"],
-                p_data["is_company"],
-                p_data["legal_representative"],
-                p_data["credit_code"],
+                name=p_data["name"],
+                id_number=p_data.get("id_number", ""),
+                address=p_data.get("address", ""),
+                phone=p_data.get("phone", ""),
+                is_company=p_data.get("is_company", False),
+                legal_representative=p_data.get("legal_representative", ""),
+                credit_code=p_data.get("credit_code", ""),
+                gender=p_data.get("gender", ""),
+                birth_date=p_data.get("birth_date", ""),
+                ethnicity=_resolve_ethnicity(p_data),
+                occupation=p_data.get("occupation", ""),
             ))
+
+
+def _add_agent(model, view):
+    """Attach the optional agent; the section stays case-level, plaintiff-side."""
+    agent_data = view.party_page.get_agent_data()
+    if not agent_data:
+        return
+    if not _text(agent_data.get("name")):
+        # An opened-but-nameless section is a UI state, not an agent: the
+        # document paragraph needs a name to attach the remaining details to.
+        return
+    model.agent = AgentInfo(
+        name=_text(agent_data.get("name")),
+        type=_text(agent_data.get("type")),
+        org=_text(agent_data.get("org")),
+        phone=_text(agent_data.get("phone")),
+    )
 
 
 def _fill_loan(view, model):
@@ -209,6 +246,8 @@ def build_case_model(view):
     model = _model_for(case_type)
 
     _add_parties(model, view.party_page.get_party_data())
+
+    _add_agent(model, view)
 
     _FILLERS[case_type](view, model)
 

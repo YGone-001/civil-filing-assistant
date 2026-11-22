@@ -13,6 +13,7 @@ from views.pages.common import (
     _set_page_form_accessibility,
     _set_status,
     _wrap_in_scroll,
+    add_facts_examples_button,
 )
 
 class DivorceClaimPage(_TitledPage):
@@ -37,6 +38,7 @@ class DivorceClaimPage(_TitledPage):
         marriage.addRow("登记结婚日期:", self.marriage_date)
         marriage.addRow("离婚原因:", self.divorce_reason)
         marriage.addRow("分居起始日期:", self.separation_start_date)
+        add_facts_examples_button(self, marriage)
 
         # --- 二、子女与抚养（无子女可留空） ---------------------------------
         child = _section(root, "二、子女与抚养（无子女可留空）")

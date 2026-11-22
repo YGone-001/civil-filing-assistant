@@ -36,6 +36,7 @@ from views.pages.common import (
     _set_page_form_accessibility,
     _set_status,
     _wrap_in_scroll,
+    add_facts_examples_button,
 )
 from utils.labor_security import (
     LABOR_PROCEDURES,
@@ -245,6 +246,7 @@ class LaborClaimPage(_TitledPage):
         basic.addRow("岗位:", self.job_title)
         basic.addRow("月工资标准(元):", self.monthly_salary)
         basic.addRow("离职/截止日期:", self.emp_term_date)
+        add_facts_examples_button(self, basic)
 
         # --- 三、欠薪与加班 -------------------------------------------------
         unpaid = _section(root, "三、欠薪与加班")

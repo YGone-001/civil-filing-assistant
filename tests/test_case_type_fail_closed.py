@@ -33,7 +33,10 @@ from presenters.model_builder import (
 def _fake_view(case_type):
     return SimpleNamespace(
         field=lambda name: case_type if name == "case_type" else "",
-        party_page=SimpleNamespace(get_party_data=lambda: {"plaintiffs": [], "defendants": []}),
+        party_page=SimpleNamespace(
+            get_party_data=lambda: {"plaintiffs": [], "defendants": []},
+            get_agent_data=lambda: None,
+        ),
         evidence_page=SimpleNamespace(get_evidence_items=lambda: []),
         loan_claim_page=SimpleNamespace(get_has_iou=lambda: None),
         contract_claim_page=SimpleNamespace(

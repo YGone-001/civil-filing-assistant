@@ -8,6 +8,7 @@ import re
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtWidgets import (
+    QComboBox,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
@@ -18,6 +19,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from models.case_model import AGENT_TYPES
+from models.validation import DateStatus, parse_full_date
 from views.theme import (
     DANGER_BUTTON,
     ERROR_LABEL,
@@ -35,6 +38,19 @@ from views.pages.common import (
     _dedup_messages,
     _set_label_field_accessibility,
     _set_status,
+)
+
+#: Ethnicity options for the natural-person party cards (56 recognised groups
+#: plus a free-text "其他" companion), mirroring the historical generator.
+ETHNICITY_OTHER = "其他"
+ETHNICITY_OPTIONS = (
+    "汉", "蒙古", "回", "藏", "维吾尔", "苗", "彝", "壮", "布依", "朝鲜",
+    "满", "侗", "瑶", "白", "土家", "哈尼", "哈萨克", "傣", "黎", "傈僳",
+    "佤", "畲", "高山", "拉祜", "水", "东乡", "纳西", "景颇", "柯尔克孜",
+    "土", "达斡尔", "仫佬", "羌", "布朗", "撒拉", "毛南", "仡佬", "锡伯",
+    "阿昌", "普米", "塔吉克", "怒", "乌孜别克", "俄罗斯", "鄂温克", "德昂",
+    "保安", "裕固", "京", "塔塔尔", "独龙", "鄂伦春", "赫哲", "门巴",
+    "珞巴", "基诺", ETHNICITY_OTHER,
 )
 
 class PartyPage(_TitledPage):
@@ -104,6 +120,8 @@ class PartyPage(_TitledPage):
         self._add_d_row = self._button_row(self.add_d_btn)
         self.scroll_layout.addWidget(self._add_d_row)
 
+        self._build_agent_section()
+
         self.scroll_layout.addStretch()
         self.scroll_area.setWidget(self.scroll_widget)
         main_layout.addWidget(self.scroll_area)
@@ -138,6 +156,119 @@ class PartyPage(_TitledPage):
         show = self.current_case_type == "property"
         for widget in self.defendant_widgets:
             widget["addr_hint"].setVisible(show)
+
+    def _build_agent_section(self):
+        """Build the optional litigation-agent section below the party lists.
+
+        The section stays hidden until the user asks for it; ``get_agent_data``
+        reports ``None`` while it is closed so a never-opened section is
+        indistinguishable from "no agent" in the draft payload.
+        """
+        self.agent_section_label = QLabel("诉讼代理人（可选）")
+        self.agent_section_label.setObjectName(SECTION_LABEL)
+        self.scroll_layout.addWidget(self.agent_section_label)
+
+        self.agent_toggle_btn = QPushButton("添加代理人")
+        self.agent_toggle_btn.setObjectName(SECONDARY_BUTTON)
+        self.agent_toggle_btn.setAccessibleName("添加代理人")
+        self.agent_toggle_btn.setAccessibleDescription("添加或移除诉讼代理人信息")
+        self.agent_toggle_btn.clicked.connect(self._toggle_agent_section)
+        self._agent_toggle_row = self._button_row(self.agent_toggle_btn)
+        self.scroll_layout.addWidget(self._agent_toggle_row)
+
+        self.agent_frame = QGroupBox("诉讼代理人")
+        agent_grid = QGridLayout(self.agent_frame)
+        agent_grid.setHorizontalSpacing(SPACING_LG)
+        agent_grid.setVerticalSpacing(SPACING_MD)
+        agent_grid.setColumnStretch(1, 1)
+        agent_grid.setColumnStretch(3, 1)
+
+        agent_name_label = QLabel("姓名:")
+        self.agent_type_label = QLabel("代理类型:")
+        self.agent_org_label = QLabel("所在单位/律师事务所:")
+        agent_phone_label = QLabel("电话:")
+        for label in (agent_name_label, self.agent_type_label,
+                      self.agent_org_label, agent_phone_label):
+            label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+
+        self.agent_name_edit = QLineEdit()
+        self.agent_type_combo = QComboBox()
+        self.agent_type_combo.addItem("")
+        for role in AGENT_TYPES:
+            self.agent_type_combo.addItem(role)
+        self.agent_org_edit = QLineEdit()
+        self.agent_phone_edit = QLineEdit()
+        self.agent_phone_edit.setValidator(QRegularExpressionValidator(_PHONE_INPUT_PATTERN))
+
+        agent_grid.addWidget(agent_name_label, 0, 0)
+        agent_grid.addWidget(self.agent_name_edit, 0, 1)
+        agent_grid.addWidget(self.agent_type_label, 0, 2)
+        agent_grid.addWidget(self.agent_type_combo, 0, 3)
+        agent_grid.addWidget(self.agent_org_label, 1, 0)
+        agent_grid.addWidget(self.agent_org_edit, 1, 1)
+        agent_grid.addWidget(agent_phone_label, 1, 2)
+        agent_grid.addWidget(self.agent_phone_edit, 1, 3)
+
+        self.agent_frame.setVisible(False)
+        self.scroll_layout.addWidget(self.agent_frame)
+
+        for edit in (self.agent_name_edit, self.agent_org_edit, self.agent_phone_edit):
+            edit.textChanged.connect(lambda _text: self._refresh_validation_message())
+
+        # Explicit open/closed state: ``isVisible()`` also reports False while
+        # the page itself is not yet on screen, so it cannot carry this state.
+        self._agent_section_open = False
+        self._agent_widgets = {
+            "name": self.agent_name_edit,
+            "type": self.agent_type_combo,
+            "org": self.agent_org_edit,
+            "phone": self.agent_phone_edit,
+        }
+        self._agent_name_fields = [
+            (agent_name_label, self.agent_name_edit),
+            (self.agent_type_label, self.agent_type_combo),
+            (self.agent_org_label, self.agent_org_edit),
+            (agent_phone_label, self.agent_phone_edit),
+        ]
+        self._apply_field_names(self._agent_name_fields, "诉讼代理人")
+
+    def _toggle_agent_section(self):
+        """Open or close the agent section; closing also clears its fields."""
+        self._agent_section_open = not self._agent_section_open
+        self.agent_frame.setVisible(self._agent_section_open)
+        self.agent_toggle_btn.setText("移除代理人" if self._agent_section_open else "添加代理人")
+        if not self._agent_section_open:
+            self.agent_name_edit.clear()
+            self.agent_type_combo.setCurrentIndex(0)
+            self.agent_org_edit.clear()
+            self.agent_phone_edit.clear()
+        self._refresh_validation_message()
+
+    def get_agent_data(self):
+        """Return the agent record, or ``None`` while the section is closed."""
+        if not self._agent_section_open:
+            return None
+
+        def combo_text(combo):
+            return (combo.currentText() or "").strip()
+
+        return {
+            "name": self._widget_text(self.agent_name_edit).strip(),
+            "type": combo_text(self.agent_type_combo),
+            "org": self._widget_text(self.agent_org_edit).strip(),
+            "phone": self._widget_text(self.agent_phone_edit).strip(),
+        }
+
+    def set_agent_data(self, data):
+        """Fill the agent section from a draft record and open it."""
+        self.agent_name_edit.setText((data.get("name") or "").strip())
+        role = (data.get("type") or "").strip()
+        index = self.agent_type_combo.findText(role)
+        self.agent_type_combo.setCurrentIndex(index if index >= 0 else 0)
+        self.agent_org_edit.setText((data.get("org") or "").strip())
+        self.agent_phone_edit.setText((data.get("phone") or "").strip())
+        if not self._agent_section_open:
+            self._toggle_agent_section()
 
     @staticmethod
     def _button_row(button):
@@ -207,8 +338,14 @@ class PartyPage(_TitledPage):
         legal_rep_label = QLabel("法定代表人:")
         addr_label = QLabel("住址/住所地:")
         phone_label = QLabel("电话:")
+        gender_label = QLabel("性别:")
+        birth_label = QLabel("出生日期:")
+        ethnicity_label = QLabel("民族:")
+        ethnicity_other_label = QLabel("其他民族:")
+        occupation_label = QLabel("职业:")
         for label in (name_label, id_label, credit_code_label, legal_rep_label,
-                      addr_label, phone_label):
+                      addr_label, phone_label, gender_label, birth_label,
+                      ethnicity_label, ethnicity_other_label, occupation_label):
             label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
 
         grid = QGridLayout()
@@ -217,7 +354,22 @@ class PartyPage(_TitledPage):
         grid.setColumnStretch(1, 1)
         grid.setColumnStretch(3, 1)
 
-        # Personal mode: 姓名 | 身份证号, then 住址 | 电话.
+        # Natural-person detail widgets follow the historical generator's card:
+        # they collapse with the rest of the personal fields in company mode.
+        gender_combo = QComboBox()
+        gender_combo.addItem("")
+        gender_combo.addItem("男")
+        gender_combo.addItem("女")
+        birth_edit = QLineEdit()
+        birth_edit.setPlaceholderText("格式 YYYY-MM-DD")
+        ethnicity_combo = QComboBox()
+        for option in ETHNICITY_OPTIONS:
+            ethnicity_combo.addItem(option)
+        ethnicity_other_edit = QLineEdit()
+        ethnicity_other_edit.setPlaceholderText("请输入民族名称")
+        occupation_edit = QLineEdit()
+
+        # Personal mode: 姓名 | 身份证号, then 住址 | 电话, then the detail rows.
         grid.addWidget(name_label, 0, 0)
         grid.addWidget(name_edit, 0, 1)
         grid.addWidget(id_label, 0, 2)
@@ -226,11 +378,21 @@ class PartyPage(_TitledPage):
         grid.addWidget(addr_edit, 1, 1)
         grid.addWidget(phone_label, 1, 2)
         grid.addWidget(phone_edit, 1, 3)
-        # Company mode adds a third row that collapses while every cell is hidden.
-        grid.addWidget(credit_code_label, 2, 0)
-        grid.addWidget(credit_code_edit, 2, 1)
-        grid.addWidget(legal_rep_label, 2, 2)
-        grid.addWidget(legal_rep_edit, 2, 3)
+        grid.addWidget(gender_label, 2, 0)
+        grid.addWidget(gender_combo, 2, 1)
+        grid.addWidget(birth_label, 2, 2)
+        grid.addWidget(birth_edit, 2, 3)
+        grid.addWidget(ethnicity_label, 3, 0)
+        grid.addWidget(ethnicity_combo, 3, 1)
+        grid.addWidget(occupation_label, 3, 2)
+        grid.addWidget(occupation_edit, 3, 3)
+        grid.addWidget(ethnicity_other_label, 4, 0)
+        grid.addWidget(ethnicity_other_edit, 4, 1)
+        # Company mode adds a row that collapses while every cell is hidden.
+        grid.addWidget(credit_code_label, 5, 0)
+        grid.addWidget(credit_code_edit, 5, 1)
+        grid.addWidget(legal_rep_label, 5, 2)
+        grid.addWidget(legal_rep_edit, 5, 3)
         group_layout.addLayout(grid)
 
         phone_validator = QRegularExpressionValidator(_PHONE_INPUT_PATTERN)
@@ -248,7 +410,15 @@ class PartyPage(_TitledPage):
 
         # 个人/企业 toggle. Toggling swaps the personal ID field for the company
         # credit-code / legal-representative fields; each caption travels with
-        # its field so no dangling identity label is ever left behind.
+        # its field so no dangling identity label is ever left behind. The
+        # natural-person detail fields collapse together with the identity row.
+        personal_fields = (
+            gender_label, gender_combo,
+            birth_label, birth_edit,
+            ethnicity_label, ethnicity_combo,
+            ethnicity_other_label, ethnicity_other_edit,
+            occupation_label, occupation_edit,
+        )
         is_company_check.toggled.connect(
             lambda checked: self._toggle_company_fields(
                 checked,
@@ -258,6 +428,8 @@ class PartyPage(_TitledPage):
                 id_label,
                 credit_code_label,
                 legal_rep_label,
+                personal_fields,
+                card=widget,
             )
         )
         # The company/natural-person form is case-relevant beyond this page
@@ -265,9 +437,23 @@ class PartyPage(_TitledPage):
         # must reach the wizard's page-completeness listeners immediately.
         is_company_check.toggled.connect(lambda *_: self.completeChanged.emit())
 
+        # The free-text companion only matters when the combo says "其他" and
+        # the card is in natural-person mode.
+        def refresh_ethnicity_other_visibility():
+            self._update_ethnicity_other_visibility(widget)
+
+        ethnicity_combo.currentTextChanged.connect(lambda _text: refresh_ethnicity_other_visibility())
+        ethnicity_combo.currentTextChanged.connect(lambda _text: self._refresh_validation_message())
+        gender_combo.currentTextChanged.connect(lambda _text: self._refresh_validation_message())
+
         name_fields = [
             (name_label, name_edit),
             (id_label, id_edit),
+            (gender_label, gender_combo),
+            (birth_label, birth_edit),
+            (ethnicity_label, ethnicity_combo),
+            (ethnicity_other_label, ethnicity_other_edit),
+            (occupation_label, occupation_edit),
             (credit_code_label, credit_code_edit),
             (legal_rep_label, legal_rep_edit),
             (addr_label, addr_edit),
@@ -283,9 +469,15 @@ class PartyPage(_TitledPage):
             "is_company": is_company_check,
             "credit_code": credit_code_edit,
             "legal_rep": legal_rep_edit,
+            "gender": gender_combo,
+            "birth": birth_edit,
+            "ethnicity": ethnicity_combo,
+            "ethnicity_other": ethnicity_other_edit,
+            "occupation": occupation_edit,
             "id_label": id_label,
             "credit_code_label": credit_code_label,
             "legal_rep_label": legal_rep_label,
+            "ethnicity_other_label": ethnicity_other_label,
             "delete_btn": delete_btn,
             "name_fields": name_fields,
             "addr_hint": addr_hint,
@@ -311,17 +503,30 @@ class PartyPage(_TitledPage):
             id_label,
             credit_code_label,
             legal_rep_label,
+            personal_fields,
+            card=widget,
         )
         self._apply_field_names(name_fields, f"{kind}{number}")
 
         # Keep the live guidance and the wizard "Next" button state in sync, and
         # mark the page as touched when the user leaves a field.
-        for w in (name_edit, phone_edit, credit_code_edit, legal_rep_edit):
+        for w in (name_edit, phone_edit, credit_code_edit, legal_rep_edit,
+                  birth_edit, ethnicity_other_edit, occupation_edit):
             w.textChanged.connect(lambda _text: self._refresh_validation_message())
             w.editingFinished.connect(self._on_field_edited)
 
         self._refresh_validation_message()
         self._rebuild_party_tab_order()
+
+    @staticmethod
+    def _update_ethnicity_other_visibility(widget):
+        """Show the free-text ethnicity companion only for "其他" natural persons."""
+        show = (
+            widget["ethnicity"].currentText() == ETHNICITY_OTHER
+            and not widget["is_company"].isChecked()
+        )
+        widget["ethnicity_other"].setVisible(show)
+        widget["ethnicity_other_label"].setVisible(show)
 
     def _toggle_company_fields(
         self,
@@ -332,6 +537,8 @@ class PartyPage(_TitledPage):
         id_label,
         credit_code_label,
         legal_rep_label,
+        personal_fields=(),
+        card=None,
     ):
         if id_edit is not None:
             id_edit.setVisible(not checked)
@@ -345,6 +552,10 @@ class PartyPage(_TitledPage):
             legal_rep_edit.setVisible(checked)
         if legal_rep_label is not None:
             legal_rep_label.setVisible(checked)
+        for field_widget in personal_fields:
+            field_widget.setVisible(not checked)
+        if card is not None:
+            self._update_ethnicity_other_visibility(card)
         self._refresh_validation_message()
 
     def _renumber_parties(self):
@@ -362,17 +573,21 @@ class PartyPage(_TitledPage):
         for card in self.plaintiff_widgets:
             sequence.extend(
                 card[key]
-                for key in ("name", "id", "credit_code", "legal_rep", "addr", "phone",
-                            "is_company", "delete_btn")
+                for key in ("name", "id", "addr", "phone", "gender", "birth",
+                            "ethnicity", "ethnicity_other", "occupation",
+                            "credit_code", "legal_rep", "is_company", "delete_btn")
             )
         sequence.append(self.add_p_btn)
         for card in self.defendant_widgets:
             sequence.extend(
                 card[key]
-                for key in ("name", "id", "credit_code", "legal_rep", "addr", "phone",
-                            "is_company", "delete_btn")
+                for key in ("name", "id", "addr", "phone", "gender", "birth",
+                            "ethnicity", "ethnicity_other", "occupation",
+                            "credit_code", "legal_rep", "is_company", "delete_btn")
             )
         sequence.append(self.add_d_btn)
+        for key in ("name", "type", "org", "phone"):
+            sequence.append(self._agent_widgets[key])
         for previous, following in zip(sequence, sequence[1:]):
             QWidget.setTabOrder(previous, following)
 
@@ -453,6 +668,18 @@ class PartyPage(_TitledPage):
                 code = self._widget_text(w["credit_code"]).strip()
                 if code and not re.fullmatch(r"[0-9A-HJ-NPQRTUWXY]{18}", code):
                     issues.append(f"{kind}{idx}“{name}”的统一社会信用代码格式可能不正确，建议核对（仅提示，不阻止生成）。")
+                continue
+
+            birth = self._widget_text(w["birth"]).strip()
+            if birth and parse_full_date(birth).status in (
+                DateStatus.INVALID_FORMAT,
+                DateStatus.INVALID_CALENDAR_DATE,
+                DateStatus.OUT_OF_SUPPORTED_RANGE,
+            ):
+                issues.append(f"{kind}{idx}“{name}”的出生日期格式可能不正确，建议按 YYYY-MM-DD 填写（仅提示，不阻止生成）。")
+
+            if w["ethnicity"].currentText() == ETHNICITY_OTHER and not self._widget_text(w["ethnicity_other"]).strip():
+                issues.append(f"{kind}{idx}“{name}”选择了“其他”民族但未填写具体名称（仅提示，不阻止生成）。")
 
         return issues
 
@@ -507,7 +734,10 @@ class PartyPage(_TitledPage):
         """Extract all party data to pass to presenter.
 
         Company-specific widgets are always present, but extraction is written
-        defensively so that an absent widget can never raise.
+        defensively so that an absent widget can never raise. ``ethnicity``
+        keeps the raw combo selection (which may literally be "其他"); the
+        presenter resolves it against ``ethnicity_other`` so the draft can
+        restore the combo state verbatim.
         """
         def build(widgets):
             result = []
@@ -520,6 +750,11 @@ class PartyPage(_TitledPage):
                     "is_company": w["is_company"].isChecked(),
                     "credit_code": self._widget_text(w["credit_code"]),
                     "legal_representative": self._widget_text(w["legal_rep"]),
+                    "gender": w["gender"].currentText().strip(),
+                    "birth_date": self._widget_text(w["birth"]).strip(),
+                    "ethnicity": w["ethnicity"].currentText().strip(),
+                    "ethnicity_other": self._widget_text(w["ethnicity_other"]).strip(),
+                    "occupation": self._widget_text(w["occupation"]).strip(),
                 })
             return result
 

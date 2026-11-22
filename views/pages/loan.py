@@ -16,6 +16,7 @@ from views.pages.common import (
     _set_page_form_accessibility,
     _set_status,
     _wrap_in_scroll,
+    add_facts_examples_button,
 )
 
 class LoanClaimPage(_TitledPage):
@@ -112,6 +113,7 @@ class LoanClaimPage(_TitledPage):
         demand.addRow("催款时间:", self.demand_date)
         demand.addRow("催款方式:", self.demand_method)
         demand.addRow("", self.cond_hint)
+        add_facts_examples_button(self, demand)
 
         # --- 四、建议管辖法院 ------------------------------------------------
         court = _section(root, "四、建议管辖法院")

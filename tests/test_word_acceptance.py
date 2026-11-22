@@ -140,12 +140,15 @@ def test_page_margins_are_standard(qapp, tmp_path, monkeypatch, case_type, doc_k
     doc = Document(str(docs[doc_kind]))
 
     for section in doc.sections:
-        # Use approximate comparison to tolerate EMU rounding (Cm(3.17) = 1141200 EMU
-        # but python-docx may round to 1141095).
-        assert abs(section.top_margin - Cm(2.54)) < 200, "top margin should be ~2.54cm"
-        assert abs(section.bottom_margin - Cm(2.54)) < 200, "bottom margin should be ~2.54cm"
-        assert abs(section.left_margin - Cm(3.17)) < 200, "left margin should be ~3.17cm"
-        assert abs(section.right_margin - Cm(3.17)) < 200, "right margin should be ~3.17cm"
+        # A4 纸 + GB/T 9704-2012 公文版式页边距。Use approximate comparison to
+        # tolerate EMU rounding (Cm(3.7) = 1332000 EMU but python-docx may
+        # round to 1332230).
+        assert abs(section.page_width - Cm(21.0)) < 500, "page width should be A4 (~21cm)"
+        assert abs(section.page_height - Cm(29.7)) < 500, "page height should be A4 (~29.7cm)"
+        assert abs(section.top_margin - Cm(3.7)) < 500, "top margin should be ~3.7cm"
+        assert abs(section.bottom_margin - Cm(3.5)) < 500, "bottom margin should be ~3.5cm"
+        assert abs(section.left_margin - Cm(2.8)) < 500, "left margin should be ~2.8cm"
+        assert abs(section.right_margin - Cm(2.6)) < 500, "right margin should be ~2.6cm"
 
 
 # ---------------------------------------------------------------------------
@@ -555,4 +558,37 @@ def test_party_line_omits_blank_details():
     person = PartyInfo("原告甲（测试）", "", "示例地址", "")
     assert DocumentGenerator._party_line(person) == "原告甲（测试），住址：示例地址。"
     company = PartyInfo("示例公司（测试）", is_company=True, address="示例住所")
+    assert DocumentGenerator._party_line(company) == "示例公司（测试），住所地：示例住所。"
+
+
+def test_party_line_renders_natural_person_details():
+    from models.case_model import PartyInfo
+    from utils.doc_generator import DocumentGenerator
+
+    person = PartyInfo(
+        "张三（测试）", "11010119900101000X", "北京市示例区示例路1号", "010-1234567",
+        gender="男", birth_date="1990-01-01", ethnicity="汉", occupation="务农",
+    )
+    assert DocumentGenerator._party_line(person) == (
+        "张三（测试），男，1990年1月1日出生，汉族，务农，"
+        "身份证号：11010119900101000X，住址：北京市示例区示例路1号，联系电话：010-1234567。"
+    )
+
+
+def test_party_line_handles_partial_details():
+    from models.case_model import PartyInfo
+    from utils.doc_generator import DocumentGenerator
+
+    # Only an ethnicity that already carries the suffix: no doubling.
+    person = PartyInfo("李四（测试）", ethnicity="赫哲族")
+    assert DocumentGenerator._party_line(person) == "李四（测试），赫哲族。"
+
+    # An unparseable birth date degrades to a labelled segment, never dropped.
+    person = PartyInfo("王五（测试）", birth_date="1990年春")
+    assert DocumentGenerator._party_line(person) == "王五（测试），出生日期：1990年春。"
+
+    # Company parties ignore the natural-person detail fields entirely.
+    company = PartyInfo(
+        "示例公司（测试）", is_company=True, address="示例住所", gender="男", occupation="务农",
+    )
     assert DocumentGenerator._party_line(company) == "示例公司（测试），住所地：示例住所。"

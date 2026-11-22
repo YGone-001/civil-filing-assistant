@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 
 import pytest
-from PySide6.QtWidgets import QLineEdit, QWizard
+from PySide6.QtWidgets import QComboBox, QLineEdit, QWizard
 
 from drafts import load_draft, save_draft, schema
 from drafts.errors import DraftValidationError
@@ -825,7 +825,13 @@ def test_party_text_keys_cover_every_text_widget_on_a_card(qapp):
     wizard, _ = make_wizard()
     wizard.party_page.initializePage()
     card = wizard.party_page.plaintiff_widgets[0]
-    text_widgets = {key for key, value in card.items() if isinstance(value, QLineEdit)}
+    # Gender and ethnicity are combo boxes, not line edits; both must stay in
+    # the detection contract alongside the plain text fields.
+    text_widgets = {
+        key
+        for key, value in card.items()
+        if isinstance(value, (QLineEdit, QComboBox))
+    }
     assert text_widgets == set(PARTY_TEXT_WIDGET_KEYS)
 
 

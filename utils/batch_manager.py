@@ -78,19 +78,23 @@ class BatchExportManager:
 
         p_safe = self._sanitize_component(p_name)
         d_safe = self._sanitize_component(d_name)
+        # Chinese-style case caption, e.g. "张三诉李四民间借贷纠纷"; the case
+        # type name is sanitized too ("离婚析产/抚养费纠纷" contains a slash).
+        case_label = self._sanitize_component(
+            getattr(model, "case_type_name", "") or "民事案件"
+        )
 
         now = datetime.datetime.now()
         date_str = now.strftime("%Y%m%d")
-        stamp = now.strftime("%Y%m%d_%H%M%S")
 
-        folder_name = f"{p_safe}_vs_{d_safe}_{date_str}"
+        folder_name = f"{p_safe}诉{d_safe}_{date_str}"
         os.makedirs(base_path, exist_ok=True)
 
         # Resolve a unique final directory up front; a numeric suffix is used
         # only when a previous export already occupies the name.
         target_dir = self._unique_path(base_path, folder_name)
 
-        prefix = f"{p_safe}_vs_{d_safe}_{stamp}"
+        prefix = f"{p_safe}诉{d_safe}{case_label}"
         specs = [
             (self.generator.export_complaint, f"{prefix}_民事起诉状.docx"),
             (self.generator.export_evidence_list, f"{prefix}_证据清单.docx"),

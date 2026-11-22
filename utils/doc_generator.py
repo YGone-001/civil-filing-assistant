@@ -8,6 +8,8 @@ from docx.shared import Pt, Cm
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_LINE_SPACING
 from docx.oxml.ns import qn
 
+from models.validation import DateStatus, parse_full_date
+
 class DocumentGenerator:
     def __init__(self):
         self.doc = Document()
@@ -18,11 +20,16 @@ class DocumentGenerator:
         self._set_global_style()
 
     def _set_global_style(self):
+        # A4 纸 + GB/T 9704-2012 公文版式页边距（上 3.7 / 下 3.5 / 左 2.8 /
+        # 右 2.6 cm，版心 15.6×24.7cm）。纸型必须与边距所引用的同一版式配套，
+        # 不能停留在 python-docx 的默认 Letter；三份文书共用同一版式设置。
         for section in self.doc.sections:
-            section.top_margin = Cm(2.54)
-            section.bottom_margin = Cm(2.54)
-            section.left_margin = Cm(3.17)
-            section.right_margin = Cm(3.17)
+            section.page_width = Cm(21.0)
+            section.page_height = Cm(29.7)
+            section.top_margin = Cm(3.7)
+            section.bottom_margin = Cm(3.5)
+            section.left_margin = Cm(2.8)
+            section.right_margin = Cm(2.6)
 
     def _add_text(self, text, font_name, font_size, bold, align, first_line_indent):
         p = self.doc.add_paragraph()
@@ -72,8 +79,36 @@ class DocumentGenerator:
             run2.font.size = Pt(16)
 
     @staticmethod
-    def _party_line(party):
-        """Join the supplied party details, omitting blank labelled segments."""
+    def _birth_text(raw):
+        """Format a birth date per the complaint convention, never dropping input.
+
+        A parseable date reads "X年X月X日出生"; anything else falls back to a
+        labelled segment with the verbatim text instead of being discarded.
+        Blank input contributes no segment at all.
+        """
+        validation = parse_full_date(raw)
+        if validation.status == DateStatus.EMPTY:
+            return ""
+        if validation.status == DateStatus.VALID and validation.value is not None:
+            value = validation.value
+            return f"{value.year}年{value.month}月{value.day}日出生"
+        return f"出生日期：{raw}"
+
+    @staticmethod
+    def _ethnicity_text(raw):
+        """Append the 族 suffix once, whatever form the user typed."""
+        if not raw or raw.endswith("族"):
+            return raw
+        return f"{raw}族"
+
+    @classmethod
+    def _party_line(cls, party):
+        """Join the supplied party details, omitting blank labelled segments.
+
+        Natural-person detail values (gender, birth, ethnicity, occupation)
+        read unlabelled — "张三，男，1970年1月1日出生，汉族，务农，住…";
+        company parties keep their labelled attribute segments.
+        """
         def text(attr):
             return (getattr(party, attr, "") or "").strip()
 
@@ -84,14 +119,55 @@ class DocumentGenerator:
                 ("住所地", text("address")),
                 ("联系电话", text("phone")),
             ]
+            parts = [text("name")] + [f"{label}：{value}" for label, value in segments if value]
         else:
+            parts = [part for part in (
+                text("name"),
+                text("gender"),
+                cls._birth_text(text("birth_date")),
+                cls._ethnicity_text(text("ethnicity")),
+                text("occupation"),
+            ) if part]
             segments = [
                 ("身份证号", text("id_number")),
                 ("住址", text("address")),
                 ("联系电话", text("phone")),
             ]
-        parts = [text("name")] + [f"{label}：{value}" for label, value in segments if value]
+            parts += [f"{label}：{value}" for label, value in segments if value]
         return "，".join(part for part in parts if part) + "。"
+
+    def add_agent_block(self, agent):
+        """Add the optional litigation-agent paragraph after the plaintiff block."""
+        if agent is None:
+            return
+        name = (getattr(agent, "name", "") or "").strip()
+        if not name:
+            return
+        content = name
+        agent_type = (getattr(agent, "type", "") or "").strip()
+        if agent_type:
+            content += f"（{agent_type}）"
+        org = (getattr(agent, "org", "") or "").strip()
+        if org:
+            content += f"，{org}"
+        phone = (getattr(agent, "phone", "") or "").strip()
+        if phone:
+            content += f"，联系电话{phone}"
+
+        p = self.doc.add_paragraph()
+        p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+        p.paragraph_format.line_spacing = Pt(28)
+
+        run1 = p.add_run("诉讼代理人：")
+        run1.font.name = "SimHei"
+        run1._element.rPr.rFonts.set(qn('w:eastAsia'), "SimHei")
+        run1.font.size = Pt(16)
+        run1.bold = False
+
+        run2 = p.add_run(content + "。")
+        run2.font.name = "FangSong_GB2312"
+        run2._element.rPr.rFonts.set(qn('w:eastAsia'), "FangSong_GB2312")
+        run2.font.size = Pt(16)
 
     def add_claims(self, claims):
         self.add_heading("诉讼请求：")
@@ -159,16 +235,29 @@ class DocumentGenerator:
         self.add_title("民 事 起 诉 状")
         self.doc.add_paragraph()
         self.add_party_block("原告", model.party_manager.plaintiffs)
+        self.add_agent_block(getattr(model, "agent", None))
         self.add_party_block("被告", model.party_manager.defendants)
         self.doc.add_paragraph()
         self.add_claims(model.render_claims())
         self.doc.add_paragraph()
         self.add_facts(model.render_facts())
         self.doc.add_paragraph()
-        self.doc.add_paragraph()
+        self._add_appendix(model)
         self.add_footer(model.court_name)
         self._add_pagination(self.doc)
         self.save(file_path)
+
+    def _add_appendix(self, model):
+        """Add the attachment note: one copy of the complaint per defendant.
+
+        The count follows the defendant list actually present in the model, so
+        an unusual party setup can never print a wrong number. Users edit the
+        exported file to add further attachments.
+        """
+        defendant_count = len(model.party_manager.defendants)
+        if defendant_count <= 0:
+            return
+        self.add_body(f"附：本状副本{defendant_count}份。")
 
     def export_evidence_list(self, model, file_path):
         self.reset()

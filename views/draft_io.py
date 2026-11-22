@@ -83,9 +83,22 @@ INITIAL_FLAG_VALUES = {
 }
 
 #: Party-card widget keys that hold user-editable text. ``is_company`` is the
-#: seventh user-editable attribute and is checked separately because it is a
-#: checkbox, not a text field.
-PARTY_TEXT_WIDGET_KEYS = ("name", "id", "addr", "phone", "credit_code", "legal_rep")
+#: twelfth user-editable attribute and is checked separately because it is a
+#: checkbox, not a text field. ``gender`` and ``ethnicity`` are combo boxes;
+#: :func:`_read_text`/:func:`_write_text` branch on ``currentText`` for them.
+PARTY_TEXT_WIDGET_KEYS = (
+    "name",
+    "id",
+    "addr",
+    "phone",
+    "credit_code",
+    "legal_rep",
+    "gender",
+    "birth",
+    "ethnicity",
+    "ethnicity_other",
+    "occupation",
+)
 
 #: Cards the wizard creates per side when the party page is first shown. An
 #: additional card is a user-created entry even while it is still blank.
@@ -136,16 +149,20 @@ class RestoreResult:
 
 
 def _read_text(widget):
-    """Read the current text of a line edit or a multi-line edit."""
+    """Read the current text of a combo, line edit or multi-line edit."""
     if hasattr(widget, "toPlainText"):
         return widget.toPlainText()
+    if hasattr(widget, "currentText"):
+        return widget.currentText()
     return widget.text()
 
 
 def _write_text(widget, value):
-    """Write *value* into a line edit or a multi-line edit."""
+    """Write *value* into a combo, line edit or multi-line edit."""
     if hasattr(widget, "setPlainText"):
         widget.setPlainText(value)
+    elif hasattr(widget, "setCurrentText"):
+        widget.setCurrentText(value)
     else:
         widget.setText(value)
 
@@ -255,6 +272,11 @@ def has_meaningful_session(wizard):
     if _has_party_input(wizard.party_page):
         return True
 
+    # An opened agent section is a deliberate user action even before anything
+    # is typed into it - same philosophy as a user-added blank party card.
+    if wizard.party_page.get_agent_data() is not None:
+        return True
+
     for case_type in CLAIM_PAGE_ATTR_BY_CASE:
         page = claim_page(wizard, case_type)
         if _has_edited_fields(page, case_type):
@@ -326,6 +348,7 @@ def capture_draft(wizard, resume_page=None):
         "factual_flags": _capture_flags(page, case_type),
         "evidence": evidence,
         "resume_page": resume_page or page_name(wizard),
+        "agent": wizard.party_page.get_agent_data(),
     }
 
 
@@ -349,6 +372,13 @@ def _fill_party_card(widget, record):
     widget["phone"].setText(record["phone"])
     widget["credit_code"].setText(record["credit_code"])
     widget["legal_rep"].setText(record["legal_representative"])
+    # Combos first: selecting "其他" flips the ethnicity companion edit's
+    # visibility, so the stored companion text must land after the selection.
+    widget["gender"].setCurrentText(record["gender"])
+    widget["birth"].setText(record["birth_date"])
+    widget["ethnicity"].setCurrentText(record["ethnicity"])
+    widget["ethnicity_other"].setText(record["ethnicity_other"])
+    widget["occupation"].setText(record["occupation"])
     # Checked last: toggling swaps the visible identity fields, and the values
     # above must already be in place when that happens.
     widget["is_company"].setChecked(bool(record["is_company"]))
@@ -371,10 +401,17 @@ def _restore_side(page, kind, records):
         _fill_party_card(widget, record)
 
 
+def _apply_agent(wizard, agent):
+    """Restore the optional agent section; ``None`` leaves it closed."""
+    if agent is not None:
+        wizard.party_page.set_agent_data(agent)
+
+
 def _apply_parties(wizard, document):
     page = wizard.party_page
     _restore_side(page, 0, document.plaintiffs)
     _restore_side(page, 1, document.defendants)
+    _apply_agent(wizard, document.agent)
 
     # Mark the page as initialised for this case type: the next
     # ``initializePage()`` must not delete the restored cards.

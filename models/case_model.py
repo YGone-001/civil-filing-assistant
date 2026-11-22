@@ -29,7 +29,9 @@ from models.validation import DateStatus, parse_full_date
 
 
 class PartyInfo:
-    def __init__(self, name="", id_number="", address="", phone="", is_company=False, legal_representative="", credit_code=""):
+    def __init__(self, name="", id_number="", address="", phone="", is_company=False,
+                 legal_representative="", credit_code="", gender="", birth_date="",
+                 ethnicity="", occupation=""):
         self.name = name
         self.id_number = id_number
         self.address = address
@@ -37,6 +39,26 @@ class PartyInfo:
         self.is_company = is_company
         self.legal_representative = legal_representative
         self.credit_code = credit_code
+        # Natural-person detail fields. ``ethnicity`` holds the resolved value
+        # (the "其他" free-text choice is resolved upstream by the presenter);
+        # the raw combo selection lives only in the UI and the draft payload.
+        self.gender = gender
+        self.birth_date = birth_date
+        self.ethnicity = ethnicity
+        self.occupation = occupation
+
+#: Agent role vocabulary shared by the party page combo and the draft schema
+#: validation, so the two can never drift apart.
+AGENT_TYPES = ("律师", "法律工作者", "近亲属", "工作人员", "公民代理")
+
+class AgentInfo:
+    """Case-level optional litigation agent standing on the plaintiff's side."""
+
+    def __init__(self, name="", type="", org="", phone=""):
+        self.name = name
+        self.type = type
+        self.org = org
+        self.phone = phone
 
 class PartyManager:
     def __init__(self):
@@ -63,6 +85,7 @@ class CaseTemplate:
     def __init__(self):
         self.case_type_name = "未命名案由"
         self.party_manager = PartyManager()
+        self.agent = None # Optional[AgentInfo]
         self.court_name = ""
         self.evidences = [] # List of EvidenceItem
 
