@@ -50,7 +50,8 @@ class DocumentGenerator:
         self._add_text(text, "SimSun", 22, True, WD_PARAGRAPH_ALIGNMENT.CENTER, 0)
 
     def add_heading(self, text):
-        self._add_text(text, "SimHei", 16, True, WD_PARAGRAPH_ALIGNMENT.LEFT, 0)
+        p = self._add_text(text, "SimHei", 16, True, WD_PARAGRAPH_ALIGNMENT.LEFT, 0)
+        p.paragraph_format.keep_with_next = True
 
     def add_body(self, text, align=WD_PARAGRAPH_ALIGNMENT.JUSTIFY, first_line_indent=32):
         self._add_text(text, "FangSong_GB2312", 16, False, align, first_line_indent)

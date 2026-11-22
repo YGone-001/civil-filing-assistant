@@ -364,6 +364,20 @@ def test_complaint_body_text_uses_fangsong(qapp, tmp_path, monkeypatch, case_typ
     assert found_facts, "complaint should contain 事实与理由 heading"
 
 
+@pytest.mark.parametrize("case_type", CASE_TYPES)
+def test_complaint_section_headings_keep_with_next(qapp, tmp_path, monkeypatch, case_type):
+    docs = _export_all(tmp_path, monkeypatch, case_type)
+    doc = Document(str(docs["complaint"]))
+
+    expected = {"诉讼请求：", "事实与理由："}
+    headings = [p for p in doc.paragraphs if p.text.strip() in expected]
+    assert {p.text.strip() for p in headings} == expected, \
+        f"complaint should contain both section headings, got {[p.text for p in headings]}"
+    for heading in headings:
+        assert heading.paragraph_format.keep_with_next is True, \
+            f"{heading.text.strip()} must stay with its body paragraph"
+
+
 # ---------------------------------------------------------------------------
 # 7. Footer / pagination
 # ---------------------------------------------------------------------------
