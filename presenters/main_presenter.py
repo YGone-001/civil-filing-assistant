@@ -124,14 +124,21 @@ class MainPresenter:
         if case_type == "labor":
             # Fail-closed procedural gate: the same evaluator the wizard page
             # uses decides whether this classification may produce a
-            # complaint. Blocked states keep every input and export nothing.
+            # complaint. The plaintiff's company/natural-person form comes
+            # from the party cards; the role itself is never inferred. Blocked
+            # states keep every input and export nothing.
             from utils.labor_security import evaluate_labor_eligibility
 
+            plaintiff_is_company = any(
+                card["is_company"].isChecked()
+                for card in self.view.party_page.plaintiff_widgets
+            )
             eligibility = evaluate_labor_eligibility(
                 model.labor_procedure,
                 refusal_ground=model.labor_refusal_ground,
                 role=model.labor_role,
                 delay_exception=model.labor_delay_exception,
+                plaintiff_is_company=plaintiff_is_company,
                 commission=model.arb_commission,
                 application_date=model.arb_application_date,
                 acceptance_date=model.arb_acceptance_date,

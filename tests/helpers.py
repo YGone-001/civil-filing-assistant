@@ -34,14 +34,16 @@ def make_wizard():
 def set_labor_non_final_award(page):
     """Record a completed arbitration with a received non-final award.
 
-    The labour complaint gate requires a procedurally eligible classification;
-    the non-final-award state is the ordinary post-arbitration path and needs
-    only the commission and the document date.
+    The labour complaint gate requires a procedurally eligible classification
+    AND an explicitly confirmed employee plaintiff (the wage template is
+    employee-only); the non-final-award state is the ordinary
+    post-arbitration path and needs the commission and the document date.
     """
-    from utils.labor_security import PROCEDURE_NON_FINAL_AWARD
+    from utils.labor_security import PROCEDURE_NON_FINAL_AWARD, ROLE_EMPLOYEE
 
     index = page.procedure_combo.findData(PROCEDURE_NON_FINAL_AWARD)
     page.procedure_combo.setCurrentIndex(index)
+    page._role_buttons[ROLE_EMPLOYEE].setChecked(True)
     page.arb_commission.setText("示例劳动人事争议仲裁委员会")
     page.arb_receipt_date.setText("2024-06-01")
 

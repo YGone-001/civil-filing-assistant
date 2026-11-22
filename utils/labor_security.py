@@ -238,6 +238,7 @@ def evaluate_labor_eligibility(
     refusal_ground=None,
     role=None,
     delay_exception=None,
+    plaintiff_is_company=False,
     commission="",
     application_date="",
     acceptance_date="",
@@ -248,7 +249,9 @@ def evaluate_labor_eligibility(
 
     Every required fact must come from user input; nothing is inferred. The
     evaluation is pure (``today`` injectable) so the wizard page, the export
-    gate and tests share one implementation.
+    gate and tests share one implementation. ``plaintiff_is_company`` reports
+    whether any plaintiff card is marked as a company, so the employee-only
+    wage template cannot be produced for a company-form plaintiff.
     """
     if today is None:
         today = datetime.date.today()
@@ -294,9 +297,21 @@ def evaluate_labor_eligibility(
             "建议携带仲裁文书等材料咨询法律专业人士，或改选最符合实际情况的程序状态。",
         )
 
+    # Employee-plaintiff contract: every state that can otherwise reach the
+    # labour complaint must first establish who is suing. The current document
+    # model is an employee wage-recovery template; a legal right to sue does
+    # not imply this template fits the plaintiff's side.
+    if procedure in _ROLE_REQUIRED_STATES:
+        role_block = _require_employee_role(role, procedure)
+        if role_block is not None:
+            return role_block
+        company_block = _require_employee_plaintiff_form(plaintiff_is_company)
+        if company_block is not None:
+            return company_block
+
     if procedure == PROCEDURE_NOT_ACCEPTED:
         return _evaluate_not_accepted(
-            refusal_ground, commission, receipt_date
+            refusal_ground, commission, receipt_date, today
         )
 
     if procedure == PROCEDURE_ACCEPTANCE_OVERDUE:
@@ -310,15 +325,71 @@ def evaluate_labor_eligibility(
         )
 
     if procedure == PROCEDURE_NON_FINAL_AWARD:
-        return _evaluate_award_received(
-            procedure, None, commission, receipt_date, today
-        )
+        return _evaluate_award_received(commission, receipt_date, today)
 
     if procedure == PROCEDURE_FINAL_AWARD:
-        return _evaluate_final_award(role, commission, receipt_date, today)
+        return _evaluate_final_award(commission, receipt_date, today)
 
     # Unreachable while LABOR_PROCEDURES is exhaustive; kept fail-closed.
     return LaborEligibility(False, "程序状态无法识别，请重新选择。")
+
+
+#: States that can otherwise reach the employee wage-recovery complaint and
+#: therefore require the plaintiff role (and the plaintiff's natural-person
+#: form) to be confirmed before anything else is evaluated.
+_ROLE_REQUIRED_STATES = frozenset({
+    PROCEDURE_ACCEPTANCE_OVERDUE,
+    PROCEDURE_NOT_ACCEPTED,
+    PROCEDURE_AWARD_OVERDUE,
+    PROCEDURE_NON_FINAL_AWARD,
+    PROCEDURE_FINAL_AWARD,
+})
+
+
+def _require_employee_role(role, procedure):
+    """Gate the employee-only wage template on the confirmed plaintiff role.
+
+    ``None`` blocks (never defaults to employee). An employer plaintiff is
+    blocked as unsupported by the current template — phrased as a product
+    boundary, not as a legal prohibition, except for final awards where
+    Article 49 makes the cancellation application the employer's actual route.
+    """
+    if role not in LABOR_ROLES:
+        return LaborEligibility(
+            False,
+            "请先确认您在本案中的身份（劳动者／员工一方，或用人单位／雇主一方）："
+            "两者的程序后果不同，且本工具的劳动争议起诉状模板面向劳动者编写。",
+        )
+    if role == ROLE_EMPLOYER:
+        if procedure == PROCEDURE_FINAL_AWARD:
+            return LaborEligibility(
+                False,
+                "终局裁决对用人单位实行一裁终局：用人单位不得就同一争议向人民法院起诉，"
+                "只能自收到裁决书之日起三十日内向劳动争议仲裁委员会所在地的中级人民法院"
+                "申请撤销裁决（《劳动争议调解仲裁法》第四十七条、第四十九条）。"
+                "本工具不生成撤销裁决申请书，建议咨询法律专业人士。本次不生成起诉状。",
+            )
+        return LaborEligibility(
+            False,
+            "您确认原告一方为用人单位（雇主）。本工具当前的劳动争议起诉状模板面向劳动者"
+            "（员工一方）追索工资等请求编写；用人单位作为原告的情形，当前版本不支持生成起诉状。"
+            "这并不否定用人单位依法可享有的起诉权利（例如对非终局裁决不服，用人单位同样可以"
+            "自收到裁决书之日起十五日内向人民法院提起诉讼，《劳动争议调解仲裁法》第五十条）；"
+            "建议另行准备相应法律文书或咨询法律专业人士。本次不生成起诉状。",
+        )
+    return None
+
+
+def _require_employee_plaintiff_form(plaintiff_is_company):
+    """Block the contradiction of a company-form plaintiff in the wage template."""
+    if plaintiff_is_company:
+        return LaborEligibility(
+            False,
+            "原告一方被标记为单位／公司，而当前劳动争议起诉状模板面向劳动者（员工一方）"
+            "追索工资等请求，两者不一致。请核对原告身份后修改，或就单位一方的主张"
+            "咨询法律专业人士并另行准备相应文书。本次不生成起诉状。",
+        )
+    return None
 
 
 def _require_commission(commission):
@@ -334,8 +405,29 @@ def _require_date(value, label):
     return None
 
 
-def _filing_window_warning(receipt_date, today):
-    """Non-authoritative reminder for the 15-day award filing window."""
+def _require_past_date(value, label, today):
+    """Validate a *received*-document date: well-formed and not in the future.
+
+    A future date contradicts the selected state itself (the document cannot
+    already have been received), so it must never become an asserted fact in a
+    generated document. ``value == today`` is accepted; strictly-later dates
+    are blocked.
+    """
+    blocker = _require_date(value, label)
+    if blocker is not None:
+        return blocker
+    parsed = parse_date_text(value)
+    if parsed > today:
+        return LaborEligibility(
+            False,
+            f"{label}（{value.strip()}）晚于今天：尚未收到的文书不能作为已收到的"
+            "既成事实填写，请核对日期，或改选正确的程序状态。",
+        )
+    return None
+
+
+def _non_final_award_warning(receipt_date, today):
+    """Non-authoritative reminder for the Article 50 non-final filing window."""
     elapsed = _elapsed_days(receipt_date, today)
     if elapsed is not None and elapsed > AWARD_FILING_WINDOW_DAYS:
         return (
@@ -350,7 +442,30 @@ def _filing_window_warning(receipt_date, today):
     )
 
 
-def _evaluate_not_accepted(refusal_ground, commission, receipt_date):
+def _final_award_employee_warning(receipt_date, today):
+    """Non-authoritative reminder for the Article 47/48 final-award window.
+
+    Deliberately separate from the non-final warning: a final award becomes
+    effective under its own statutory rule (Article 47: 裁决书自作出之日起发生
+    法律效力), not upon expiry of the filing period, so Article 50 language
+    must never appear here.
+    """
+    elapsed = _elapsed_days(receipt_date, today)
+    if elapsed is not None and elapsed > AWARD_FILING_WINDOW_DAYS:
+        return (
+            "提醒：按您填写的日期计算，距收到裁决书已超过十五日（节假日可能依法顺延）。"
+            "终局裁决自作出之日起发生法律效力（《劳动争议调解仲裁法》第四十七条）；"
+            "劳动者不服的，可以自收到裁决书之日起十五日内向人民法院提起诉讼（第四十八条）。"
+            "是否仍在期限内以法院认定为准，建议先向法院或法律专业人士确认后尽快办理。"
+        )
+    return (
+        "提醒：该裁决为终局裁决，自作出之日起发生法律效力（《劳动争议调解仲裁法》第四十七条）；"
+        "劳动者不服的，可以自收到裁决书之日起十五日内向人民法院提起诉讼（第四十八条）。"
+        "期限计算以法院认定为准，建议尽快办理。"
+    )
+
+
+def _evaluate_not_accepted(refusal_ground, commission, receipt_date, today):
     if refusal_ground not in LABOR_REFUSAL_GROUNDS:
         return LaborEligibility(
             False,
@@ -368,7 +483,7 @@ def _evaluate_not_accepted(refusal_ground, commission, receipt_date):
     blocker = _require_commission(commission)
     if blocker is not None:
         return blocker
-    blocker = _require_date(receipt_date, "收到不予受理通知书的日期")
+    blocker = _require_past_date(receipt_date, "收到不予受理通知书的日期", today)
     if blocker is not None:
         return blocker
 
@@ -464,34 +579,21 @@ def _evaluate_award_overdue(delay_exception, commission, acceptance_date, today)
     )
 
 
-def _evaluate_award_received(procedure, role, commission, receipt_date, today):
+def _evaluate_award_received(commission, receipt_date, today):
     blocker = _require_commission(commission)
     if blocker is not None:
         return blocker
-    blocker = _require_date(receipt_date, "收到裁决书的日期")
+    blocker = _require_past_date(receipt_date, "收到裁决书的日期", today)
     if blocker is not None:
         return blocker
-    return LaborEligibility(True, warning=_filing_window_warning(receipt_date, today))
+    return LaborEligibility(True, warning=_non_final_award_warning(receipt_date, today))
 
 
-def _evaluate_final_award(role, commission, receipt_date, today):
-    if role not in LABOR_ROLES:
-        return LaborEligibility(
-            False,
-            "终局裁决对劳动者与用人单位的程序后果不同，请先确认您在本案中的身份。",
-        )
-    if role == ROLE_EMPLOYER:
-        return LaborEligibility(
-            False,
-            "终局裁决对用人单位实行一裁终局：用人单位不得就同一争议向人民法院起诉，"
-            "只能自收到裁决书之日起三十日内向劳动争议仲裁委员会所在地的中级人民法院"
-            "申请撤销裁决（《劳动争议调解仲裁法》第四十七条、第四十九条）。"
-            "本工具不生成撤销裁决申请书，建议咨询法律专业人士。本次不生成起诉状。",
-        )
+def _evaluate_final_award(commission, receipt_date, today):
     blocker = _require_commission(commission)
     if blocker is not None:
         return blocker
-    blocker = _require_date(receipt_date, "收到裁决书的日期")
+    blocker = _require_past_date(receipt_date, "收到裁决书的日期", today)
     if blocker is not None:
         return blocker
-    return LaborEligibility(True, warning=_filing_window_warning(receipt_date, today))
+    return LaborEligibility(True, warning=_final_award_employee_warning(receipt_date, today))

@@ -81,7 +81,11 @@ def _tri_state_value(group):
 
 
 def _choice_group(owner, values, labels):
-    """Return ``(group, layout, widgets)`` for a value radio list, none selected."""
+    """Return ``(group, layout, widgets)`` for a value radio list, none selected.
+
+    Radios stack in a single column: the labels are legal phrasing and must
+    never force horizontal scrolling at the minimum window width.
+    """
     group = QButtonGroup(owner)
     widgets = {}
     layout = QGridLayout()
@@ -89,8 +93,7 @@ def _choice_group(owner, values, labels):
         button = QRadioButton(labels[value])
         group.addButton(button, index)
         widgets[value] = button
-        layout.addWidget(button, index // 2, index % 2)
-    layout.setHorizontalSpacing(16)
+        layout.addWidget(button, index, 0)
     return group, layout, widgets
 
 
@@ -328,6 +331,15 @@ class LaborClaimPage(_TitledPage):
         PROCEDURE_NON_FINAL_AWARD,
         PROCEDURE_FINAL_AWARD,
     })
+    #: States that can reach the employee wage-recovery complaint and must
+    #: therefore confirm the plaintiff role (mirrors the evaluator contract).
+    _ROLE_REQUIRED_STATES = frozenset({
+        PROCEDURE_ACCEPTANCE_OVERDUE,
+        PROCEDURE_NOT_ACCEPTED,
+        PROCEDURE_AWARD_OVERDUE,
+        PROCEDURE_NON_FINAL_AWARD,
+        PROCEDURE_FINAL_AWARD,
+    })
 
     def _update_conditional_rows(self):
         """Reveal the rows the selected state needs; hidden rows keep values."""
@@ -365,7 +377,7 @@ class LaborClaimPage(_TitledPage):
         self._delay_label.setVisible(show_delay)
         self._delay_row.setVisible(show_delay)
 
-        show_role = state == PROCEDURE_FINAL_AWARD
+        show_role = state in self._ROLE_REQUIRED_STATES
         self._role_label.setVisible(show_role)
         self._role_row.setVisible(show_role)
 
@@ -374,17 +386,45 @@ class LaborClaimPage(_TitledPage):
     # ------------------------------------------------------------------ #
 
     def evaluate_current(self):
-        """Run the shared eligibility evaluator on the page's current input."""
+        """Run the shared eligibility evaluator on the page's current input.
+
+        The plaintiff's company/natural-person form is read from the party
+        cards so the employee-only wage template cannot be produced for a
+        company-form plaintiff (the role itself is never inferred from the
+        cards — the user must select it).
+        """
+        wizard = self.wizard()
+        plaintiff_is_company = False
+        if wizard is not None:
+            plaintiff_is_company = any(
+                card["is_company"].isChecked()
+                for card in wizard.party_page.plaintiff_widgets
+            )
         return evaluate_labor_eligibility(
             self.get_labor_procedure(),
             refusal_ground=self.get_refusal_ground(),
             role=self.get_labor_role(),
             delay_exception=self.get_delay_exception(),
+            plaintiff_is_company=plaintiff_is_company,
             commission=self.arb_commission.text(),
             application_date=self.arb_application_date.text(),
             acceptance_date=self.arb_acceptance_date.text(),
             receipt_date=self.arb_receipt_date.text(),
         )
+
+    def initializePage(self):
+        """Subscribe to party-form changes once the page can see the wizard.
+
+        The plaintiff's company/natural-person form lives on the party page and
+        changes without touching any widget on this page; without this wiring
+        the guidance hint and the Next button would go stale when the user
+        marks a plaintiff as a company. The wiring is idempotent.
+        """
+        wizard = self.wizard()
+        if wizard is not None and not getattr(self, "_party_form_wired", False):
+            self._party_form_wired = True
+            wizard.party_page.completeChanged.connect(self._refresh_conditional)
+        self._refresh_conditional()
 
     def _conditional_issue(self):
         """The blocking explanation for the current selection, or ``""``."""

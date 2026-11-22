@@ -260,6 +260,10 @@ class PartyPage(_TitledPage):
                 legal_rep_label,
             )
         )
+        # The company/natural-person form is case-relevant beyond this page
+        # (the labour complaint is an employee-side template), so the change
+        # must reach the wizard's page-completeness listeners immediately.
+        is_company_check.toggled.connect(lambda *_: self.completeChanged.emit())
 
         name_fields = [
             (name_label, name_edit),

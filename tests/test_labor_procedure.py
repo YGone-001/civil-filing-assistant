@@ -59,6 +59,7 @@ COMMISSION = "示例劳动人事争议仲裁委员会"
 
 
 def _allow(procedure, **kwargs):
+    kwargs.setdefault("role", ROLE_EMPLOYEE)
     kwargs.setdefault("commission", COMMISSION)
     kwargs.setdefault("today", TODAY)
     eligibility = evaluate_labor_eligibility(procedure, **kwargs)
@@ -67,6 +68,7 @@ def _allow(procedure, **kwargs):
 
 
 def _block(procedure, **kwargs):
+    kwargs.setdefault("role", ROLE_EMPLOYEE)
     kwargs.setdefault("commission", COMMISSION)
     kwargs.setdefault("today", TODAY)
     eligibility = evaluate_labor_eligibility(procedure, **kwargs)
@@ -323,12 +325,13 @@ def test_conditional_rows_follow_the_selected_state(qapp):
     assert not page.arb_receipt_date.isHidden()
     assert "不予受理通知书" in page._receipt_label.text()
     assert not page._refusal_row.isHidden()
-    assert page._role_row.isHidden()
+    assert not page._role_row.isHidden()
 
     _select(page, PROCEDURE_AWARD_OVERDUE)
     assert page.arb_receipt_date.isHidden()
     assert not page.arb_acceptance_date.isHidden()
     assert not page._delay_row.isHidden()
+    assert not page._role_row.isHidden()
     assert page._refusal_row.isHidden()
 
     _select(page, PROCEDURE_FINAL_AWARD)
@@ -408,7 +411,7 @@ def test_classification_flags_are_captured_and_restored(qapp):
     document = schema.validate_document(capture_draft(wizard, "labor_claim"))
     assert document.factual_flags["labor_procedure"] == PROCEDURE_NOT_ACCEPTED
     assert document.factual_flags["labor_refusal_ground"] == GROUND_PARTY_UNQUALIFIED
-    assert document.factual_flags["labor_role"] is None
+    assert document.factual_flags["labor_role"] == ROLE_EMPLOYEE
     assert document.factual_flags["labor_delay_exception"] is None
     assert document.factual_flags["is_no_contract"] is False
 
@@ -418,7 +421,7 @@ def test_classification_flags_are_captured_and_restored(qapp):
     page = fresh.labor_claim_page
     assert page.get_labor_procedure() == PROCEDURE_NOT_ACCEPTED
     assert page.get_refusal_ground() == GROUND_PARTY_UNQUALIFIED
-    assert page.get_labor_role() is None
+    assert page.get_labor_role() == ROLE_EMPLOYEE
     assert page.get_delay_exception() is None
     assert page.get_has_no_contract() is False
     assert page.arb_commission.text() == COMMISSION
@@ -694,3 +697,324 @@ def test_fill_case_facts_labor_fixture_is_eligible(qapp):
     assert page.get_labor_procedure() == PROCEDURE_NON_FINAL_AWARD
     assert page.isComplete()
     assert page.evaluate_current().eligible
+
+
+# --------------------------------------------------------------------------- #
+# B5-01: employee-plaintiff contract (role + company-form plaintiff)
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize(
+    "state,extra",
+    [
+        (PROCEDURE_ACCEPTANCE_OVERDUE,
+         {"delay_exception": False, "application_date": "2020-01-01"}),
+        (PROCEDURE_NOT_ACCEPTED,
+         {"refusal_ground": GROUND_OTHER_OR_UNSTATED, "receipt_date": "2024-06-01"}),
+        (PROCEDURE_AWARD_OVERDUE,
+         {"delay_exception": False, "acceptance_date": "2020-01-01"}),
+        (PROCEDURE_NON_FINAL_AWARD, {"receipt_date": "2024-06-01"}),
+        (PROCEDURE_FINAL_AWARD, {"receipt_date": "2024-06-01"}),
+    ],
+)
+def test_every_complaint_path_requires_the_plaintiff_role(state, extra):
+    blocked = _block(state, role=None, **extra)
+    assert "请先确认您在本案中的身份" in blocked.reason
+
+
+@pytest.mark.parametrize(
+    "state,extra",
+    [
+        (PROCEDURE_ACCEPTANCE_OVERDUE,
+         {"delay_exception": False, "application_date": "2020-01-01"}),
+        (PROCEDURE_NOT_ACCEPTED,
+         {"refusal_ground": GROUND_OTHER_OR_UNSTATED, "receipt_date": "2024-06-01"}),
+        (PROCEDURE_AWARD_OVERDUE,
+         {"delay_exception": False, "acceptance_date": "2020-01-01"}),
+        (PROCEDURE_NON_FINAL_AWARD, {"receipt_date": "2024-06-01"}),
+    ],
+)
+def test_employer_plaintiff_is_blocked_as_unsupported_template(state, extra):
+    blocked = _block(state, role=ROLE_EMPLOYER, **extra)
+    assert "不支持生成起诉状" in blocked.reason
+    # The product boundary must not be misstated as a legal prohibition.
+    assert "并不否定用人单位依法可享有的起诉权利" in blocked.reason
+    assert "另行准备相应法律文书或咨询法律专业人士" in blocked.reason
+
+
+def test_final_award_employer_keeps_article_forty_nine_guidance():
+    blocked = _block(PROCEDURE_FINAL_AWARD, role=ROLE_EMPLOYER, receipt_date="2024-06-01")
+    assert "一裁终局" in blocked.reason
+    assert "第四十九条" in blocked.reason
+    assert "撤销裁决" in blocked.reason
+
+
+@pytest.mark.parametrize(
+    "state,extra",
+    [
+        (PROCEDURE_ACCEPTANCE_OVERDUE,
+         {"delay_exception": False, "application_date": "2020-01-01"}),
+        (PROCEDURE_NOT_ACCEPTED,
+         {"refusal_ground": GROUND_OTHER_OR_UNSTATED, "receipt_date": "2024-06-01"}),
+        (PROCEDURE_AWARD_OVERDUE,
+         {"delay_exception": False, "acceptance_date": "2020-01-01"}),
+        (PROCEDURE_NON_FINAL_AWARD, {"receipt_date": "2024-06-01"}),
+        (PROCEDURE_FINAL_AWARD, {"receipt_date": "2024-06-01"}),
+    ],
+)
+def test_confirmed_employee_role_proceeds_when_procedural_facts_pass(state, extra):
+    _allow(state, role=ROLE_EMPLOYEE, **extra)
+
+
+def test_company_form_plaintiff_blocks_the_employee_template():
+    blocked = _block(
+        PROCEDURE_NON_FINAL_AWARD, plaintiff_is_company=True, receipt_date="2024-06-01"
+    )
+    assert "单位／公司" in blocked.reason
+    assert "两者不一致" in blocked.reason
+
+
+def test_page_role_row_follows_all_complaint_paths(qapp):
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "labor")
+    page = wizard.labor_claim_page
+    for state in (PROCEDURE_NOT_APPLIED, PROCEDURE_APPLICATION_PENDING,
+                  PROCEDURE_MEDIATION_EFFECTIVE, PROCEDURE_OTHER_OR_UNCERTAIN):
+        _select(page, state)
+        assert page._role_row.isHidden(), state
+    for state in (PROCEDURE_ACCEPTANCE_OVERDUE, PROCEDURE_NOT_ACCEPTED,
+                  PROCEDURE_AWARD_OVERDUE, PROCEDURE_NON_FINAL_AWARD,
+                  PROCEDURE_FINAL_AWARD):
+        _select(page, state)
+        assert not page._role_row.isHidden(), state
+
+
+def test_role_is_never_defaulted_to_employee(qapp):
+    """Without user selection the role stays unconfirmed even on an otherwise
+    filled page; the guidance asks for it before anything else."""
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "labor")
+    page = wizard.labor_claim_page
+    # Reset to a state the fixture did not configure, keeping the party/claim
+    # fields, then verify the role itself is only ever a user choice.
+    _select(page, PROCEDURE_AWARD_OVERDUE)
+    page.delay_no.setChecked(True)
+    page.arb_acceptance_date.setText("2020-01-01")
+    assert page.get_labor_role() == ROLE_EMPLOYEE  # fixture chose it explicitly
+
+    fresh, _ = make_wizard()
+    select_case(fresh, "labor")
+    fresh_page = fresh.labor_claim_page
+    _select(fresh_page, PROCEDURE_NON_FINAL_AWARD)
+    assert fresh_page.get_labor_role() is None
+    assert "请先确认您在本案中的身份" in fresh_page._conditional_issue()
+
+
+def test_company_plaintiff_contradiction_blocks_the_real_export_path(
+    qapp, monkeypatch, tmp_path, dialog_recorder
+):
+    """Pre-fix this exact flow published three employee wage DOCX files for a
+    company plaintiff; it must now be blocked with no output at all."""
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "labor")
+    page = wizard.labor_claim_page
+    _select(page, PROCEDURE_NON_FINAL_AWARD)
+    page._role_buttons[ROLE_EMPLOYEE].setChecked(True)
+    page.arb_commission.setText(COMMISSION)
+    page.arb_receipt_date.setText("2024-06-01")
+    # Enter the page once so its party-form wiring is live (as in real use),
+    # then mark the plaintiff as a company.
+    wizard.show()
+    page.initializePage()
+    card = wizard.party_page.plaintiff_widgets[0]
+    card["name"].setText("示例有限公司（虚构）")
+    card["is_company"].setChecked(True)
+
+    assert not page.isComplete()
+    assert "单位／公司" in page.arbitration_hint.text()
+    assert presenter.attempt_finish() == presenter.FINISH_VALIDATION_FAILED
+    warnings = [c for c in dialog_recorder if c["kind"] == "warning"]
+    assert warnings and "单位／公司" in warnings[-1]["args"][2]
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+
+
+def test_unconfirmed_role_blocks_the_real_export_path(qapp, monkeypatch, tmp_path):
+    """Pre-fix, role=None + non-final award exported the employee wage claim.
+    Exclusive radio buttons cannot be unchecked, so the unconfirmed-role gate
+    is exercised through a role-less v3 draft restored via the real open path:
+    export is refused until the user confirms the role, then succeeds."""
+    from PySide6.QtWidgets import QFileDialog
+
+    from drafts import save_draft as save_draft_file
+    from presenters.draft_presenter import DraftPresenter
+
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    draft = DraftPresenter(wizard, presenter)
+    from helpers import set_parties
+
+    select_case(wizard, "labor")
+    set_parties(wizard)
+    page = wizard.labor_claim_page
+    _select(page, PROCEDURE_NON_FINAL_AWARD)
+    page.arb_commission.setText(COMMISSION)
+    page.arb_receipt_date.setText("2024-06-01")
+    # role deliberately left unselected
+    document = schema.validate_document(capture_draft(wizard, "labor_claim"))
+    assert document.factual_flags["labor_role"] is None
+    path = tmp_path / "role-less draft.cfdraft"
+    save_draft_file(str(path), document)
+
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName",
+        staticmethod(lambda *a, **kw: (str(path), "")),
+    )
+    assert draft.open_draft() is True
+    restored = draft.wizard
+    restored_page = restored.labor_claim_page
+    assert restored_page.get_labor_role() is None
+    assert not restored_page.isComplete()
+    assert presenter.attempt_finish() == presenter.FINISH_VALIDATION_FAILED
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+
+    # Confirming the role on the restored wizard (without retyping anything)
+    # resolves the procedural block and restores the ordinary export path.
+    # (The draft intentionally carries no claim fields, so the page's own
+    # mandatory-field completeness stays off; the role block itself is gone.)
+    restored_page._role_buttons[ROLE_EMPLOYEE].setChecked(True)
+    assert restored_page._conditional_issue() == ""
+    assert presenter.attempt_finish() == presenter.FINISH_SUCCESS
+    assert len(list(desktop.rglob("*.docx"))) == 3
+
+
+def test_restored_draft_without_role_requires_confirmation(qapp):
+    """A v3 draft saved before role confirmation must not silently become an
+    employee complaint: it restores readable, then blocks until confirmed."""
+    from views.draft_io import capture_draft
+
+    from helpers import set_parties
+
+    wizard, _ = make_wizard()
+    select_case(wizard, "labor")
+    set_parties(wizard)
+    page = wizard.labor_claim_page
+    _select(page, PROCEDURE_NON_FINAL_AWARD)
+    page.arb_commission.setText(COMMISSION)
+    page.arb_receipt_date.setText("2024-06-01")
+    page.emp_join_date.setText("2023-01-15")
+    page.job_title.setText("示例岗位")
+    page.monthly_salary.setText("6000")
+    page.unpaid_months.setText("2023年12月")
+    page.court_name.setText("示例人民法院")
+    # role deliberately left unselected
+    document = schema.validate_document(capture_draft(wizard, "labor_claim"))
+    assert document.factual_flags["labor_role"] is None
+
+    fresh, _ = make_wizard()
+    fresh.restart()
+    result = apply_draft(fresh, document)
+    assert result.resume_page == "labor_claim"
+    restored = fresh.labor_claim_page
+    assert restored.get_labor_role() is None
+    assert not restored.isComplete()
+    assert "请先确认您在本案中的身份" in restored.arbitration_hint.text()
+    assert not fresh.button(QWizard.NextButton).isEnabled()
+
+    restored._role_buttons[ROLE_EMPLOYEE].setChecked(True)
+    assert restored.isComplete()
+    assert fresh.button(QWizard.NextButton).isEnabled()
+
+
+# --------------------------------------------------------------------------- #
+# B5-02: separate final / non-final award warnings
+# --------------------------------------------------------------------------- #
+
+
+def test_non_final_warning_cites_article_fifty_only():
+    recent = _allow(PROCEDURE_NON_FINAL_AWARD, receipt_date="2026-11-20")
+    assert "第五十条" in recent.warning
+    assert "第四十七条" not in recent.warning
+    assert "期满不起诉" in recent.warning
+
+
+def test_non_final_warning_stays_calm_within_fifteen_days():
+    recent = _allow(PROCEDURE_NON_FINAL_AWARD, receipt_date="2026-11-20")
+    assert "超过十五日" not in recent.warning
+
+
+def test_final_award_employee_warning_cites_forty_seven_and_forty_eight():
+    recent = _allow(PROCEDURE_FINAL_AWARD, receipt_date="2026-11-20")
+    assert "第四十七条" in recent.warning
+    assert "第四十八条" in recent.warning
+    # The final award takes effect under its own rule, not upon expiry of the
+    # filing period: Article 50 language must never appear.
+    assert "第五十条" not in recent.warning
+    assert "自作出之日起发生法律效力" in recent.warning
+
+
+def test_final_award_employee_warning_intensifies_after_fifteen_days():
+    late = _allow(PROCEDURE_FINAL_AWARD, receipt_date="2026-01-01")
+    assert "超过十五日" in late.warning
+    assert "第四十八条" in late.warning
+    assert "第五十条" not in late.warning
+
+
+# --------------------------------------------------------------------------- #
+# B5-03: future receipt dates
+# --------------------------------------------------------------------------- #
+
+
+_FUTURE_STATES = (
+    (PROCEDURE_NOT_ACCEPTED, {"refusal_ground": GROUND_OTHER_OR_UNSTATED}),
+    (PROCEDURE_NON_FINAL_AWARD, {}),
+    (PROCEDURE_FINAL_AWARD, {}),
+)
+
+
+@pytest.mark.parametrize("state,extra", _FUTURE_STATES)
+def test_future_receipt_date_is_rejected(state, extra):
+    blocked = _block(state, receipt_date="2027-01-01", **extra)
+    assert "晚于今天" in blocked.reason
+
+
+@pytest.mark.parametrize("state,extra", _FUTURE_STATES)
+def test_receipt_date_on_today_is_accepted(state, extra):
+    _allow(state, receipt_date="2026-11-22", **extra)
+
+
+@pytest.mark.parametrize("state,extra", _FUTURE_STATES)
+def test_receipt_date_one_day_ahead_is_rejected(state, extra):
+    blocked = _block(state, receipt_date="2026-11-23", **extra)
+    assert "晚于今天" in blocked.reason
+
+
+@pytest.mark.parametrize("state,extra", _FUTURE_STATES)
+def test_malformed_receipt_dates_stay_rejected(state, extra):
+    _block(state, receipt_date="2026-02-30", **extra)  # impossible calendar date
+    _block(state, receipt_date="2026/11/22", **extra)  # wrong format
+
+
+def test_valid_receipt_date_does_not_bypass_role_confirmation():
+    for state, extra in _FUTURE_STATES:
+        blocked = _block(state, role=None, receipt_date="2024-06-01", **extra)
+        assert "请先确认您在本案中的身份" in blocked.reason
+
+
+def test_future_date_never_reaches_the_published_complaint(
+    qapp, monkeypatch, tmp_path
+):
+    """Pre-fix, receipt 2027-01-01 flowed into the DOCX as a completed event."""
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "labor")
+    page = wizard.labor_claim_page
+    _select(page, PROCEDURE_NON_FINAL_AWARD)
+    page._role_buttons[ROLE_EMPLOYEE].setChecked(True)
+    page.arb_commission.setText(COMMISSION)
+    page.arb_receipt_date.setText("2027-01-01")
+
+    assert not page.isComplete()
+    assert "晚于今天" in page.arbitration_hint.text()
+    assert presenter.attempt_finish() == presenter.FINISH_VALIDATION_FAILED
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))

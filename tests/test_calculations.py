@@ -394,6 +394,7 @@ def test_labor_without_end_date_still_reads_cleanly():
 def test_labor_arbitration_is_stated_from_supplied_details_only():
     model = _labor()
     model.labor_procedure = "non_final_award"
+    model.labor_role = "employee"
     model.arb_commission = "示例劳动人事争议仲裁委员会"
     model.arb_receipt_date = "2024-06-01"
     facts = model.render_facts()
@@ -403,7 +404,12 @@ def test_labor_arbitration_is_stated_from_supplied_details_only():
     model.arb_case_no = "示例仲裁案号-001"
     assert "（案号：示例仲裁案号-001）" in model.render_facts()
 
-    # Unconfirmed and blocked classifications must not produce a sentence.
+    # Unconfirmed role/classification and blocked states must not produce a
+    # sentence: eligibility, plaintiff identity and wording stay consistent.
+    model.labor_role = None
+    assert "仲裁" not in model.render_facts()
+
+    model.labor_role = "employee"
     model.labor_procedure = None
     assert "仲裁" not in model.render_facts()
 
