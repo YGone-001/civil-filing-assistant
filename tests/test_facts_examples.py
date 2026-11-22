@@ -23,9 +23,20 @@ def test_every_supported_case_type_has_exemplars(case_type):
         assert len(text.strip()) > 50
 
 
-def test_exemplars_cover_more_than_one_topic_for_labor_and_divorce():
+def test_every_case_type_has_at_least_two_exemplars():
+    for case_type in CASE_TYPES:
+        assert len(FactsExamplesLibrary.get_facts_examples(case_type)) >= 2, case_type
+
+
+def test_labor_and_divorce_keep_three_exemplars():
     assert len(FactsExamplesLibrary.get_facts_examples("labor")) >= 3
     assert len(FactsExamplesLibrary.get_facts_examples("divorce")) >= 3
+
+
+def test_exemplar_titles_are_unique_within_a_case_type():
+    for case_type in CASE_TYPES:
+        titles = [title for title, _text in FactsExamplesLibrary.get_facts_examples(case_type)]
+        assert len(titles) == len(set(titles)), case_type
 
 
 def test_unknown_case_type_gets_no_exemplars():
