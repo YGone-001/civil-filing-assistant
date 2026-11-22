@@ -3,6 +3,7 @@
 from PySide6.QtWidgets import QMessageBox, QWizard
 
 from main import _parse_args
+from views import dialogs
 from views.main_window import LawsuitWizard
 from views.theme import PRIMARY_BUTTON
 from views.widgets import CASE_TYPE_LABELS
@@ -71,9 +72,9 @@ def test_demo_controls_are_hidden_in_production_and_guard_property_data(
 
     def decline(*args, **kwargs):
         calls.append((args, kwargs))
-        return QMessageBox.No
+        return False
 
-    monkeypatch.setattr(QMessageBox, "question", decline)
+    monkeypatch.setattr(dialogs, "confirm", decline)
     wizard.property_claim_page.fill_btn.click()
 
     assert calls

@@ -14,6 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 MODULES = (
     "views.main_window",
     "views.wizard_pages",
+    "views.dialogs",
     "views.pages",
     "views.pages.common",
     "views.pages.base",

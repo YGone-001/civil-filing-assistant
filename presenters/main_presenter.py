@@ -2,8 +2,6 @@
 # Purpose: Bridge between View (QWizard) and Model/Utils
 # Encoding: UTF-8
 
-from PySide6.QtWidgets import QMessageBox
-
 from presenters.model_builder import (
     UnsupportedCaseTypeError,
     build_case_model,
@@ -12,6 +10,7 @@ from presenters.model_builder import (
 from utils.doc_generator import DocumentGenerator
 from utils.security_check import SecurityGuard
 from utils.batch_manager import BatchExportManager
+from views import dialogs
 
 
 class MainPresenter:
@@ -79,7 +78,7 @@ class MainPresenter:
         # values a frozenset membership test would choke on): no fallback
         # model, no document for a different category, no uncaught exception.
         if not is_supported_case_type(case_type):
-            QMessageBox.warning(
+            dialogs.warning(
                 self.view,
                 "案由无效",
                 "当前案由选择无效，无法生成文书。\n"
@@ -90,7 +89,7 @@ class MainPresenter:
         # Never silently drop incomplete parties and then produce a document
         # that misrepresents the case; block export instead.
         if not self.view.party_page.isComplete():
-            QMessageBox.warning(
+            dialogs.warning(
                 self.view,
                 "当事人信息不完整",
                 "请至少填写一名原告和一名被告的姓名/名称后再生成文书。\n"
@@ -101,7 +100,7 @@ class MainPresenter:
         try:
             model = build_case_model(self.view)
         except UnsupportedCaseTypeError:
-            QMessageBox.warning(
+            dialogs.warning(
                 self.view,
                 "案由无效",
                 "当前案由选择无效，无法生成文书。\n"
@@ -114,7 +113,7 @@ class MainPresenter:
         # open so the user can correct the input and retry.
         conflict = getattr(model, "delivery_receipt_conflict", None)
         if callable(conflict) and conflict():
-            QMessageBox.warning(
+            dialogs.warning(
                 self.view,
                 "信息相互矛盾",
                 "“未交货”与“已签收”不能同时成立。\n"
@@ -123,7 +122,7 @@ class MainPresenter:
             return self.FINISH_VALIDATION_FAILED
 
         if case_type == "labor" and getattr(model, "has_arbitrated", None) is not True:
-            QMessageBox.warning(
+            dialogs.warning(
                 self.view,
                 "尚不能生成起诉状",
                 "劳动争议须先经劳动仲裁，本工具只生成仲裁之后向法院起诉所用的起诉状。\n"
@@ -141,7 +140,7 @@ class MainPresenter:
         except Exception as exc:
             # A failed export must not be reported as success, must not leave
             # the process, and must leave the application usable for retry.
-            QMessageBox.critical(
+            dialogs.critical(
                 self.view,
                 "生成失败",
                 "生成文档时发生错误：\n"
@@ -156,7 +155,7 @@ class MainPresenter:
         SecurityGuard.wipe_memory(model)
 
         self.view.export_page.show_export_result(target_dir, files)
-        QMessageBox.information(
+        dialogs.information(
             self.view,
             "生成成功",
             "立案材料已生成完成（起诉状 / 证据清单 / 送达地址确认书）。\n\n"
@@ -182,7 +181,7 @@ class MainPresenter:
                 return
             diff = abs(user_total - computed) / user_total
             if diff > Decimal("0.01"):
-                QMessageBox.warning(
+                dialogs.warning(
                     self.view,
                     "提示",
                     "物业费自填总金额与系统按整月计算的结果差异超过 1%，"

@@ -18,6 +18,13 @@ Two rules drive the implementation:
    first shown. A restored page is therefore marked as already initialised for
    the restored case type, so a later visit does not wipe the restored cards or
    resurrect evidence suggestions the user had deliberately deleted.
+3. **Restore the walked route, not just the destination.** Qt's 上一步 walks
+   an internal visited-pages history in reverse; a bare ``setCurrentId()``
+   appends only the destination, so a restored wizard's Back button used to
+   jump straight back to the welcome page. ``apply_draft()`` therefore replays
+   every page between the start and the resolved resume page, reproducing the
+   history a user would have built by pressing 下一步 through the same
+   case-specific route.
 """
 
 from dataclasses import dataclass
@@ -436,6 +443,35 @@ def resolve_resume_page(wizard, document):
     return name, ""
 
 
+def _replay_visited_route(wizard, target_id):
+    """Replay the real forward route up to *target_id* and return the page reached.
+
+    Qt records visited pages in an internal history that the 上一步 button
+    walks in reverse, and ``setCurrentId()`` only appends its destination to
+    that history. Re-visiting every page between the start and *target_id*
+    appends each one, so the restored wizard ends up with exactly the history
+    a user would have built by pressing 下一步 through the same case-specific
+    route - and Back therefore leads to the logically preceding step.
+
+    Qt refuses ``setCurrentId()`` away from a page whose ``isComplete()`` is
+    False, so the replay stops by itself at the first page the restored data
+    cannot legitimately leave. ``resolve_resume_page()`` already honours the
+    same completeness predicates when it picks *target_id*, so an early stop
+    can only mean the stored page no longer stands on its prerequisites;
+    the caller reports where the wizard actually opened instead.
+    """
+    for _ in range(len(PAGE_ATTR_BY_NAME) + 1):
+        if wizard.currentId() == target_id:
+            break
+        next_id = wizard.nextId()
+        if next_id == -1:
+            break
+        wizard.setCurrentId(next_id)
+        if wizard.currentId() != next_id:
+            break
+    return wizard.currentId()
+
+
 def apply_draft(wizard, document):
     """Restore *document* into a freshly created wizard and return the outcome.
 
@@ -456,5 +492,11 @@ def apply_draft(wizard, document):
 
     resume_page, note = resolve_resume_page(wizard, document)
     target_id = page_id(wizard, resume_page)
-    wizard.setCurrentId(target_id)
-    return RestoreResult(resume_page=resume_page, resume_page_id=target_id, note=note)
+    reached_id = _replay_visited_route(wizard, target_id)
+    if reached_id != target_id:
+        # Defensive: the replay stopped at a page whose prerequisites are not
+        # met. Report the page the wizard really opened instead of claiming the
+        # stored step was honoured.
+        resume_page = page_name(wizard)
+        note = note or "草稿记录的步骤暂无法直接恢复，已从最近的有效步骤继续。"
+    return RestoreResult(resume_page=resume_page, resume_page_id=reached_id, note=note)

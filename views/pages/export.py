@@ -256,8 +256,7 @@ class ExportPage(_TitledPage):
 
     def show_preview(self):
         """Show a case-specific preview in a scrollable dialog."""
-        from PySide6.QtWidgets import QMessageBox
-
+        from views import dialogs
         from views.widgets import CASE_TYPE_LABELS
 
         wizard = self.wizard()
@@ -273,7 +272,7 @@ class ExportPage(_TitledPage):
             claims = model.render_claims()
             facts = model.render_facts()
         except Exception as exc:  # a preview failure must never crash the wizard
-            QMessageBox.warning(self, "预览不可用", f"暂时无法生成“{label}”预览：\n{exc}")
+            dialogs.warning(self, "预览不可用", f"暂时无法生成“{label}”预览：\n{exc}")
             return
 
         claims_text = "\n".join(f"{i}. {c}" for i, c in enumerate(claims, 1))

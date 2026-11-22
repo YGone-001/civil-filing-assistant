@@ -21,6 +21,8 @@ if str(TESTS_DIR) not in sys.path:
 
 from PySide6.QtWidgets import QApplication, QDialog, QFileDialog, QMessageBox  # noqa: E402
 
+from views import dialogs  # noqa: E402
+
 
 @pytest.fixture(scope="session")
 def qapp():
@@ -52,6 +54,37 @@ def dialog_recorder(monkeypatch, qapp):
 
     for kind in ("information", "warning", "critical", "question"):
         monkeypatch.setattr(QMessageBox, kind, _make(kind))
+
+    # The Chinese dialog helper (views/dialogs.py) is the seam the production
+    # code now uses; record it with the same shape the old static question
+    # calls produced so existing assertions keep working. Confirmations
+    # proceed affirmatively unless a test installs its own answer.
+    def _fake_confirm(parent, title, text, **kwargs):
+        recorded.append(
+            {
+                "kind": "question",
+                "args": (
+                    parent,
+                    title,
+                    text,
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.No,
+                ),
+                "kwargs": kwargs,
+            }
+        )
+        return True
+
+    def _fake_notice(kind):
+        def _fake(parent, title, text, *args, **kwargs):
+            recorded.append({"kind": kind, "args": (parent, title, text), "kwargs": kwargs})
+            return QMessageBox.Ok
+
+        return _fake
+
+    monkeypatch.setattr(dialogs, "confirm", _fake_confirm)
+    for kind in ("information", "warning", "critical"):
+        monkeypatch.setattr(dialogs, kind, _fake_notice(kind))
 
     # Prevent custom QDialog subclasses (e.g. _PreviewDialog) from blocking.
     def _fake_exec(self, *args, **kwargs):

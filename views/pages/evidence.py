@@ -226,7 +226,7 @@ class EvidencePage(_TitledPage):
 
     def remove_selected_rows(self):
         """Remove selected rows, confirming only when content would be lost."""
-        from PySide6.QtWidgets import QMessageBox
+        from views import dialogs
 
         rows = sorted({idx.row() for idx in self.table.selectionModel().selectedRows()}, reverse=True)
         if not rows:
@@ -243,14 +243,12 @@ class EvidencePage(_TitledPage):
                 break
 
         if has_content:
-            reply = QMessageBox.question(
+            if not dialogs.confirm(
                 self,
                 "确认删除",
                 f"将删除 {len(rows)} 行证据，确定吗？",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No,
-            )
-            if reply != QMessageBox.StandardButton.Yes:
+                positive="确认删除",
+            ):
                 return
 
         removed_suggested = 0

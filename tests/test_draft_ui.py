@@ -59,25 +59,35 @@ def _open_dialog_to(monkeypatch, path):
 
 
 def _answer_questions(monkeypatch, answer, recorded=None):
-    """Answer every question with *answer*, optionally recording it.
+    """Answer every confirmation with *answer*, optionally recording it.
 
     ``recorded`` is the ``dialog_recorder`` list: installing this stub replaces
     the fixture's fake, so a test that inspects the questions must pass the
-    recorder here.
+    recorder here. *answer* may be ``QMessageBox.Yes`` / ``QMessageBox.No`` as
+    before; it maps to the boolean the Chinese dialog helper returns.
     """
+    from views import dialogs
 
-    def _fake(parent, title, text, buttons=None, default=None):
+    affirmative = answer == QMessageBox.Yes
+
+    def _fake(parent, title, text, **kwargs):
         if recorded is not None:
             recorded.append(
                 {
                     "kind": "question",
-                    "args": (parent, title, text, buttons, default),
-                    "kwargs": {},
+                    "args": (
+                        parent,
+                        title,
+                        text,
+                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                        QMessageBox.StandardButton.No,
+                    ),
+                    "kwargs": kwargs,
                 }
             )
-        return answer
+        return affirmative
 
-    monkeypatch.setattr(QMessageBox, "question", staticmethod(_fake))
+    monkeypatch.setattr(dialogs, "confirm", _fake)
 
 
 def _dialog_texts(recorded):

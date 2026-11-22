@@ -7,7 +7,6 @@ from PySide6.QtWidgets import (
     QAbstractButton,
     QApplication,
     QFormLayout,
-    QMessageBox,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -15,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from presenters.model_builder import is_supported_case_type
+from views import dialogs
 from views.draft_io import has_meaningful_session
 from views.theme import PAGE_CONTENT_COLUMN, PRIMARY_BUTTON, SECONDARY_BUTTON
 from views.widgets import CASE_TYPE_LABELS, DraftActionBar, StepIndicator, page_title
@@ -366,17 +366,15 @@ class LawsuitWizard(QWizard):
             meaningful = True
         if not meaningful:
             return True
-        answer = QMessageBox.question(
+        return dialogs.confirm(
             self,
             "退出确认",
             "退出后，当前窗口中填写的案件信息将不会保留"
             "（已保存的草稿和已生成的 Word 文件不受影响）。\n\n"
-            "如需稍后继续填写，请选择“否”，然后点击“保存草稿”。\n\n"
+            "如需稍后继续填写，请选择“取消”，然后点击“保存草稿”。\n\n"
             "确定退出吗？",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
+            positive="确认退出",
         )
-        return answer == QMessageBox.Yes
 
     # ------------------------------------------------------------------ #
     # Demo / test-data filling
@@ -395,14 +393,12 @@ class LawsuitWizard(QWizard):
     def _demo_fill(self):
         """Guard the test-data entry behind a confirmation before overwriting."""
         if self._has_entered_data():
-            answer = QMessageBox.question(
+            if not dialogs.confirm(
                 self,
                 "覆盖确认",
                 "检测到已填写的案件信息。是否用演示数据覆盖当前内容？",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
-            if answer != QMessageBox.Yes:
+                positive="确认覆盖",
+            ):
                 return
         # Ensure a case type is selected so the fill covers a complete branch.
         if not self.field("case_type"):
@@ -490,4 +486,4 @@ class LawsuitWizard(QWizard):
         # demo fill counts as an explicit clear, not a "reload suggestions" cue).
         self.evidence_page.clear_all_rows()
 
-        QMessageBox.information(self, "提示", "测试数据已自动填入！您可以直接点击下一步查看并生成文档。")
+        dialogs.information(self, "提示", "测试数据已自动填入！您可以直接点击下一步查看并生成文档。")

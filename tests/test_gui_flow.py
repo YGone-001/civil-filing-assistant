@@ -568,13 +568,13 @@ def test_t08_presenter_reads_directory_from_export_page(qapp, monkeypatch, tmp_p
 
 
 def test_exit_with_entered_input_asks_and_can_be_cancelled(qapp, monkeypatch, dialog_recorder):
-    from PySide6.QtWidgets import QMessageBox
+    from views import dialogs
 
     wizard, _ = make_wizard()
     prepare_case(wizard, "loan")
     wizard.show()
     qapp.processEvents()
-    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.No)
+    monkeypatch.setattr(dialogs, "confirm", lambda *a, **k: False)
 
     wizard.button(QWizard.CancelButton).click()
     qapp.processEvents()

@@ -364,28 +364,28 @@ class ContractClaimPage(_TitledPage):
 
     def calc_penalty_daily_5_per_10k(self):
         """Thin adapter: read inputs, call the pure calculator, show or record."""
-        from PySide6.QtWidgets import QMessageBox
+        from views import dialogs
         try:
             start, cutoff, error = self._resolve_overdue_cutoff()
             if error is not None:
-                QMessageBox.warning(self, "提示", error.message)
+                dialogs.warning(self, "提示", error.message)
                 return
             result = calculate_daily_penalty(self.unpaid_amount.text(), start, cutoff)
         except CalculationError as exc:
-            QMessageBox.warning(self, "提示", str(exc))
+            dialogs.warning(self, "提示", str(exc))
             return
         except Exception:
-            QMessageBox.warning(self, "提示", "请先填写有效的“尚欠货款本金(元)”与日期(YYYY-MM-DD)。")
+            dialogs.warning(self, "提示", "请先填写有效的“尚欠货款本金(元)”与日期(YYYY-MM-DD)。")
             return
         self._apply_calculated_penalty(format_money(result.amount), result.method, result.cutoff)
 
     def calc_penalty_by_lpr_multiple(self):
         """Thin adapter: read inputs, call the pure calculator, show or record."""
-        from PySide6.QtWidgets import QMessageBox
+        from views import dialogs
         try:
             start, cutoff, error = self._resolve_overdue_cutoff()
             if error is not None:
-                QMessageBox.warning(self, "提示", error.message)
+                dialogs.warning(self, "提示", error.message)
                 return
             result = calculate_lpr_penalty(
                 self.unpaid_amount.text(),
@@ -395,9 +395,9 @@ class ContractClaimPage(_TitledPage):
                 cutoff,
             )
         except CalculationError as exc:
-            QMessageBox.warning(self, "提示", str(exc))
+            dialogs.warning(self, "提示", str(exc))
             return
         except Exception:
-            QMessageBox.warning(self, "提示", "请先填写有效的本金、LPR、倍数与日期(YYYY-MM-DD)。")
+            dialogs.warning(self, "提示", "请先填写有效的本金、LPR、倍数与日期(YYYY-MM-DD)。")
             return
         self._apply_calculated_penalty(format_money(result.amount), result.method, result.cutoff)

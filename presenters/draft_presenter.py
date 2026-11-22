@@ -20,7 +20,7 @@ close, or on navigation; an application that is closed without pressing
 import datetime
 import os
 
-from PySide6.QtWidgets import QFileDialog, QMessageBox
+from PySide6.QtWidgets import QFileDialog
 
 from drafts import (
     DRAFT_EXTENSION,
@@ -31,6 +31,7 @@ from drafts import (
     validate_document,
 )
 from presenters.model_builder import is_supported_case_type
+from views import dialogs
 from views.draft_io import (
     apply_draft,
     capture_draft,
@@ -93,7 +94,7 @@ class DraftPresenter:
         wizard = self.wizard
         case_type = wizard.field("case_type")
         if not is_supported_case_type(case_type):
-            QMessageBox.warning(
+            dialogs.warning(
                 self.wizard,
                 self.SAVE_TITLE,
                 "请先选择案件类型后再保存草稿。\n本次未写入任何文件。",
@@ -114,7 +115,7 @@ class DraftPresenter:
             document = validate_document(capture_draft(wizard, page_name(wizard)))
             save_draft(path, document, protector=self._protector)
         except DraftError as exc:
-            QMessageBox.warning(
+            dialogs.warning(
                 self.wizard,
                 "保存草稿失败",
                 f"{exc}\n\n当前填写内容仍保留在程序中，本次未写入草稿文件。",
@@ -122,7 +123,7 @@ class DraftPresenter:
             return False
         except Exception:
             # Never surface a raw exception: it may embed field values.
-            QMessageBox.warning(
+            dialogs.warning(
                 self.wizard,
                 "保存草稿失败",
                 "保存草稿时发生未预期的错误，本次未写入草稿文件。\n"
@@ -130,7 +131,7 @@ class DraftPresenter:
             )
             return False
 
-        QMessageBox.information(
+        dialogs.information(
             self.wizard,
             "草稿已保存",
             "草稿已加密保存到：\n"
@@ -144,7 +145,7 @@ class DraftPresenter:
         return True
 
     def _confirm_sensitive_save(self):
-        answer = QMessageBox.question(
+        return dialogs.confirm(
             self.wizard,
             self.SAVE_TITLE,
             "草稿将包含当事人姓名、证件号码、联系方式、案件事实与证据等敏感信息，"
@@ -152,22 +153,18 @@ class DraftPresenter:
             "加密只保护文件内容：使用同一 Windows 账户的其他程序仍可能读取；"
             "草稿也不能在更换账户或电脑后保证打开。\n\n"
             "是否继续保存草稿？",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,
+            positive="保存",
         )
-        return answer == QMessageBox.StandardButton.Yes
 
     def _confirm_overwrite(self, path):
-        answer = QMessageBox.question(
+        return dialogs.confirm(
             self.wizard,
             "覆盖草稿",
             "该位置已存在同名文件：\n"
             f"{path}\n\n"
             "覆盖后原有草稿将被替换。是否继续？",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,
+            positive="继续覆盖",
         )
-        return answer == QMessageBox.StandardButton.Yes
 
     def _default_file_path(self):
         """Suggest a neutral filename that never embeds a party name."""
@@ -205,14 +202,14 @@ class DraftPresenter:
         try:
             document = load_draft(path, protector=self._protector)
         except DraftError as exc:
-            QMessageBox.warning(
+            dialogs.warning(
                 self.wizard,
                 "无法打开草稿",
                 f"{exc}\n\n当前填写内容未做任何更改。",
             )
             return False
         except Exception:
-            QMessageBox.warning(
+            dialogs.warning(
                 self.wizard,
                 "无法打开草稿",
                 "草稿文件无法读取或解析。\n当前填写内容未做任何更改。",
@@ -225,7 +222,7 @@ class DraftPresenter:
         try:
             new_wizard, result = self._build_restored_wizard(document)
         except Exception:
-            QMessageBox.warning(
+            dialogs.warning(
                 self.wizard,
                 "无法打开草稿",
                 "草稿内容无法完整还原。\n当前填写内容未做任何更改。",
@@ -233,7 +230,7 @@ class DraftPresenter:
             return False
 
         self._swap_wizard(new_wizard)
-        QMessageBox.information(
+        dialogs.information(
             self.wizard,
             "草稿已打开",
             self._restored_message(document, result, path),
@@ -292,17 +289,15 @@ class DraftPresenter:
             return True
 
     def _confirm_replace_session(self):
-        answer = QMessageBox.question(
+        return dialogs.confirm(
             self.wizard,
             "替换当前内容",
             "当前窗口包含已填写或已修改的案件信息。\n"
             "打开其他草稿将替换当前窗口中的内容。\n"
             "如需保留当前修改，请先保存草稿。\n\n"
             "是否继续？",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,
+            positive="继续替换",
         )
-        return answer == QMessageBox.StandardButton.Yes
 
     def _restored_message(self, document, result, path):
         label = CASE_TYPE_LABELS.get(document.case_type, "未知案由")

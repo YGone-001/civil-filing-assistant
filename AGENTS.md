@@ -32,6 +32,7 @@
 
 - `main.py`：应用入口、运行环境提示以及 View/Presenter 组装。
 - `views/`：Qt 界面、向导页面、页面路由和字段注册；避免放置文书排版逻辑。
+- `views/dialogs.py`：中文按钮的标准消息对话框统一封装；破坏性确认框的默认按钮与 Esc 键均为取消动作，提示类对话框统一使用“确定”。新增确认类弹窗应复用该封装，而不是直接调用 `QMessageBox.question`。
 - `presenters/`：从 View 收集数据、构建 Model 并编排导出；避免复制案件规则。
 - `models/`：案件字段、诉讼请求、事实理由及金额计算规则。
 - `utils/doc_generator.py`：Word 排版和保存，不负责决定案件事实。

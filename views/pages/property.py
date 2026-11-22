@@ -178,8 +178,8 @@ class PropertyClaimPage(_TitledPage):
         self.court_name.setText("上海市徐汇区人民法院")
         self.update_calc()
         if notify:
-            from PySide6.QtWidgets import QMessageBox
-            QMessageBox.information(self, "提示", "物业纠纷测试数据已填入。")
+            from views import dialogs
+            dialogs.information(self, "提示", "物业纠纷测试数据已填入。")
 
     def set_demo_mode(self, enabled):
         """Show or hide the demo-mode badge and test-data button."""
