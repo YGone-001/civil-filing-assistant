@@ -495,12 +495,18 @@ class LaborCaseModel(CaseTemplate):
         self.social_sec_info = ""
         self.total_unpaid_amount = ""
         self.overtime_hours = ""
-        # Procedural posture. A complaint is only generated after arbitration;
-        # None = 未确认, False = 尚未申请仲裁.
-        self.has_arbitrated = None
+        # Procedural classification (vocabulary and eligibility rules live in
+        # utils.labor_security; the export gate runs the same evaluator). All
+        # classification fields start unconfirmed and are never inferred.
+        self.labor_procedure = None
+        self.labor_refusal_ground = None
+        self.labor_role = None
+        self.labor_delay_exception = None
         self.arb_commission = ""
         self.arb_case_no = ""
         self.arb_receipt_date = ""
+        self.arb_application_date = ""
+        self.arb_acceptance_date = ""
 
     def resolve_unpaid_month_count(self):
         """Return ``(months, is_partial)`` for the unpaid-salary period.
@@ -563,18 +569,78 @@ class LaborCaseModel(CaseTemplate):
         return claims
 
     def _arbitration_sentence(self):
-        """State the prior arbitration only from the details the user supplied."""
-        if self.has_arbitrated is not True:
+        """State the prior arbitration exactly as the user classified it.
+
+        Each supported procedural state produces one sentence asserting only
+        the facts the user entered — the actual document type and dates — and
+        never the old combined “仲裁裁决书（或不予受理通知书）” wording.
+        Anything not classified as eligible by the shared evaluator produces
+        no arbitration sentence at all (the export gate blocks earlier with
+        the evaluator's own explanation).
+        """
+        from utils.labor_security import (
+            PROCEDURE_ACCEPTANCE_OVERDUE,
+            PROCEDURE_AWARD_OVERDUE,
+            PROCEDURE_FINAL_AWARD,
+            PROCEDURE_NON_FINAL_AWARD,
+            PROCEDURE_NOT_ACCEPTED,
+            evaluate_labor_eligibility,
+        )
+
+        eligibility = evaluate_labor_eligibility(
+            self.labor_procedure,
+            refusal_ground=self.labor_refusal_ground,
+            role=self.labor_role,
+            delay_exception=self.labor_delay_exception,
+            commission=self.arb_commission,
+            application_date=self.arb_application_date,
+            acceptance_date=self.arb_acceptance_date,
+            receipt_date=self.arb_receipt_date,
+        )
+        if not eligibility.eligible:
             return ""
+
         commission = (self.arb_commission or "").strip()
         case_no = (self.arb_case_no or "").strip()
+        suffix = f"（案号：{case_no}）" if case_no else ""
         receipt = (self.arb_receipt_date or "").strip()
-        sentence = f"原告曾就上述争议向{commission or '劳动人事争议仲裁委员会'}申请劳动仲裁"
-        if case_no:
-            sentence += f"（案号：{case_no}）"
-        if receipt:
-            sentence += f"，并于{receipt}收到仲裁裁决书（或不予受理通知书）"
-        return sentence + "。原告对此不服，现依法向人民法院提起诉讼。"
+
+        if self.labor_procedure == PROCEDURE_NOT_ACCEPTED:
+            return (
+                f"原告曾就上述争议向{commission}申请劳动仲裁{suffix}，"
+                f"并于{receipt}收到该委员会作出的不予受理书面决定（通知书）。"
+                "原告不服，现依法向人民法院提起诉讼。"
+            )
+        if self.labor_procedure == PROCEDURE_ACCEPTANCE_OVERDUE:
+            application = (self.arb_application_date or "").strip()
+            return (
+                f"原告于{application}就上述争议向{commission}申请劳动仲裁{suffix}，"
+                "该委员会至今未作出是否受理的决定。"
+                "依据《中华人民共和国劳动争议调解仲裁法》第二十九条，"
+                "原告就该劳动争议事项向人民法院提起诉讼。"
+            )
+        if self.labor_procedure == PROCEDURE_AWARD_OVERDUE:
+            acceptance = (self.arb_acceptance_date or "").strip()
+            return (
+                f"原告曾就上述争议向{commission}申请劳动仲裁{suffix}，"
+                f"该委员会于{acceptance}受理。受理后至今，该委员会未作出仲裁裁决。"
+                "依据《中华人民共和国劳动争议调解仲裁法》第四十三条第二款，"
+                "原告就该劳动争议事项向人民法院提起诉讼。"
+            )
+        if self.labor_procedure == PROCEDURE_NON_FINAL_AWARD:
+            return (
+                f"原告曾就上述争议向{commission}申请劳动仲裁{suffix}，"
+                f"并于{receipt}收到该委员会作出的非终局仲裁裁决书。"
+                "原告对该裁决不服，现依法向人民法院提起诉讼。"
+            )
+        if self.labor_procedure == PROCEDURE_FINAL_AWARD:
+            return (
+                f"原告曾就上述争议向{commission}申请劳动仲裁{suffix}，"
+                f"并于{receipt}收到该委员会作出的终局裁决。"
+                "原告对该裁决不服，现依法向人民法院提起诉讼。"
+            )
+        # Unreachable while the evaluator and the state set agree.
+        return ""
 
     def render_facts(self):
         summary = self._ensure_unpaid_total()

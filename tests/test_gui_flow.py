@@ -621,46 +621,58 @@ def test_close_without_prompt_skips_the_confirmation(qapp, dialog_recorder):
     assert not any(entry["kind"] == "question" for entry in dialog_recorder)
 
 
-# --- Labour arbitration gate --------------------------------------------------
+# --- Labour procedural classification gate ------------------------------------
 
 
-def _labor_without_posture(wizard):
+def _labor_unclassified(wizard):
     prepare_case(wizard, "labor")
     page = wizard.labor_claim_page
-    page.arbitrated_unknown.setChecked(True)
+    page.procedure_combo.setCurrentIndex(0)  # the placeholder -> 未选择
     return page
 
 
-def test_labor_page_blocks_until_arbitration_is_confirmed(qapp):
+def test_labor_page_blocks_until_procedure_is_classified(qapp):
     wizard, _ = make_wizard()
-    page = _labor_without_posture(wizard)
+    page = _labor_unclassified(wizard)
     assert not page.isComplete()
-    assert "确认是否已经申请劳动仲裁" in page.arbitration_hint.text()
+    assert "请先选择" in page.arbitration_hint.text()
 
-    page.arbitrated_no.setChecked(True)
+    index = page.procedure_combo.findData("not_applied")
+    page.procedure_combo.setCurrentIndex(index)
     assert not page.isComplete()
     assert "尚未申请劳动仲裁" in page.arbitration_hint.text()
     assert page.validatePage() is False
 
-    page.arbitrated_yes.setChecked(True)
+    index = page.procedure_combo.findData("non_final_award")
+    page.procedure_combo.setCurrentIndex(index)
     page.arb_commission.setText("")
+    page.arb_receipt_date.setText("")  # the fixture pre-filled both
     assert not page.isComplete()
     assert "仲裁机构" in page.arbitration_hint.text()
 
     page.arb_commission.setText("示例劳动人事争议仲裁委员会")
+    assert "收到裁决书的日期" in page.arbitration_hint.text()
+
+    page.arb_receipt_date.setText("2024-06-01")
     assert page.isComplete()
     assert page.arbitration_hint.isHidden()
 
 
-def test_presenter_refuses_labor_export_without_arbitration(qapp, monkeypatch, tmp_path, dialog_recorder):
+def test_presenter_refuses_labor_export_for_blocked_states(qapp, monkeypatch, tmp_path, dialog_recorder):
     desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
     wizard, presenter = make_wizard()
-    page = _labor_without_posture(wizard)
-    page.arbitrated_no.setChecked(True)
+    page = _labor_unclassified(wizard)
+    index = page.procedure_combo.findData("mediation_effective")
+    page.procedure_combo.setCurrentIndex(index)
 
     assert presenter.attempt_finish() == presenter.FINISH_VALIDATION_FAILED
-    assert any(entry["kind"] == "warning" for entry in dialog_recorder)
+    warnings = [entry for entry in dialog_recorder if entry["kind"] == "warning"]
+    assert warnings and "调解书" in warnings[-1]["args"][2]
     assert not (desktop.exists() and list(desktop.rglob("*.docx")))
 
-    page.arbitrated_yes.setChecked(True)
+    # Correcting the classification restores the ordinary export path.
+    index = page.procedure_combo.findData("non_final_award")
+    page.procedure_combo.setCurrentIndex(index)
+    page.arb_commission.setText("示例劳动人事争议仲裁委员会")
+    page.arb_receipt_date.setText("2024-06-01")
     assert presenter.attempt_finish() == presenter.FINISH_SUCCESS

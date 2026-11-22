@@ -42,7 +42,10 @@ def _fake_view(case_type):
         ),
         labor_claim_page=SimpleNamespace(
             get_has_no_contract=lambda: None,
-            get_has_arbitrated=lambda: None,
+            get_labor_procedure=lambda: None,
+            get_refusal_ground=lambda: None,
+            get_labor_role=lambda: None,
+            get_delay_exception=lambda: None,
         ),
     )
 

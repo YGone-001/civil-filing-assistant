@@ -31,11 +31,24 @@ def make_wizard():
     return wizard, presenter
 
 
-def set_labor_arbitrated(page):
-    """Record a completed (fictional) arbitration, the gate for a labour complaint."""
-    page.arbitrated_yes.setChecked(True)
+def set_labor_non_final_award(page):
+    """Record a completed arbitration with a received non-final award.
+
+    The labour complaint gate requires a procedurally eligible classification;
+    the non-final-award state is the ordinary post-arbitration path and needs
+    only the commission and the document date.
+    """
+    from utils.labor_security import PROCEDURE_NON_FINAL_AWARD
+
+    index = page.procedure_combo.findData(PROCEDURE_NON_FINAL_AWARD)
+    page.procedure_combo.setCurrentIndex(index)
     page.arb_commission.setText("示例劳动人事争议仲裁委员会")
     page.arb_receipt_date.setText("2024-06-01")
+
+
+# Backwards-compatible alias for older local scripts; new tests should call the
+# named helper above so the fixture intent stays explicit.
+set_labor_arbitrated = set_labor_non_final_award
 
 
 def select_case(wizard, case_type):

@@ -38,12 +38,17 @@ from dataclasses import dataclass
 
 from drafts.errors import DraftFileTooLargeError, DraftValidationError
 from drafts.storage import MAX_PLAINTEXT_BYTES
+from utils.labor_security import (
+    LABOR_PROCEDURES,
+    LABOR_REFUSAL_GROUNDS,
+    LABOR_ROLES,
+)
 
 #: Version of the *inner* JSON document (independent of the envelope version).
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 #: Older inner-document versions that :func:`_migrate` can upgrade.
-MIGRATABLE_VERSIONS = (1,)
+MIGRATABLE_VERSIONS = (1, 2)
 
 #: Case categories this build can restore. Mirrors
 #: ``presenters.model_builder.SUPPORTED_CASE_TYPES`` and is asserted equal there.
@@ -111,7 +116,25 @@ _PARTY_GROUP_KEYS = ("plaintiffs", "defendants")
 _EVIDENCE_KEYS = ("state", "rows")
 
 #: Confirmations whose third state (``None`` = 未确认) is meaningful.
-TRI_STATE_FLAGS = ("has_iou", "is_delivered", "is_signed", "has_arbitrated", "is_no_contract")
+TRI_STATE_FLAGS = (
+    "has_iou",
+    "is_delivered",
+    "is_signed",
+    "labor_delay_exception",
+    "is_no_contract",
+)
+
+#: Classification fields stored as ``None`` (unconfirmed) or one of the
+#: vocabulary strings owned by :mod:`utils.labor_security` (imported, so the
+#: two can never drift).
+STRING_FLAGS = ("labor_procedure", "labor_refusal_ground", "labor_role")
+
+#: Allowed values per string classification flag.
+STRING_FLAG_VALUES = {
+    "labor_procedure": LABOR_PROCEDURES,
+    "labor_refusal_ground": LABOR_REFUSAL_GROUNDS,
+    "labor_role": LABOR_ROLES,
+}
 
 #: Case type -> the page name that owns its claim inputs.
 CLAIM_PAGE_NAMES_BY_CASE = {
@@ -215,6 +238,8 @@ TEXT_FIELDS = {
         ("l_arb_commission", "arb_commission", TEXT_LIMIT, False),
         ("l_arb_case_no", "arb_case_no", TEXT_LIMIT, False),
         ("l_arb_receipt_date", "arb_receipt_date", TEXT_LIMIT, False),
+        ("l_arb_application_date", "arb_application_date", TEXT_LIMIT, False),
+        ("l_arb_acceptance_date", "arb_acceptance_date", TEXT_LIMIT, False),
     )),
     "divorce": _specs((
         ("d_marriage_date", "marriage_date", TEXT_LIMIT, False),
@@ -229,12 +254,20 @@ TEXT_FIELDS = {
     )),
 }
 
-#: Confirmations stored per case type, in a fixed order.
+#: Confirmations stored per case type, in a fixed order. Labour drafts carry
+#: the procedural classification (state, refusal ground, party role, delay
+#: exception) alongside the ordinary no-contract confirmation.
 FLAG_FIELDS = {
     "loan": ("has_iou",),
     "contract": ("is_delivered", "is_signed"),
     "property": (),
-    "labor": ("has_arbitrated", "is_no_contract"),
+    "labor": (
+        "labor_procedure",
+        "labor_refusal_ground",
+        "labor_role",
+        "labor_delay_exception",
+        "is_no_contract",
+    ),
     "divorce": (),
 }
 
@@ -376,7 +409,14 @@ def _validate_flags(case_type, value):
     validated = {}
     for name in names:
         raw = mapping[name]
-        if raw is not None and not isinstance(raw, bool):
+        if name in STRING_FLAG_VALUES:
+            # Classification flags are ``None`` (未确认) or a known vocabulary
+            # string; anything else is rejected instead of coerced.
+            if raw is not None and raw not in STRING_FLAG_VALUES[name]:
+                raise DraftValidationError(
+                    f"factual_flags.{name} 不是受支持的取值。"
+                )
+        elif raw is not None and not isinstance(raw, bool):
             # ``None`` is the "unconfirmed" state and must survive as such; a
             # missing or malformed value is never interpreted as a negative.
             raise DraftValidationError(
@@ -428,9 +468,30 @@ def _migrate(mapping):
     tri-state. A version-1 ``False`` was the binary control's untouched
     default, so it is migrated to ``None`` ("未确认") rather than to a
     confirmed "否"; ``True`` was always an explicit choice and is kept.
+
+    Version 2 -> 3: the labour arbitration posture became an explicit
+    procedural classification. ``has_arbitrated`` maps onto ``labor_procedure``
+    without inventing any fact: ``None`` stays ``None`` (未确认), ``False``
+    becomes ``not_applied`` (the old control's own wording was "尚未申请劳动
+    仲裁"), and ``True`` — which never recorded WHICH document the user
+    received — becomes ``other_or_uncertain`` so a legacy draft can never
+    silently enter the complaint path as a verified award or mediation. The
+    refusal ground, party role and delay exception start unconfirmed, and the
+    two new date fields start blank; the legacy receipt date is preserved
+    verbatim. Non-labour drafts only move to the new version number.
     """
     upgraded = dict(mapping)
+    if upgraded.get("schema_version") == 1:
+        upgraded = _migrate_v1_to_v2(upgraded)
+    if upgraded.get("schema_version") == 2:
+        upgraded = _migrate_v2_to_v3(upgraded)
     upgraded["schema_version"] = SCHEMA_VERSION
+    return upgraded
+
+
+def _migrate_v1_to_v2(mapping):
+    """Version 1 -> 2 shape: arbitration posture fields appear on labour drafts."""
+    upgraded = dict(mapping)
     if upgraded.get("case_type") == "labor":
         fields = upgraded.get("fields")
         if isinstance(fields, dict):
@@ -449,6 +510,43 @@ def _migrate(mapping):
                 flags["is_no_contract"] = None
             flags["has_arbitrated"] = None
             upgraded["factual_flags"] = flags
+    upgraded["schema_version"] = 2
+    return upgraded
+
+
+def _migrate_v2_to_v3(mapping):
+    """Version 2 -> 3 shape: labour posture becomes a procedural classification."""
+    upgraded = dict(mapping)
+    if upgraded.get("case_type") == "labor":
+        fields = upgraded.get("fields")
+        if isinstance(fields, dict):
+            fields = dict(fields)
+            for key in ("l_arb_application_date", "l_arb_acceptance_date"):
+                if key in fields:
+                    raise DraftValidationError("fields 的字段集合不符合草稿格式。")
+                fields[key] = ""
+            upgraded["fields"] = fields
+        flags = upgraded.get("factual_flags")
+        if isinstance(flags, dict):
+            if "labor_procedure" in flags or "labor_role" in flags:
+                raise DraftValidationError("factual_flags 的字段集合不符合草稿格式。")
+            if "has_arbitrated" not in flags:
+                raise DraftValidationError("factual_flags 的字段集合不符合草稿格式。")
+            flags = dict(flags)
+            legacy = flags.pop("has_arbitrated")
+            if legacy is None:
+                flags["labor_procedure"] = None
+            elif legacy is False:
+                flags["labor_procedure"] = "not_applied"
+            else:
+                # ``True`` only ever meant "some arbitration document was
+                # received"; the type is unknown and must not be guessed.
+                flags["labor_procedure"] = "other_or_uncertain"
+            flags["labor_refusal_ground"] = None
+            flags["labor_role"] = None
+            flags["labor_delay_exception"] = None
+            upgraded["factual_flags"] = flags
+    upgraded["schema_version"] = 3
     return upgraded
 
 

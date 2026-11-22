@@ -121,14 +121,29 @@ class MainPresenter:
             )
             return self.FINISH_VALIDATION_FAILED
 
-        if case_type == "labor" and getattr(model, "has_arbitrated", None) is not True:
-            dialogs.warning(
-                self.view,
-                "尚不能生成起诉状",
-                "劳动争议须先经劳动仲裁，本工具只生成仲裁之后向法院起诉所用的起诉状。\n"
-                "请在“仲裁情况”中确认已经仲裁并填写仲裁机构与收到裁决日期；本次未导出任何文件。",
+        if case_type == "labor":
+            # Fail-closed procedural gate: the same evaluator the wizard page
+            # uses decides whether this classification may produce a
+            # complaint. Blocked states keep every input and export nothing.
+            from utils.labor_security import evaluate_labor_eligibility
+
+            eligibility = evaluate_labor_eligibility(
+                model.labor_procedure,
+                refusal_ground=model.labor_refusal_ground,
+                role=model.labor_role,
+                delay_exception=model.labor_delay_exception,
+                commission=model.arb_commission,
+                application_date=model.arb_application_date,
+                acceptance_date=model.arb_acceptance_date,
+                receipt_date=model.arb_receipt_date,
             )
-            return self.FINISH_VALIDATION_FAILED
+            if not eligibility.eligible:
+                dialogs.warning(
+                    self.view,
+                    "尚不能生成起诉状",
+                    f"{eligibility.reason}\n本次未导出任何文件。",
+                )
+                return self.FINISH_VALIDATION_FAILED
 
         if case_type == "property":
             self._warn_property_mismatch(model)

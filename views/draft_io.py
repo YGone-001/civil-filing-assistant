@@ -70,12 +70,15 @@ INITIAL_FIELD_VALUES = {
 }
 
 #: Initial state of every persisted confirmation: ``None`` is the tri-state
-#: "未确认" default of every control.
+#: "未确认" default of every control (and the unselected classification combo).
 INITIAL_FLAG_VALUES = {
     "has_iou": None,
     "is_delivered": None,
     "is_signed": None,
-    "has_arbitrated": None,
+    "labor_procedure": None,
+    "labor_refusal_ground": None,
+    "labor_role": None,
+    "labor_delay_exception": None,
     "is_no_contract": None,
 }
 
@@ -268,7 +271,11 @@ def has_meaningful_session(wizard):
 
 
 def _capture_flags(page, case_type):
-    """Return the confirmation states for *case_type*, preserving ``None``."""
+    """Return the confirmation/classification states for *case_type*.
+
+    Classification strings (``None`` = not yet selected) and tri-state values
+    are both captured exactly as shown; nothing is inferred.
+    """
     names = FLAG_FIELDS[case_type]
     if not names:
         return {}
@@ -279,7 +286,10 @@ def _capture_flags(page, case_type):
         return {"is_delivered": flags["is_delivered"], "is_signed": flags["is_signed"]}
     if case_type == "labor":
         return {
-            "has_arbitrated": page.get_has_arbitrated(),
+            "labor_procedure": page.get_labor_procedure(),
+            "labor_refusal_ground": page.get_refusal_ground(),
+            "labor_role": page.get_labor_role(),
+            "labor_delay_exception": page.get_delay_exception(),
             "is_no_contract": page.get_has_no_contract(),
         }
     raise AssertionError(f"未登记的事实确认项：{case_type}")
@@ -391,6 +401,21 @@ def _set_tri_state(yes_button, no_button, unknown_button, value):
         unknown_button.setChecked(True)
 
 
+def _select_choice(buttons, value):
+    """Check the radio mapped to *value*; leave untouched when ``None``.
+
+    A ``None`` classification keeps every button unchecked, which is exactly
+    the "未选择" state a fresh page starts in.
+    """
+    if value is None:
+        return
+    for candidate, button in buttons.items():
+        if candidate == value:
+            button.setChecked(True)
+            return
+    raise AssertionError("草稿中的分类取值没有对应的选项。")
+
+
 def _apply_flags(page, document):
     case_type = document.case_type
     flags = document.factual_flags
@@ -401,9 +426,15 @@ def _apply_flags(page, document):
         _set_tri_state(page.del_yes, page.del_no, page.del_unknown, flags["is_delivered"])
         _set_tri_state(page.sign_yes, page.sign_no, page.sign_unknown, flags["is_signed"])
     elif case_type == "labor":
+        index = page.procedure_combo.findData(flags["labor_procedure"])
+        if flags["labor_procedure"] is not None and index < 0:
+            raise AssertionError("草稿中的程序状态不在当前支持范围内。")
+        page.procedure_combo.setCurrentIndex(index if index >= 0 else 0)
+        _select_choice(page._refusal_buttons, flags["labor_refusal_ground"])
+        _select_choice(page._role_buttons, flags["labor_role"])
         _set_tri_state(
-            page.arbitrated_yes, page.arbitrated_no, page.arbitrated_unknown,
-            flags["has_arbitrated"],
+            page.delay_yes, page.delay_no, page.delay_unknown,
+            flags["labor_delay_exception"],
         )
         _set_tri_state(
             page.no_contract_yes, page.no_contract_no, page.no_contract_unknown,

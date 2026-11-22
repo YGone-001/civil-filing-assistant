@@ -393,15 +393,20 @@ def test_labor_without_end_date_still_reads_cleanly():
 
 def test_labor_arbitration_is_stated_from_supplied_details_only():
     model = _labor()
-    model.has_arbitrated = True
+    model.labor_procedure = "non_final_award"
     model.arb_commission = "示例劳动人事争议仲裁委员会"
     model.arb_receipt_date = "2024-06-01"
     facts = model.render_facts()
-    assert "向示例劳动人事争议仲裁委员会申请劳动仲裁，并于2024-06-01收到仲裁裁决书" in facts
+    assert "向示例劳动人事争议仲裁委员会申请劳动仲裁，并于2024-06-01收到该委员会作出的非终局仲裁裁决书" in facts
     assert "案号" not in facts
 
     model.arb_case_no = "示例仲裁案号-001"
     assert "（案号：示例仲裁案号-001）" in model.render_facts()
 
-    model.has_arbitrated = None
+    # Unconfirmed and blocked classifications must not produce a sentence.
+    model.labor_procedure = None
+    assert "仲裁" not in model.render_facts()
+
+    model.labor_procedure = "mediation_effective"
+    model.arb_case_no = ""
     assert "仲裁" not in model.render_facts()

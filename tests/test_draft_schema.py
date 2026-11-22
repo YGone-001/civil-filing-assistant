@@ -97,9 +97,25 @@ def test_captured_flags_match_the_declared_registry(qapp, case_type):
     assert set(payload["factual_flags"]) == set(schema.FLAG_FIELDS[case_type])
 
 
-def test_every_declared_flag_is_tri_state():
+def test_every_declared_flag_is_tri_state_or_classification():
     declared = {name for names in schema.FLAG_FIELDS.values() for name in names}
-    assert declared == set(schema.TRI_STATE_FLAGS)
+    assert declared == set(schema.TRI_STATE_FLAGS) | set(schema.STRING_FLAGS)
+    assert not (set(schema.TRI_STATE_FLAGS) & set(schema.STRING_FLAGS))
+
+
+def test_string_classifications_accept_only_known_vocabulary():
+    from utils.labor_security import LABOR_PROCEDURES, LABOR_REFUSAL_GROUNDS, LABOR_ROLES
+
+    assert schema.STRING_FLAG_VALUES["labor_procedure"] == LABOR_PROCEDURES
+    assert schema.STRING_FLAG_VALUES["labor_refusal_ground"] == LABOR_REFUSAL_GROUNDS
+    assert schema.STRING_FLAG_VALUES["labor_role"] == LABOR_ROLES
+
+
+def test_string_classification_rejects_an_unknown_value():
+    payload = _blank_payload("labor")
+    payload["factual_flags"]["labor_procedure"] = "already_sued"
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
 
 
 def test_resume_pages_match_the_wizard_page_names():
@@ -299,13 +315,111 @@ def test_tri_state_flag_rejects_a_non_boolean_value():
 def test_labor_flags_accept_the_unconfirmed_state():
     payload = _blank_payload("labor")
     document = schema.validate_document(payload)
-    assert document.factual_flags == {"has_arbitrated": None, "is_no_contract": None}
+    assert document.factual_flags == {
+        "labor_procedure": None,
+        "labor_refusal_ground": None,
+        "labor_role": None,
+        "labor_delay_exception": None,
+        "is_no_contract": None,
+    }
+
+
+def test_string_classifications_survive_as_stored():
+    from utils.labor_security import (
+        GROUND_OTHER_OR_UNSTATED,
+        PROCEDURE_NOT_ACCEPTED,
+        ROLE_EMPLOYEE,
+    )
+
+    payload = _blank_payload("labor")
+    payload["factual_flags"]["labor_procedure"] = PROCEDURE_NOT_ACCEPTED
+    payload["factual_flags"]["labor_refusal_ground"] = GROUND_OTHER_OR_UNSTATED
+    payload["factual_flags"]["labor_role"] = ROLE_EMPLOYEE
+    payload["factual_flags"]["labor_delay_exception"] = False
+    document = schema.validate_document(payload)
+    assert document.factual_flags["labor_procedure"] == PROCEDURE_NOT_ACCEPTED
+    assert document.factual_flags["labor_refusal_ground"] == GROUND_OTHER_OR_UNSTATED
+    assert document.factual_flags["labor_role"] == ROLE_EMPLOYEE
+    assert document.factual_flags["labor_delay_exception"] is False
+
+
+def _version_two_labor_payload(has_arbitrated, receipt_date="2024-06-01"):
+    """A structurally complete v2 labour payload (pre-classification shape)."""
+    fields = {
+        spec.key: ""
+        for spec in schema.TEXT_FIELDS["labor"]
+        if spec.key not in ("l_arb_application_date", "l_arb_acceptance_date")
+    }
+    fields["l_arb_commission"] = "示例劳动人事争议仲裁委员会"
+    fields["l_arb_receipt_date"] = receipt_date
+    return {
+        "schema_version": 2,
+        "case_type": "labor",
+        "fields": fields,
+        "parties": {"plaintiffs": [], "defendants": []},
+        "factual_flags": {"has_arbitrated": has_arbitrated, "is_no_contract": None},
+        "evidence": {"state": "NOT_INITIALIZED", "rows": []},
+        "resume_page": "party",
+    }
+
+
+def test_version_two_confirmed_arbitration_never_becomes_a_verified_award():
+    """A legacy ``True`` never recorded WHICH document was received, so it must
+    land in the review-required state instead of an award/mediation class."""
+    document = schema.validate_document(_version_two_labor_payload(True))
+    assert document.schema_version == schema.SCHEMA_VERSION
+    assert document.factual_flags["labor_procedure"] == "other_or_uncertain"
+    assert document.factual_flags["labor_role"] is None
+    assert document.factual_flags["labor_refusal_ground"] is None
+    assert document.factual_flags["labor_delay_exception"] is None
+    # The legacy receipt date survives verbatim; nothing is fabricated.
+    assert document.fields["l_arb_receipt_date"] == "2024-06-01"
+    assert document.fields["l_arb_application_date"] == ""
+    assert document.fields["l_arb_acceptance_date"] == ""
+    from utils.labor_security import evaluate_labor_eligibility
+
+    eligibility = evaluate_labor_eligibility(
+        document.factual_flags["labor_procedure"],
+        commission=document.fields["l_arb_commission"],
+        receipt_date=document.fields["l_arb_receipt_date"],
+    )
+    assert not eligibility.eligible
+
+
+def test_version_two_not_yet_applied_maps_to_not_applied():
+    document = schema.validate_document(_version_two_labor_payload(False))
+    assert document.factual_flags["labor_procedure"] == "not_applied"
+
+
+def test_version_two_unconfirmed_stays_unconfirmed():
+    document = schema.validate_document(_version_two_labor_payload(None))
+    assert document.factual_flags["labor_procedure"] is None
+
+
+def test_version_two_document_already_carrying_classification_is_rejected():
+    payload = _version_two_labor_payload(True)
+    payload["factual_flags"]["labor_procedure"] = "non_final_award"
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
+
+
+def test_version_two_labor_payload_missing_the_posture_flag_is_rejected():
+    payload = _version_two_labor_payload(True)
+    del payload["factual_flags"]["has_arbitrated"]
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
 
 
 def _version_one_labor_payload(is_no_contract):
     payload = _blank_payload("labor")
     payload["schema_version"] = 1
-    for key in ("l_arb_commission", "l_arb_case_no", "l_arb_receipt_date"):
+    for key in (
+        "l_arb_commission",
+        "l_arb_case_no",
+        "l_arb_receipt_date",
+        "l_arb_application_date",
+        "l_arb_acceptance_date",
+    ):
         del payload["fields"][key]
     payload["factual_flags"] = {"is_no_contract": is_no_contract}
     payload["fields"]["l_job_title"] = "示例岗位"
@@ -317,7 +431,10 @@ def test_version_one_labor_draft_is_migrated():
     assert document.schema_version == schema.SCHEMA_VERSION
     assert document.fields["l_job_title"] == "示例岗位"
     assert document.fields["l_arb_commission"] == ""
-    assert document.factual_flags == {"has_arbitrated": None, "is_no_contract": True}
+    assert document.fields["l_arb_application_date"] == ""
+    assert document.factual_flags["labor_procedure"] is None
+    assert document.factual_flags["labor_role"] is None
+    assert document.factual_flags["is_no_contract"] is True
 
 
 def test_version_one_binary_default_becomes_unconfirmed():

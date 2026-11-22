@@ -138,7 +138,12 @@ class _TwoColumnForm:
 
     def _add_field(self, label_text, field):
         column = self._slot * 2
-        label = QLabel(label_text)
+        if isinstance(label_text, QLabel):
+            # A caller-owned QLabel (e.g. a label whose text changes with the
+            # selected procedure) is used verbatim instead of being wrapped.
+            label = label_text
+        else:
+            label = QLabel(label_text)
         label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.grid.addWidget(label, self._row, column)
         self.grid.addWidget(self._as_widget(field), self._row, column + 1)
