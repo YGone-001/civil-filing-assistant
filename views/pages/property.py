@@ -17,6 +17,7 @@ from views.pages.common import (
     _set_status,
     _wrap_in_scroll,
     add_facts_examples_button,
+    add_supplement_section,
 )
 from views.widgets import DateLineEdit
 
@@ -97,6 +98,8 @@ class PropertyClaimPage(_TitledPage):
         amount.addRow("自填总金额(元):", self.total_input)
         amount.addRow("系统计算:", self.calc_label)
         amount.addRow("", self.warn_label)
+
+        add_supplement_section(self, root, "p")
 
         # --- 四、建议管辖法院 -----------------------------------------------
         court = _section(root, "四、建议管辖法院")

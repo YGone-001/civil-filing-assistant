@@ -49,6 +49,15 @@ def _loan_payload(**overrides):
     return payload
 
 
+def _strip_v5_fields(payload):
+    """Remove the optional supplement fields so a payload matches pre-v5 shape."""
+    case_type = payload.get("case_type")
+    for spec in schema.TEXT_FIELDS.get(case_type, ()):
+        if spec.widget in ("extra_claims", "extra_facts"):
+            payload["fields"].pop(spec.key, None)
+    return payload
+
+
 # --------------------------------------------------------------------------- #
 # Registry integrity
 # --------------------------------------------------------------------------- #
@@ -355,6 +364,7 @@ def _version_two_labor_payload(has_arbitrated, receipt_date="2024-06-01"):
         spec.key: ""
         for spec in schema.TEXT_FIELDS["labor"]
         if spec.key not in ("l_arb_application_date", "l_arb_acceptance_date")
+        and spec.widget not in ("extra_claims", "extra_facts")
     }
     fields["l_arb_commission"] = "示例劳动人事争议仲裁委员会"
     fields["l_arb_receipt_date"] = receipt_date
@@ -432,6 +442,7 @@ def _version_one_labor_payload(is_no_contract):
         del payload["fields"][key]
     payload["factual_flags"] = {"is_no_contract": is_no_contract}
     payload["fields"]["l_job_title"] = "示例岗位"
+    _strip_v5_fields(payload)
     return payload
 
 
@@ -469,6 +480,7 @@ def test_version_one_document_already_carrying_new_keys_is_rejected():
 def test_version_one_non_labor_draft_is_migrated_unchanged():
     payload = _loan_payload(schema_version=1)
     del payload["agent"]  # legacy documents predate the v4 agent key
+    _strip_v5_fields(payload)
     document = schema.validate_document(payload)
     assert document.schema_version == schema.SCHEMA_VERSION
     assert document.fields["loan_date"] == "2023年1月1日"
@@ -486,6 +498,7 @@ def test_version_three_draft_gains_party_details_and_blank_agent():
     payload = _blank_payload("loan")
     payload["schema_version"] = 3
     del payload["agent"]
+    _strip_v5_fields(payload)
     payload["parties"]["plaintiffs"] = [
         {
             "name": "张三（测试）",
@@ -513,6 +526,28 @@ def test_version_three_document_already_carrying_agent_is_rejected():
     payload["schema_version"] = 3
     del payload["agent"]
     payload["agent"] = None
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
+
+
+# --------------------------------------------------------------------------- #
+# Version 4 -> 5: optional user-supplied claim/fact fields
+# --------------------------------------------------------------------------- #
+
+
+def test_version_four_draft_gains_blank_supplement_fields():
+    payload = _loan_payload()
+    payload["schema_version"] = 4
+    _strip_v5_fields(payload)
+    document = schema.validate_document(payload)
+    assert document.schema_version == schema.SCHEMA_VERSION
+    assert document.fields["loan_extra_claims"] == ""
+    assert document.fields["loan_extra_facts"] == ""
+
+
+def test_version_four_draft_already_carrying_supplement_fields_is_rejected():
+    payload = _loan_payload()
+    payload["schema_version"] = 4
     with pytest.raises(DraftValidationError):
         schema.validate_document(payload)
 

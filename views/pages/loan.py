@@ -17,6 +17,7 @@ from views.pages.common import (
     _set_status,
     _wrap_in_scroll,
     add_facts_examples_button,
+    add_supplement_section,
 )
 from views.widgets import DateLineEdit
 
@@ -115,6 +116,8 @@ class LoanClaimPage(_TitledPage):
         demand.addRow("催款方式:", self.demand_method)
         demand.addRow("", self.cond_hint)
         add_facts_examples_button(self, demand)
+
+        add_supplement_section(self, root, "loan")
 
         # --- 四、建议管辖法院 ------------------------------------------------
         court = _section(root, "四、建议管辖法院")

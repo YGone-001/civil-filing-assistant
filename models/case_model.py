@@ -82,12 +82,21 @@ class EvidenceItem:
 
 class CaseTemplate:
     """Base class for all case types."""
+    #: The final claim shared by every current case model. User-supplied
+    #: claims are inserted before it so it stays last, as court templates
+    #: conventionally place the litigation-cost request at the end.
+    LITIGATION_COST_CLAIM = "本案诉讼费由被告承担。"
+
     def __init__(self):
         self.case_type_name = "未命名案由"
         self.party_manager = PartyManager()
         self.agent = None # Optional[AgentInfo]
         self.court_name = ""
         self.evidences = [] # List of EvidenceItem
+        # User-supplied additions. They never replace the generated content;
+        # the document writers append them with an explicit label.
+        self.extra_claims = []
+        self.extra_facts = ""
 
     def render_claims(self):
         """Return a list of string claims."""
@@ -96,6 +105,41 @@ class CaseTemplate:
     def render_facts(self):
         """Return a formatted string of facts and reasons."""
         return ""
+
+    def _normalized_extra_claims(self):
+        raw_claims = self.extra_claims
+        if isinstance(raw_claims, str):
+            raw_claims = raw_claims.splitlines()
+        normalized = []
+        for raw in raw_claims or []:
+            text = str(raw or "").strip().rstrip("；;。")
+            if text:
+                normalized.append(f"{text}；")
+        return normalized
+
+    def all_claims(self):
+        """Return generated claims with user-supplied additions.
+
+        Additions are inserted before the final litigation-cost claim; an
+        empty addition list leaves the generated claims untouched.
+        """
+        claims = list(self.render_claims())
+        extras = self._normalized_extra_claims()
+        if not extras:
+            return claims
+        if claims and claims[-1] == self.LITIGATION_COST_CLAIM:
+            return claims[:-1] + extras + [claims[-1]]
+        return claims + extras
+
+    def all_facts(self):
+        """Return generated facts plus the optional user-supplied note."""
+        facts = (self.render_facts() or "").strip()
+        extra = (self.extra_facts or "").strip()
+        if not extra:
+            return facts
+        if not facts:
+            return f"补充说明：{extra}"
+        return f"{facts}\n\n补充说明：{extra}"
 
 class LoanCaseModel(CaseTemplate):
     def __init__(self):

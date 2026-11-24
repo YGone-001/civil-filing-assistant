@@ -13,7 +13,8 @@ next launch.
 The document is therefore a flat, explicit, versioned record:
 
 * ``fields``        - the case-specific text inputs, keyed by their existing
-                      wizard field identifiers (never renamed here);
+                      wizard field identifiers (never renamed here), including
+                      the optional user-supplied claims/facts additions;
 * ``parties``       - ordered plaintiff/defendant records, blank cards included;
 * ``factual_flags`` - tri-state confirmations where ``None`` means "unconfirmed";
 * ``evidence``      - the row list plus the page's own state label;
@@ -49,10 +50,10 @@ from utils.labor_security import (
 )
 
 #: Version of the *inner* JSON document (independent of the envelope version).
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 #: Older inner-document versions that :func:`_migrate` can upgrade.
-MIGRATABLE_VERSIONS = (1, 2, 3)
+MIGRATABLE_VERSIONS = (1, 2, 3, 4)
 
 #: Case categories this build can restore. Mirrors
 #: ``presenters.model_builder.SUPPORTED_CASE_TYPES`` and is asserted equal there.
@@ -225,6 +226,8 @@ TEXT_FIELDS = {
         ("start_date", "start_date", TEXT_LIMIT, False),
         ("demand_date", "demand_date", TEXT_LIMIT, False),
         ("demand_method", "demand_method", TEXT_LIMIT, False),
+        ("loan_extra_claims", "extra_claims", LONG_TEXT_LIMIT, False),
+        ("loan_extra_facts", "extra_facts", LONG_TEXT_LIMIT, False),
         ("court_name", "court_name", TEXT_LIMIT, False),
     )),
     "contract": _specs((
@@ -240,6 +243,8 @@ TEXT_FIELDS = {
         ("c_overdue_end", "overdue_end", TEXT_LIMIT, False),
         ("c_lpr_value", "lpr_value", NUMERIC_LIMIT, True),
         ("c_lpr_multiple", "lpr_multiple", NUMERIC_LIMIT, True),
+        ("c_extra_claims", "extra_claims", LONG_TEXT_LIMIT, False),
+        ("c_extra_facts", "extra_facts", LONG_TEXT_LIMIT, False),
     )),
     "property": _specs((
         ("p_property_addr", "property_addr", TEXT_LIMIT, False),
@@ -250,6 +255,8 @@ TEXT_FIELDS = {
         ("p_late_fee_logic", "late_fee_logic", TEXT_LIMIT, False),
         ("p_demand_record", "demand_record", LONG_TEXT_LIMIT, False),
         ("p_total_input", "total_input", NUMERIC_LIMIT, True),
+        ("p_extra_claims", "extra_claims", LONG_TEXT_LIMIT, False),
+        ("p_extra_facts", "extra_facts", LONG_TEXT_LIMIT, False),
         ("p_court_name", "court_name", TEXT_LIMIT, False),
     )),
     "labor": _specs((
@@ -267,6 +274,8 @@ TEXT_FIELDS = {
         ("l_arb_receipt_date", "arb_receipt_date", TEXT_LIMIT, False),
         ("l_arb_application_date", "arb_application_date", TEXT_LIMIT, False),
         ("l_arb_acceptance_date", "arb_acceptance_date", TEXT_LIMIT, False),
+        ("l_extra_claims", "extra_claims", LONG_TEXT_LIMIT, False),
+        ("l_extra_facts", "extra_facts", LONG_TEXT_LIMIT, False),
     )),
     "divorce": _specs((
         ("d_marriage_date", "marriage_date", TEXT_LIMIT, False),
@@ -277,6 +286,8 @@ TEXT_FIELDS = {
         ("d_divorce_reason", "divorce_reason", TEXT_LIMIT, False),
         ("d_separation_start_date", "separation_start_date", TEXT_LIMIT, False),
         ("d_asset_description", "asset_description", TEXT_LIMIT, False),
+        ("d_extra_claims", "extra_claims", LONG_TEXT_LIMIT, False),
+        ("d_extra_facts", "extra_facts", LONG_TEXT_LIMIT, False),
         ("d_court_name", "court_name", TEXT_LIMIT, False),
     )),
 }
@@ -532,6 +543,9 @@ def _migrate(mapping):
     (gender, birth date, ethnicity and its free-text companion, occupation),
     filled blank because the legacy draft simply did not ask for them, and
     the document gained the optional ``agent`` record as ``None``.
+
+    Version 4 -> 5: every case gained the optional user-supplied claim/fact
+    fields, filled blank because a v4 draft never asked for them.
     """
     upgraded = dict(mapping)
     if upgraded.get("schema_version") == 1:
@@ -540,6 +554,8 @@ def _migrate(mapping):
         upgraded = _migrate_v2_to_v3(upgraded)
     if upgraded.get("schema_version") == 3:
         upgraded = _migrate_v3_to_v4(upgraded)
+    if upgraded.get("schema_version") == 4:
+        upgraded = _migrate_v4_to_v5(upgraded)
     upgraded["schema_version"] = SCHEMA_VERSION
     return upgraded
 
@@ -635,6 +651,31 @@ def _complete_party_record_v4(record):
     return completed
 
 
+def _extra_field_keys(case_type):
+    """Return the optional supplement keys registered for *case_type*."""
+    return tuple(
+        spec.key
+        for spec in TEXT_FIELDS.get(case_type, ())
+        if spec.widget in ("extra_claims", "extra_facts")
+    )
+
+
+def _migrate_v4_to_v5(mapping):
+    """Version 4 -> 5 shape: optional user-supplied claims/facts fields."""
+    upgraded = dict(mapping)
+    case_type = upgraded.get("case_type")
+    fields = upgraded.get("fields")
+    if isinstance(fields, dict) and case_type in TEXT_FIELDS:
+        fields = dict(fields)
+        for key in _extra_field_keys(case_type):
+            if key in fields:
+                raise DraftValidationError("fields 的字段集合不符合草稿格式。")
+            fields[key] = ""
+        upgraded["fields"] = fields
+    upgraded["schema_version"] = 5
+    return upgraded
+
+
 def validate_document(payload):
     """Validate *payload* and return a :class:`DraftDocument`.
 
@@ -649,10 +690,11 @@ def validate_document(payload):
     if isinstance(version, bool) or not isinstance(version, int):
         raise DraftValidationError("schema_version 必须是整数。")
     if version in MIGRATABLE_VERSIONS:
-        # Legacy documents carry the pre-4 top-level key set; the strict check
-        # must run against that set so they reach migration instead of being
-        # rejected for lacking ``agent``.
-        _require_exact_keys(mapping, _DOCUMENT_KEYS_V3, "草稿文档")
+        # v1-v3 documents predate ``agent``; v4/v5 carry it. The strict check
+        # runs against the document's own version so legacy drafts reach
+        # migration instead of being rejected for the wrong key set.
+        expected_keys = _DOCUMENT_KEYS_V3 if version <= 3 else _DOCUMENT_KEYS
+        _require_exact_keys(mapping, expected_keys, "草稿文档")
         mapping = _migrate(mapping)
         version = SCHEMA_VERSION
     _require_exact_keys(mapping, _DOCUMENT_KEYS, "草稿文档")

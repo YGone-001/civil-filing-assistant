@@ -32,6 +32,7 @@ from views.pages.common import (
     _set_status,
     _wrap_in_scroll,
     add_facts_examples_button,
+    add_supplement_section,
 )
 from views.widgets import DateLineEdit
 
@@ -180,6 +181,8 @@ class ContractClaimPage(_TitledPage):
         amounts.addRow("", calc_btn_widget)
         amounts.addRow(self.calc_help)
         add_facts_examples_button(self, amounts)
+
+        add_supplement_section(self, root, "c")
 
         # --- 四、建议管辖法院 ------------------------------------------------
         court = _section(root, "四、建议管辖法院")

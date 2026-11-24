@@ -63,10 +63,10 @@ def build_complaint_text(model):
         lines.append(f"{label}：{line}")
 
     lines.extend(["", "诉讼请求："])
-    for index, claim in enumerate(model.render_claims(), 1):
+    for index, claim in enumerate(model.all_claims(), 1):
         lines.append(f"{index}. {claim}")
 
-    lines.extend(["", "事实与理由：", model.render_facts()])
+    lines.extend(["", "事实与理由：", model.all_facts()])
 
     appendix = _appendix_text(model)
     if appendix:
@@ -90,10 +90,16 @@ def build_complaint_html(model):
     indent = "&#12288;&#12288;"
     claims_html = "\n".join(
         f'<p class="claim">{indent}{index}. {_escape(claim)}</p>'
-        for index, claim in enumerate(model.render_claims(), 1)
+        for index, claim in enumerate(model.all_claims(), 1)
     )
 
-    facts_html = indent + _escape(model.render_facts()).replace("\n", "<br/>")
+    fact_paragraphs = [
+        part.strip() for part in model.all_facts().split("\n\n") if part.strip()
+    ]
+    facts_html = "\n".join(
+        f'<p class="body">{indent}{_escape(part).replace(chr(10), "<br/>")}</p>'
+        for part in fact_paragraphs
+    )
     appendix = _appendix_text(model)
     appendix_html = f'<p class="appendix">{indent}{_escape(appendix)}</p>' if appendix else ""
     court = _escape(model.court_name)

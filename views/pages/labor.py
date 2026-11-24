@@ -37,6 +37,7 @@ from views.pages.common import (
     _set_status,
     _wrap_in_scroll,
     add_facts_examples_button,
+    add_supplement_section,
 )
 from views.widgets import DateLineEdit
 from utils.labor_security import (
@@ -280,6 +281,8 @@ class LaborClaimPage(_TitledPage):
 
         contract.addRow("是否未签劳动合同:", no_contract_layout)
         contract.addRow("社保缴纳情况:", self.social_sec_info)
+
+        add_supplement_section(self, root, "l")
 
         # --- 五、建议管辖法院 -----------------------------------------------
         court = _section(root, "五、建议管辖法院")

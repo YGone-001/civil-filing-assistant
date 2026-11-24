@@ -25,7 +25,14 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from views.theme import SECTION_BOX, SECONDARY_BUTTON, SPACING_LG, SPACING_MD, SPACING_SM
+from views.theme import (
+    INFO_LABEL,
+    SECTION_BOX,
+    SECONDARY_BUTTON,
+    SPACING_LG,
+    SPACING_MD,
+    SPACING_SM,
+)
 from views.widgets import content_column
 
 def _set_status(label, text):
@@ -207,6 +214,56 @@ def add_facts_examples_button(page, form):
     row_layout.addWidget(button)
     row_layout.addStretch(1)
     form.addRow("", row)
+
+
+def add_supplement_section(page, root, field_prefix):
+    """Append the optional user-supplied claim/fact section to a claim page.
+
+    The section is deliberately separate from the structured inputs: generated
+    claims and facts stay authoritative, while these two fields are appended
+    verbatim (with claim lines numbered) for details the templates do not cover.
+    """
+    box = QGroupBox("补充内容（选填）")
+    box.setObjectName(SECTION_BOX)
+    layout = QVBoxLayout(box)
+    layout.setContentsMargins(SPACING_MD, SPACING_SM, SPACING_MD, SPACING_MD)
+    layout.setSpacing(SPACING_MD)
+
+    claims_label = QLabel("其他诉讼请求（每行一项）:")
+    claims_edit = QPlainTextEdit()
+    claims_edit.setPlaceholderText(
+        "如：判令被告支付律师费人民币XXX元（请自行核对是否属于本案审理范围）"
+    )
+    claims_edit.setMaximumHeight(88)
+
+    facts_label = QLabel("补充事实与理由:")
+    facts_edit = QPlainTextEdit()
+    facts_edit.setPlaceholderText("可补充结构化字段未覆盖的事实经过或说明。")
+    facts_edit.setMaximumHeight(108)
+
+    hint = QLabel(
+        "说明：补充内容将原样写入文书，不会替换上方按模板生成的请求和事实；"
+        "请自行核对事实、金额与法律依据。"
+    )
+    hint.setObjectName(INFO_LABEL)
+    hint.setWordWrap(True)
+
+    layout.addWidget(claims_label)
+    layout.addWidget(claims_edit)
+    layout.addWidget(facts_label)
+    layout.addWidget(facts_edit)
+    layout.addWidget(hint)
+    root.addWidget(box)
+
+    # Page attributes are what the draft adapter reads and writes; the wizard
+    # fields keep the same values reachable through ``view.field``.
+    page.extra_claims = claims_edit
+    page.extra_facts = facts_edit
+    _set_label_field_accessibility(claims_label, claims_edit)
+    _set_label_field_accessibility(facts_label, facts_edit)
+    page.registerField(f"{field_prefix}_extra_claims", claims_edit, "plainText")
+    page.registerField(f"{field_prefix}_extra_facts", facts_edit, "plainText")
+    return claims_edit, facts_edit
 
 
 def _wrap_in_scroll(root_layout):

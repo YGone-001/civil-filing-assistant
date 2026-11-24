@@ -194,7 +194,17 @@ class DocumentGenerator:
 
     def add_facts(self, facts_text):
         self.add_heading("事实与理由：")
-        self.add_body(facts_text, align=WD_PARAGRAPH_ALIGNMENT.JUSTIFY, first_line_indent=32)
+        # ``all_facts()`` separates the generated narrative and the optional
+        # user-supplied note with a blank line; each becomes its own paragraph.
+        paragraphs = [part.strip() for part in str(facts_text).split("\n\n") if part.strip()]
+        if not paragraphs:
+            paragraphs = [""]
+        for paragraph in paragraphs:
+            self.add_body(
+                paragraph,
+                align=WD_PARAGRAPH_ALIGNMENT.JUSTIFY,
+                first_line_indent=32,
+            )
 
     def add_footer(self, court_name):
         self._add_text("此致", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.LEFT, 0)
@@ -256,9 +266,9 @@ class DocumentGenerator:
         self.add_agent_block(getattr(model, "agent", None))
         self.add_party_block("被告", model.party_manager.defendants)
         self.doc.add_paragraph()
-        self.add_claims(model.render_claims())
+        self.add_claims(model.all_claims())
         self.doc.add_paragraph()
-        self.add_facts(model.render_facts())
+        self.add_facts(model.all_facts())
         self.doc.add_paragraph()
         self._add_appendix(model)
         self.add_footer(model.court_name)

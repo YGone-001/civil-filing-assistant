@@ -14,6 +14,7 @@ from views.pages.common import (
     _set_status,
     _wrap_in_scroll,
     add_facts_examples_button,
+    add_supplement_section,
 )
 from views.widgets import DateLineEdit
 
@@ -87,6 +88,8 @@ class DivorceClaimPage(_TitledPage):
         self.asset_description.setPlaceholderText("如: 房产归原告，车辆归被告")
 
         asset.addRow("财产分割方案:", self.asset_description)
+
+        add_supplement_section(self, root, "d")
 
         # --- 四、建议管辖法院 -----------------------------------------------
         court = _section(root, "四、建议管辖法院")

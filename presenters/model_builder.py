@@ -239,6 +239,26 @@ _FILLERS = {
     "divorce": _fill_divorce,
 }
 
+#: Registered field prefix used by each claim page's supplement section.
+_EXTRA_FIELD_PREFIX = {
+    "loan": "loan",
+    "contract": "c",
+    "property": "p",
+    "labor": "l",
+    "divorce": "d",
+}
+
+
+def _fill_extras(view, model, case_type):
+    """Copy the optional user-supplied claims/facts onto the model."""
+    prefix = _EXTRA_FIELD_PREFIX[case_type]
+    claims_text = view.field(f"{prefix}_extra_claims") or ""
+    facts_text = view.field(f"{prefix}_extra_facts") or ""
+    model.extra_claims = [
+        line.strip() for line in str(claims_text).splitlines() if line.strip()
+    ]
+    model.extra_facts = str(facts_text).strip()
+
 
 def build_case_model(view):
     """Return a populated case model for the wizard's current selection."""
@@ -250,6 +270,7 @@ def build_case_model(view):
     _add_agent(model, view)
 
     _FILLERS[case_type](view, model)
+    _fill_extras(view, model, case_type)
 
     for name, target in view.evidence_page.get_evidence_items():
         model.evidences.append(EvidenceItem(name, target))

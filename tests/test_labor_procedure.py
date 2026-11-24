@@ -478,6 +478,7 @@ def test_legacy_style_draft_falls_back_to_the_claim_page(qapp):
         spec.key: ""
         for spec in schema.TEXT_FIELDS["labor"]
         if spec.key not in ("l_arb_application_date", "l_arb_acceptance_date")
+        and spec.widget not in ("extra_claims", "extra_facts")
     }
     document = schema.validate_document(
         {
