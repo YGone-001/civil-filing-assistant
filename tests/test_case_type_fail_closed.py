@@ -20,6 +20,7 @@ from models.case_model import (
     LaborCaseModel,
     LoanCaseModel,
     PropertyCaseModel,
+    RentalCaseModel,
 )
 from presenters.model_builder import (
     SUPPORTED_CASE_TYPES,
@@ -50,12 +51,16 @@ def _fake_view(case_type):
             get_labor_role=lambda: None,
             get_delay_exception=lambda: None,
         ),
+        rental_claim_page=SimpleNamespace(
+            get_lease_status=lambda: None,
+            get_property_returned=lambda: None,
+        ),
     )
 
 
-def test_supported_registry_matches_five_case_types():
+def test_supported_registry_matches_six_case_types():
     assert SUPPORTED_CASE_TYPES == frozenset(
-        {"loan", "contract", "property", "labor", "divorce"}
+        {"loan", "contract", "property", "labor", "divorce", "rental"}
     )
 
 
@@ -67,6 +72,7 @@ def test_supported_registry_matches_five_case_types():
         ("property", PropertyCaseModel),
         ("labor", LaborCaseModel),
         ("divorce", DivorceCaseModel),
+        ("rental", RentalCaseModel),
     ],
 )
 def test_valid_case_types_build_their_own_model(case_type, cls):
@@ -87,8 +93,8 @@ def test_unknown_case_type_fails_closed_in_model_builder(bad):
 INVALID_CASE_TYPES = [None, "", "unknown", "LOAN", " loan", 123, ["loan"], {"type": "loan"}]
 
 
-def test_supported_case_type_validator_accepts_exactly_five_identifiers():
-    for valid in ("loan", "contract", "property", "labor", "divorce"):
+def test_supported_case_type_validator_accepts_exactly_six_identifiers():
+    for valid in ("loan", "contract", "property", "labor", "divorce", "rental"):
         assert is_supported_case_type(valid) is True
 
 

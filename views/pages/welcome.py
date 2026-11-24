@@ -66,7 +66,7 @@ class WelcomePage(_TitledPage):
 
         # The five supported case types, so first-time users know what the
         # wizard can produce before they commit to any entry work.
-        capability = QLabel("支持五类常见案由：民间借贷 · 买卖合同 · 物业服务 · 劳动报酬 · 离婚析产")
+        capability = QLabel("支持六类常见案由：民间借贷 · 买卖合同 · 物业服务 · 劳动报酬 · 离婚析产 · 租赁合同")
         capability.setObjectName(PAGE_LEAD)
         capability.setWordWrap(True)
         layout.addWidget(capability)

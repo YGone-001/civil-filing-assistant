@@ -168,7 +168,7 @@ def _all_indicators(wizard):
 def test_step_indicators_count_matches_non_welcome_pages(qapp):
     wizard, _ = make_wizard()
     # 9 non-welcome pages: case-selection, party, 5 claim pages, evidence, export.
-    assert len(_all_indicators(wizard)) == 9
+    assert len(_all_indicators(wizard)) == 10
 
 
 def test_step_indicators_show_not_started_on_welcome(qapp):
@@ -301,6 +301,7 @@ def _show_claim_page(wizard, case_type):
         "property": "property_claim_page",
         "labor": "labor_claim_page",
         "divorce": "divorce_claim_page",
+        "rental": "rental_claim_page",
     }[case_type])
 
 
@@ -494,6 +495,7 @@ def test_every_labeled_text_input_has_an_accessible_name(qapp):
         wizard.property_claim_page,
         wizard.labor_claim_page,
         wizard.divorce_claim_page,
+        wizard.rental_claim_page,
     )
     inputs = []
     for page in pages:
@@ -553,10 +555,11 @@ def test_party_card_tab_moves_to_the_next_input(qapp):
         ("property", "property_claim_page"),
         ("labor", "labor_claim_page"),
         ("divorce", "divorce_claim_page"),
+        ("rental", "rental_claim_page"),
     ],
 )
 def test_claim_pages_are_wrapped_in_scroll_area(qapp, case_type, page_attr):
-    """Each of the five claim pages must contain a QScrollArea for small-screen support."""
+    """Each of the six claim pages must contain a QScrollArea for small-screen support."""
     wizard, _ = make_wizard()
     page = getattr(wizard, page_attr)
     scroll_areas = page.findChildren(QScrollArea)

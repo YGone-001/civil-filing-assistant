@@ -26,6 +26,7 @@ PAGE_OWNERS = {
     "PartyPage": "views.pages.party",
     "LoanClaimPage": "views.pages.loan",
     "ContractClaimPage": "views.pages.contract",
+    "RentalClaimPage": "views.pages.rental",
     "PropertyClaimPage": "views.pages.property",
     "LaborClaimPage": "views.pages.labor",
     "DivorceClaimPage": "views.pages.divorce",
@@ -39,11 +40,12 @@ PAGE_IDS = {
     "PAGE_PARTY": 2,
     "PAGE_LOAN_CLAIM": 3,
     "PAGE_CONTRACT_CLAIM": 4,
-    "PAGE_PROPERTY_CLAIM": 5,
-    "PAGE_LABOR_CLAIM": 6,
-    "PAGE_DIVORCE_CLAIM": 7,
-    "PAGE_EVIDENCE": 8,
-    "PAGE_EXPORT": 9,
+    "PAGE_RENTAL_CLAIM": 5,
+    "PAGE_PROPERTY_CLAIM": 6,
+    "PAGE_LABOR_CLAIM": 7,
+    "PAGE_DIVORCE_CLAIM": 8,
+    "PAGE_EVIDENCE": 9,
+    "PAGE_EXPORT": 10,
 }
 
 CLAIM_PAGE_ATTR = {
@@ -52,6 +54,7 @@ CLAIM_PAGE_ATTR = {
     "property": ("PAGE_PROPERTY_CLAIM", "property_claim_page"),
     "labor": ("PAGE_LABOR_CLAIM", "labor_claim_page"),
     "divorce": ("PAGE_DIVORCE_CLAIM", "divorce_claim_page"),
+    "rental": ("PAGE_RENTAL_CLAIM", "rental_claim_page"),
 }
 
 
@@ -105,12 +108,12 @@ def test_pages_register_with_expected_ids_and_instances(qapp, case_type):
     owner_name = {
         "loan": "LoanClaimPage", "contract": "ContractClaimPage",
         "property": "PropertyClaimPage", "labor": "LaborClaimPage",
-        "divorce": "DivorceClaimPage",
+        "divorce": "DivorceClaimPage", "rental": "RentalClaimPage",
     }[case_type]
     assert type(page) is getattr(facade, owner_name)
 
 
-def test_real_button_navigation_across_all_five_case_types(qapp):
+def test_real_button_navigation_across_all_six_case_types(qapp):
     """Real QWizard buttons drive welcome → selection → party → claim →
     evidence → export for every case type, then Back preserves input."""
     wizard, _ = make_wizard()
@@ -155,6 +158,7 @@ def _claim_page_has_values(wizard, case_type):
         "property": ("property_addr", "house_area"),
         "labor": ("emp_join_date", "monthly_salary"),
         "divorce": ("marriage_date", "child_name"),
+        "rental": ("property_address", "arrears_amount"),
     }[case_type]
     return all(getattr(page, name).text().strip() for name in probe)
 
@@ -176,6 +180,10 @@ def test_claim_page_public_widget_attributes_preserved(qapp):
                                        "social_sec_info", "no_contract_yes", "arbitration_notice"]),
         "divorce": ("divorce_claim_page", ["marriage_date", "child_name", "support_monthly",
                                            "asset_description", "child_help"]),
+        "rental": ("rental_claim_page", ["property_address", "contract_date", "lease_start",
+                                        "lease_end", "monthly_rent", "arrears_amount",
+                                        "lease_status_combo", "returned_yes",
+                                        "termination_date", "status_description"]),
     }
     for case_type, (attr, widgets) in prepare.items():
         select_case(wizard, case_type)

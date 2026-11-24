@@ -42,6 +42,7 @@
 | --- | --- | --- |
 | 民间借贷纠纷 | 借款时间、用途、本金、交付方式、利率、催收情况 | 利息暂计、借条状态、证据建议 |
 | 买卖合同纠纷 | 合同、标的、交付签收、欠款、违约金 | 逾期付款表述、交付状态、证据建议 |
+| 租赁合同纠纷 | 房屋地址、租期、租金、欠租期间与金额、催缴、合同状态、解除日期、房屋返还 | 欠租与解除/腾退请求组织、合同状态分类、证据建议 |
 | 物业服务合同纠纷 | 房屋、面积、单价、欠费期间、催缴记录 | 欠费月份与金额计算、金额偏差提示 |
 | 劳动报酬／工资追索 | 仲裁程序状态（九类）、收到的仲裁文书与日期、原告身份（劳动者/用人单位）、入离职、岗位、工资、欠薪期间、加班、合同与社保 | 欠薪计算、未签合同请求；按程序状态与原告身份双重准入：仅劳动者（员工方）的可诉状态生成起诉状并按实际文书类型表述，用人单位原告与其他不可诉状态阻止并给出依据与指引 |
 | 离婚、析产与抚养费纠纷 | 婚姻、子女、抚养诉求、财产与离婚原因 | 抚养及财产诉求组织、证据建议 |
@@ -62,7 +63,7 @@ flowchart LR
     Entry --> Guard["SecurityGuard<br/>网络状态提示"]
     Entry --> View["LawsuitWizard<br/>向导界面"]
     View --> Presenter["MainPresenter<br/>收集并编排数据"]
-    Presenter --> Models["CaseModel<br/>五类案件模型"]
+    Presenter --> Models["CaseModel<br/>六类案件模型"]
     View --> Evidence["EvidenceLibrary<br/>案由证据建议"]
     Evidence --> Presenter
     Models --> Generator["DocumentGenerator<br/>Word 文书生成"]
@@ -106,7 +107,7 @@ DPAPI 的密钥来自当前 Windows 用户的配置文件，因此：
 | View | [`views/`](views) | 向导页面、字段校验、案由分支和预览界面 |
 | Presenter | [`presenters/main_presenter.py`](presenters/main_presenter.py) | 将界面字段转换为案件模型并触发批量导出 |
 | 草稿 | [`presenters/draft_presenter.py`](presenters/draft_presenter.py)、[`drafts/`](drafts) | 显式保存/打开草稿：严格校验、DPAPI 加密、原子写入与整窗还原 |
-| Model | [`models/case_model.py`](models/case_model.py) | 当事人、证据和五类案件的请求／事实生成逻辑 |
+| Model | [`models/case_model.py`](models/case_model.py) | 当事人、证据和六类案件的请求／事实生成逻辑 |
 | 文书与规则工具 | [`utils/`](utils) | Word 排版、证据建议、批量命名、程序提示与隐私清理 |
 
 应用当前没有数据库、服务端接口或云端依赖。案件数据只在当前进程、用户主动保存的本地草稿和生成的本地 Word 文件中流转。

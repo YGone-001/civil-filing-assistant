@@ -59,7 +59,9 @@ def test_verify_docx_rejects_zip_without_document_xml(tmp_path):
         BatchExportManager._verify_docx(str(bad))
 
 
-@pytest.mark.parametrize("case_type", ["loan", "contract", "property", "labor", "divorce"])
+@pytest.mark.parametrize(
+    "case_type", ["loan", "contract", "property", "labor", "divorce", "rental"]
+)
 def test_evidence_library_returns_pairs(case_type):
     items = EvidenceLibrary.get_default_evidence(case_type)
     assert len(items) >= 1

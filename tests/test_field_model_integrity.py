@@ -1,5 +1,5 @@
 # File: tests/test_field_model_integrity.py
-# Purpose: End-to-end field-mapping contract for all five case types (P2-08).
+# Purpose: End-to-end field-mapping contract for all supported case types (P2-08).
 # Encoding: UTF-8
 """Executable proof that registered UI fields reach their model attributes.
 
@@ -83,6 +83,21 @@ FIELD_MODEL_MAP = {
         ("d_asset_description", "asset_description"),
         ("d_court_name", "court_name"),
     ],
+    "rental": [
+        ("r_property_address", "property_address"),
+        ("r_contract_date", "contract_date"),
+        ("r_lease_start", "lease_start"),
+        ("r_lease_end", "lease_end"),
+        ("r_monthly_rent", "monthly_rent"),
+        ("r_payment_cycle", "payment_cycle"),
+        ("r_arrears_start", "arrears_start"),
+        ("r_arrears_end", "arrears_end"),
+        ("r_arrears_amount", "arrears_amount"),
+        ("r_late_fee", "late_fee"),
+        ("r_demand_record", "demand_record"),
+        ("r_termination_date", "termination_date"),
+        ("r_court_name", "court_name"),
+    ],
 }
 
 ALL_MAPPINGS = [
@@ -119,6 +134,9 @@ def test_registered_field_reaches_model_attribute(qapp, case_type, field, attr):
         ("divorce", "d_divorce_reason", "divorce_reason"),
         ("divorce", "d_separation_start_date", "separation_start_date"),
         ("divorce", "d_asset_description", "asset_description"),
+        ("rental", "r_late_fee", "late_fee"),
+        ("rental", "r_demand_record", "demand_record"),
+        ("rental", "r_termination_date", "termination_date"),
     ],
 )
 def test_empty_optional_fields_map_as_empty_without_fabrication(qapp, case_type, field, attr):

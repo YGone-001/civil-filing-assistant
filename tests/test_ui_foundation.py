@@ -27,6 +27,7 @@ def test_wizard_navigation_is_localized_and_primary(qapp):
         wizard.property_claim_page.title(),
         wizard.labor_claim_page.title(),
         wizard.divorce_claim_page.title(),
+        wizard.rental_claim_page.title(),
         wizard.evidence_page.title(),
         wizard.export_page.title(),
     ]

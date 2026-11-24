@@ -18,6 +18,7 @@ from models.case_model import (
     LaborCaseModel,
     LoanCaseModel,
     PropertyCaseModel,
+    RentalCaseModel,
 )
 from utils.security_check import SecurityGuard
 
@@ -57,6 +58,15 @@ FICTIONAL_VALUES = {
         "divorce_reason": "测试原因", "separation_start_date": "2022-01-01",
         "asset_description": "测试房产归原告", "court_name": "测试人民法院",
     },
+    "rental": {
+        "property_address": "测试小区5栋602室", "contract_date": "2023-01-01",
+        "lease_start": "2023-01-01", "lease_end": "2024-12-31",
+        "monthly_rent": "3000", "payment_cycle": "按月支付",
+        "arrears_start": "2024-01-01", "arrears_end": "2024-03-31",
+        "arrears_amount": "9000", "late_fee": "500",
+        "demand_record": "测试催缴记录", "termination_date": "",
+        "court_name": "测试人民法院",
+    },
 }
 
 MODEL_CLASSES = {
@@ -65,6 +75,7 @@ MODEL_CLASSES = {
     "property": PropertyCaseModel,
     "labor": LaborCaseModel,
     "divorce": DivorceCaseModel,
+    "rental": RentalCaseModel,
 }
 
 

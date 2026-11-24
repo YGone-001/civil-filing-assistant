@@ -74,7 +74,7 @@ def test_welcome_page_communicates_capabilities_and_hides_demo(qapp):
     wizard, _ = make_wizard()
     page = wizard.welcome_page
     labels = " ".join(child.text() for child in page.findChildren(type(page.demo_badge)))
-    assert "五类常见案由" in labels
+    assert "六类常见案由" in labels
     # Demo controls stay hidden in production mode.
     assert page.fill_btn.isHidden()
     assert page.demo_badge.isHidden()
@@ -97,7 +97,7 @@ def test_every_page_renders_offscreen(qapp, case_type):
     page = getattr(wizard, {
         "loan": "loan_claim_page", "contract": "contract_claim_page",
         "property": "property_claim_page", "labor": "labor_claim_page",
-        "divorce": "divorce_claim_page",
+        "divorce": "divorce_claim_page", "rental": "rental_claim_page",
     }[case_type])
     pixmap = page.grab()
     assert not pixmap.isNull()

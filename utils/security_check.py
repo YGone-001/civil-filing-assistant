@@ -181,11 +181,27 @@ class SecurityGuard:
             "divorce_reason",
             "separation_start_date",
             "asset_description",
+            "property_address",
+            "lease_start",
+            "lease_end",
+            "monthly_rent",
+            "payment_cycle",
+            "arrears_start",
+            "arrears_end",
+            "arrears_amount",
+            "late_fee",
+            "termination_date",
+            "lease_status",
+            "property_returned",
+            "extra_claims",
+            "extra_facts",
         ]:
             if hasattr(model, attr):
                 v = getattr(model, attr)
                 if isinstance(v, str):
                     setattr(model, attr, "X" * len(v) if v else "")
+                elif isinstance(v, list):
+                    v.clear()
                 else:
                     try:
                         setattr(model, attr, None)

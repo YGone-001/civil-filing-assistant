@@ -40,6 +40,7 @@ CASE_TYPE_LABELS = {
     "property": "物业服务合同纠纷",
     "labor": "劳动报酬/工资追索",
     "divorce": "离婚纠纷",
+    "rental": "租赁合同纠纷",
 }
 
 

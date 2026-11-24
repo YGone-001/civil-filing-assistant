@@ -47,6 +47,7 @@ PAGE_ATTR_BY_NAME = {
     "property_claim": "PAGE_PROPERTY_CLAIM",
     "labor_claim": "PAGE_LABOR_CLAIM",
     "divorce_claim": "PAGE_DIVORCE_CLAIM",
+    "rental_claim": "PAGE_RENTAL_CLAIM",
     "evidence": "PAGE_EVIDENCE",
     "export": "PAGE_EXPORT",
 }
@@ -58,6 +59,7 @@ CLAIM_PAGE_ATTR_BY_CASE = {
     "property": "property_claim_page",
     "labor": "labor_claim_page",
     "divorce": "divorce_claim_page",
+    "rental": "rental_claim_page",
 }
 
 #: Registered text inputs whose widget starts *non-empty*. Everything else in
@@ -80,6 +82,8 @@ INITIAL_FLAG_VALUES = {
     "labor_role": None,
     "labor_delay_exception": None,
     "is_no_contract": None,
+    "lease_status": None,
+    "property_returned": None,
 }
 
 #: Party-card widget keys that hold user-editable text. ``is_company`` is the
@@ -314,6 +318,11 @@ def _capture_flags(page, case_type):
             "labor_delay_exception": page.get_delay_exception(),
             "is_no_contract": page.get_has_no_contract(),
         }
+    if case_type == "rental":
+        return {
+            "lease_status": page.get_lease_status(),
+            "property_returned": page.get_property_returned(),
+        }
     raise AssertionError(f"未登记的事实确认项：{case_type}")
 
 
@@ -476,6 +485,15 @@ def _apply_flags(page, document):
         _set_tri_state(
             page.no_contract_yes, page.no_contract_no, page.no_contract_unknown,
             flags["is_no_contract"],
+        )
+    elif case_type == "rental":
+        index = page.lease_status_combo.findData(flags["lease_status"])
+        if flags["lease_status"] is not None and index < 0:
+            raise AssertionError("草稿中的合同状态不在当前支持范围内。")
+        page.lease_status_combo.setCurrentIndex(index if index >= 0 else 0)
+        _set_tri_state(
+            page.returned_yes, page.returned_no, page.returned_unknown,
+            flags["property_returned"],
         )
 
     # Re-evaluate the page's conditional requirement for the restored state so

@@ -9,7 +9,14 @@ All sample data here is deliberately fictional (names like "原告甲（测试�
 
 from pathlib import Path
 
-CASE_INDEX = {"loan": 0, "contract": 1, "property": 2, "labor": 3, "divorce": 4}
+CASE_INDEX = {
+    "loan": 0,
+    "contract": 1,
+    "property": 2,
+    "labor": 3,
+    "divorce": 4,
+    "rental": 5,
+}
 CASE_TYPES = tuple(CASE_INDEX)
 
 CASE_LABELS = {
@@ -18,6 +25,7 @@ CASE_LABELS = {
     "property": "物业服务合同纠纷",
     "labor": "劳动报酬/工资追索",
     "divorce": "离婚纠纷",
+    "rental": "租赁合同纠纷",
 }
 
 
@@ -180,6 +188,23 @@ def fill_case_facts(wizard, case_type, confirm_flags=True):
         p.separation_start_date.setText("2022-01-01")
         p.asset_description.setText("房产归原告，车辆归被告")
         p.court_name.setText("北京市朝阳区人民法院")
+    elif case_type == "rental":
+        p = wizard.rental_claim_page
+        p.property_address.setText("示例市示例区示例路5号602室")
+        p.contract_date.setText("2023-01-01")
+        p.lease_start.setText("2023-01-01")
+        p.lease_end.setText("2024-12-31")
+        p.monthly_rent.setText("3000")
+        p.payment_cycle.setText("按月支付")
+        p.arrears_start.setText("2024-01-01")
+        p.arrears_end.setText("2024-03-31")
+        p.arrears_amount.setText("9000")
+        p.late_fee.setText("500")
+        p.demand_record.setPlainText("2024年4月通过微信和短信催缴。")
+        status_index = p.lease_status_combo.findData("request_termination")
+        p.lease_status_combo.setCurrentIndex(status_index)
+        p.returned_no.setChecked(True)
+        p.court_name.setText("上海市徐汇区人民法院")
     return case_type
 
 
@@ -244,6 +269,20 @@ def fill_minimal_case(wizard, case_type, plaintiffs=None, defendants=None):
         p.child_name.setText("示例子女")
         p.child_birthday.setText("2020-01-01")
         p.support_monthly.setText("2000")
+        p.court_name.setText("示例人民法院")
+    elif case_type == "rental":
+        p = wizard.rental_claim_page
+        p.property_address.setText("示例市示例区示例路5号602室")
+        p.contract_date.setText("2023-01-01")
+        p.lease_start.setText("2023-01-01")
+        p.lease_end.setText("2024-12-31")
+        p.monthly_rent.setText("3000")
+        p.payment_cycle.setText("按月支付")
+        p.arrears_start.setText("2024-01-01")
+        p.arrears_end.setText("2024-03-31")
+        p.arrears_amount.setText("9000")
+        status_index = p.lease_status_combo.findData("active")
+        p.lease_status_combo.setCurrentIndex(status_index)
         p.court_name.setText("示例人民法院")
     return wizard
 

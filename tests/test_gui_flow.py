@@ -25,6 +25,7 @@ EXPECTED_ROUTE_PAGE = {
     "property": "PAGE_PROPERTY_CLAIM",
     "labor": "PAGE_LABOR_CLAIM",
     "divorce": "PAGE_DIVORCE_CLAIM",
+    "rental": "PAGE_RENTAL_CLAIM",
 }
 
 
@@ -203,6 +204,7 @@ def test_preview_is_case_specific(qapp, dialog_recorder):
         "property": "物业费",
         "labor": "欠付工资",
         "divorce": "离婚",
+        "rental": "欠付租金",
     }
     for case_type, keyword in expectations.items():
         wizard, _ = make_wizard()

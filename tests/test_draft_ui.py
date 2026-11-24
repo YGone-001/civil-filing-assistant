@@ -116,6 +116,7 @@ def _make(tmp_path, monkeypatch, case_type="loan", fill=True, protector=None):
             "property": "PAGE_PROPERTY_CLAIM",
             "labor": "PAGE_LABOR_CLAIM",
             "divorce": "PAGE_DIVORCE_CLAIM",
+            "rental": "PAGE_RENTAL_CLAIM",
         }[case_type]))
     return wizard, presenter, draft
 
@@ -145,6 +146,7 @@ def test_every_page_carries_a_draft_action_bar(qapp):
         wizard.property_claim_page,
         wizard.labor_claim_page,
         wizard.divorce_claim_page,
+        wizard.rental_claim_page,
         wizard.evidence_page,
         wizard.export_page,
     )

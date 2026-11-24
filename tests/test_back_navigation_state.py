@@ -29,6 +29,7 @@ CLAIM_PAGE_ATTR = {
     "property": "property_claim_page",
     "labor": "labor_claim_page",
     "divorce": "divorce_claim_page",
+    "rental": "rental_claim_page",
 }
 
 CLAIM_PAGE_ID = {
@@ -37,6 +38,7 @@ CLAIM_PAGE_ID = {
     "property": "PAGE_PROPERTY_CLAIM",
     "labor": "PAGE_LABOR_CLAIM",
     "divorce": "PAGE_DIVORCE_CLAIM",
+    "rental": "PAGE_RENTAL_CLAIM",
 }
 
 
@@ -79,6 +81,9 @@ ALL_FIELD_NAMES = {
     "divorce": ("marriage_date", "divorce_reason", "separation_start_date",
                 "child_name", "child_birthday", "custody_preference",
                 "support_monthly", "asset_description", "court_name"),
+    "rental": ("property_address", "contract_date", "lease_start", "lease_end",
+               "monthly_rent", "payment_cycle", "arrears_start", "arrears_end",
+               "arrears_amount", "late_fee", "demand_record", "court_name"),
 }
 
 

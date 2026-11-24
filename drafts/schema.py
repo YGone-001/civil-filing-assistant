@@ -42,7 +42,7 @@ from typing import Optional
 
 from drafts.errors import DraftFileTooLargeError, DraftValidationError
 from drafts.storage import MAX_PLAINTEXT_BYTES
-from models.case_model import AGENT_TYPES
+from models.case_model import AGENT_TYPES, RENTAL_LEASE_STATUSES
 from utils.labor_security import (
     LABOR_PROCEDURES,
     LABOR_REFUSAL_GROUNDS,
@@ -57,7 +57,7 @@ MIGRATABLE_VERSIONS = (1, 2, 3, 4)
 
 #: Case categories this build can restore. Mirrors
 #: ``presenters.model_builder.SUPPORTED_CASE_TYPES`` and is asserted equal there.
-CASE_TYPES = ("loan", "contract", "property", "labor", "divorce")
+CASE_TYPES = ("loan", "contract", "property", "labor", "divorce", "rental")
 
 #: Stable page names used by ``resume_page`` (never numeric Qt ids).
 RESUME_PAGES = (
@@ -69,6 +69,7 @@ RESUME_PAGES = (
     "property_claim",
     "labor_claim",
     "divorce_claim",
+    "rental_claim",
     "evidence",
     "export",
 )
@@ -150,18 +151,20 @@ TRI_STATE_FLAGS = (
     "is_signed",
     "labor_delay_exception",
     "is_no_contract",
+    "property_returned",
 )
 
 #: Classification fields stored as ``None`` (unconfirmed) or one of the
 #: vocabulary strings owned by :mod:`utils.labor_security` (imported, so the
 #: two can never drift).
-STRING_FLAGS = ("labor_procedure", "labor_refusal_ground", "labor_role")
+STRING_FLAGS = ("labor_procedure", "labor_refusal_ground", "labor_role", "lease_status")
 
 #: Allowed values per string classification flag.
 STRING_FLAG_VALUES = {
     "labor_procedure": LABOR_PROCEDURES,
     "labor_refusal_ground": LABOR_REFUSAL_GROUNDS,
     "labor_role": LABOR_ROLES,
+    "lease_status": RENTAL_LEASE_STATUSES,
 }
 
 #: Case type -> the page name that owns its claim inputs.
@@ -171,6 +174,7 @@ CLAIM_PAGE_NAMES_BY_CASE = {
     "property": "property_claim",
     "labor": "labor_claim",
     "divorce": "divorce_claim",
+    "rental": "rental_claim",
 }
 
 __all__ = [
@@ -290,6 +294,23 @@ TEXT_FIELDS = {
         ("d_extra_facts", "extra_facts", LONG_TEXT_LIMIT, False),
         ("d_court_name", "court_name", TEXT_LIMIT, False),
     )),
+    "rental": _specs((
+        ("r_property_address", "property_address", TEXT_LIMIT, False),
+        ("r_contract_date", "contract_date", TEXT_LIMIT, False),
+        ("r_lease_start", "lease_start", TEXT_LIMIT, False),
+        ("r_lease_end", "lease_end", TEXT_LIMIT, False),
+        ("r_monthly_rent", "monthly_rent", NUMERIC_LIMIT, True),
+        ("r_payment_cycle", "payment_cycle", TEXT_LIMIT, False),
+        ("r_arrears_start", "arrears_start", TEXT_LIMIT, False),
+        ("r_arrears_end", "arrears_end", TEXT_LIMIT, False),
+        ("r_arrears_amount", "arrears_amount", NUMERIC_LIMIT, True),
+        ("r_late_fee", "late_fee", NUMERIC_LIMIT, True),
+        ("r_demand_record", "demand_record", LONG_TEXT_LIMIT, False),
+        ("r_termination_date", "termination_date", TEXT_LIMIT, False),
+        ("r_extra_claims", "extra_claims", LONG_TEXT_LIMIT, False),
+        ("r_extra_facts", "extra_facts", LONG_TEXT_LIMIT, False),
+        ("r_court_name", "court_name", TEXT_LIMIT, False),
+    )),
 }
 
 #: Confirmations stored per case type, in a fixed order. Labour drafts carry
@@ -307,6 +328,7 @@ FLAG_FIELDS = {
         "is_no_contract",
     ),
     "divorce": (),
+    "rental": ("lease_status", "property_returned"),
 }
 
 

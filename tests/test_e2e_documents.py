@@ -33,6 +33,7 @@ CASE_CONTENT = {
     "property": ["物业费", "7761.60", "115.5"],
     "labor": ["欠付工资", "24000.00", "8000"],
     "divorce": ["离婚", "抚养费", "3000"],
+    "rental": ["欠付租金", "9000", "示例市示例区示例路5号602室"],
 }
 
 # C3: every phrase below was previously invented by the template without any
@@ -43,6 +44,7 @@ FORBIDDEN_FABRICATIONS = {
     "property": ["无故拖欠", "已构成违约", "多次向被告履行", "签署了《物业服务合同》"],
     "labor": ["兢兢业业"],
     "divorce": ["生活琐事"],
+    "rental": ["无故拖欠", "多次催讨", "已构成违约"],
 }
 
 # What the corrected template actually emits for each filled, fictional case.
@@ -52,6 +54,7 @@ CORRECTED_PHRASES = {
     "property": ["向被告催缴"],
     "labor": ["未按时足额支付"],
     "divorce": ["双方感情确已破裂"],
+    "rental": ["未按约支付租金", "被告尚未腾退返还房屋"],
 }
 
 

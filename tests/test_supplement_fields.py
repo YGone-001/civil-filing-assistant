@@ -23,6 +23,7 @@ from views.draft_io import apply_draft, capture_draft
         ("property_claim_page", "p"),
         ("labor_claim_page", "l"),
         ("divorce_claim_page", "d"),
+        ("rental_claim_page", "r"),
     ),
 )
 def test_every_claim_page_exposes_supplement_fields(qapp, page_attr, prefix):

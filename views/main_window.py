@@ -24,6 +24,7 @@ from views.wizard_pages import (
     PartyPage,
     LoanClaimPage,
     ContractClaimPage,
+    RentalClaimPage,
     PropertyClaimPage,
     LaborClaimPage,
     DivorceClaimPage,
@@ -92,11 +93,12 @@ class LawsuitWizard(QWizard):
         self.PAGE_PARTY = 2
         self.PAGE_LOAN_CLAIM = 3
         self.PAGE_CONTRACT_CLAIM = 4
-        self.PAGE_PROPERTY_CLAIM = 5
-        self.PAGE_LABOR_CLAIM = 6
-        self.PAGE_DIVORCE_CLAIM = 7
-        self.PAGE_EVIDENCE = 8
-        self.PAGE_EXPORT = 9
+        self.PAGE_RENTAL_CLAIM = 5
+        self.PAGE_PROPERTY_CLAIM = 6
+        self.PAGE_LABOR_CLAIM = 7
+        self.PAGE_DIVORCE_CLAIM = 8
+        self.PAGE_EVIDENCE = 9
+        self.PAGE_EXPORT = 10
 
         # Add pages
         self.welcome_page = WelcomePage()
@@ -104,6 +106,7 @@ class LawsuitWizard(QWizard):
         self.party_page = PartyPage()
         self.loan_claim_page = LoanClaimPage()
         self.contract_claim_page = ContractClaimPage()
+        self.rental_claim_page = RentalClaimPage()
         self.property_claim_page = PropertyClaimPage()
         self.labor_claim_page = LaborClaimPage()
         self.divorce_claim_page = DivorceClaimPage()
@@ -115,6 +118,7 @@ class LawsuitWizard(QWizard):
         self.setPage(self.PAGE_PARTY, self.party_page)
         self.setPage(self.PAGE_LOAN_CLAIM, self.loan_claim_page)
         self.setPage(self.PAGE_CONTRACT_CLAIM, self.contract_claim_page)
+        self.setPage(self.PAGE_RENTAL_CLAIM, self.rental_claim_page)
         self.setPage(self.PAGE_PROPERTY_CLAIM, self.property_claim_page)
         self.setPage(self.PAGE_LABOR_CLAIM, self.labor_claim_page)
         self.setPage(self.PAGE_DIVORCE_CLAIM, self.divorce_claim_page)
@@ -128,6 +132,7 @@ class LawsuitWizard(QWizard):
             self.PAGE_PARTY: 2,
             self.PAGE_LOAN_CLAIM: 3,
             self.PAGE_CONTRACT_CLAIM: 3,
+            self.PAGE_RENTAL_CLAIM: 3,
             self.PAGE_PROPERTY_CLAIM: 3,
             self.PAGE_LABOR_CLAIM: 3,
             self.PAGE_DIVORCE_CLAIM: 3,
@@ -140,6 +145,7 @@ class LawsuitWizard(QWizard):
             (self.PAGE_PARTY, self.party_page),
             (self.PAGE_LOAN_CLAIM, self.loan_claim_page),
             (self.PAGE_CONTRACT_CLAIM, self.contract_claim_page),
+            (self.PAGE_RENTAL_CLAIM, self.rental_claim_page),
             (self.PAGE_PROPERTY_CLAIM, self.property_claim_page),
             (self.PAGE_LABOR_CLAIM, self.labor_claim_page),
             (self.PAGE_DIVORCE_CLAIM, self.divorce_claim_page),
@@ -160,6 +166,7 @@ class LawsuitWizard(QWizard):
             self.party_page,
             self.loan_claim_page,
             self.contract_claim_page,
+            self.rental_claim_page,
             self.property_claim_page,
             self.labor_claim_page,
             self.divorce_claim_page,
@@ -315,6 +322,8 @@ class LawsuitWizard(QWizard):
                 return self.PAGE_CASE_SELECTION
             if case_type == "contract":
                 return self.PAGE_CONTRACT_CLAIM
+            elif case_type == "rental":
+                return self.PAGE_RENTAL_CLAIM
             elif case_type == "property":
                 return self.PAGE_PROPERTY_CLAIM
             elif case_type == "labor":
@@ -324,7 +333,14 @@ class LawsuitWizard(QWizard):
             else:
                 return self.PAGE_LOAN_CLAIM
 
-        elif current == self.PAGE_LOAN_CLAIM or current == self.PAGE_CONTRACT_CLAIM or current == self.PAGE_PROPERTY_CLAIM or current == self.PAGE_LABOR_CLAIM or current == self.PAGE_DIVORCE_CLAIM:
+        elif current in (
+            self.PAGE_LOAN_CLAIM,
+            self.PAGE_CONTRACT_CLAIM,
+            self.PAGE_RENTAL_CLAIM,
+            self.PAGE_PROPERTY_CLAIM,
+            self.PAGE_LABOR_CLAIM,
+            self.PAGE_DIVORCE_CLAIM,
+        ):
             return self.PAGE_EVIDENCE
 
         elif current == self.PAGE_EVIDENCE:

@@ -28,6 +28,7 @@ CLAIM_PAGE_ATTR = {
     "property": "PAGE_PROPERTY_CLAIM",
     "labor": "PAGE_LABOR_CLAIM",
     "divorce": "PAGE_DIVORCE_CLAIM",
+    "rental": "PAGE_RENTAL_CLAIM",
 }
 
 

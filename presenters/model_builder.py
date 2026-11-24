@@ -18,6 +18,7 @@ from models.case_model import (
     LoanCaseModel,
     PartyInfo,
     PropertyCaseModel,
+    RentalCaseModel,
 )
 
 _MODEL_BY_CASE_TYPE = {
@@ -26,6 +27,7 @@ _MODEL_BY_CASE_TYPE = {
     "property": PropertyCaseModel,
     "labor": LaborCaseModel,
     "divorce": DivorceCaseModel,
+    "rental": RentalCaseModel,
 }
 
 # Single supported-case registry shared by model building, wizard routing and
@@ -218,6 +220,24 @@ def _fill_labor(view, model):
     model.arb_acceptance_date = view.field("l_arb_acceptance_date")
 
 
+def _fill_rental(view, model):
+    model.property_address = view.field("r_property_address")
+    model.contract_date = view.field("r_contract_date")
+    model.lease_start = view.field("r_lease_start")
+    model.lease_end = view.field("r_lease_end")
+    model.monthly_rent = view.field("r_monthly_rent")
+    model.payment_cycle = view.field("r_payment_cycle")
+    model.arrears_start = view.field("r_arrears_start")
+    model.arrears_end = view.field("r_arrears_end")
+    model.arrears_amount = view.field("r_arrears_amount")
+    model.late_fee = view.field("r_late_fee")
+    model.demand_record = view.field("r_demand_record")
+    model.termination_date = view.field("r_termination_date")
+    model.court_name = view.field("r_court_name")
+    model.lease_status = view.rental_claim_page.get_lease_status()
+    model.property_returned = view.rental_claim_page.get_property_returned()
+
+
 def _fill_divorce(view, model):
     model.marriage_date = view.field("d_marriage_date")
     model.child_name = view.field("d_child_name")
@@ -237,6 +257,7 @@ _FILLERS = {
     "property": _fill_property,
     "labor": _fill_labor,
     "divorce": _fill_divorce,
+    "rental": _fill_rental,
 }
 
 #: Registered field prefix used by each claim page's supplement section.
@@ -246,6 +267,7 @@ _EXTRA_FIELD_PREFIX = {
     "property": "p",
     "labor": "l",
     "divorce": "d",
+    "rental": "r",
 }
 
 

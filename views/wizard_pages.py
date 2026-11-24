@@ -34,4 +34,5 @@ from views.pages.labor import LaborClaimPage  # noqa: F401
 from views.pages.loan import LoanClaimPage  # noqa: F401
 from views.pages.party import PartyPage  # noqa: F401
 from views.pages.property import PropertyClaimPage  # noqa: F401
+from views.pages.rental import RentalClaimPage  # noqa: F401
 from views.pages.welcome import WelcomePage  # noqa: F401

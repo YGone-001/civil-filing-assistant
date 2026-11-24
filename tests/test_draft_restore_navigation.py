@@ -39,6 +39,7 @@ CLAIM_PAGE_ID = {
     "property": "PAGE_PROPERTY_CLAIM",
     "labor": "PAGE_LABOR_CLAIM",
     "divorce": "PAGE_DIVORCE_CLAIM",
+    "rental": "PAGE_RENTAL_CLAIM",
 }
 
 

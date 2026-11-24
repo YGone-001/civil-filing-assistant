@@ -38,7 +38,9 @@ def test_default_size_respects_available_geometry(qapp):
     assert size.height() <= max(int(available.height() * 0.9), wizard.minimumSize().height())
 
 
-@pytest.mark.parametrize("case_type", ["loan", "contract", "property", "labor", "divorce"])
+@pytest.mark.parametrize(
+    "case_type", ["loan", "contract", "property", "labor", "divorce", "rental"]
+)
 def test_claim_pages_need_no_horizontal_scroll_at_minimum_width(qapp, case_type):
     """At the minimum window size the claim forms must still fit horizontally.
 
@@ -51,14 +53,14 @@ def test_claim_pages_need_no_horizontal_scroll_at_minimum_width(qapp, case_type)
     page_id = {
         "loan": "PAGE_LOAN_CLAIM", "contract": "PAGE_CONTRACT_CLAIM",
         "property": "PAGE_PROPERTY_CLAIM", "labor": "PAGE_LABOR_CLAIM",
-        "divorce": "PAGE_DIVORCE_CLAIM",
+        "divorce": "PAGE_DIVORCE_CLAIM", "rental": "PAGE_RENTAL_CLAIM",
     }[case_type]
     wizard.setCurrentId(getattr(wizard, page_id))
     qapp.processEvents()
     page = getattr(wizard, {
         "loan": "loan_claim_page", "contract": "contract_claim_page",
         "property": "property_claim_page", "labor": "labor_claim_page",
-        "divorce": "divorce_claim_page",
+        "divorce": "divorce_claim_page", "rental": "rental_claim_page",
     }[case_type])
     areas = page.findChildren(QScrollArea)
     assert areas, "claim pages wrap their content in a scroll area"

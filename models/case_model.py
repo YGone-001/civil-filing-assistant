@@ -51,6 +51,15 @@ class PartyInfo:
 #: validation, so the two can never drift apart.
 AGENT_TYPES = ("律师", "法律工作者", "近亲属", "工作人员", "公民代理")
 
+#: Rental-contract status vocabulary shared by the claim page, the model and
+#: the draft schema; ``None`` means the user has not classified it yet.
+RENTAL_LEASE_STATUSES = ("active", "terminated", "request_termination")
+RENTAL_LEASE_LABELS = {
+    "active": "继续履行",
+    "terminated": "已解除",
+    "request_termination": "请求解除",
+}
+
 class AgentInfo:
     """Case-level optional litigation agent standing on the plaintiff's side."""
 
@@ -328,6 +337,100 @@ class ContractCaseModel(CaseTemplate):
             fact_str += "被告尚欠原告货款，具体金额以双方核对及相关证据为准。"
         fact_str += "为维护原告合法权益，特诉至贵院。"
         return fact_str
+
+class RentalCaseModel(CaseTemplate):
+    def __init__(self):
+        super().__init__()
+        self.case_type_name = "租赁合同纠纷"
+
+        self.property_address = ""
+        self.contract_date = ""
+        self.lease_start = ""
+        self.lease_end = ""
+        self.monthly_rent = ""
+        self.payment_cycle = ""
+        self.arrears_start = ""
+        self.arrears_end = ""
+        self.arrears_amount = ""
+        self.late_fee = ""
+        self.demand_record = ""
+        # ``None`` means the user has not classified the contract status.
+        self.lease_status = None
+        self.termination_date = ""
+        self.property_returned = None
+
+    def _return_claim_allowed(self):
+        return (
+            self.lease_status in ("terminated", "request_termination")
+            and self.property_returned is False
+        )
+
+    def render_claims(self):
+        claims = []
+        if self.lease_status == "request_termination":
+            claims.append(
+                f"判令解除原告与被告之间关于{self.property_address}的房屋租赁合同；"
+            )
+
+        period = ""
+        if self.arrears_start and self.arrears_end:
+            period = f"（欠租期间自 {self.arrears_start} 起至 {self.arrears_end} 止）"
+        elif self.arrears_start:
+            period = f"（自 {self.arrears_start} 起）"
+        claims.append(
+            f"判令被告向原告支付欠付租金人民币 {self.arrears_amount} 元{period}；"
+        )
+
+        if self.late_fee:
+            claims.append(f"判令被告支付违约金（滞纳金）人民币 {self.late_fee} 元；")
+
+        if self._return_claim_allowed():
+            claims.append(f"判令被告腾退并返还位于{self.property_address}的房屋；")
+
+        claims.append("本案诉讼费由被告承担。")
+        return claims
+
+    def render_facts(self):
+        fact_str = (
+            f"原告与被告于{self.contract_date}签订《房屋租赁合同》，"
+            f"约定原告将位于{self.property_address}的房屋出租给被告，"
+            f"租赁期限自{self.lease_start}至{self.lease_end}，"
+            f"月租金{self.monthly_rent}元，租金支付方式为{self.payment_cycle}。"
+        )
+
+        if self.arrears_start:
+            period = f"自{self.arrears_start}起"
+            if self.arrears_end:
+                period += f"至{self.arrears_end}"
+            fact_str += f"被告{period}未按约支付租金，尚欠租金{self.arrears_amount}元。"
+        else:
+            fact_str += f"被告尚欠原告租金{self.arrears_amount}元。"
+
+        demand = (self.demand_record or "").strip()
+        if demand:
+            if demand[-1] not in "。！？.!?":
+                demand += "。"
+            fact_str += f"原告曾向被告催缴，催缴情况如下：{demand}但被告至今未支付。"
+
+        if self.lease_status == "request_termination":
+            fact_str += "原告因被告欠付租金，请求解除双方租赁合同。"
+        elif self.lease_status == "terminated":
+            if self.termination_date:
+                fact_str += f"双方租赁合同已于{self.termination_date}解除。"
+            else:
+                fact_str += "双方租赁合同已经解除，解除日期尚需人工核对。"
+        elif self.lease_status == "active":
+            fact_str += "双方租赁合同仍在履行中。"
+
+        if self.lease_status in ("terminated", "request_termination"):
+            if self.property_returned is True:
+                fact_str += "被告已腾退并返还房屋。"
+            elif self.property_returned is False:
+                fact_str += "被告尚未腾退返还房屋。"
+
+        fact_str += "为维护原告合法权益，特诉至贵院。"
+        return fact_str
+
 
 class PropertyCaseModel(CaseTemplate):
     def __init__(self):

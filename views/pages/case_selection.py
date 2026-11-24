@@ -26,6 +26,7 @@ class CaseSelectionPage(_TitledPage):
         "property": "适用于业主与物业公司之间的物业费、服务合同纠纷。",
         "labor": "适用于工资、加班费等劳动报酬追索（注意仲裁前置）。",
         "divorce": "适用于离婚、子女抚养与财产分割等婚姻家庭纠纷。",
+        "rental": "适用于房屋租赁中的欠租、解除合同与腾退返还争议。",
     }
 
     # Single-character badges rendered in each selection card.
@@ -35,6 +36,7 @@ class CaseSelectionPage(_TitledPage):
         "property": "物",
         "labor": "劳",
         "divorce": "离",
+        "rental": "租",
     }
 
     def __init__(self):
@@ -59,6 +61,7 @@ class CaseSelectionPage(_TitledPage):
         self.case_combo.addItem("物业服务合同纠纷", "property")
         self.case_combo.addItem("劳动报酬/工资追索", "labor")
         self.case_combo.addItem("离婚纠纷", "divorce")
+        self.case_combo.addItem("租赁合同纠纷", "rental")
         self.case_combo.setVisible(False)
 
         # --- Card-style selector (two-column grid) ------------------------
@@ -74,6 +77,7 @@ class CaseSelectionPage(_TitledPage):
             ("property", "物业服务合同纠纷"),
             ("labor", "劳动报酬/工资追索"),
             ("divorce", "离婚纠纷"),
+            ("rental", "租赁合同纠纷"),
         ]
         for index, (key, label) in enumerate(cases):
             card = QPushButton()

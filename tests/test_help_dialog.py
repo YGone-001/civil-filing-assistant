@@ -22,7 +22,7 @@ def test_help_content_covers_the_required_sections(qapp):
     ):
         assert phrase in text, phrase
     assert "不构成法律意见" in text
-    assert "五类案由" in text
+    assert "六类案由" in text
     assert "三份" in text
 
 

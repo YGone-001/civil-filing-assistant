@@ -11,7 +11,7 @@ import pytest
 
 from utils.facts_examples import FactsExamplesLibrary
 
-CASE_TYPES = ("loan", "contract", "property", "labor", "divorce")
+CASE_TYPES = ("loan", "contract", "property", "labor", "divorce", "rental")
 
 
 @pytest.mark.parametrize("case_type", CASE_TYPES)
