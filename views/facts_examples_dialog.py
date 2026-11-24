@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QVBoxLayout,
 )
-from views.theme import INFO_LABEL, SECONDARY_BUTTON, SPACING_MD
+from views.theme import INFO_LABEL, SECONDARY_BUTTON, SPACING_MD, SPACING_SM
 from utils.facts_examples import FactsExamplesLibrary
 
 _DISCLAIMER = "以下范例仅供写作参考，不构成法律意见；文书内容仍以您填写的结构化信息为准。"
@@ -45,8 +45,17 @@ class FactsExamplesDialog(QDialog):
         self.example_list = QListWidget()
         self.example_viewer = QPlainTextEdit()
         self.example_viewer.setReadOnly(True)
+
+        right = QVBoxLayout()
+        right.setSpacing(SPACING_SM)
+        self.example_desc = QLabel("")
+        self.example_desc.setObjectName(INFO_LABEL)
+        self.example_desc.setWordWrap(True)
+        right.addWidget(self.example_desc)
+        right.addWidget(self.example_viewer, 1)
+
         body.addWidget(self.example_list, 2)
-        body.addWidget(self.example_viewer, 3)
+        body.addLayout(right, 3)
         layout.addLayout(body)
 
         close_btn = QPushButton("关闭")
@@ -80,5 +89,8 @@ class FactsExamplesDialog(QDialog):
     def _show_example(self, row):
         examples = FactsExamplesLibrary.get_facts_examples(self._case_type)
         if 0 <= row < len(examples):
-            _title, text = examples[row]
+            title, text = examples[row]
+            description = FactsExamplesLibrary.get_description(title)
+            self.example_desc.setText(f"适用范围：{description}" if description else "")
+            self.example_desc.setVisible(bool(description))
             self.example_viewer.setPlainText(text)

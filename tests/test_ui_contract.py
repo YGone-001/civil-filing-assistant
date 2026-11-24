@@ -95,7 +95,7 @@ EXPECTED_BUTTON_TEXTS = {
     "remove_row_btn": "删除选中行",
     "change_dir_btn": "更改目录",
     "open_dir_btn": "打开输出目录",
-    "preview_btn": "预览关键信息",
+    "preview_btn": "预览起诉状",
 }
 
 
@@ -118,7 +118,7 @@ def test_export_page_button_texts_are_chinese(qapp):
     page = wizard.export_page
     assert page.change_dir_btn.text() == "更改目录"
     assert page.open_dir_btn.text() == "打开输出目录"
-    assert page.preview_btn.text() == "预览关键信息"
+    assert page.preview_btn.text() == "预览起诉状"
     assert page.open_result_btn.text() == "打开本次生成的文件夹"
 
 
@@ -474,7 +474,7 @@ def test_export_buttons_have_accessible_names(qapp):
     page = wizard.export_page
     assert page.change_dir_btn.accessibleName() == "更改输出目录"
     assert page.open_dir_btn.accessibleName() == "打开输出目录"
-    assert page.preview_btn.accessibleName() == "预览关键信息"
+    assert page.preview_btn.accessibleName() == "预览起诉状"
     assert page.open_result_btn.accessibleName() == "打开本次生成的文件夹"
 
 

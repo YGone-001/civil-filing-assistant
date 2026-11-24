@@ -240,12 +240,21 @@ class LawsuitWizard(QWizard):
         bar = DraftActionBar()
         bar.save_button.clicked.connect(self.save_draft_requested.emit)
         bar.open_button.clicked.connect(self.open_draft_requested.emit)
+        bar.help_requested.connect(self._show_help)
         if isinstance(layout, QFormLayout):
             layout.addRow(bar)
         else:
             layout.addWidget(bar)
         self._draft_bars.append((page, bar))
         return bar
+
+    def _show_help(self):
+        """Open the shared usage guide from any wizard page."""
+        from views.help_dialog import HelpDialog
+
+        dialog = HelpDialog(self)
+        dialog.exec()
+        dialog.deleteLater()
 
     def _current_draft_bar(self):
         """Return the draft action bar of the page currently shown."""

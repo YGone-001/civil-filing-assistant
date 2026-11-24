@@ -144,6 +144,17 @@ def test_complete_with_valid_parties(qapp):
 # --- 当事人卡片：个人/企业切换、删除与重新编号 ----------------------------
 
 
+def test_identity_fields_keep_the_18_character_limit(qapp):
+    """ID numbers and unified social credit codes are capped like the legacy tool."""
+    wizard, _ = make_wizard()
+    select_case(wizard, "loan")
+    set_parties(wizard)
+    card = wizard.party_page.plaintiff_widgets[0]
+
+    assert card["id"].maxLength() == 18
+    assert card["credit_code"].maxLength() == 18
+
+
 def test_company_toggle_swaps_identity_fields(qapp):
     wizard, _ = make_wizard()
     select_case(wizard, "contract")

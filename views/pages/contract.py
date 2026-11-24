@@ -33,6 +33,7 @@ from views.pages.common import (
     _wrap_in_scroll,
     add_facts_examples_button,
 )
+from views.widgets import DateLineEdit
 
 class ContractClaimPage(_TitledPage):
     def __init__(self):
@@ -44,7 +45,7 @@ class ContractClaimPage(_TitledPage):
         # --- 一、合同基本事实 -------------------------------------------------
         basics = _section(root, "一、合同基本事实")
 
-        self.contract_date = QLineEdit()
+        self.contract_date = DateLineEdit(restrict_future=True)
         self.contract_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-01-01")
 
         self.contract_name = QLineEdit()
@@ -65,7 +66,7 @@ class ContractClaimPage(_TitledPage):
         # --- 二、履行与签收情况 ---------------------------------------------
         performance = _section(root, "二、履行与签收情况")
 
-        self.delivery_date = QLineEdit()
+        self.delivery_date = DateLineEdit(restrict_future=True)
         self.delivery_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-02-01（已交货时必填）")
 
         # Delivery status is tri-state: an explicit "未确认" option is selected by
@@ -126,10 +127,10 @@ class ContractClaimPage(_TitledPage):
         self.penalty_warning.setVisible(False)
         self.penalty_amount.textChanged.connect(self.update_penalty_warning)
 
-        self.overdue_start = QLineEdit()
+        self.overdue_start = DateLineEdit(restrict_future=True)
         self.overdue_start.setPlaceholderText("格式 YYYY-MM-DD，如 2023-03-01")
 
-        self.overdue_end = QLineEdit()
+        self.overdue_end = DateLineEdit(restrict_future=True)
         self.overdue_end.setPlaceholderText("格式 YYYY-MM-DD（留空默认今天）")
 
         self.lpr_value = QLineEdit("3.45")

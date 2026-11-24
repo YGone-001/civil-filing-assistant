@@ -18,6 +18,7 @@ from views.pages.common import (
     _wrap_in_scroll,
     add_facts_examples_button,
 )
+from views.widgets import DateLineEdit
 
 class LoanClaimPage(_TitledPage):
     def __init__(self):
@@ -29,7 +30,7 @@ class LoanClaimPage(_TitledPage):
         # --- 一、借款基本事实 -------------------------------------------------
         basics = _section(root, "一、借款基本事实")
 
-        self.loan_date = QLineEdit()
+        self.loan_date = DateLineEdit(restrict_future=True)
         self.loan_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-01-01")
 
         self.loan_reason = QLineEdit()
@@ -76,7 +77,7 @@ class LoanClaimPage(_TitledPage):
         self.rate_warning.setVisible(False)
         self.rate.textChanged.connect(self.validate_rate)
 
-        self.start_date = QLineEdit()
+        self.start_date = DateLineEdit(restrict_future=True)
         self.start_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-05-01")
 
         amounts.addRow("借款本金(元):", self.principal)

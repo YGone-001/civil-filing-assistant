@@ -38,6 +38,7 @@ from views.pages.common import (
     _wrap_in_scroll,
     add_facts_examples_button,
 )
+from views.widgets import DateLineEdit
 from utils.labor_security import (
     LABOR_PROCEDURES,
     LABOR_REFUSAL_GROUNDS,
@@ -163,15 +164,15 @@ class LaborClaimPage(_TitledPage):
         self._commission_label = QLabel("仲裁机构:")
         self._case_no_label = QLabel("仲裁案号:")
 
-        self.arb_receipt_date = QLineEdit()
+        self.arb_receipt_date = DateLineEdit(restrict_future=True)
         self.arb_receipt_date.setPlaceholderText("格式 YYYY-MM-DD")
         self._receipt_label = QLabel("收到裁决书日期:")
 
-        self.arb_application_date = QLineEdit()
+        self.arb_application_date = DateLineEdit(restrict_future=True)
         self.arb_application_date.setPlaceholderText("格式 YYYY-MM-DD")
         self._application_label = QLabel("申请仲裁日期:")
 
-        self.arb_acceptance_date = QLineEdit()
+        self.arb_acceptance_date = DateLineEdit(restrict_future=True)
         self.arb_acceptance_date.setPlaceholderText("见受理通知书，格式 YYYY-MM-DD")
         self._acceptance_label = QLabel("仲裁受理日期:")
 
@@ -229,7 +230,7 @@ class LaborClaimPage(_TitledPage):
         # --- 二、劳动关系基本事实 -------------------------------------------
         basic = _section(root, "二、劳动关系基本事实")
 
-        self.emp_join_date = QLineEdit()
+        self.emp_join_date = DateLineEdit(restrict_future=True)
         self.emp_join_date.setPlaceholderText("格式 YYYY-MM-DD，如 2023-01-15")
 
         self.job_title = QLineEdit()
@@ -239,7 +240,7 @@ class LaborClaimPage(_TitledPage):
         _decimal_validator(self.monthly_salary)
         self.monthly_salary.setPlaceholderText("如: 8000")
 
-        self.emp_term_date = QLineEdit()
+        self.emp_term_date = DateLineEdit(restrict_future=True)
         self.emp_term_date.setPlaceholderText("格式 YYYY-MM-DD（仍在职可不填）")
 
         basic.addRow("入职日期:", self.emp_join_date)

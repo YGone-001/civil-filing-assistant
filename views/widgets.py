@@ -2,11 +2,23 @@
 # Purpose: Small reusable view components shared across wizard pages
 # Encoding: UTF-8
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtCore import QDate, QPoint, Qt, Signal
+from PySide6.QtGui import QColor, QIcon, QPainter, QPen, QPixmap
+from PySide6.QtWidgets import (
+    QApplication,
+    QCalendarWidget,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
+from models.validation import DateStatus, parse_full_date
 from views.theme import (
     CASE_CONTEXT_LABEL,
+    COLOR_PRIMARY,
     CONTENT_MAX_WIDTH,
     DRAFT_ACTION_BAR,
     PAGE_CONTENT_COLUMN,
@@ -80,8 +92,120 @@ def page_title(text):
     return label
 
 
+def _calendar_icon():
+    """A small, theme-coloured calendar glyph for the date action.
+
+    Qt ships no standard calendar icon, so the glyph is painted in memory. It
+    keeps the date affordance visually consistent with the application's single
+    primary accent instead of introducing an unrelated stock icon.
+    """
+    pixmap = QPixmap(16, 16)
+    pixmap.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(pixmap)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    pen = QPen(QColor(COLOR_PRIMARY))
+    pen.setWidthF(1.3)
+    painter.setPen(pen)
+    painter.drawRoundedRect(2, 3, 12, 11, 2, 2)
+    painter.drawLine(2, 6, 14, 6)
+    painter.drawLine(5, 2, 5, 4)
+    painter.drawLine(11, 2, 11, 4)
+    painter.end()
+    return QIcon(pixmap)
+
+
+class _CalendarPopup(QCalendarWidget):
+    """A lightweight popup calendar that reports the chosen date."""
+
+    date_selected = Signal(QDate)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowFlags(Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint)
+        self.setGridVisible(True)
+        self.setVerticalHeaderFormat(QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader)
+        self.clicked.connect(self._choose)
+
+    def _choose(self, date):
+        if date.isValid():
+            self.date_selected.emit(date)
+        self.hide()
+
+
+class DateLineEdit(QLineEdit):
+    """A text date field with a calendar popup.
+
+    Drafts, wizard fields and the draft adapter all read and write plain text,
+    so this remains a ``QLineEdit`` rather than a ``QDateEdit``. The calendar
+    only offers dates; the text stays editable and keeps being validated by the
+    shared full-date parser, which preserves the existing error messages.
+    """
+
+    def __init__(self, parent=None, restrict_future=False):
+        super().__init__(parent)
+        self._restrict_future = bool(restrict_future)
+        self._popup = None
+        self._calendar_action = self.addAction(
+            _calendar_icon(), QLineEdit.ActionPosition.TrailingPosition
+        )
+        self._calendar_action.setText("选择日期")
+        self._calendar_action.setToolTip("选择日期")
+        self._calendar_action.triggered.connect(self._open_calendar)
+
+    def restrict_future(self):
+        """Return whether the popup refuses dates after today."""
+        return self._restrict_future
+
+    def _ensure_calendar_popup(self):
+        if self._popup is None:
+            popup = _CalendarPopup(self)
+            popup.date_selected.connect(self._apply_calendar_date)
+            self._popup = popup
+        if self._restrict_future:
+            self._popup.setMaximumDate(QDate.currentDate())
+        return self._popup
+
+    def _apply_calendar_date(self, date):
+        if date.isValid():
+            self.setText(date.toString("yyyy-MM-dd"))
+
+    def _open_calendar(self):
+        popup = self._ensure_calendar_popup()
+        validation = parse_full_date(self.text())
+        if validation.status == DateStatus.VALID and validation.value is not None:
+            value = validation.value
+            popup.setSelectedDate(QDate(value.year, value.month, value.day))
+        else:
+            selected = QDate.currentDate()
+            if self._restrict_future:
+                selected = min(selected, popup.maximumDate())
+            popup.setSelectedDate(selected)
+
+        # Prefer opening below the field, but keep the popup inside the screen
+        # and flip it above when the field is near the bottom edge.
+        popup.adjustSize()
+        position = self.mapToGlobal(QPoint(0, self.height()))
+        screen = QApplication.screenAt(position)
+        if screen is not None:
+            available = screen.availableGeometry()
+            size = popup.sizeHint()
+            x = min(max(position.x(), available.left()),
+                    available.right() - size.width())
+            y = position.y()
+            if y + size.height() > available.bottom():
+                y = self.mapToGlobal(QPoint(0, 0)).y() - size.height()
+            position = QPoint(x, y)
+        popup.move(position)
+        popup.show()
+
+    def hideEvent(self, event):
+        if self._popup is not None:
+            self._popup.hide()
+        super().hideEvent(event)
+
+
 class DraftActionBar(QWidget):
-    """The 保存草稿 / 打开草稿 actions shown under every wizard page.
+    """The 使用说明 / 保存草稿 / 打开草稿 actions shown under every wizard page.
 
     The buttons live in the page's own content column rather than in
     ``QWizard``'s button box: a custom wizard button is owned by an internal
@@ -90,10 +214,13 @@ class DraftActionBar(QWidget):
     ordinary layout-owned widget follows the same ownership rules as every
     other control in this application.
 
-    The bar carries no behaviour of its own; the wizard re-emits the clicks as
-    ``save_draft_requested`` / ``open_draft_requested`` so the presenter only
-    has to listen to one pair of signals no matter how many pages exist.
+    The bar carries no behaviour of its own; the wizard re-emits the draft
+    clicks as ``save_draft_requested`` / ``open_draft_requested`` and opens the
+    usage guide from ``help_requested``, so the presenter only has to listen to
+    one pair of signals no matter how many pages exist.
     """
+
+    help_requested = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -113,9 +240,15 @@ class DraftActionBar(QWidget):
         self.open_button.setObjectName(SECONDARY_BUTTON)
         self.open_button.setAccessibleName("打开草稿")
         self.open_button.setAccessibleDescription("打开此前保存的本地草稿并继续填写")
+        self.help_button = QPushButton("使用说明")
+        self.help_button.setObjectName(SECONDARY_BUTTON)
+        self.help_button.setAccessibleName("使用说明")
+        self.help_button.setAccessibleDescription("查看填写顺序、核对要点与免责声明")
+        self.help_button.clicked.connect(self.help_requested.emit)
 
         layout.addWidget(self.save_button)
         layout.addWidget(self.open_button)
+        layout.addWidget(self.help_button)
         layout.addStretch(1)
 
 

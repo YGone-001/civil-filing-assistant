@@ -31,7 +31,7 @@ from views.theme import (
     SPACING_LG,
     SPACING_MD,
 )
-from views.widgets import content_column
+from views.widgets import DateLineEdit, content_column
 from views.pages.base import _TitledPage
 from views.pages.common import (
     _PHONE_INPUT_PATTERN,
@@ -300,6 +300,7 @@ class PartyPage(_TitledPage):
 
         name_edit = QLineEdit()
         id_edit = QLineEdit()
+        id_edit.setMaxLength(18)
         addr_edit = QLineEdit()
         phone_edit = QLineEdit()
 
@@ -312,6 +313,7 @@ class PartyPage(_TitledPage):
         # ``None`` widget. They stay hidden until the toggle is switched.
         credit_code_edit = QLineEdit()
         credit_code_edit.setPlaceholderText("统一社会信用代码")
+        credit_code_edit.setMaxLength(18)
         credit_code_edit.setVisible(False)
 
         legal_rep_edit = QLineEdit()
@@ -360,7 +362,7 @@ class PartyPage(_TitledPage):
         gender_combo.addItem("")
         gender_combo.addItem("男")
         gender_combo.addItem("女")
-        birth_edit = QLineEdit()
+        birth_edit = DateLineEdit(restrict_future=True)
         birth_edit.setPlaceholderText("格式 YYYY-MM-DD")
         ethnicity_combo = QComboBox()
         for option in ETHNICITY_OPTIONS:

@@ -15,6 +15,7 @@ from views.pages.common import (
     _wrap_in_scroll,
     add_facts_examples_button,
 )
+from views.widgets import DateLineEdit
 
 class DivorceClaimPage(_TitledPage):
     def __init__(self):
@@ -26,13 +27,13 @@ class DivorceClaimPage(_TitledPage):
         # --- 一、婚姻与离婚原因 ---------------------------------------------
         marriage = _section(root, "一、婚姻与离婚原因")
 
-        self.marriage_date = QLineEdit()
+        self.marriage_date = DateLineEdit(restrict_future=True)
         self.marriage_date.setPlaceholderText("格式 YYYY-MM-DD，如 2018-05-20")
 
         self.divorce_reason = QLineEdit()
         self.divorce_reason.setPlaceholderText("如: 感情不和/长期分居")
 
-        self.separation_start_date = QLineEdit()
+        self.separation_start_date = DateLineEdit(restrict_future=True)
         self.separation_start_date.setPlaceholderText("格式 YYYY-MM-DD，如 2022-01-01")
 
         marriage.addRow("登记结婚日期:", self.marriage_date)
@@ -46,7 +47,7 @@ class DivorceClaimPage(_TitledPage):
         self.child_name = QLineEdit()
         self.child_name.setPlaceholderText("如: 张三")
 
-        self.child_birthday = QLineEdit()
+        self.child_birthday = DateLineEdit(restrict_future=True)
         self.child_birthday.setPlaceholderText("格式 YYYY-MM-DD，如 2020-01-01")
 
         self.custody_preference = QLineEdit()

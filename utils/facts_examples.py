@@ -11,8 +11,32 @@ document automatically.
 """
 
 
+#: One-line "when this exemplar fits" notes, shown above the reference text.
+#: Kept separate from the (title, text) pairs so existing callers and tests do
+#: not need to unpack a third value.
+EXAMPLE_DESCRIPTIONS = {
+    "民间借贷纠纷（借款未还、借条纠纷）": "适用于借款未还、有借条或借款约定的纠纷。",
+    "民间借贷纠纷（无借条、转账交付、未约定利息）": "适用于无借条、仅通过转账交付且未约定利息的借款纠纷。",
+    "买卖合同纠纷（货物买卖、货款拖欠）": "适用于货物已交付、买方拖欠货款的纠纷。",
+    "买卖合同纠纷（已付货款、卖方未交付、解除合同退款）": "适用于买方已付款、卖方未交货并要求解除合同退款的纠纷。",
+    "物业服务合同纠纷（物业费与服务质量）": "适用于物业费、物业服务质量或催缴争议。",
+    "物业服务合同纠纷（物业公司追索物业费）": "适用于物业公司作为原告追索欠付物业费。",
+    "追索劳动报酬纠纷（工资、加班费）": "适用于工资、加班费等劳动报酬追索。",
+    "劳动争议（经仲裁后起诉）": "适用于已经劳动仲裁、准备向法院起诉的劳动争议。",
+    "经济补偿金纠纷（解除劳动合同补偿）": "适用于解除劳动合同后主张经济补偿金。",
+    "离婚纠纷（夫妻感情破裂）": "适用于夫妻感情破裂、提起离婚诉讼。",
+    "抚养费纠纷（子女抚养费追索）": "适用于子女抚养费、抚养关系争议。",
+    "离婚后财产分割纠纷（漏分财产）": "适用于离婚后发现或漏分夫妻共同财产。",
+}
+
+
 class FactsExamplesLibrary:
     """Per-case-type exemplar library, mirroring :mod:`utils.evidence_library`."""
+
+    @staticmethod
+    def get_description(title):
+        """Return the one-line applicability note for *title*, or ``""``."""
+        return EXAMPLE_DESCRIPTIONS.get(title, "")
 
     @staticmethod
     def get_facts_examples(case_type):

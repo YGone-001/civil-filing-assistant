@@ -103,6 +103,35 @@ class DocumentGenerator:
         return f"{raw}族"
 
     @classmethod
+    def format_party_line(cls, party):
+        """Public wrapper used by the on-screen document preview."""
+        return cls._party_line(party)
+
+    @staticmethod
+    def format_agent_text(agent):
+        """Return the agent paragraph text (without the leading label).
+
+        Shared by the DOCX writer and the HTML preview so the two cannot drift
+        apart; an absent or nameless agent yields an empty string.
+        """
+        if agent is None:
+            return ""
+        name = (getattr(agent, "name", "") or "").strip()
+        if not name:
+            return ""
+        content = name
+        agent_type = (getattr(agent, "type", "") or "").strip()
+        if agent_type:
+            content += f"（{agent_type}）"
+        org = (getattr(agent, "org", "") or "").strip()
+        if org:
+            content += f"，{org}"
+        phone = (getattr(agent, "phone", "") or "").strip()
+        if phone:
+            content += f"，联系电话{phone}"
+        return content + "。"
+
+    @classmethod
     def _party_line(cls, party):
         """Join the supplied party details, omitting blank labelled segments.
 
@@ -139,21 +168,9 @@ class DocumentGenerator:
 
     def add_agent_block(self, agent):
         """Add the optional litigation-agent paragraph after the plaintiff block."""
-        if agent is None:
+        content = self.format_agent_text(agent)
+        if not content:
             return
-        name = (getattr(agent, "name", "") or "").strip()
-        if not name:
-            return
-        content = name
-        agent_type = (getattr(agent, "type", "") or "").strip()
-        if agent_type:
-            content += f"（{agent_type}）"
-        org = (getattr(agent, "org", "") or "").strip()
-        if org:
-            content += f"，{org}"
-        phone = (getattr(agent, "phone", "") or "").strip()
-        if phone:
-            content += f"，联系电话{phone}"
 
         p = self.doc.add_paragraph()
         p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
@@ -165,7 +182,7 @@ class DocumentGenerator:
         run1.font.size = Pt(16)
         run1.bold = False
 
-        run2 = p.add_run(content + "。")
+        run2 = p.add_run(content)
         run2.font.name = "FangSong_GB2312"
         run2._element.rPr.rFonts.set(qn('w:eastAsia'), "FangSong_GB2312")
         run2.font.size = Pt(16)

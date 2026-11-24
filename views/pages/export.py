@@ -14,8 +14,8 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QPlainTextEdit,
     QPushButton,
+    QTextBrowser,
     QVBoxLayout,
     QWidget,
 )
@@ -33,30 +33,38 @@ from views.pages.base import _TitledPage
 from views.pages.common import _wrap_in_scroll
 
 class _PreviewDialog(QDialog):
-    """A scrollable, read-only preview of the case text before export.
+    """A scrollable, read-only document-style preview of the complaint.
 
-    The dialog explicitly states that the preview is plain text only and does
-    not represent the final Word layout (fonts, tables, headers, page breaks).
+    The dialog renders an approximate page view, but it still states that the
+    preview does not represent the final Word layout (fonts, tables, headers,
+    page breaks). When ``html`` is omitted the plain ``text`` is shown, which
+    keeps the dialog usable in tests and as a fallback.
     """
 
-    def __init__(self, title, text, parent=None):
+    def __init__(self, title, text, parent=None, html=None):
         super().__init__(parent)
         self.setWindowTitle(title)
 
         layout = QVBoxLayout(self)
 
         disclaimer = QLabel(
-            "以下预览仅展示文本内容，不代表最终 Word 排版"
-            "（字体、表格、页眉页脚、分页等）。"
+            "以下为文书式预览，字体和分页仅为近似效果，不代表最终 Word 排版"
+            "（表格、页眉页脚、分页等以导出文件为准）。"
         )
         disclaimer.setObjectName(INFO_LABEL)
         disclaimer.setWordWrap(True)
         layout.addWidget(disclaimer)
 
-        viewer = QPlainTextEdit()
-        viewer.setReadOnly(True)
-        viewer.setPlainText(text)
-        layout.addWidget(viewer)
+        self.viewer = QTextBrowser()
+        self.viewer.setReadOnly(True)
+        self.viewer.setOpenExternalLinks(False)
+        self.viewer.setAccessibleName("起诉状预览内容")
+        self.viewer.setAccessibleDescription("按当前填写内容生成的起诉状近似预览")
+        if html:
+            self.viewer.setHtml(html)
+        else:
+            self.viewer.setPlainText(text)
+        layout.addWidget(self.viewer)
 
         close_btn = QPushButton("关闭")
         close_btn.clicked.connect(self.accept)
@@ -89,12 +97,12 @@ class ExportPage(_TitledPage):
         layout = QVBoxLayout()
 
         intro_row = QHBoxLayout()
-        intro = QLabel("信息收集完毕，建议先预览诉讼请求与事实理由，核对无误后再生成文书。")
+        intro = QLabel("信息收集完毕，建议先预览完整起诉状，核对无误后再生成文书。")
         intro.setWordWrap(True)
         intro_row.addWidget(intro, 1)
-        self.preview_btn = QPushButton("预览关键信息")
+        self.preview_btn = QPushButton("预览起诉状")
         self.preview_btn.setObjectName(SECONDARY_BUTTON)
-        self.preview_btn.setAccessibleName("预览关键信息")
+        self.preview_btn.setAccessibleName("预览起诉状")
         self.preview_btn.clicked.connect(self.show_preview)
         intro_row.addWidget(self.preview_btn)
         layout.addLayout(intro_row)
@@ -255,7 +263,7 @@ class ExportPage(_TitledPage):
     # ------------------------------------------------------------------ #
 
     def show_preview(self):
-        """Show a case-specific preview in a scrollable dialog."""
+        """Show the complete complaint in a document-style preview dialog."""
         from views import dialogs
         from views.widgets import CASE_TYPE_LABELS
 
@@ -268,34 +276,19 @@ class ExportPage(_TitledPage):
 
         try:
             from presenters.model_builder import build_case_model
+            from utils.document_preview import build_complaint_html, build_complaint_text
+
             model = build_case_model(wizard)
-            claims = model.render_claims()
-            facts = model.render_facts()
+            preview_text = build_complaint_text(model)
+            preview_html = build_complaint_html(model)
         except Exception as exc:  # a preview failure must never crash the wizard
             dialogs.warning(self, "预览不可用", f"暂时无法生成“{label}”预览：\n{exc}")
             return
 
-        claims_text = "\n".join(f"{i}. {c}" for i, c in enumerate(claims, 1))
-
-        evidence_lines = []
-        for i, ev in enumerate(getattr(model, "evidences", []), 1):
-            name = getattr(ev, "name", str(ev))
-            target = getattr(ev, "target", "")
-            if target:
-                evidence_lines.append(f"{i}. {name} —— {target}")
-            else:
-                evidence_lines.append(f"{i}. {name}")
-        evidence_text = "\n".join(evidence_lines) if evidence_lines else "（未填写证据）"
-
-        preview_text = (
-            f"案由：{label}\n\n"
-            f"【诉讼请求（预览）】\n{claims_text}\n\n"
-            f"【事实与理由（预览）】\n{facts}\n\n"
-            f"【证据清单（预览）】\n{evidence_text}"
-        )
-
         # Stash the text so tests can inspect it without a modal dialog.
         self._last_preview_text = preview_text
+        self._last_preview_html = preview_html
 
-        dialog = _PreviewDialog("关键信息预览", preview_text, self)
+        dialog = _PreviewDialog("民事起诉状预览", preview_text, self, html=preview_html)
         dialog.exec()
+        dialog.deleteLater()

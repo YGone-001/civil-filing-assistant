@@ -45,6 +45,12 @@ def test_unknown_case_type_gets_no_exemplars():
     assert FactsExamplesLibrary.get_facts_examples(None) == []
 
 
+def test_every_exemplar_has_an_applicability_note():
+    for case_type in CASE_TYPES:
+        for title, _text in FactsExamplesLibrary.get_facts_examples(case_type):
+            assert FactsExamplesLibrary.get_description(title), (case_type, title)
+
+
 def test_exemplars_use_placeholders_instead_of_concrete_facts():
     """No exemplar may assert a concrete money amount, date or identifier."""
     for case_type in CASE_TYPES:

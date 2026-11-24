@@ -18,6 +18,7 @@ from views.pages.common import (
     _wrap_in_scroll,
     add_facts_examples_button,
 )
+from views.widgets import DateLineEdit
 
 class PropertyClaimPage(_TitledPage):
     def __init__(self):
@@ -52,10 +53,10 @@ class PropertyClaimPage(_TitledPage):
         _decimal_validator(self.fee_rate)
         self.fee_rate.setPlaceholderText("如: 2.8")
 
-        self.period_start = QLineEdit()
+        self.period_start = DateLineEdit(restrict_future=True)
         self.period_start.setPlaceholderText("格式 YYYY-MM-DD 或 YYYY年M月D日，如 2024-01-01")
 
-        self.period_end = QLineEdit()
+        self.period_end = DateLineEdit(restrict_future=True)
         self.period_end.setPlaceholderText("格式 YYYY-MM-DD 或 YYYY年M月D日，如 2025-12-31")
 
         basic.addRow("物业地址/房号:", self.property_addr)
