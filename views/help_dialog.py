@@ -4,7 +4,7 @@
 """The shared "使用说明" dialog.
 
 The guide is intentionally read-only and uses the same restrained visual
-language as the rest of the wizard. It explains the five supported case
+language as the rest of the wizard. It explains the six supported case
 categories, the suggested filling order and the points that must be checked
 before filing, without turning any of them into a legal conclusion.
 """

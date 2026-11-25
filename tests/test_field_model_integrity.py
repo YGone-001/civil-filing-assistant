@@ -272,7 +272,7 @@ def test_enterprise_party_fields_reach_the_model(qapp):
 
 
 def test_minimal_input_still_builds_every_case_model(qapp):
-    """Required-only input builds all five models (required-field contract)."""
+    """Required-only input builds all six models (required-field contract)."""
     for case_type in CASE_TYPES:
         wizard, _ = make_wizard()
         fill_minimal_case(wizard, case_type)

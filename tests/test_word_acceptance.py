@@ -1,10 +1,10 @@
 # File: tests/test_word_acceptance.py
 # Purpose: Automated Word document acceptance tests — programmatically verifies
 #          fonts, tables, party info, margins, pagination, and empty-field
-#          handling across all five case types and three document kinds.
+#          handling across all six case types and three document kinds.
 # Encoding: UTF-8
 
-"""Automated acceptance for the three Word documents across all five case types.
+"""Automated acceptance for the three Word documents across all six case types.
 
 These tests open the generated ``.docx`` files with ``python-docx`` and inspect
 document structure (fonts, tables, margins, pagination, party blocks) to

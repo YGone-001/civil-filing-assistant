@@ -1,5 +1,5 @@
 # File: tests/test_e2e_documents.py
-# Purpose: End-to-end acceptance for all five case categories (5 x 3 DOCX) and
+# Purpose: End-to-end acceptance for all six case categories (6 x 3 DOCX) and
 #          case-fact integrity regression (no unsupported factual assertions).
 # Encoding: UTF-8
 """Full-flow document acceptance and case-fact integrity.

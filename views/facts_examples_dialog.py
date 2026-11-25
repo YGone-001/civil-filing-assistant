@@ -1,7 +1,7 @@
 # File: views/facts_examples_dialog.py
 # Purpose: Shared "范例参考" dialog for the claim pages.
 # Encoding: UTF-8
-"""Reference-exemplar dialog shared by the five claim pages.
+"""Reference-exemplar dialog shared by the claim pages.
 
 The dialog is read-only: it shows sample "事实与理由" prose so the user can
 compare wording while filling the structured fields. Nothing is inserted back

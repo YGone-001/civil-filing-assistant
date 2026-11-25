@@ -971,7 +971,7 @@ def test_unknown_case_type_cannot_hide_retained_case_input(qapp, monkeypatch):
 
 
 def test_session_inspection_reads_every_case_page_without_mutation(qapp):
-    """Detection inspects all five pages and changes none of them."""
+    """Detection inspects all case pages and changes none of them."""
     wizard, _ = make_wizard()
     wizard.restart()
     select_case(wizard, "loan")

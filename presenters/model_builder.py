@@ -37,7 +37,7 @@ SUPPORTED_CASE_TYPES = frozenset(_MODEL_BY_CASE_TYPE)
 
 
 def is_supported_case_type(case_type):
-    """Return ``True`` only for the five supported identifiers; never raises.
+    """Return ``True`` only for the supported case-type identifiers; never raises.
 
     This is the one validation contract shared by model construction, wizard
     routing, preview and Finish/export. Malformed strings, unsupported

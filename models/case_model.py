@@ -1,7 +1,7 @@
 # File: models/case_model.py
 # Purpose: Data models for the lawsuit
 # Encoding: UTF-8
-"""Case models for the five supported categories.
+"""Case models for the six supported categories.
 
 Numeric parsing, money formatting and the reusable calculations live in
 :mod:`models.calculations`; full-date parsing and the structured validation

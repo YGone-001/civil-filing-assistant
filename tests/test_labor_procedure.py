@@ -674,7 +674,7 @@ def test_gate_blocks_when_the_model_disagrees_with_the_page(qapp, monkeypatch, t
     assert not (desktop.exists() and list(desktop.rglob("*.docx")))
 
 
-def test_all_five_case_types_still_export_after_procedure_work(
+def test_all_six_case_types_still_export_after_procedure_work(
     qapp, monkeypatch, tmp_path
 ):
     """The other four case types are untouched by the labour rework."""

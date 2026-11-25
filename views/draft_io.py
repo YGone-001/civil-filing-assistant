@@ -254,7 +254,7 @@ def has_meaningful_session(wizard):
     A session is meaningful when any of the following is true:
 
     * a party card holds any user-editable value, or the user added a card;
-    * *any* of the five case pages holds a registered input that differs from
+    * *any* of the case pages holds a registered input that differs from
       the value its page starts with (blank, except the contract LPR reference
       and multiplier), or a factual confirmation that differs from its initial
       state;
