@@ -79,8 +79,10 @@ By document: civil complaint 121 · evidence list 5 · service address 5.
 By frozen severity: HIGH 4 · MEDIUM 65 · LOW 59 · INFORMATIONAL 3.
 
 > The counts above describe the frozen five-case baseline. The separate rental addendum
-> (`rental-contract-work-package.md` / `.json`) is `OPEN` / `NO-GO`; it does not change these
-> counts and is validated by `tools/check_rental_governance_package.py`.
+> (`rental-contract-work-package.md` / `.json`) is `OPEN` / `SOURCE_VERIFIED` / `NO-GO`: a
+> candidate official rental complaint has been identified and its file verified, but no mapping,
+> legal review or rights decision exists. It does not change these counts and is validated by
+> `tools/check_rental_governance_package.py`.
 
 ---
 

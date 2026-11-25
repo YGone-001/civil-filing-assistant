@@ -1,14 +1,15 @@
 # 租赁合同纠纷 — Governance Work Package
 
-> **Status: OPEN / NO-GO.** This is a post-baseline governance addendum only.
-> No official source has been identified or approved. No legal review has occurred.
-> No mapping is approved. No implementation or release is authorized.
+> **Status: OPEN / SOURCE_VERIFIED / NO-GO.** This is a post-baseline governance addendum only.
+> A candidate official rental complaint has been identified and its file has been verified at
+> file level. It has not been selected, mapped, legally reviewed or approved. No legal review has
+> occurred. No mapping is approved. No implementation or release is authorized.
 > The existing rental output is a project-authored software baseline, not an official template.
 
 - Work package: `wp-rental-source-discovery`
 - Case type: `rental`
-- Current stage: `SOURCE_DISCOVERY`
-- Baseline commit: `b81810ad2669194b30094fd5dd91613c8d234e82`
+- Current stage: `TEXT_AND_STRUCTURE_COMPARISON`
+- Baseline commit: `b59658b0ad3147c5e8d51f6611afbe0dc67d170f`
 - Created: 2026-11-26
 - Machine-readable record: `rental-contract-work-package.json`
 - Validator: `tools/check_rental_governance_package.py`
@@ -27,11 +28,12 @@ The application now generates three rental-contract documents:
 - 证据清单
 - 送达地址确认书
 
-The engineering path is implemented and tested, but the legal-template governance path has not
-started. `case-template-mapping.json` still covers only the original five case types. Adding
-rental entries without source evidence, a written comparison and review evidence would create
-false governance coverage. This package starts the missing work at the correct first stage:
-**source discovery**.
+The engineering path is implemented and tested, but the legal-template governance path is still
+at its earliest stages. `case-template-mapping.json` still covers only the original five case
+types. Adding rental entries without source evidence, a written comparison and review evidence
+would create false governance coverage. This package records the missing work from the first
+stage: **source discovery**. Source discovery and file-level verification are complete; the
+documentary comparison is the next stage.
 
 ---
 
@@ -48,7 +50,7 @@ false governance coverage. This package starts the missing work at the correct f
 | Automated tests | `tests/test_rental_case.py`, `tests/test_word_acceptance.py`, `tests/test_e2e_documents.py` |
 | Engineering status | IMPLEMENTED_AND_TESTED |
 | Runtime characterization | PROJECT_AUTHORED_STRUCTURED_TEMPLATE |
-| Governance status | NOT_REGISTERED |
+| Governance status | NOT_REGISTERED (candidate source verified; no mapping entry) |
 
 Current fields include property address, contract date, lease term, monthly rent, payment cycle,
 arrears period and amount, late fee, demand history, contract status, termination date, whether
@@ -64,7 +66,7 @@ every rental dispute type.
 
 This package does **not** claim:
 
-- that an official rental-contract template exists or has been located;
+- that the candidate official rental complaint has been selected, mapped or approved;
 - that any current rental output conforms to an official template;
 - that any source may be adapted or redistributed;
 - that any legal/content review has occurred;
@@ -77,29 +79,45 @@ official rental template exists. It only records the scope of that earlier audit
 
 ---
 
-## 4. Source discovery target
+## 4. Source discovery and verification result
 
-The first task is to locate and record authoritative sources for:
+The first two tasks are complete. The inspected source is:
 
-1. a rental-contract civil complaint;
-2. a standalone evidence-list document, or a decision that the official complaint's evidence
-   section is the only relevant counterpart;
-3. a service-address confirmation form, or a documented decision that no counterpart exists in
-   the inspected material.
+| Item | Value |
+|---|---|
+| Source | `spc-2025-notice-pdf` |
+| Official URL | `https://www.court.gov.cn/upload/file/2025/06/22/17/43/202506221742_01.pdf` |
+| Source level / type | A / `OFFICIAL_TEMPLATE` |
+| Verification status | `SOURCE_FILE_VERIFIED` |
+| Re-retrieved | 2026-11-26 |
+| File size | 6,832,359 bytes |
+| Page count | 975 |
+| SHA-256 | `07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88` |
+| Local artifact | `NOT_STORED_IN_REPOSITORY` |
 
-For every candidate, record a source-registry entry with an official URL and explicit `null`
-values for unknown attributes. A URL alone does not establish authenticity. A retrieved file does
-not establish legal applicability. Do not populate `case-template-mapping.json` until source
-evidence exists.
+File verification means only that the file's identity matched the existing registry record. It
+does not establish legal applicability, content correctness or approval.
 
-Current source-discovery state:
+### Counterpart assessment (limited to this source)
+
+| Document type | Classification | Evidence |
+|---|---|---|
+| Civil complaint | `CANDIDATE_OFFICIAL_COMPLAINT` | `民事起诉状（房屋租赁合同纠纷）` blank form at PDF pages 171–176 (printed 155–160); filled instance at PDF pages 181–186 (printed 165–170) |
+| Evidence list | `OFFICIAL_SECTION_ONLY` | The official rental complaint contains an `证据清单` section at PDF pages 175/185; no standalone official evidence-list document was identified in this PDF |
+| Service address confirmation | `NO_COUNTERPART_IDENTIFIED_IN_INSPECTED_SOURCE` | No service-address confirmation form was found in the inspected rental pages; this statement is limited to this source |
+
+Current discovery state:
 
 ```text
-candidate_source_ids: []
+candidate_source_ids: ["spc-2025-notice-pdf"]
 selected_source_id:   null
-official_counterpart: UNKNOWN
-status:               NOT_STARTED
+official_counterpart: CANDIDATE_OFFICIAL_COMPLAINT
+status:               CANDIDATE_IDENTIFIED
 ```
+
+The page ranges are evidence for the next stage. They are not a mapping, an applicability decision
+or an approval. The absence of a service-address form in this PDF does not establish that no such
+official document exists.
 
 ---
 
@@ -124,9 +142,9 @@ These questions are inputs to future legal/content review; they are not answered
 
 | Stage | Task | Status | Exit condition |
 |---|---|---|---|
-| `SOURCE_DISCOVERY` | Locate candidate sources | `NOT_STARTED` | Source record with official URL and explicit nulls |
-| `SOURCE_VERIFICATION` | Verify identity, version, hash and artifact | `BLOCKED` | `SOURCE_FILE_VERIFIED` with evidence |
-| `TEXT_AND_STRUCTURE_COMPARISON` | Compare official elements with rental fields | `BLOCKED` | Written comparison of elements/sections/omissions |
+| `SOURCE_DISCOVERY` | Locate candidate sources | `COMPLETE` | Source record with official URL and explicit nulls |
+| `SOURCE_VERIFICATION` | Verify identity, version, hash and artifact | `COMPLETE` | `SOURCE_FILE_VERIFIED` with evidence |
+| `TEXT_AND_STRUCTURE_COMPARISON` | Compare official elements with rental fields | `NOT_STARTED` | Written comparison of elements/sections/omissions |
 | `CASE_MAPPING_REVIEW` | Decide counterpart mapping | `BLOCKED` | Mapping entries added only after source evidence |
 | `LEGAL_CONTENT_REVIEW` | Review claims, facts and procedure | `BLOCKED` | Documented legal/content decision |
 | `RIGHTS_AND_REDISTRIBUTION_REVIEW` | Decide adaptation/redistribution rights | `BLOCKED` | Separate rights decision |

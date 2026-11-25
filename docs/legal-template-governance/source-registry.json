@@ -74,11 +74,11 @@
       "retrieval_or_review_date": "2026-10-10",
       "source_level": "A",
       "verification_status": "SOURCE_FILE_VERIFIED",
-      "verification_evidence": "Downloaded once on 2026-10-10 for inspection only (stored in a temporary directory outside the repository). Verified: PDF 1.7 magic bytes, 6832359 bytes, 975 pages, 23 embedded font files, 55 ToUnicode maps. Text extraction located a table of contents and per-category 民事起诉状/民事答辩状 sections. Located 民事起诉状 pages for every application category: 离婚纠纷 p57, 买卖合同纠纷 p71, 民间借贷纠纷 p134, 物业服务合同纠纷 p233, 劳动争议纠纷 p248. SHA-256 recorded below.",
+      "verification_evidence": "Downloaded once on 2026-10-10 for inspection only (stored in a temporary directory outside the repository). Verified: PDF 1.7 magic bytes, 6832359 bytes, 975 pages, 23 embedded font files, 55 ToUnicode maps. Text extraction located a table of contents and per-category 民事起诉状/民事答辩状 sections. Located 民事起诉状 pages for every application category: 离婚纠纷 p57, 买卖合同纠纷 p71, 民间借贷纠纷 p134, 物业服务合同纠纷 p233, 劳动争议纠纷 p248. SHA-256 recorded below. Re-retrieved on 2026-11-26: the same size, page count and SHA-256 were reproduced. Rental-contract review located 民事起诉状（房屋租赁合同纠纷） at PDF pages 171-176 (printed 155-160), an instance at PDF pages 181-186 (printed 165-170), an evidence-list (证据清单) section at PDF pages 175/185, and no standalone evidence-list or service-address confirmation form in the inspected rental pages.",
       "local_artifact_status": "NOT_STORED_IN_REPOSITORY",
       "content_hash_if_verified": "sha256:07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
       "legal_or_copyright_review_status": "NOT_REVIEWED",
-      "notes": "URL path implies the file was uploaded on 2025-06-22 and it is referenced by the 2025-06-23 news page; the document's own date line was not extracted, so both date fields are null. Content was inspected structurally and partially by text extraction; a full page-by-page legal review was NOT performed. The file is a 6.8 MB third-party document and must not be committed to the repository without a rights review."
+      "notes": "URL path implies the file was uploaded on 2025-06-22 and it is referenced by the 2025-06-23 news page; the document's own date line was not extracted, so both date fields are null. Content was inspected structurally and partially by text extraction; a full page-by-page legal review was NOT performed. The 2026-11-26 re-retrieval was used only for file-level verification and page location; it did not perform a legal or rights review. The file is a 6.8 MB third-party document and must not be committed to the repository without a rights review."
     },
     {
       "source_id": "spc-court-doc-styles",

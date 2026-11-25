@@ -8,7 +8,9 @@
 >
 > **Post-baseline rental case:** `rental` is not registered in this five-case mapping. Its separate
 > governance work package is `official-adaptation-planning/rental-contract-work-package.md` /
-> `.json` (`OPEN` / `NO-GO`). Do not add rental mappings here without source evidence.
+> `.json` (`OPEN` / `SOURCE_VERIFIED` / `NO-GO`). A candidate official rental complaint has been
+> located at PDF pages 171–176 (instance 181–186), but no rental mapping, applicability decision,
+> legal review or approval exists. Do not add rental mappings here without that evidence.
 
 - Repository: `YGone-001/civil-filing-assistant`
 - Audited revision: `eb23e3e8c8ae080d7185309bf69b3e41681a904e`

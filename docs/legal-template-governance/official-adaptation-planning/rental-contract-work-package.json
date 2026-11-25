@@ -2,9 +2,9 @@
   "work_package_id": "wp-rental-source-discovery",
   "title": "租赁合同纠纷 — governance source discovery and adaptation design",
   "status": "OPEN",
-  "current_stage": "SOURCE_DISCOVERY",
+  "current_stage": "TEXT_AND_STRUCTURE_COMPARISON",
   "created_date": "2026-11-26",
-  "baseline_commit": "b81810ad2669194b30094fd5dd91613c8d234e82",
+  "baseline_commit": "b59658b0ad3147c5e8d51f6611afbe0dc67d170f",
   "case_type": "rental",
   "document_types": [
     "civil_complaint",
@@ -16,11 +16,45 @@
   "central_mapping_registry_updated": false,
   "frozen_planning_records_modified": false,
   "source_discovery": {
-    "status": "NOT_STARTED",
-    "candidate_source_ids": [],
+    "status": "CANDIDATE_IDENTIFIED",
+    "candidate_source_ids": [
+      "spc-2025-notice-pdf"
+    ],
     "selected_source_id": null,
-    "official_counterpart": "UNKNOWN",
-    "next_action": "Locate and record an authoritative source for a rental-contract civil complaint before any mapping or content change is proposed."
+    "official_counterpart": "CANDIDATE_OFFICIAL_COMPLAINT",
+    "next_action": "Compare the official rental complaint elements and structure with the current rental fields, claims and facts; do not add a mapping until that comparison is written."
+  },
+  "source_verification": {
+    "source_id": "spc-2025-notice-pdf",
+    "status": "SOURCE_FILE_VERIFIED",
+    "retrieved_date": "2026-11-26",
+    "file_size_bytes": 6832359,
+    "page_count": 975,
+    "sha256": "07fc626a7b703beb27b1dab9b5d7aa47b6dc58b4165048813e02663f9fd11b88",
+    "local_artifact_status": "NOT_STORED_IN_REPOSITORY",
+    "evidence": "The official PDF was re-retrieved on 2026-11-26; its size, page count and SHA-256 match the existing source record. This verifies the file only, not legal applicability or approval."
+  },
+  "counterpart_assessment": {
+    "civil_complaint": {
+      "classification": "CANDIDATE_OFFICIAL_COMPLAINT",
+      "source_id": "spc-2025-notice-pdf",
+      "blank_form_pdf_pages": [171, 176],
+      "blank_form_printed_pages": [155, 160],
+      "instance_pdf_pages": [181, 186],
+      "instance_printed_pages": [165, 170],
+      "notes": "The blank form and instance were located by text extraction. The page range is evidence for the next comparison stage; it is not a mapping approval."
+    },
+    "evidence_list": {
+      "classification": "OFFICIAL_SECTION_ONLY",
+      "source_id": "spc-2025-notice-pdf",
+      "pdf_pages": [175, 185],
+      "notes": "The official rental complaint contains an evidence-list section (证据清单) and the instance says the list is attached. No standalone official evidence-list document was identified in the inspected PDF."
+    },
+    "service_address_confirmation": {
+      "classification": "NO_COUNTERPART_IDENTIFIED_IN_INSPECTED_SOURCE",
+      "source_id": "spc-2025-notice-pdf",
+      "notes": "No service-address confirmation form was found in the inspected rental pages. This statement is limited to this source and does not establish that no such official form exists."
+    }
   },
   "legal_review_status": "NOT_REQUESTED",
   "rights_review_status": "NOT_REVIEWED",
@@ -96,29 +130,31 @@
     {
       "task_id": "source-discovery",
       "stage": "SOURCE_DISCOVERY",
-      "status": "NOT_STARTED",
+      "status": "COMPLETE",
       "owner_role": "source_discovery_reviewer",
       "objective": "Locate candidate authoritative sources for rental-contract complaint, evidence-list and service-address documents.",
       "exit_criteria": [
         "A source record with an official URL and explicit nulls for unknown attributes is created.",
         "The source is not described as verified or approved merely because a URL exists."
-      ]
+      ],
+      "evidence": "Candidate identified: spc-2025-notice-pdf; rental complaint at PDF pages 171-176 and instance at 181-186."
     },
     {
       "task_id": "source-verification",
       "stage": "SOURCE_VERIFICATION",
-      "status": "BLOCKED",
+      "status": "COMPLETE",
       "owner_role": "source_verification_reviewer",
       "objective": "Verify source identity, version, level, hash and local artifact status.",
       "exit_criteria": [
         "The source reaches SOURCE_FILE_VERIFIED with a recorded hash and evidence.",
         "No content or legal conclusion is inferred from the file hash alone."
-      ]
+      ],
+      "evidence": "Re-retrieved on 2026-11-26: 6,832,359 bytes, 975 pages, SHA-256 matches the source registry. File verification only."
     },
     {
       "task_id": "text-and-structure-comparison",
       "stage": "TEXT_AND_STRUCTURE_COMPARISON",
-      "status": "BLOCKED",
+      "status": "NOT_STARTED",
       "owner_role": "legal_content_reviewer",
       "objective": "Compare official elements and document structure with the current rental fields, claims and facts.",
       "exit_criteria": [
@@ -212,7 +248,8 @@
     "Release approval is recorded separately."
   ],
   "non_claims": [
-    "No official rental-contract template has been identified or approved.",
+    "A candidate official rental complaint has been identified, but it has not been mapped or approved for adaptation.",
+    "The candidate source file has been verified at file level only; this is not legal/content review or legal approval.",
     "No legal review has been performed.",
     "No mapping is approved.",
     "No rights or redistribution decision has been made.",
