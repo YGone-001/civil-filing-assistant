@@ -6,11 +6,14 @@
 >
 > Machine-readable counterpart: `case-template-mapping.json`. Sources: `source-registry.json`.
 >
-> **Post-baseline rental case:** `rental` is not registered in this five-case mapping. Its separate
-> governance work package is `official-adaptation-planning/rental-contract-work-package.md` /
-> `.json` (`OPEN` / `SOURCE_VERIFIED` / `NO-GO`). A candidate official rental complaint has been
-> located at PDF pages 171–176 (instance 181–186), but no rental mapping, applicability decision,
-> legal review or approval exists. Do not add rental mappings here without that evidence.
+> **Post-baseline rental case:** `rental` is now registered as a post-baseline addendum with three
+> unapproved entries. Its governance work package is
+> `official-adaptation-planning/rental-contract-work-package.md` / `.json`
+> (`OPEN` / `LEGAL_REVIEW_PACKET_PREPARED` / `NO-GO`). A candidate official rental complaint has
+> been located at PDF pages 171–176 (instance 181–186), and the documentary comparison records 35
+> open gaps. A legal review packet is prepared, but no reviewer is assigned and no rental mapping is
+> legally reviewed or approved. Do not mark any rental entry `APPROVED` without the required review
+> evidence.
 
 - Repository: `YGone-001/civil-filing-assistant`
 - Audited revision: `eb23e3e8c8ae080d7185309bf69b3e41681a904e`
@@ -18,9 +21,10 @@
 
 ---
 
-## 1. Runtime identifiers (unchanged)
+## 1. Runtime identifiers
 
-Case types: `loan`, `contract`, `property`, `labor`, `divorce`
+Original case types: `loan`, `contract`, `property`, `labor`, `divorce`
+Post-baseline addendum: `rental`
 Document types: `civil_complaint`, `evidence_list`, `service_address_confirmation`
 
 These are the existing runtime identifiers. This document renames nothing and changes no
@@ -37,11 +41,12 @@ case-selection behaviour.
 | `REJECTED` | Considered and rejected |
 | `NO_OFFICIAL_SOURCE_IDENTIFIED` | No counterpart found in the inspected official material |
 
-Approval status is tracked separately (`approval_status`); all 15 entries are `NOT_REQUESTED`.
+Approval status is tracked separately (`approval_status`); all 18 entries (15 original + 3 rental)
+are `NOT_REQUESTED`.
 
 ---
 
-## 3. The fifteen mappings
+## 3. The fifteen original mappings
 
 | # | Case type | Document type | Candidate source | Mapping status | Evidence / unresolved question |
 |---|---|---|---|---|---|
@@ -60,6 +65,17 @@ Approval status is tracked separately (`approval_status`); all 15 entries are `N
 | 13 | `divorce` | `civil_complaint` | `spc-2025-notice-pdf` | `CANDIDATE_SOURCE_IDENTIFIED` | `民事起诉状（离婚纠纷）` at PDF p57 (instance p64). Open: the application combines divorce + custody + support + property division; one official text may not cover the whole workflow. |
 | 14 | `divorce` | `evidence_list` | `spc-2025-notice-pdf` | `UNVERIFIED` | Same evidence-section reasoning as #2. |
 | 15 | `divorce` | `service_address_confirmation` | — | `NO_OFFICIAL_SOURCE_IDENTIFIED` | Same as #3. |
+
+### 3.1 Rental addendum (three unapproved mappings)
+
+Added by the rental governance mapping review on 2026-11-26. These entries are candidate or
+no-counterpart records only; none is legally reviewed or approved.
+
+| # | Case type | Document type | Candidate source | Mapping status | Evidence / unresolved question |
+|---|---|---|---|---|---|
+| 16 | `rental` | `civil_complaint` | `spc-2025-notice-pdf` | `CANDIDATE_SOURCE_IDENTIFIED` | `民事起诉状（房屋租赁合同纠纷）` at PDF pages 171–176 (instance 181–186). Open: the current narrative, lessor-oriented output differs structurally from the official element table; 35 gaps are recorded in `official-adaptation-planning/rental-text-and-structure-comparison.md`. |
+| 17 | `rental` | `evidence_list` | `spc-2025-notice-pdf` | `UNVERIFIED` | Only an evidence-list section exists at PDF pages 175/185; no standalone official evidence-list document was identified. |
+| 18 | `rental` | `service_address_confirmation` | — | `NO_OFFICIAL_SOURCE_IDENTIFIED` | No service-address confirmation form was found in the inspected rental pages; this is limited to that source. |
 
 ---
 

@@ -20,6 +20,9 @@ PACKAGE = (
 SOURCE_REGISTRY = (
     REPO_ROOT / "docs" / "legal-template-governance" / "source-registry.json"
 )
+MAPPING_REGISTRY = (
+    REPO_ROOT / "docs" / "legal-template-governance" / "case-template-mapping.json"
+)
 
 
 def _load():
@@ -30,8 +33,12 @@ def _registry():
     return json.loads(SOURCE_REGISTRY.read_text(encoding="utf-8"))
 
 
+def _mapping_registry():
+    return json.loads(MAPPING_REGISTRY.read_text(encoding="utf-8"))
+
+
 def test_real_rental_governance_package_is_valid():
-    issues = crgp.validate_package(_load(), _registry())
+    issues = crgp.validate_package(_load(), _registry(), _mapping_registry())
     assert issues == [], issues
 
 
@@ -121,7 +128,6 @@ def test_package_rejects_an_inverted_page_range():
         ("legal_review_status", "REVIEWED"),
         ("rights_review_status", "REVIEWED"),
         ("release_gate", "GO"),
-        ("central_mapping_registry_updated", True),
         ("frozen_planning_records_modified", True),
         ("assigned_reviewers", ["invented reviewer"]),
     ],
@@ -132,6 +138,60 @@ def test_package_rejects_false_approval_states(field, value):
     assert crgp.validate_package(data), f"{field} should be rejected"
 
 
+def test_package_requires_the_central_mapping_update():
+    data = _load()
+    data["central_mapping_registry_updated"] = False
+    assert any(
+        "central_mapping_registry_updated" in issue
+        for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_missing_rental_mapping_entries():
+    data = _load()
+    registry = _mapping_registry()
+    registry["mappings"] = [
+        mapping for mapping in registry["mappings"]
+        if mapping.get("case_type") != "rental"
+    ]
+    issues = crgp.validate_package(data, _registry(), registry)
+    assert any("three rental mappings" in issue for issue in issues)
+
+
+def test_package_rejects_an_approved_rental_mapping():
+    data = _load()
+    registry = _mapping_registry()
+    for mapping in registry["mappings"]:
+        if mapping.get("mapping_id") == "map-rental-complaint":
+            mapping["mapping_status"] = "APPROVED"
+            mapping["approval_status"] = "APPROVED"
+    issues = crgp.validate_package(data, _registry(), registry)
+    assert any("approval_status" in issue for issue in issues)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("status", "COMPLETE"),
+        ("review_performed", True),
+        ("reviewer_assigned", True),
+        ("review_date", "2026-11-26"),
+    ],
+)
+def test_package_rejects_a_performed_legal_review(field, value):
+    data = _load()
+    data["legal_content_review"][field] = value
+    assert crgp.validate_package(data), f"{field} should be rejected"
+
+
+def test_package_rejects_a_legal_question_count_mismatch():
+    data = _load()
+    data["legal_content_review"]["question_count"] = 20
+    assert any(
+        "question_count" in issue for issue in crgp.validate_package(data)
+    )
+
+
 def test_package_rejects_an_incomplete_document_set():
     data = _load()
     data["document_types"] = ["civil_complaint", "evidence_list"]
@@ -140,8 +200,41 @@ def test_package_rejects_an_incomplete_document_set():
 
 def test_package_rejects_a_skipped_stage():
     data = _load()
-    data["current_stage"] = "CASE_MAPPING_REVIEW"
+    data["current_stage"] = "ENGINEERING_IMPLEMENTATION"
     assert any("current_stage" in issue for issue in crgp.validate_package(data))
+
+
+def test_package_rejects_a_non_complete_comparison():
+    data = _load()
+    data["text_and_structure_comparison"]["status"] = "NOT_STARTED"
+    assert any(
+        "text_and_structure_comparison.status" in issue
+        for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_comparison_gap_count_mismatch():
+    data = _load()
+    data["text_and_structure_comparison"]["gap_count"] = 34
+    assert any(
+        "gap_count" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_comparison_page_range_mismatch():
+    data = _load()
+    data["text_and_structure_comparison"]["blank_form_pdf_pages"] = [170, 176]
+    assert any(
+        "blank_form_pdf_pages" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_an_invalid_comparison_gap_id():
+    data = _load()
+    data["text_and_structure_comparison"]["gap_register_ids"][0] = "GAP-01"
+    assert any(
+        "gap_register_ids" in issue for issue in crgp.validate_package(data)
+    )
 
 
 def test_package_rejects_an_incomplete_past_stage():
@@ -150,20 +243,35 @@ def test_package_rejects_an_incomplete_past_stage():
     assert any("tasks[0]" in issue for issue in crgp.validate_package(data))
 
 
+def test_package_rejects_an_incomplete_comparison_stage():
+    data = _load()
+    data["tasks"][2]["status"] = "NOT_STARTED"
+    assert any("tasks[2]" in issue for issue in crgp.validate_package(data))
+
+
+def test_package_rejects_an_incomplete_mapping_review_stage():
+    data = _load()
+    data["tasks"][3]["status"] = "NOT_STARTED"
+    assert any("tasks[3]" in issue for issue in crgp.validate_package(data))
+
+
 def test_package_rejects_a_completed_current_stage():
     data = _load()
-    data["tasks"][2]["status"] = "COMPLETE"
-    assert any("tasks[2]" in issue for issue in crgp.validate_package(data))
+    data["tasks"][4]["status"] = "COMPLETE"
+    assert any("tasks[4]" in issue for issue in crgp.validate_package(data))
 
 
 def test_package_rejects_a_completed_later_task():
     data = _load()
-    data["tasks"][3]["status"] = "COMPLETE"
+    data["tasks"][5]["status"] = "COMPLETE"
     assert any("completion" in issue for issue in crgp.validate_package(data))
 
 
 @pytest.mark.parametrize("field", ["source_discovery", "source_verification",
-                                   "counterpart_assessment"])
+                                   "counterpart_assessment",
+                                   "text_and_structure_comparison",
+                                   "case_mapping_review",
+                                   "legal_content_review"])
 def test_package_rejects_missing_evidence_sections(field):
     data = _load()
     del data[field]

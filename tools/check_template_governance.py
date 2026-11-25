@@ -90,7 +90,8 @@ LEGAL_REVIEW_STATUSES = frozenset({
 })
 COMPLETED_LEGAL_REVIEW_STATUSES = frozenset({"REVIEWED"})
 
-CASE_TYPES = frozenset({"loan", "contract", "property", "labor", "divorce"})
+# The original five-case governance baseline plus the post-baseline rental addendum.
+CASE_TYPES = frozenset({"loan", "contract", "property", "labor", "divorce", "rental"})
 DOCUMENT_TYPES = frozenset({
     "civil_complaint",
     "evidence_list",

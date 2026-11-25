@@ -232,9 +232,12 @@ Approval is a **relationship**, not a set of populated text fields. Populating
    reviewer performed legal analysis, and a passing validation run must never be reported as a
    legal approval or certification.
 
-8. **Current state.** The repository registry contains **no approved mappings**: all fifteen
-   mappings are `approval_status = NOT_REQUESTED`, and the official notice PDF source remains
-   `spc-2025-notice-pdf` at `SOURCE_FILE_VERIFIED`. Nothing is promoted by this policy.
+8. **Current state.** The repository registry contains **no approved mappings**: all eighteen
+   mappings (the original fifteen plus three rental addendum entries) are
+   `approval_status = NOT_REQUESTED`, and the official notice PDF source remains
+   `spc-2025-notice-pdf` at `SOURCE_FILE_VERIFIED`. No legal/content review has been completed for
+   the rental addendum; its review packet is prepared, but no reviewer is assigned. Nothing is
+   promoted by this policy.
 
 ---
 

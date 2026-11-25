@@ -48,7 +48,7 @@ Gates are sequential. A failed or missing prerequisite blocks every downstream g
 |---|---|---|---|
 | 1 | `SOURCE_AUTHENTICITY` | `REVIEW_REQUIRED` | file retrieved and hashed (`SOURCE_FILE_VERIFIED`), but no authority-issued applicability confirmation per category |
 | 2 | `SOURCE_CONTENT_REVIEW` | `REVIEW_REQUIRED` | no documented content review of the per-category forms |
-| 3 | `MAPPING_APPLICABILITY_REVIEW` | `REVIEW_REQUIRED` | all 15 mappings are `CANDIDATE_SOURCE_IDENTIFIED`, `UNVERIFIED` or `NO_OFFICIAL_SOURCE_IDENTIFIED` |
+| 3 | `MAPPING_APPLICABILITY_REVIEW` | `REVIEW_REQUIRED` | all 18 mappings (15 original + 3 rental) are `CANDIDATE_SOURCE_IDENTIFIED`, `UNVERIFIED` or `NO_OFFICIAL_SOURCE_IDENTIFIED` |
 | 4 | `LEGAL_CONTENT_REVIEW` | `REVIEW_REQUIRED` | no legal/content review performed; reviewer identity not recorded |
 | 5 | `RIGHTS_AND_REDISTRIBUTION_REVIEW` | `REVIEW_REQUIRED` | `legal_or_copyright_review_status = NOT_REVIEWED` |
 | 6 | `SCOPED_ENGINEERING_AUTHORIZATION` | `NOT_ASSESSED` | blocked by gates 1–5 |

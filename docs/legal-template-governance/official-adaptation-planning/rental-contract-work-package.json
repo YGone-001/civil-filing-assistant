@@ -2,9 +2,9 @@
   "work_package_id": "wp-rental-source-discovery",
   "title": "租赁合同纠纷 — governance source discovery and adaptation design",
   "status": "OPEN",
-  "current_stage": "TEXT_AND_STRUCTURE_COMPARISON",
+  "current_stage": "LEGAL_CONTENT_REVIEW",
   "created_date": "2026-11-26",
-  "baseline_commit": "b59658b0ad3147c5e8d51f6611afbe0dc67d170f",
+  "baseline_commit": "1cb15822aa50f3b9708e649c212057b327c2ed6d",
   "case_type": "rental",
   "document_types": [
     "civil_complaint",
@@ -13,7 +13,7 @@
   ],
   "runtime_status": "IMPLEMENTED_AND_TESTED",
   "runtime_characterization": "PROJECT_AUTHORED_STRUCTURED_TEMPLATE",
-  "central_mapping_registry_updated": false,
+  "central_mapping_registry_updated": true,
   "frozen_planning_records_modified": false,
   "source_discovery": {
     "status": "CANDIDATE_IDENTIFIED",
@@ -22,7 +22,7 @@
     ],
     "selected_source_id": null,
     "official_counterpart": "CANDIDATE_OFFICIAL_COMPLAINT",
-    "next_action": "Compare the official rental complaint elements and structure with the current rental fields, claims and facts; do not add a mapping until that comparison is written."
+    "next_action": "Proceed to LEGAL_CONTENT_REVIEW: review the rental claims, facts, conditionality and official counterpart decisions. The three rental mappings remain unapproved until that review and the rights review are complete."
   },
   "source_verification": {
     "source_id": "spc-2025-notice-pdf",
@@ -42,7 +42,7 @@
       "blank_form_printed_pages": [155, 160],
       "instance_pdf_pages": [181, 186],
       "instance_printed_pages": [165, 170],
-      "notes": "The blank form and instance were located by text extraction. The page range is evidence for the next comparison stage; it is not a mapping approval."
+      "notes": "The blank form and instance were located by text extraction. The page range is evidence for the comparison and mapping review; it is not a mapping approval."
     },
     "evidence_list": {
       "classification": "OFFICIAL_SECTION_ONLY",
@@ -56,6 +56,131 @@
       "notes": "No service-address confirmation form was found in the inspected rental pages. This statement is limited to this source and does not establish that no such official form exists."
     }
   },
+  "text_and_structure_comparison": {
+    "status": "COMPLETE",
+    "completed_date": "2026-11-26",
+    "document": "rental-text-and-structure-comparison.md",
+    "source_id": "spc-2025-notice-pdf",
+    "blank_form_pdf_pages": [171, 176],
+    "instance_pdf_pages": [181, 186],
+    "current_output_basis": "A fictional sample generated from RentalCaseModel and DocumentGenerator at baseline commit 1cb15822aa50f3b9708e649c212057b327c2ed6d; no real case data was used.",
+    "method": "Section-by-section comparison of the official blank form and filled instance against the current rental fields, claims, facts and generated documents. Only section labels and page references are recorded; official text is not copied.",
+    "summary": "The current output is a narrative, lessor-oriented complaint. Core arrears claims and facts are covered. The official element table adds party detail, claim items, jurisdiction and preservation sections, fact elements and a mediation-preference section that the current model does not capture. The comparison records 35 open gaps; none is approved for implementation.",
+    "gap_register_ids": [
+      "RCS-01",
+      "RCS-02",
+      "RCS-03",
+      "RCS-04",
+      "RCS-05",
+      "RCS-06",
+      "RCS-07",
+      "RCS-08",
+      "RCS-09",
+      "RCS-10",
+      "RCS-11",
+      "RCS-12",
+      "RCS-13",
+      "RCS-14",
+      "RCS-15",
+      "RCS-16",
+      "RCS-17",
+      "RCS-18",
+      "RCS-19",
+      "RCS-20",
+      "RCS-21",
+      "RCS-22",
+      "RCS-23",
+      "RCS-24",
+      "RCS-25",
+      "RCS-26",
+      "RCS-27",
+      "RCS-28",
+      "RCS-29",
+      "RCS-30",
+      "RCS-31",
+      "RCS-32",
+      "RCS-33",
+      "RCS-34",
+      "RCS-35"
+    ],
+    "gap_count": 35,
+    "highest_priority_open_questions": [
+      "Whether the product should remain a lessor-only arrears template or also support a lessee plaintiff (delivery of premises and deposit return).",
+      "Whether an already-terminated lease requires a claim confirming the termination date.",
+      "Whether return of the premises and damages for termination must be separate claims.",
+      "Whether the official element-table style should be adopted, or the current narrative pleading style retained with selected elements added."
+    ]
+  },
+  "case_mapping_review": {
+    "status": "COMPLETE",
+    "completed_date": "2026-11-26",
+    "document": "case-template-mapping.json",
+    "mapping_ids": [
+      "map-rental-complaint",
+      "map-rental-evidence",
+      "map-rental-address"
+    ],
+    "decisions": {
+      "civil_complaint": {
+        "decision": "CANDIDATE_OFFICIAL_COUNTERPART",
+        "mapping_status": "CANDIDATE_SOURCE_IDENTIFIED",
+        "basis": "The official rental complaint was located at PDF pages 171-176 (instance 181-186) and compared with the current output. It is the documentary counterpart, but legal applicability is not reviewed."
+      },
+      "evidence_list": {
+        "decision": "NO_STANDALONE_OFFICIAL_COUNTERPART",
+        "mapping_status": "UNVERIFIED",
+        "basis": "Only an evidence-list section exists at PDF pages 175/185; no standalone official evidence-list document was identified in the inspected source."
+      },
+      "service_address_confirmation": {
+        "decision": "NO_COUNTERPART_IN_INSPECTED_SOURCE",
+        "mapping_status": "NO_OFFICIAL_SOURCE_IDENTIFIED",
+        "basis": "No service-address confirmation form was found in the inspected rental pages; this is limited to this source."
+      }
+    },
+    "approval_status": "NOT_REQUESTED",
+    "legal_review_status": "NOT_STARTED",
+    "notes": "Three unapproved rental mapping entries were added to the central registry after source verification and comparison. No mapping is approved."
+  },
+  "legal_content_review": {
+    "status": "PACKET_PREPARED",
+    "prepared_date": "2026-11-26",
+    "packet_document": "rental-legal-content-review-packet.md",
+    "review_performed": false,
+    "reviewer_required": "A qualified legal professional with civil litigation and lease-dispute experience, independent of the project.",
+    "reviewer_assigned": false,
+    "review_date": null,
+    "blocking_reason": "No qualified legal reviewer has been assigned. The project cannot self-certify legal content, and tests, documentation or commits are not legal review.",
+    "question_ids": [
+      "LRQ-01",
+      "LRQ-02",
+      "LRQ-03",
+      "LRQ-04",
+      "LRQ-05",
+      "LRQ-06",
+      "LRQ-07",
+      "LRQ-08",
+      "LRQ-09",
+      "LRQ-10",
+      "LRQ-11",
+      "LRQ-12",
+      "LRQ-13",
+      "LRQ-14",
+      "LRQ-15",
+      "LRQ-16",
+      "LRQ-17",
+      "LRQ-18",
+      "LRQ-19",
+      "LRQ-20",
+      "LRQ-21"
+    ],
+    "question_count": 21,
+    "non_claims": [
+      "This packet is not a legal opinion, legal review record or approval.",
+      "No reviewer has been assigned; all reviewer identity, qualification, date and decision fields remain blank.",
+      "No legal conclusion has been reached on any question.",
+      "Preparing this packet does not complete the LEGAL_CONTENT_REVIEW stage."
+    ]
+  },
   "legal_review_status": "NOT_REQUESTED",
   "rights_review_status": "NOT_REVIEWED",
   "implementation_authorization": "NOT_AUTHORIZED",
@@ -68,7 +193,7 @@
     "release_approver"
   ],
   "assigned_reviewers": [],
-  "scope_note": "Post-baseline addendum only. It does not alter the frozen five-case planning counts (15 routes, 131 gaps, 199 crosswalks) and it does not authorize any runtime change. The existing rental output is a project-authored software baseline, not an official template or legal authority.",
+  "scope_note": "Post-baseline addendum only. It does not alter the frozen five-case planning counts (15 routes, 131 gaps, 199 crosswalks). It adds three unapproved rental entries to the central case-template mapping and does not authorize any runtime change. The existing rental output is a project-authored software baseline, not an official template or legal authority.",
   "current_application": {
     "case_type_name": "租赁合同纠纷",
     "user_fields": [
@@ -119,6 +244,7 @@
   },
   "known_legal_questions": [
     "Whether the correct official counterpart is a generic lease dispute, a residential lease dispute, a commercial lease dispute, or a separate variant.",
+    "Whether the product should remain a lessor-only arrears template or also support a lessee plaintiff claiming delivery of the premises or return of the deposit.",
     "Whether the plaintiff's right to rent or authority to sublease must be captured and reviewed before asserting a rent claim.",
     "Whether the complaint should request termination, confirm an already-completed termination, or remain silent on contract status in each procedural posture.",
     "Whether arrears, late fees, deposit set-off, occupation-use fees and damages must be separated into distinct claims.",
@@ -154,35 +280,39 @@
     {
       "task_id": "text-and-structure-comparison",
       "stage": "TEXT_AND_STRUCTURE_COMPARISON",
-      "status": "NOT_STARTED",
+      "status": "COMPLETE",
       "owner_role": "legal_content_reviewer",
       "objective": "Compare official elements and document structure with the current rental fields, claims and facts.",
       "exit_criteria": [
         "A written comparison records elements, sections, omissions and conditionality differences.",
         "Any proposed rental field or narrative change is identified with a gap record."
-      ]
+      ],
+      "evidence": "rental-text-and-structure-comparison.md records the section-by-section comparison and 35 open gaps (RCS-01 to RCS-35). It is documentary only and does not approve any mapping or legal conclusion."
     },
     {
       "task_id": "case-mapping-review",
       "stage": "CASE_MAPPING_REVIEW",
-      "status": "BLOCKED",
+      "status": "COMPLETE",
       "owner_role": "legal_content_reviewer",
       "objective": "Decide whether each rental document type has a correct official counterpart.",
       "exit_criteria": [
         "Mapping entries are added to case-template-mapping.json only after source evidence exists.",
         "Each entry remains unapproved unless a separate legal review approves it."
-      ]
+      ],
+      "evidence": "Three unapproved rental entries were added: map-rental-complaint (CANDIDATE_SOURCE_IDENTIFIED), map-rental-evidence (UNVERIFIED), and map-rental-address (NO_OFFICIAL_SOURCE_IDENTIFIED). All remain approval_status NOT_REQUESTED."
     },
     {
       "task_id": "legal-and-content-review",
       "stage": "LEGAL_CONTENT_REVIEW",
-      "status": "BLOCKED",
+      "status": "NOT_STARTED",
       "owner_role": "legal_content_reviewer",
       "objective": "Review rental claims, facts, conditionality and procedural applicability.",
       "exit_criteria": [
         "A documented legal/content decision exists with reviewer role and date.",
         "Automated tests are not treated as legal approval."
-      ]
+      ],
+      "preparation_evidence": "rental-legal-content-review-packet.md prepared with 21 questions (LRQ-01 to LRQ-21); no reviewer assigned and no legal conclusion reached.",
+      "blocking_reason": "No qualified legal reviewer has been assigned; the stage cannot be completed by the project itself."
     },
     {
       "task_id": "rights-and-redistribution-review",
@@ -248,8 +378,12 @@
     "Release approval is recorded separately."
   ],
   "non_claims": [
-    "A candidate official rental complaint has been identified, but it has not been mapped or approved for adaptation.",
+    "A candidate official rental complaint has been identified and three unapproved rental mapping entries have been recorded, but no mapping is approved for adaptation.",
     "The candidate source file has been verified at file level only; this is not legal/content review or legal approval.",
+    "The text-and-structure comparison is documentary only; it does not decide mapping applicability, legal sufficiency or approval.",
+    "The mapping review records candidate and no-counterpart decisions only; it is not a legal applicability review or approval.",
+    "No official text has been copied into the repository; only section labels, page references and gap identifiers are recorded.",
+    "A legal review packet has been prepared, but no reviewer has been assigned and no legal conclusion has been reached.",
     "No legal review has been performed.",
     "No mapping is approved.",
     "No rights or redistribution decision has been made.",

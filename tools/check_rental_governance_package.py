@@ -8,15 +8,17 @@ The validator proves only that the work package is well-formed and still at a
 pre-review stage. It cannot establish that a source exists, that legal review
 occurred, or that a mapping is applicable.
 
-Two documentary gates may be recorded as ``COMPLETE``:
+Four documentary gates may be recorded as ``COMPLETE``:
 
 * ``SOURCE_DISCOVERY``
 * ``SOURCE_VERIFICATION``
+* ``TEXT_AND_STRUCTURE_COMPARISON``
+* ``CASE_MAPPING_REVIEW``
 
-The current stage may be ``TEXT_AND_STRUCTURE_COMPARISON``; every later gate
-must remain incomplete and unauthorized. A candidate source may be recorded,
-but no source selection, mapping, legal review, rights decision, engineering
-authorization or release approval is accepted.
+The current stage may be ``LEGAL_CONTENT_REVIEW``; every later gate must remain
+incomplete and unauthorized. A candidate source and three unapproved rental
+mapping entries may be recorded, but no source selection, legal review, rights
+decision, engineering authorization or release approval is accepted.
 
 Usage::
 
@@ -45,6 +47,9 @@ DEFAULT_PACKAGE = (
 DEFAULT_SOURCE_REGISTRY = (
     REPO_ROOT / "docs" / "legal-template-governance" / "source-registry.json"
 )
+DEFAULT_MAPPING_REGISTRY = (
+    REPO_ROOT / "docs" / "legal-template-governance" / "case-template-mapping.json"
+)
 
 CASE_TYPE = "rental"
 DOCUMENT_TYPES = (
@@ -63,8 +68,8 @@ TASK_STAGES = (
     "DOCX_REGRESSION_VALIDATION",
     "RELEASE_APPROVAL",
 )
-# Only the documentary evidence stages may advance in this package.
-PACKAGE_STAGES = TASK_STAGES[:3]
+# The documentary stages and the mapping review may advance here.
+PACKAGE_STAGES = TASK_STAGES[:5]
 TASK_STATUSES = frozenset({
     "NOT_STARTED",
     "BLOCKED",
@@ -87,6 +92,16 @@ COUNTERPART_CLASSIFICATIONS = {
         "NO_COUNTERPART_IDENTIFIED_IN_INSPECTED_SOURCE",
     }),
 }
+RENTAL_MAPPING_IDS = {
+    "civil_complaint": "map-rental-complaint",
+    "evidence_list": "map-rental-evidence",
+    "service_address_confirmation": "map-rental-address",
+}
+EXPECTED_RENTAL_MAPPING_STATUSES = {
+    "civil_complaint": "CANDIDATE_SOURCE_IDENTIFIED",
+    "evidence_list": "UNVERIFIED",
+    "service_address_confirmation": "NO_OFFICIAL_SOURCE_IDENTIFIED",
+}
 
 _REQUIRED_TOP_LEVEL = (
     "work_package_id",
@@ -104,6 +119,9 @@ _REQUIRED_TOP_LEVEL = (
     "source_discovery",
     "source_verification",
     "counterpart_assessment",
+    "text_and_structure_comparison",
+    "case_mapping_review",
+    "legal_content_review",
     "legal_review_status",
     "rights_review_status",
     "implementation_authorization",
@@ -121,6 +139,8 @@ _REQUIRED_TOP_LEVEL = (
 
 _HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
 _HEX64_RE = re.compile(r"^[0-9a-f]{64}$")
+_GAP_ID_RE = re.compile(r"^RCS-\d{2}$")
+_LRQ_ID_RE = re.compile(r"^LRQ-\d{2}$")
 
 
 def _date_is_iso(value: Any) -> bool:
@@ -319,6 +339,264 @@ def _check_counterpart_assessment(
                 issues.append(f"{label}.pdf_pages must be a non-empty list of page numbers")
 
 
+def _check_text_and_structure_comparison(
+    data: Dict[str, Any], candidate_ids: List[str], issues: List[str]
+) -> None:
+    comparison = data.get("text_and_structure_comparison")
+    if not isinstance(comparison, dict):
+        issues.append("text_and_structure_comparison must be an object")
+        return
+
+    if comparison.get("status") != "COMPLETE":
+        issues.append("text_and_structure_comparison.status must be 'COMPLETE'")
+    if not _date_is_iso(comparison.get("completed_date")):
+        issues.append(
+            "text_and_structure_comparison.completed_date must be an ISO calendar date"
+        )
+    if comparison.get("document") != "rental-text-and-structure-comparison.md":
+        issues.append(
+            "text_and_structure_comparison.document must be "
+            "'rental-text-and-structure-comparison.md'"
+        )
+
+    source_id = comparison.get("source_id")
+    if not isinstance(source_id, str) or not source_id.strip():
+        issues.append(
+            "text_and_structure_comparison.source_id must be a non-empty string"
+        )
+    elif source_id not in candidate_ids:
+        issues.append(
+            "text_and_structure_comparison.source_id must appear in "
+            "source_discovery.candidate_source_ids"
+        )
+
+    _require_string(comparison, "current_output_basis", issues)
+    _require_string(comparison, "method", issues)
+    _require_string(comparison, "summary", issues)
+
+    for key in ("blank_form_pdf_pages", "instance_pdf_pages"):
+        _check_page_range(comparison, key, "text_and_structure_comparison", issues)
+
+    assessment = data.get("counterpart_assessment")
+    if isinstance(assessment, dict):
+        complaint = assessment.get("civil_complaint")
+        if isinstance(complaint, dict):
+            for key in ("blank_form_pdf_pages", "instance_pdf_pages"):
+                if comparison.get(key) != complaint.get(key):
+                    issues.append(
+                        f"text_and_structure_comparison.{key} must match "
+                        f"counterpart_assessment.civil_complaint.{key}"
+                    )
+
+    gap_ids = comparison.get("gap_register_ids")
+    if not isinstance(gap_ids, list) or not gap_ids:
+        issues.append(
+            "text_and_structure_comparison.gap_register_ids must be a non-empty list"
+        )
+        gap_ids = []
+    else:
+        normalized = []
+        for gap_id in gap_ids:
+            if not isinstance(gap_id, str) or not _GAP_ID_RE.match(gap_id):
+                issues.append(
+                    "text_and_structure_comparison.gap_register_ids must use RCS-NN "
+                    "identifiers"
+                )
+                continue
+            normalized.append(gap_id)
+        if len(set(normalized)) != len(normalized):
+            issues.append(
+                "text_and_structure_comparison.gap_register_ids must not contain duplicates"
+            )
+
+    gap_count = comparison.get("gap_count")
+    if not _is_positive_int(gap_count):
+        issues.append(
+            "text_and_structure_comparison.gap_count must be a positive integer"
+        )
+    elif gap_count != len(gap_ids):
+        issues.append(
+            "text_and_structure_comparison.gap_count must equal the number of gap ids"
+        )
+
+    questions = comparison.get("highest_priority_open_questions")
+    if not isinstance(questions, list) or not questions or not all(
+        isinstance(item, str) and item.strip() for item in questions
+    ):
+        issues.append(
+            "text_and_structure_comparison.highest_priority_open_questions must be a "
+            "non-empty list of strings"
+        )
+
+
+def _check_case_mapping_review(data: Dict[str, Any], issues: List[str]) -> None:
+    review = data.get("case_mapping_review")
+    if not isinstance(review, dict):
+        issues.append("case_mapping_review must be an object")
+        return
+
+    if review.get("status") != "COMPLETE":
+        issues.append("case_mapping_review.status must be 'COMPLETE'")
+    if not _date_is_iso(review.get("completed_date")):
+        issues.append("case_mapping_review.completed_date must be an ISO calendar date")
+    if review.get("document") != "case-template-mapping.json":
+        issues.append(
+            "case_mapping_review.document must be 'case-template-mapping.json'"
+        )
+
+    expected_ids = [RENTAL_MAPPING_IDS[doc_type] for doc_type in DOCUMENT_TYPES]
+    if review.get("mapping_ids") != expected_ids:
+        issues.append(
+            "case_mapping_review.mapping_ids must be exactly: "
+            + ", ".join(expected_ids)
+        )
+
+    decisions = review.get("decisions")
+    if not isinstance(decisions, dict):
+        issues.append("case_mapping_review.decisions must be an object")
+    else:
+        for document_type in DOCUMENT_TYPES:
+            label = f"case_mapping_review.decisions.{document_type}"
+            entry = decisions.get(document_type)
+            if not isinstance(entry, dict):
+                issues.append(f"{label} must be an object")
+                continue
+            expected_status = EXPECTED_RENTAL_MAPPING_STATUSES[document_type]
+            if entry.get("mapping_status") != expected_status:
+                issues.append(
+                    f"{label}.mapping_status must be {expected_status!r}"
+                )
+            for key in ("decision", "basis"):
+                value = entry.get(key)
+                if not isinstance(value, str) or not value.strip():
+                    issues.append(f"{label}.{key} must be a non-empty string")
+
+    if review.get("approval_status") != "NOT_REQUESTED":
+        issues.append("case_mapping_review.approval_status must remain 'NOT_REQUESTED'")
+    if review.get("legal_review_status") != "NOT_STARTED":
+        issues.append("case_mapping_review.legal_review_status must remain 'NOT_STARTED'")
+    _require_string(review, "notes", issues)
+
+
+def _check_legal_content_review(data: Dict[str, Any], issues: List[str]) -> None:
+    review = data.get("legal_content_review")
+    if not isinstance(review, dict):
+        issues.append("legal_content_review must be an object")
+        return
+
+    if review.get("status") != "PACKET_PREPARED":
+        issues.append("legal_content_review.status must be 'PACKET_PREPARED'")
+    if not _date_is_iso(review.get("prepared_date")):
+        issues.append("legal_content_review.prepared_date must be an ISO calendar date")
+    if review.get("packet_document") != "rental-legal-content-review-packet.md":
+        issues.append(
+            "legal_content_review.packet_document must be "
+            "'rental-legal-content-review-packet.md'"
+        )
+    if review.get("review_performed") is not False:
+        issues.append("legal_content_review.review_performed must remain false")
+    _require_string(review, "reviewer_required", issues)
+    if review.get("reviewer_assigned") is not False:
+        issues.append("legal_content_review.reviewer_assigned must remain false")
+    if review.get("review_date") is not None:
+        issues.append("legal_content_review.review_date must remain null")
+    _require_string(review, "blocking_reason", issues)
+
+    question_ids = review.get("question_ids")
+    if not isinstance(question_ids, list) or not question_ids:
+        issues.append("legal_content_review.question_ids must be a non-empty list")
+        question_ids = []
+    else:
+        normalized = []
+        for question_id in question_ids:
+            if not isinstance(question_id, str) or not _LRQ_ID_RE.match(question_id):
+                issues.append(
+                    "legal_content_review.question_ids must use LRQ-NN identifiers"
+                )
+                continue
+            normalized.append(question_id)
+        if len(set(normalized)) != len(normalized):
+            issues.append(
+                "legal_content_review.question_ids must not contain duplicates"
+            )
+
+    question_count = review.get("question_count")
+    if not _is_positive_int(question_count):
+        issues.append(
+            "legal_content_review.question_count must be a positive integer"
+        )
+    elif question_count != len(question_ids):
+        issues.append(
+            "legal_content_review.question_count must equal the number of question ids"
+        )
+
+    non_claims = review.get("non_claims")
+    if not isinstance(non_claims, list) or not non_claims or not all(
+        isinstance(item, str) and item.strip() for item in non_claims
+    ):
+        issues.append(
+            "legal_content_review.non_claims must be a non-empty list of strings"
+        )
+
+
+def _check_mapping_registry_consistency(
+    data: Dict[str, Any],
+    mapping_registry: Optional[Dict[str, Any]],
+    issues: List[str],
+) -> None:
+    if mapping_registry is None:
+        return
+    if not isinstance(mapping_registry, dict):
+        issues.append("case-template-mapping registry must be a JSON object")
+        return
+
+    mappings = mapping_registry.get("mappings")
+    if not isinstance(mappings, list):
+        issues.append(
+            "case-template-mapping registry must contain a 'mappings' list"
+        )
+        return
+
+    rental = [
+        mapping
+        for mapping in mappings
+        if isinstance(mapping, dict) and mapping.get("case_type") == "rental"
+    ]
+    if len(rental) != 3:
+        issues.append(
+            "case-template-mapping registry must contain exactly three rental mappings"
+        )
+        return
+
+    by_document = {
+        mapping.get("document_type"): mapping for mapping in rental
+    }
+    if set(by_document) != set(DOCUMENT_TYPES):
+        issues.append(
+            "case-template-mapping rental entries must cover all three document types"
+        )
+        return
+
+    for document_type in DOCUMENT_TYPES:
+        mapping = by_document[document_type]
+        label = f"case-template-mapping rental {document_type}"
+        expected_id = RENTAL_MAPPING_IDS[document_type]
+        if mapping.get("mapping_id") != expected_id:
+            issues.append(f"{label}: mapping_id must be {expected_id!r}")
+        expected_status = EXPECTED_RENTAL_MAPPING_STATUSES[document_type]
+        if mapping.get("mapping_status") != expected_status:
+            issues.append(f"{label}: mapping_status must be {expected_status!r}")
+        if mapping.get("approval_status") != "NOT_REQUESTED":
+            issues.append(f"{label}: approval_status must remain 'NOT_REQUESTED'")
+        if document_type == "civil_complaint":
+            refs = mapping.get("candidate_source_ids")
+            if not isinstance(refs, list) or "spc-2025-notice-pdf" not in refs:
+                issues.append(
+                    f"{label}: candidate_source_ids must include "
+                    "'spc-2025-notice-pdf'"
+                )
+
+
 def _check_task_progression(
     data: Dict[str, Any], tasks: List[Any], issues: List[str]
 ) -> None:
@@ -401,7 +679,9 @@ def _check_registry_consistency(
 
 
 def validate_package(
-    data: Any, source_registry: Optional[Dict[str, Any]] = None
+    data: Any,
+    source_registry: Optional[Dict[str, Any]] = None,
+    mapping_registry: Optional[Dict[str, Any]] = None,
 ) -> List[str]:
     """Return validation issues; an empty list means the package is valid."""
     issues: List[str] = []
@@ -434,8 +714,10 @@ def validate_package(
         issues.append("runtime_status must record the tested baseline")
     if data.get("runtime_characterization") != "PROJECT_AUTHORED_STRUCTURED_TEMPLATE":
         issues.append("runtime_characterization must remain project-authored")
-    if data.get("central_mapping_registry_updated") is not False:
-        issues.append("central_mapping_registry_updated must be false")
+    if data.get("central_mapping_registry_updated") is not True:
+        issues.append(
+            "central_mapping_registry_updated must be true after the mapping review"
+        )
     if data.get("frozen_planning_records_modified") is not False:
         issues.append("frozen_planning_records_modified must be false")
     if data.get("legal_review_status") != "NOT_REQUESTED":
@@ -463,7 +745,11 @@ def validate_package(
     candidate_ids = _check_source_discovery(data, issues)
     _check_source_verification(data, candidate_ids, issues)
     _check_counterpart_assessment(data, candidate_ids, issues)
+    _check_text_and_structure_comparison(data, candidate_ids, issues)
+    _check_case_mapping_review(data, issues)
+    _check_legal_content_review(data, issues)
     _check_registry_consistency(data, candidate_ids, source_registry, issues)
+    _check_mapping_registry_consistency(data, mapping_registry, issues)
 
     _require_string_list(data, "reviewer_roles_required", issues)
     if data.get("assigned_reviewers") != []:
@@ -538,13 +824,17 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument(
         "--source-registry", type=Path, default=DEFAULT_SOURCE_REGISTRY
     )
+    parser.add_argument(
+        "--mapping-registry", type=Path, default=DEFAULT_MAPPING_REGISTRY
+    )
     args = parser.parse_args(argv)
 
     issues: List[str] = []
     data = _load(args.package, issues)
     registry = _load(args.source_registry, issues)
+    mapping_registry = _load(args.mapping_registry, issues)
     if data is not None:
-        issues.extend(validate_package(data, registry))
+        issues.extend(validate_package(data, registry, mapping_registry))
 
     if issues:
         print("FAIL rental governance work package is invalid:")
@@ -553,7 +843,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 1
     print(
         "OK   rental governance work package is valid "
-        "(pre-review, candidate source only, NO-GO)"
+        "(legal review packet prepared, review not performed, NO-GO)"
     )
     return 0
 

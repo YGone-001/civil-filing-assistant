@@ -123,7 +123,7 @@ def _approved_mapping(case_type="contract", document_type="civil_complaint", **o
 
 
 def _fixture_mappings(approved=None):
-    """All fifteen combinations; *approved* replaces its own slot when supplied."""
+    """All case-document combinations; *approved* replaces its own slot when supplied."""
     mappings = []
     for case_type in sorted(ctg.CASE_TYPES):
         for document_type in sorted(ctg.DOCUMENT_TYPES):
@@ -186,11 +186,28 @@ def test_repository_registry_covers_all_document_types():
     assert {m["document_type"] for m in data["mappings"]} == set(ctg.DOCUMENT_TYPES)
 
 
-def test_repository_registry_has_exactly_fifteen_combinations():
+def test_repository_registry_has_eighteen_combinations():
     data = json.loads(MAPPING_REGISTRY.read_text(encoding="utf-8"))
     combos = {(m["case_type"], m["document_type"]) for m in data["mappings"]}
-    assert len(combos) == 15
-    assert len(data["mappings"]) == 15
+    assert len(combos) == 18
+    assert len(data["mappings"]) == 18
+    assert len([m for m in data["mappings"] if m["case_type"] == "rental"]) == 3
+    assert len([m for m in data["mappings"] if m["case_type"] != "rental"]) == 15
+
+
+def test_repository_registry_rental_entries_are_unapproved():
+    data = json.loads(MAPPING_REGISTRY.read_text(encoding="utf-8"))
+    rental = [m for m in data["mappings"] if m["case_type"] == "rental"]
+    assert {m["document_type"] for m in rental} == set(ctg.DOCUMENT_TYPES)
+    assert all(m["approval_status"] == "NOT_REQUESTED" for m in rental)
+    assert all(
+        m["mapping_status"] in {
+            "CANDIDATE_SOURCE_IDENTIFIED",
+            "UNVERIFIED",
+            "NO_OFFICIAL_SOURCE_IDENTIFIED",
+        }
+        for m in rental
+    )
 
 
 def test_repository_registry_has_no_approved_mapping():

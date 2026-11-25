@@ -1,9 +1,9 @@
 {
-  "mapping_version": "1.0.0",
+  "mapping_version": "1.1.0",
   "repository": "https://github.com/YGone-001/civil-filing-assistant.git",
   "audited_revision": "eb23e3e8c8ae080d7185309bf69b3e41681a904e",
   "review_date": "2026-10-10",
-  "notes": "Auditable mapping between the application's five runtime case types, its three generated documents, and candidate external source materials. Every entry is a candidate record: NONE of the mappings has been legally reviewed or approved. 'CANDIDATE_SOURCE_IDENTIFIED' means a plausible official source exists and was located; it does NOT mean the application output conforms to it.",
+  "notes": "Auditable mapping between the application's runtime case types (the original five-case baseline plus the post-baseline rental addendum), its three generated documents, and candidate external source materials. Every entry is a candidate record: NONE of the mappings has been legally reviewed or approved. 'CANDIDATE_SOURCE_IDENTIFIED' means a plausible official source exists and was located; it does NOT mean the application output conforms to it. The three rental entries were added after source verification and a written text/structure comparison; they remain unapproved.",
   "mapping_status_informational": [
     "UNVERIFIED",
     "CANDIDATE_SOURCE_IDENTIFIED",
@@ -18,6 +18,15 @@
     "APPROVED",
     "REJECTED"
   ],
+  "post_baseline_addendum": {
+    "case_type": "rental",
+    "added_date": "2026-11-26",
+    "work_package": "wp-rental-source-discovery",
+    "comparison_document": "official-adaptation-planning/rental-text-and-structure-comparison.md",
+    "status": "MAPPING_REVIEW_COMPLETE",
+    "approval_status": "NOT_REQUESTED",
+    "notes": "Adds three unapproved rental mapping records after source verification and the written comparison. It does not alter the frozen five-case planning counts (15 routes, 131 gaps, 199 crosswalks)."
+  },
   "mappings": [
     {
       "mapping_id": "map-loan-complaint",
@@ -258,6 +267,63 @@
       "required_manual_review": true,
       "approval_status": "NOT_REQUESTED",
       "notes": "No official source identified."
+    },
+    {
+      "mapping_id": "map-rental-complaint",
+      "case_type": "rental",
+      "document_type": "civil_complaint",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_complaint",
+      "current_output_status": "IMPLEMENTED_AND_TESTED",
+      "candidate_source_ids": ["spc-2025-notice-pdf"],
+      "mapping_status": "CANDIDATE_SOURCE_IDENTIFIED",
+      "mapping_confidence_or_evidence": "The official notice PDF contains 民事起诉状（房屋租赁合同纠纷） at PDF pages 171-176 (printed 155-160), with an instance at PDF pages 181-186 (printed 165-170). The text-and-structure comparison is recorded in official-adaptation-planning/rental-text-and-structure-comparison.md.",
+      "jurisdictional_scope": "Mainland China, nationwide (per the 2025-07-14 nationwide rollout); local court requirements not verified.",
+      "applicability_notes": "Mapping review decision: the official rental complaint is the documentary counterpart for the civil complaint. It is not a legal applicability approval. The current output is a narrative, lessor-oriented complaint; the official text is an element table with lessor/lessee branches, and the comparison records 35 open gaps.",
+      "unverified_assumptions": [
+        "That the official rental complaint is the correct counterpart for every rental dispute variant.",
+        "That the current narrative style may be used instead of the official element table.",
+        "That the current lessor-oriented model covers the intended product scope.",
+        "That local courts accept the current document structure."
+      ],
+      "required_manual_review": true,
+      "approval_status": "NOT_REQUESTED",
+      "notes": "Candidate only; mapping review complete, legal/content review not started."
+    },
+    {
+      "mapping_id": "map-rental-evidence",
+      "case_type": "rental",
+      "document_type": "evidence_list",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_evidence_list",
+      "current_output_status": "IMPLEMENTED_AND_TESTED",
+      "candidate_source_ids": ["spc-2025-notice-pdf"],
+      "mapping_status": "UNVERIFIED",
+      "mapping_confidence_or_evidence": "The official rental complaint contains an evidence-list (证据清单) section at PDF pages 175/185; no standalone official evidence-list document was identified in the inspected source.",
+      "jurisdictional_scope": null,
+      "applicability_notes": "The current standalone evidence list is a project-authored four-column table. Its relationship to the official complaint's evidence-list section is not established.",
+      "unverified_assumptions": [
+        "That the official complaint's evidence-list section governs a standalone evidence-list document."
+      ],
+      "required_manual_review": true,
+      "approval_status": "NOT_REQUESTED",
+      "notes": "No standalone official counterpart identified; the current output is project-authored."
+    },
+    {
+      "mapping_id": "map-rental-address",
+      "case_type": "rental",
+      "document_type": "service_address_confirmation",
+      "current_generator": "utils/doc_generator.py :: DocumentGenerator.export_address_form",
+      "current_output_status": "IMPLEMENTED_AND_TESTED",
+      "candidate_source_ids": [],
+      "mapping_status": "NO_OFFICIAL_SOURCE_IDENTIFIED",
+      "mapping_confidence_or_evidence": "No service-address confirmation form was found in the inspected rental pages (PDF 171-186). This statement is limited to this source.",
+      "jurisdictional_scope": null,
+      "applicability_notes": "The current service-address confirmation form is a project-authored procedural document; no counterpart was found in the inspected official source.",
+      "unverified_assumptions": [
+        "That the form's content is acceptable to any specific court."
+      ],
+      "required_manual_review": true,
+      "approval_status": "NOT_REQUESTED",
+      "notes": "No official counterpart identified in the inspected source; this does not imply the document is incorrect."
     }
   ]
 }
