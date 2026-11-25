@@ -5,6 +5,10 @@
 > source exists and was located — it does **not** mean the application's output conforms to it.
 >
 > Machine-readable counterpart: `case-template-mapping.json`. Sources: `source-registry.json`.
+>
+> **Post-baseline rental case:** `rental` is not registered in this five-case mapping. Its separate
+> governance work package is `official-adaptation-planning/rental-contract-work-package.md` /
+> `.json` (`OPEN` / `NO-GO`). Do not add rental mappings here without source evidence.
 
 - Repository: `YGone-001/civil-filing-assistant`
 - Audited revision: `eb23e3e8c8ae080d7185309bf69b3e41681a904e`

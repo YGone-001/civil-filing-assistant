@@ -37,6 +37,7 @@ decide?** — without changing anything:
 | Implementation sequence | `implementation-sequence.md` |
 | Pilot selection | `pilot-selection.md` |
 | Final decision request | `decision-request.md` |
+| 租赁合同治理工作包（后置增补） | `rental-contract-work-package.md` / `rental-contract-work-package.json` |
 
 Machine-readable planning records are validated offline by
 `tools/check_template_adaptation_plan.py` with regression tests in
@@ -76,6 +77,10 @@ BLOCKED                      5   all five service-address routes (no candidate s
 Gap distribution by case: `loan` 29 · `contract` 29 · `property` 24 · `labor` 26 · `divorce` 23.
 By document: civil complaint 121 · evidence list 5 · service address 5.
 By frozen severity: HIGH 4 · MEDIUM 65 · LOW 59 · INFORMATIONAL 3.
+
+> The counts above describe the frozen five-case baseline. The separate rental addendum
+> (`rental-contract-work-package.md` / `.json`) is `OPEN` / `NO-GO`; it does not change these
+> counts and is validated by `tools/check_rental_governance_package.py`.
 
 ---
 

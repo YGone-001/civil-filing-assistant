@@ -1,0 +1,222 @@
+{
+  "work_package_id": "wp-rental-source-discovery",
+  "title": "租赁合同纠纷 — governance source discovery and adaptation design",
+  "status": "OPEN",
+  "current_stage": "SOURCE_DISCOVERY",
+  "created_date": "2026-11-26",
+  "baseline_commit": "b81810ad2669194b30094fd5dd91613c8d234e82",
+  "case_type": "rental",
+  "document_types": [
+    "civil_complaint",
+    "evidence_list",
+    "service_address_confirmation"
+  ],
+  "runtime_status": "IMPLEMENTED_AND_TESTED",
+  "runtime_characterization": "PROJECT_AUTHORED_STRUCTURED_TEMPLATE",
+  "central_mapping_registry_updated": false,
+  "frozen_planning_records_modified": false,
+  "source_discovery": {
+    "status": "NOT_STARTED",
+    "candidate_source_ids": [],
+    "selected_source_id": null,
+    "official_counterpart": "UNKNOWN",
+    "next_action": "Locate and record an authoritative source for a rental-contract civil complaint before any mapping or content change is proposed."
+  },
+  "legal_review_status": "NOT_REQUESTED",
+  "rights_review_status": "NOT_REVIEWED",
+  "implementation_authorization": "NOT_AUTHORIZED",
+  "release_gate": "NO-GO",
+  "reviewer_roles_required": [
+    "source_discovery_reviewer",
+    "source_verification_reviewer",
+    "legal_content_reviewer",
+    "rights_and_redistribution_reviewer",
+    "release_approver"
+  ],
+  "assigned_reviewers": [],
+  "scope_note": "Post-baseline addendum only. It does not alter the frozen five-case planning counts (15 routes, 131 gaps, 199 crosswalks) and it does not authorize any runtime change. The existing rental output is a project-authored software baseline, not an official template or legal authority.",
+  "current_application": {
+    "case_type_name": "租赁合同纠纷",
+    "user_fields": [
+      "property_address",
+      "contract_date",
+      "lease_start",
+      "lease_end",
+      "monthly_rent",
+      "payment_cycle",
+      "arrears_start",
+      "arrears_end",
+      "arrears_amount",
+      "late_fee",
+      "demand_record",
+      "lease_status",
+      "termination_date",
+      "property_returned",
+      "court_name",
+      "extra_claims",
+      "extra_facts"
+    ],
+    "claims": [
+      "request termination when the user selects that status",
+      "arrears amount with an optional arrears period",
+      "late fee when supplied",
+      "vacate and return the premises when the contract is terminated or termination is requested and the premises are not returned",
+      "litigation costs"
+    ],
+    "documents": [
+      "civil_complaint",
+      "evidence_list",
+      "service_address_confirmation"
+    ],
+    "runtime_files": [
+      "models/case_model.py",
+      "views/pages/rental.py",
+      "presenters/model_builder.py",
+      "drafts/schema.py",
+      "utils/doc_generator.py",
+      "utils/evidence_library.py",
+      "utils/facts_examples.py"
+    ],
+    "runtime_tests": [
+      "tests/test_rental_case.py",
+      "tests/test_word_acceptance.py",
+      "tests/test_e2e_documents.py"
+    ]
+  },
+  "known_legal_questions": [
+    "Whether the correct official counterpart is a generic lease dispute, a residential lease dispute, a commercial lease dispute, or a separate variant.",
+    "Whether the plaintiff's right to rent or authority to sublease must be captured and reviewed before asserting a rent claim.",
+    "Whether the complaint should request termination, confirm an already-completed termination, or remain silent on contract status in each procedural posture.",
+    "Whether arrears, late fees, deposit set-off, occupation-use fees and damages must be separated into distinct claims.",
+    "Whether demand/notice, termination notice, return of premises and the date of actual return require separate user-confirmed fields.",
+    "Which court has jurisdiction when the property location, defendant residence and contractual jurisdiction clause differ.",
+    "Whether an official standalone evidence-list or service-address confirmation form exists for rental disputes."
+  ],
+  "tasks": [
+    {
+      "task_id": "source-discovery",
+      "stage": "SOURCE_DISCOVERY",
+      "status": "NOT_STARTED",
+      "owner_role": "source_discovery_reviewer",
+      "objective": "Locate candidate authoritative sources for rental-contract complaint, evidence-list and service-address documents.",
+      "exit_criteria": [
+        "A source record with an official URL and explicit nulls for unknown attributes is created.",
+        "The source is not described as verified or approved merely because a URL exists."
+      ]
+    },
+    {
+      "task_id": "source-verification",
+      "stage": "SOURCE_VERIFICATION",
+      "status": "BLOCKED",
+      "owner_role": "source_verification_reviewer",
+      "objective": "Verify source identity, version, level, hash and local artifact status.",
+      "exit_criteria": [
+        "The source reaches SOURCE_FILE_VERIFIED with a recorded hash and evidence.",
+        "No content or legal conclusion is inferred from the file hash alone."
+      ]
+    },
+    {
+      "task_id": "text-and-structure-comparison",
+      "stage": "TEXT_AND_STRUCTURE_COMPARISON",
+      "status": "BLOCKED",
+      "owner_role": "legal_content_reviewer",
+      "objective": "Compare official elements and document structure with the current rental fields, claims and facts.",
+      "exit_criteria": [
+        "A written comparison records elements, sections, omissions and conditionality differences.",
+        "Any proposed rental field or narrative change is identified with a gap record."
+      ]
+    },
+    {
+      "task_id": "case-mapping-review",
+      "stage": "CASE_MAPPING_REVIEW",
+      "status": "BLOCKED",
+      "owner_role": "legal_content_reviewer",
+      "objective": "Decide whether each rental document type has a correct official counterpart.",
+      "exit_criteria": [
+        "Mapping entries are added to case-template-mapping.json only after source evidence exists.",
+        "Each entry remains unapproved unless a separate legal review approves it."
+      ]
+    },
+    {
+      "task_id": "legal-and-content-review",
+      "stage": "LEGAL_CONTENT_REVIEW",
+      "status": "BLOCKED",
+      "owner_role": "legal_content_reviewer",
+      "objective": "Review rental claims, facts, conditionality and procedural applicability.",
+      "exit_criteria": [
+        "A documented legal/content decision exists with reviewer role and date.",
+        "Automated tests are not treated as legal approval."
+      ]
+    },
+    {
+      "task_id": "rights-and-redistribution-review",
+      "stage": "RIGHTS_AND_REDISTRIBUTION_REVIEW",
+      "status": "BLOCKED",
+      "owner_role": "rights_and_redistribution_reviewer",
+      "objective": "Determine whether any official source may be adapted or redistributed.",
+      "exit_criteria": [
+        "A rights decision is recorded separately from source verification and legal content review.",
+        "No official text is copied into the application without a cleared rights decision."
+      ]
+    },
+    {
+      "task_id": "engineering-implementation",
+      "stage": "ENGINEERING_IMPLEMENTATION",
+      "status": "NOT_AUTHORIZED",
+      "owner_role": "engineering_owner",
+      "objective": "Implement only a scoped, authorized adaptation after all preceding gates pass.",
+      "exit_criteria": [
+        "A scoped engineering authorization exists.",
+        "The existing rental runtime remains the project-authored baseline until then."
+      ]
+    },
+    {
+      "task_id": "docx-regression-validation",
+      "stage": "DOCX_REGRESSION_VALIDATION",
+      "status": "NOT_ASSESSED",
+      "owner_role": "engineering_owner",
+      "objective": "Validate accepted changes across all six case types and three document types.",
+      "exit_criteria": [
+        "Automated DOCX structural tests pass.",
+        "A human/WPS or Word pagination and table-layout check is recorded."
+      ]
+    },
+    {
+      "task_id": "release-approval",
+      "stage": "RELEASE_APPROVAL",
+      "status": "NOT_ASSESSED",
+      "owner_role": "release_approver",
+      "objective": "Decide whether the authorized change may ship.",
+      "exit_criteria": [
+        "Release approval is recorded separately from engineering acceptance.",
+        "No release approval is implied by a Git commit or a passing test suite."
+      ]
+    }
+  ],
+  "gate_sequence": [
+    "SOURCE_AUTHENTICITY",
+    "SOURCE_CONTENT_REVIEW",
+    "MAPPING_APPLICABILITY_REVIEW",
+    "LEGAL_CONTENT_REVIEW",
+    "RIGHTS_AND_REDISTRIBUTION_REVIEW",
+    "SCOPED_ENGINEERING_AUTHORIZATION",
+    "IMPLEMENTATION",
+    "DOCX_REGRESSION_ACCEPTANCE",
+    "RELEASE_APPROVAL"
+  ],
+  "exit_criteria": [
+    "All three rental document types have an explicit source/counterpart decision.",
+    "Rental fields and narrative claims have a documented legal/content review.",
+    "Any mapping entry is added only with source evidence and remains unapproved until separately approved.",
+    "Any runtime change has scoped engineering authorization and passes DOCX regression plus visual inspection.",
+    "Release approval is recorded separately."
+  ],
+  "non_claims": [
+    "No official rental-contract template has been identified or approved.",
+    "No legal review has been performed.",
+    "No mapping is approved.",
+    "No rights or redistribution decision has been made.",
+    "No implementation or release is authorized.",
+    "The current rental output is a software baseline only."
+  ]
+}
