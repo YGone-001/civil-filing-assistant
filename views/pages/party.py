@@ -19,7 +19,11 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from models.case_model import AGENT_TYPES
+from models.case_model import (
+    AGENT_TYPES,
+    SERVICE_ADDRESS_SOURCE_LABELS,
+    SERVICE_ADDRESS_SOURCES,
+)
 from models.validation import DateStatus, parse_full_date
 from views.theme import (
     DANGER_BUTTON,
@@ -345,9 +349,11 @@ class PartyPage(_TitledPage):
         ethnicity_label = QLabel("民族:")
         ethnicity_other_label = QLabel("其他民族:")
         occupation_label = QLabel("职业:")
+        source_label = QLabel("送达地址来源:")
         for label in (name_label, id_label, credit_code_label, legal_rep_label,
                       addr_label, phone_label, gender_label, birth_label,
-                      ethnicity_label, ethnicity_other_label, occupation_label):
+                      ethnicity_label, ethnicity_other_label, occupation_label,
+                      source_label):
             label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
 
         grid = QGridLayout()
@@ -370,6 +376,13 @@ class PartyPage(_TitledPage):
         ethnicity_other_edit = QLineEdit()
         ethnicity_other_edit.setPlaceholderText("请输入民族名称")
         occupation_edit = QLineEdit()
+        source_combo = QComboBox()
+        for value in SERVICE_ADDRESS_SOURCES:
+            source_combo.addItem(SERVICE_ADDRESS_SOURCE_LABELS[value], value)
+        source_combo.setCurrentIndex(source_combo.findData("unconfirmed"))
+        source_combo.setToolTip(
+            "选择送达地址的来源；他人提供线索不等于当事人确认。"
+        )
 
         # Personal mode: 姓名 | 身份证号, then 住址 | 电话, then the detail rows.
         grid.addWidget(name_label, 0, 0)
@@ -395,6 +408,8 @@ class PartyPage(_TitledPage):
         grid.addWidget(credit_code_edit, 5, 1)
         grid.addWidget(legal_rep_label, 5, 2)
         grid.addWidget(legal_rep_edit, 5, 3)
+        grid.addWidget(source_label, 6, 0)
+        grid.addWidget(source_combo, 6, 1)
         group_layout.addLayout(grid)
 
         phone_validator = QRegularExpressionValidator(_PHONE_INPUT_PATTERN)
@@ -460,6 +475,7 @@ class PartyPage(_TitledPage):
             (legal_rep_label, legal_rep_edit),
             (addr_label, addr_edit),
             (phone_label, phone_edit),
+            (source_label, source_combo),
         ]
 
         widget = {
@@ -476,6 +492,7 @@ class PartyPage(_TitledPage):
             "ethnicity": ethnicity_combo,
             "ethnicity_other": ethnicity_other_edit,
             "occupation": occupation_edit,
+            "service_address_source": source_combo,
             "id_label": id_label,
             "credit_code_label": credit_code_label,
             "legal_rep_label": legal_rep_label,
@@ -757,6 +774,9 @@ class PartyPage(_TitledPage):
                     "ethnicity": w["ethnicity"].currentText().strip(),
                     "ethnicity_other": self._widget_text(w["ethnicity_other"]).strip(),
                     "occupation": self._widget_text(w["occupation"]).strip(),
+                    "service_address_source": (
+                        w["service_address_source"].currentData() or "unconfirmed"
+                    ),
                 })
             return result
 

@@ -59,6 +59,26 @@ def _rental_payload(**overrides):
     return payload
 
 
+def _party_record(**overrides):
+    record = {
+        "name": "张三（测试）",
+        "id_number": "",
+        "address": "",
+        "phone": "",
+        "is_company": False,
+        "credit_code": "",
+        "legal_representative": "",
+        "gender": "",
+        "birth_date": "",
+        "ethnicity": "",
+        "ethnicity_other": "",
+        "occupation": "",
+        "service_address_source": "unconfirmed",
+    }
+    record.update(overrides)
+    return record
+
+
 def _strip_v5_fields(payload):
     """Remove the optional supplement fields so a payload matches pre-v5 shape."""
     case_type = payload.get("case_type")
@@ -175,24 +195,10 @@ def test_validation_preserves_insertion_order_and_values():
 
 def test_empty_strings_and_blank_parties_are_valid_content():
     payload = _blank_payload("divorce")
-    payload["parties"]["plaintiffs"] = [
-        {
-            "name": "",
-            "id_number": "",
-            "address": "",
-            "phone": "",
-            "is_company": False,
-            "credit_code": "",
-            "legal_representative": "",
-            "gender": "",
-            "birth_date": "",
-            "ethnicity": "",
-            "ethnicity_other": "",
-            "occupation": "",
-        }
-    ]
+    payload["parties"]["plaintiffs"] = [_party_record(name="")]
     document = schema.validate_document(payload)
     assert document.plaintiffs[0]["name"] == ""
+    assert document.plaintiffs[0]["service_address_source"] == "unconfirmed"
 
 
 # --------------------------------------------------------------------------- #
@@ -598,6 +604,39 @@ def test_version_five_loan_draft_only_bumps_the_version():
     document = schema.validate_document(payload)
     assert document.schema_version == schema.SCHEMA_VERSION
     assert document.factual_flags == {"has_iou": True}
+
+
+# --------------------------------------------------------------------------- #
+# Version 6 -> 7: per-party service-address source
+# --------------------------------------------------------------------------- #
+
+
+def test_version_six_party_records_gain_the_service_address_source():
+    payload = _loan_payload()
+    payload["schema_version"] = 6
+    record = _party_record()
+    record.pop("service_address_source")
+    payload["parties"]["plaintiffs"] = [record]
+    document = schema.validate_document(payload)
+    assert document.schema_version == schema.SCHEMA_VERSION
+    assert document.plaintiffs[0]["service_address_source"] == "unconfirmed"
+
+
+def test_version_six_party_record_already_carrying_the_source_is_rejected():
+    payload = _loan_payload()
+    payload["schema_version"] = 6
+    payload["parties"]["plaintiffs"] = [_party_record()]
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
+
+
+def test_service_address_source_must_be_a_known_value():
+    payload = _loan_payload()
+    payload["parties"]["plaintiffs"] = [
+        _party_record(service_address_source="invented")
+    ]
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
 
 
 def test_agent_record_survives_validation_and_round_trip():

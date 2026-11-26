@@ -8,6 +8,7 @@ from docx.shared import Pt, Cm
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_LINE_SPACING
 from docx.oxml.ns import qn
 
+from models.case_model import SERVICE_ADDRESS_SOURCE_LABELS
 from models.validation import DateStatus, parse_full_date
 
 class DocumentGenerator:
@@ -207,11 +208,67 @@ class DocumentGenerator:
             )
 
     def add_footer(self, court_name):
-        self._add_text("此致", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.LEFT, 0)
-        self._add_text(str(court_name or ""), "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.LEFT, 0)
-        self.doc.add_paragraph()
-        self._add_text("具状人：", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
-        self._add_text("年   月   日", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
+        # Keep "此致", the court and the signature block on the same page. A
+        # long multi-party complaint must not leave "此致" orphaned at the
+        # bottom of one page while the court name starts the next.
+        p = self._add_text("此致", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.LEFT, 0)
+        p.paragraph_format.keep_with_next = True
+        p = self._add_text(
+            str(court_name or ""), "FangSong_GB2312", 16, False,
+            WD_PARAGRAPH_ALIGNMENT.LEFT, 0,
+        )
+        p.paragraph_format.keep_with_next = True
+        p = self._add_text(
+            "具状人：", "FangSong_GB2312", 16, False,
+            WD_PARAGRAPH_ALIGNMENT.RIGHT, 0,
+        )
+        p.paragraph_format.space_before = Pt(28)
+        p.paragraph_format.keep_with_next = True
+        self._add_text(
+            "年   月   日", "FangSong_GB2312", 16, False,
+            WD_PARAGRAPH_ALIGNMENT.RIGHT, 0,
+        )
+
+    @staticmethod
+    def _keep_table_together(table):
+        """Prevent a party's address table from splitting across pages."""
+        from docx.oxml import OxmlElement
+
+        for row in table.rows:
+            tr_pr = row._tr.get_or_add_trPr()
+            tr_pr.append(OxmlElement("w:cantSplit"))
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    paragraph.paragraph_format.keep_together = True
+                    paragraph.paragraph_format.keep_with_next = True
+
+    @staticmethod
+    def _set_table_widths(table, widths):
+        """Pin a table to fixed column widths honoured by Word and WPS.
+
+        ``cell.width`` alone only writes ``w:tcW``. WPS keeps the original
+        equal ``w:gridCol`` widths in that case, so the evidence header wrapped
+        mid-word. The grid, the table width and the fixed layout must all agree.
+        """
+        from docx.oxml import OxmlElement
+        from docx.oxml.ns import qn
+
+        table.autofit = False
+        table.allow_autofit = False
+
+        tbl_pr = table._tbl.tblPr
+        tbl_w = tbl_pr.find(qn("w:tblW"))
+        if tbl_w is None:
+            tbl_w = OxmlElement("w:tblW")
+            tbl_pr.append(tbl_w)
+        tbl_w.set(qn("w:type"), "dxa")
+        tbl_w.set(qn("w:w"), str(sum(int(width.twips) for width in widths)))
+
+        for index, width in enumerate(widths):
+            column = table.columns[index]
+            column.width = width
+            for cell in column.cells:
+                cell.width = width
 
     def _set_cell_text(self, cell, text, font_name, font_size, bold, line_spacing=28):
         cell.text = ""
@@ -311,6 +368,10 @@ class DocumentGenerator:
                 row[3], str(getattr(ev, "note", "") or ""), "FangSong_GB2312", 16, False
             )
 
+        # Fixed widths keep the long "证明对象/目的" header on one line and
+        # leave the remark column readable without inventing content.
+        self._set_table_widths(table, (Cm(1.8), Cm(4.4), Cm(7.2), Cm(2.2)))
+
         self.save(file_path)
 
     def export_address_form(self, model, file_path):
@@ -326,8 +387,8 @@ class DocumentGenerator:
         self.add_body(
             "为便于人民法院依法送达诉讼文书，当事人现确认以下送达地址信息真实、准确。"
             "下列表格逐一列示向导中已填写的当事人；每一名当事人应分别确认自己的送达地址，"
-            "不能以其中一名当事人的地址代表其他当事人。原告提供的被告地址仅作为送达线索，"
-            "不能代替被告确认。",
+            "不能以其中一名当事人的地址代表其他当事人。送达地址来源栏区分当事人确认、"
+            "他人提供线索和未确认；他人提供线索不等于当事人确认。",
             align=WD_PARAGRAPH_ALIGNMENT.JUSTIFY, first_line_indent=32,
         )
         self.doc.add_paragraph()
@@ -347,6 +408,7 @@ class DocumentGenerator:
             "证件号码/统一社会信用代码",
             "联系电话",
             "送达地址",
+            "送达地址来源",
             "备注",
         ]
 
@@ -357,6 +419,7 @@ class DocumentGenerator:
             if party is None:
                 name = id_number = phone = addr = ""
                 role_text = label
+                source_text = SERVICE_ADDRESS_SOURCE_LABELS["unconfirmed"]
             else:
                 name = getattr(party, "name", "") or ""
                 if getattr(party, "is_company", False):
@@ -366,8 +429,12 @@ class DocumentGenerator:
                 phone = getattr(party, "phone", "") or ""
                 addr = getattr(party, "address", "") or ""
                 role_text = label
+                source_text = SERVICE_ADDRESS_SOURCE_LABELS.get(
+                    getattr(party, "service_address_source", "unconfirmed"),
+                    SERVICE_ADDRESS_SOURCE_LABELS["unconfirmed"],
+                )
 
-            table = self.doc.add_table(rows=6, cols=2)
+            table = self.doc.add_table(rows=7, cols=2)
             table.style = "Table Grid"
 
             values = [
@@ -376,10 +443,11 @@ class DocumentGenerator:
                 id_number,
                 phone,
                 addr,
+                source_text,
                 "如地址、电话变更，应及时书面告知人民法院。",
             ]
 
-            for i in range(6):
+            for i in range(7):
                 self._set_cell_text(
                     table.rows[i].cells[0], labels[i], "SimHei", table_font_size, True,
                     table_line_spacing,
@@ -389,14 +457,19 @@ class DocumentGenerator:
                     table_line_spacing,
                 )
 
-            self._add_text(
+            self._keep_table_together(table)
+            confirmation = self._add_text(
                 "确认人（本人或有权代收人）：", "FangSong_GB2312", 16, False,
                 WD_PARAGRAPH_ALIGNMENT.LEFT, 0,
             )
-            self._add_text(
+            confirmation.paragraph_format.keep_with_next = True
+            date_line = self._add_text(
                 "日期：", "FangSong_GB2312", 16, False,
                 WD_PARAGRAPH_ALIGNMENT.LEFT, 0,
             )
+            # Small gap after each signature block; the next party's table
+            # otherwise starts flush against this date line.
+            date_line.paragraph_format.space_after = Pt(12)
 
         self._add_pagination(self.doc)
         self.save(file_path)

@@ -12,9 +12,10 @@
 > (`OPEN` / `SCOPED_FIX_IMPLEMENTED` / `NO-GO`). A candidate official rental complaint has been
 > located at PDF pages 171–176 (instance 181–186), and the documentary comparison records 35 open
 > gaps. A non-signatory preflight recorded four output findings; two scoped fixes addressed
-> PF-01/PF-02 and PF-03/PF-04 pending recheck. No reviewer is assigned and no rental mapping is
-> legally reviewed or approved. Do not mark any rental entry `APPROVED` without the required review
-> evidence.
+> PF-01/PF-02 and PF-03/PF-04 pending recheck. A focused AI legal-content review of the lessee
+> scenario and official element table is recorded, but it is not legal advice or mapping approval.
+> No human reviewer is assigned and no rental mapping is legally reviewed or approved. Do not mark
+> any rental entry `APPROVED` without the required review evidence.
 
 - Repository: `YGone-001/civil-filing-assistant`
 - Audited revision: `eb23e3e8c8ae080d7185309bf69b3e41681a904e`

@@ -32,6 +32,7 @@ def test_get_party_data_never_raises_for_any_case(qapp, case_type):
         "ethnicity",
         "ethnicity_other",
         "occupation",
+        "service_address_source",
     }
     assert set(data["plaintiffs"][0]) == expected_keys
 

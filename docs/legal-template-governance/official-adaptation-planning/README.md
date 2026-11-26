@@ -84,11 +84,14 @@ By frozen severity: HIGH 4 · MEDIUM 65 · LOW 59 · INFORMATIONAL 3.
 > a candidate official rental complaint has been identified, its file verified, a documentary
 > comparison recorded 35 open gaps, and the mapping review added three unapproved rental entries to
 > the central registry. A non-signatory preflight covers all 21 review questions and recorded four
-> output findings. Two scoped engineering authorizations fixed PF-01/PF-02 and PF-03/PF-04; all
-> four await recheck. Formal legal review is still pending: no reviewer is assigned and no legal
-> conclusion has been reached. The central registry now has 18 entries (15 original + 3 rental),
-> while the frozen planning counts stay 15. No mapping, legal review or rights decision is approved.
-> The rental package is validated by `tools/check_rental_governance_package.py`.
+> output findings. Two scoped engineering authorizations fixed PF-01/PF-02 and PF-03/PF-04
+> (including per-party service-address source); all four await recheck. A focused AI legal-content
+> review of the lessee scenario and official
+> element table is complete; it is an AI analysis, not legal advice, a human review or an approval.
+> Formal legal review is still pending: no human reviewer is assigned and no legal conclusion has
+> been reached. The central registry now has 18 entries (15 original + 3 rental), while the frozen
+> planning counts stay 15. No mapping, legal review or rights decision is approved. The rental
+> package is validated by `tools/check_rental_governance_package.py`.
 
 ---
 

@@ -80,6 +80,12 @@ def _set_party(widget, spec):
     widget["ethnicity"].setCurrentText(spec.get("ethnicity", ""))
     widget["ethnicity_other"].setText(spec.get("ethnicity_other", ""))
     widget["occupation"].setText(spec.get("occupation", ""))
+    source_index = widget["service_address_source"].findData(
+        spec.get("service_address_source", "unconfirmed")
+    )
+    widget["service_address_source"].setCurrentIndex(
+        source_index if source_index >= 0 else 0
+    )
 
 
 def _set_party_list(page, kind, specs):

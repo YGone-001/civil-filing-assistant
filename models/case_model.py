@@ -28,10 +28,21 @@ from models.calculations import (  # noqa: F401  (compatibility re-exports)
 from models.validation import DateStatus, parse_full_date
 
 
+#: Per-party source of the service address shown in the address confirmation
+#: form. ``unconfirmed`` is the safe default and never implies the other party
+#: confirmed it.
+SERVICE_ADDRESS_SOURCES = ("party_confirmed", "third_party_lead", "unconfirmed")
+SERVICE_ADDRESS_SOURCE_LABELS = {
+    "party_confirmed": "当事人确认",
+    "third_party_lead": "他人提供线索",
+    "unconfirmed": "未确认",
+}
+
+
 class PartyInfo:
     def __init__(self, name="", id_number="", address="", phone="", is_company=False,
                  legal_representative="", credit_code="", gender="", birth_date="",
-                 ethnicity="", occupation=""):
+                 ethnicity="", occupation="", service_address_source="unconfirmed"):
         self.name = name
         self.id_number = id_number
         self.address = address
@@ -46,6 +57,7 @@ class PartyInfo:
         self.birth_date = birth_date
         self.ethnicity = ethnicity
         self.occupation = occupation
+        self.service_address_source = service_address_source
 
 #: Agent role vocabulary shared by the party page combo and the draft schema
 #: validation, so the two can never drift apart.

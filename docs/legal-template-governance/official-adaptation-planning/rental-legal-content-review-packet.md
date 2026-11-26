@@ -33,6 +33,8 @@ legal_review_status: NOT_REQUESTED
 
 预审状态：`PREFLIGHT_COMPLETE`（2026-11-26），总体建议 `MODIFY_AND_RECHECK`；目标法院和立案渠道未指定，法院适用性为 `UNDETERMINED`。预审记录见[租赁合同纠纷法律内容预审](rental-legal-content-preflight.md)，其中包含 PF-01 至 PF-04 四项输出问题。预审不是正式审阅，不能替代审阅人核签。
 
+另有项目所有者授权的专项[AI 法律内容审阅](rental-ai-legal-review-lessee-element-table.md)（`AI_REVIEW_COMPLETE`，2026-11-27），仅覆盖承租人场景和官方要素式表格。它是 AI 分析，不是持证律师意见、法律意见或人类审阅记录。
+
 本包只整理需要决定的问题、当前行为和官方对照材料，供合格审阅人使用。本包不给出任何法律结论。
 
 ---

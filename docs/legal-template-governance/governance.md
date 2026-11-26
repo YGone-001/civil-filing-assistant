@@ -167,6 +167,24 @@ These are four independent approvals and must never be conflated:
 **Passing automated tests is not legal approval. A Git commit is not legal approval.** Do not
 name a legal reviewer unless an actual review occurred.
 
+### AI-assisted legal-content review (owner-authorized)
+
+The project owner may authorize an AI-assisted legal-content review for a defined, documented
+scope. It is a **documented analysis**, not a licensed lawyer's legal opinion, not legal advice,
+and not a substitute for professional legal advice.
+
+Rules:
+
+- Record `reviewer_type: AI`, the model name/version, the actual review date, the scope, the
+  sources inspected and the limitations.
+- Never fabricate a human reviewer, credential, signature or date.
+- Use the status `AI_REVIEW_COMPLETE` or `AI_REVIEWED`; never `APPROVED`, `legal advice` or
+  `legal review passed`.
+- An AI review does not approve a mapping, authorize implementation, approve release or override
+  a rights/redistribution decision.
+- The full legal/content review gate, mapping approval, rights review, engineering authorization
+  and release approval remain separate and require their own explicit decisions.
+
 ### Approval-integrity rules (machine-checked metadata contract)
 
 Approval is a **relationship**, not a set of populated text fields. Populating

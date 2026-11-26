@@ -7,9 +7,10 @@
 > covering all 21 questions is complete and recommends modification and recheck. Two scoped
 > engineering authorizations fixed PF-01/PF-02 (payment-status wording and multiple-defendant
 > attribution) and PF-03/PF-04 (evidence-suggestion export and per-party address confirmation);
-> all four await recheck. No reviewer has been assigned and no formal legal review has occurred.
-> No mapping is legally reviewed or approved, and the overall implementation remains unauthorized.
-> No release is authorized.
+> all four await recheck. A focused AI legal-content review of the lessee scenario and official
+> element table is complete; it is an AI analysis, not legal advice or approval. No human reviewer
+> has been assigned and no formal legal review has occurred. No mapping is legally reviewed or
+> approved, and the overall implementation remains unauthorized. No release is authorized.
 > The existing rental output is a project-authored software baseline, not an official template.
 
 - Work package: `wp-rental-source-discovery`
@@ -220,8 +221,9 @@ adaptation, mapping approval, rights review or release.
 The fix updates `models/case_model.py`, `views/pages/rental.py`,
 `presenters/model_builder.py`, `drafts/schema.py` (schema v6 with a v5 migration) and
 `views/draft_io.py`, with regression tests. Recheck samples are generated in
-`test_samples/rental-pf01-pf02-recheck-2026-11-26/` (git-ignored); text-level verification passes,
-while WPS/Word inspection and formal reviewer recheck remain pending.
+`test_samples/rental-visual-recheck-2026-11-27/` (git-ignored); text-level verification and the
+WPS/Word page-by-page inspection pass for the PF-01/PF-02 scenarios (partial payment plus two
+defendants, terminated lease with unknown return). Formal reviewer recheck remains pending.
 
 ### 4.5 Scoped PF-03/PF-04 engineering result
 
@@ -230,14 +232,53 @@ The second scoped authorization covers **only** PF-03 and PF-04.
 | Finding | Status | Change summary |
 |---|---|---|
 | PF-03 | `FIXED_PENDING_RECHECK` | Library suggestions stay out of the export until the user clicks "确认建议证据" or adds a row; the evidence-list remark is blank and no longer writes "原件核对". |
-| PF-04 | `FIXED_PENDING_RECHECK` | Each party's address table is followed by its own "确认人（本人或有权代收人）" and date block; the single global signature block was removed. |
+| PF-04 | `FIXED_PENDING_RECHECK` | Each party's address table is followed by its own "确认人（本人或有权代收人）" and date block; the single global signature block was removed. A per-party "送达地址来源" records 当事人确认 / 他人提供线索 / 未确认. |
 
 The fix updates `views/pages/evidence.py`, `presenters/model_builder.py`,
 `models/case_model.py` and `utils/doc_generator.py`, with regression tests. Recheck samples are
-generated in `test_samples/rental-pf03-pf04-recheck-2026-11-26/` (git-ignored); text-level
-verification passes, while WPS/Word inspection and formal reviewer recheck remain pending.
+generated in `test_samples/rental-visual-recheck-2026-11-27/` (git-ignored); text-level
+verification and the WPS/Word page-by-page inspection pass: unconfirmed suggestions stay out of
+the list, remarks are blank, the evidence header stays on one line, each seven-row address table
+stays whole, and every party has its own confirmation block with the address-source row. Formal
+reviewer recheck remains pending.
 
 The overall `implementation_authorization` remains `NOT_AUTHORIZED` for both scoped fixes.
+
+### 4.6 AI legal-content review (focused)
+
+The project owner authorized an AI legal-content review of two topics:
+
+- the lessee plaintiff scenario (delivery of the premises and return of the deposit);
+- adoption of the official element-table structure.
+
+Full review: [`rental-ai-legal-review-lessee-element-table.md`](rental-ai-legal-review-lessee-element-table.md).
+
+```text
+status:                 AI_REVIEW_COMPLETE
+reviewer_type:          AI
+model:                  DeepSeek-V4.1-Flash
+reviewed_at:            2026-11-27
+scope:                  lessee_scenario, official_element_table
+legal_advice:           false
+human_reviewer:         not required for this focused analysis
+approval_status:        NOT_REQUESTED
+implementation:         NOT_AUTHORIZED
+```
+
+Key recommendations:
+
+- Treat the lessee scenario as a separate template or explicit plaintiff-role branch; do not reuse the
+  lessor arrears narrative.
+- A first lessee version should cover delivery of the premises, deposit return, termination,
+  litigation costs and total amount; losses, utilities and occupation-use fees remain optional.
+- Keep the narrative complaint and add an element checklist rather than copying the full official
+  table.
+- Require user confirmation for deposit payment/return, delivery status, termination date and
+  set-off; never infer them.
+
+This AI review is not a licensed lawyer's legal opinion, not legal advice and not a human review
+signature. It does not approve a mapping, authorize implementation or change the release gate. The
+full legal/content review remains `NOT_STARTED`.
 
 ---
 
@@ -333,6 +374,8 @@ Until these criteria are met, the rental release gate remains `NO-GO`.
     without scoped engineering authorization.
 12. The two scoped authorizations cover only PF-01/PF-02 and PF-03/PF-04; do not extend them to any
     other template change.
+13. The AI legal-content review is a supplemental analysis, not legal advice, a human review
+    signature, a mapping approval or an implementation authorization.
 
 ---
 
@@ -341,10 +384,11 @@ Until these criteria are met, the rental release gate remains `NO-GO`.
 - `models/case_model.py` — `RentalCaseModel`
 - `views/pages/rental.py` — rental wizard page
 - `presenters/model_builder.py` — rental model assembly and exportable-evidence selection
-- `drafts/schema.py` — rental draft fields and flags (schema v6)
+- `drafts/schema.py` — draft fields, flags and party records (schema v7)
 - `views/draft_io.py` — draft capture/restore
 - `views/pages/evidence.py` — evidence-suggestion confirmation and export filtering
-- `utils/doc_generator.py` — shared DOCX renderer and per-party address confirmation blocks
+- `views/pages/party.py` — per-party service-address source
+- `utils/doc_generator.py` — shared DOCX renderer, per-party address confirmation blocks and source row
 - `utils/evidence_library.py` — rental evidence suggestions
 - `utils/facts_examples.py` — rental fact exemplars
 - `tests/test_rental_case.py` — rental engineering tests
@@ -352,6 +396,7 @@ Until these criteria are met, the rental release gate remains `NO-GO`.
 - `rental-legal-content-review-packet.md` — legal/content review packet (no reviewer assigned)
 - `rental-legal-review-agenda.md` — reviewer agenda and blank decision checklist (no reviewer assigned)
 - `rental-legal-content-preflight.md` — non-signatory preflight over 21 questions and four output findings
+- `rental-ai-legal-review-lessee-element-table.md` — focused AI legal-content review (not legal advice)
 - `docs/legal-template-governance/case-template-mapping.json` — central registry (15 original + 3 unapproved rental entries)
 - `docs/legal-template-governance/governance.md` — change-control lifecycle and approval rules
 - `docs/legal-template-governance/official-adaptation-planning/approval-gates.md` — gate sequence

@@ -210,7 +210,7 @@ def test_address_form_has_one_table_per_party(qapp, tmp_path, monkeypatch, case_
         f"address form should have 2 tables (1 per party), got {len(doc.tables)}"
 
     for table in doc.tables:
-        assert len(table.rows) == 6, f"each address table should have 6 rows, got {len(table.rows)}"
+        assert len(table.rows) == 7, f"each address table should have 7 rows, got {len(table.rows)}"
         assert len(table.columns) == 2, f"each address table should have 2 columns, got {len(table.columns)}"
 
 
@@ -262,14 +262,50 @@ def test_address_form_confirmation_blocks_match_multiple_parties(qapp, tmp_path,
     assert len(blocks) == 3, f"expected three confirmation blocks, got {blocks}"
 
 
+def test_address_form_records_the_service_address_source(qapp, tmp_path, monkeypatch):
+    plaintiffs = [
+        {
+            "name": "原告甲（测试）",
+            "id_number": "示例证件-原告甲",
+            "address": "示例市原告路甲号",
+            "phone": "13800000000",
+            "service_address_source": "party_confirmed",
+        }
+    ]
+    defendants = [
+        {
+            "name": "被告乙（测试）",
+            "id_number": "示例证件-被告乙",
+            "address": "示例市被告路乙号",
+            "phone": "13900000000",
+            "service_address_source": "third_party_lead",
+        }
+    ]
+    docs = _export_all(
+        tmp_path, monkeypatch, "loan", plaintiffs=plaintiffs, defendants=defendants
+    )
+    doc = Document(str(docs["address"]))
+
+    assert doc.tables[0].rows[5].cells[1].text == "当事人确认"
+    assert doc.tables[1].rows[5].cells[1].text == "他人提供线索"
+
+
 @pytest.mark.parametrize("case_type", CASE_TYPES)
 def test_address_form_table_labels_are_correct(qapp, tmp_path, monkeypatch, case_type):
     docs = _export_all(tmp_path, monkeypatch, case_type)
     doc = Document(str(docs["address"]))
 
-    expected_labels = ["当事人", "姓名/名称", "证件号码/统一社会信用代码", "联系电话", "送达地址", "备注"]
+    expected_labels = [
+        "当事人",
+        "姓名/名称",
+        "证件号码/统一社会信用代码",
+        "联系电话",
+        "送达地址",
+        "送达地址来源",
+        "备注",
+    ]
     for table in doc.tables:
-        labels = [table.rows[i].cells[0].text for i in range(6)]
+        labels = [table.rows[i].cells[0].text for i in range(7)]
         assert labels == expected_labels, f"address table labels mismatch: {labels}"
 
 

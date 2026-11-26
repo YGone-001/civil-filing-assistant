@@ -256,6 +256,22 @@ def test_package_rejects_pf03_pf04_authorization_outside_scope():
     )
 
 
+def test_package_rejects_ai_review_claiming_legal_advice():
+    data = _load()
+    data["ai_legal_content_review"]["legal_advice"] = True
+    assert any(
+        "legal_advice" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_human_ai_reviewer_type():
+    data = _load()
+    data["ai_legal_content_review"]["reviewer_type"] = "HUMAN"
+    assert any(
+        "reviewer_type" in issue for issue in crgp.validate_package(data)
+    )
+
+
 def test_package_rejects_a_scoped_authorization_outside_pf01_pf02():
     data = _load()
     data["scoped_engineering_authorization"]["scope"].append("PF-03")
@@ -355,6 +371,7 @@ def test_package_rejects_a_completed_later_task():
                                    "text_and_structure_comparison",
                                    "case_mapping_review",
                                    "legal_content_review",
+                                   "ai_legal_content_review",
                                    "scoped_engineering_authorization",
                                    "scoped_engineering_authorization_pf03_pf04"])
 def test_package_rejects_missing_evidence_sections(field):

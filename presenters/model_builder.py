@@ -97,6 +97,9 @@ def _add_parties(model, party_data):
                 birth_date=p_data.get("birth_date", ""),
                 ethnicity=_resolve_ethnicity(p_data),
                 occupation=p_data.get("occupation", ""),
+                service_address_source=p_data.get(
+                    "service_address_source", "unconfirmed"
+                ),
             ))
 
 

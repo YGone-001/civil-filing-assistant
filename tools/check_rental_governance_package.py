@@ -122,6 +122,7 @@ _REQUIRED_TOP_LEVEL = (
     "text_and_structure_comparison",
     "case_mapping_review",
     "legal_content_review",
+    "ai_legal_content_review",
     "scoped_engineering_authorization",
     "scoped_engineering_authorization_pf03_pf04",
     "legal_review_status",
@@ -740,6 +741,54 @@ def _check_preflight(review: Dict[str, Any], issues: List[str]) -> None:
         )
 
 
+def _check_ai_legal_content_review(
+    data: Dict[str, Any], issues: List[str]
+) -> None:
+    review = data.get("ai_legal_content_review")
+    if not isinstance(review, dict):
+        issues.append("ai_legal_content_review must be an object")
+        return
+
+    if review.get("status") != "AI_REVIEW_COMPLETE":
+        issues.append("ai_legal_content_review.status must be 'AI_REVIEW_COMPLETE'")
+    if review.get("reviewer_type") != "AI":
+        issues.append("ai_legal_content_review.reviewer_type must be 'AI'")
+    _require_string(review, "model", issues)
+    if not _date_is_iso(review.get("reviewed_at")):
+        issues.append("ai_legal_content_review.reviewed_at must be an ISO date")
+    if review.get("scope") != ["lessee_scenario", "official_element_table"]:
+        issues.append(
+            "ai_legal_content_review.scope must be exactly "
+            "lessee_scenario and official_element_table"
+        )
+    if review.get("document") != "rental-ai-legal-review-lessee-element-table.md":
+        issues.append(
+            "ai_legal_content_review.document must be "
+            "'rental-ai-legal-review-lessee-element-table.md'"
+        )
+    if review.get("human_reviewer_required") is not False:
+        issues.append(
+            "ai_legal_content_review.human_reviewer_required must remain false"
+        )
+    if review.get("human_reviewer_signature") is not None:
+        issues.append(
+            "ai_legal_content_review.human_reviewer_signature must remain null"
+        )
+    if review.get("legal_advice") is not False:
+        issues.append("ai_legal_content_review.legal_advice must remain false")
+    if review.get("approval_status") != "NOT_REQUESTED":
+        issues.append(
+            "ai_legal_content_review.approval_status must remain 'NOT_REQUESTED'"
+        )
+    if review.get("implementation_authorization") != "NOT_AUTHORIZED":
+        issues.append(
+            "ai_legal_content_review.implementation_authorization must remain "
+            "'NOT_AUTHORIZED'"
+        )
+    _require_string(review, "summary", issues)
+    _require_string_list(review, "non_claims", issues)
+
+
 def _check_scoped_engineering_authorization(
     data: Dict[str, Any], issues: List[str]
 ) -> None:
@@ -1065,6 +1114,7 @@ def validate_package(
     _check_text_and_structure_comparison(data, candidate_ids, issues)
     _check_case_mapping_review(data, issues)
     _check_legal_content_review(data, issues)
+    _check_ai_legal_content_review(data, issues)
     _check_scoped_engineering_authorization(data, issues)
     _check_pf03_pf04_authorization(data, issues)
     _check_registry_consistency(data, candidate_ids, source_registry, issues)
@@ -1162,7 +1212,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 1
     print(
         "OK   rental governance work package is valid "
-        "(PF-01 to PF-04 fixed pending recheck, formal review not performed, NO-GO)"
+        "(AI review complete, PF-01 to PF-04 pending recheck, human review not performed, NO-GO)"
     )
     return 0
 

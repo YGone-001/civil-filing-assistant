@@ -87,10 +87,11 @@ INITIAL_FLAG_VALUES = {
     "payment_status": None,
 }
 
-#: Party-card widget keys that hold user-editable text. ``is_company`` is the
-#: twelfth user-editable attribute and is checked separately because it is a
-#: checkbox, not a text field. ``gender`` and ``ethnicity`` are combo boxes;
-#: :func:`_read_text`/:func:`_write_text` branch on ``currentText`` for them.
+#: Party-card widget keys that hold user-editable values. ``is_company`` is a
+#: checkbox and is checked separately. ``gender`` and ``ethnicity`` are combo
+#: boxes; :func:`_read_text`/:func:`_write_text` branch on ``currentText`` for
+#: them. ``service_address_source`` is a data-bearing combo whose default
+#: "unconfirmed" is not itself user input.
 PARTY_TEXT_WIDGET_KEYS = (
     "name",
     "id",
@@ -103,6 +104,7 @@ PARTY_TEXT_WIDGET_KEYS = (
     "ethnicity",
     "ethnicity_other",
     "occupation",
+    "service_address_source",
 )
 
 #: Cards the wizard creates per side when the party page is first shown. An
@@ -218,8 +220,14 @@ def _has_party_input(page):
         for card in cards:
             if card["is_company"].isChecked():
                 return True
-            if any(_read_text(card[key]).strip() for key in PARTY_TEXT_WIDGET_KEYS):
+            source = card.get("service_address_source")
+            if source is not None and source.currentData() != "unconfirmed":
                 return True
+            for key in PARTY_TEXT_WIDGET_KEYS:
+                if key == "service_address_source":
+                    continue
+                if _read_text(card[key]).strip():
+                    return True
     return False
 
 
@@ -390,6 +398,12 @@ def _fill_party_card(widget, record):
     widget["ethnicity"].setCurrentText(record["ethnicity"])
     widget["ethnicity_other"].setText(record["ethnicity_other"])
     widget["occupation"].setText(record["occupation"])
+    source_index = widget["service_address_source"].findData(
+        record["service_address_source"]
+    )
+    widget["service_address_source"].setCurrentIndex(
+        source_index if source_index >= 0 else 0
+    )
     # Checked last: toggling swaps the visible identity fields, and the values
     # above must already be in place when that happens.
     widget["is_company"].setChecked(bool(record["is_company"]))

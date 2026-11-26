@@ -46,6 +46,7 @@ from models.case_model import (
     AGENT_TYPES,
     RENTAL_LEASE_STATUSES,
     RENTAL_PAYMENT_STATUSES,
+    SERVICE_ADDRESS_SOURCES,
 )
 from utils.labor_security import (
     LABOR_PROCEDURES,
@@ -54,10 +55,10 @@ from utils.labor_security import (
 )
 
 #: Version of the *inner* JSON document (independent of the envelope version).
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 
 #: Older inner-document versions that :func:`_migrate` can upgrade.
-MIGRATABLE_VERSIONS = (1, 2, 3, 4, 5)
+MIGRATABLE_VERSIONS = (1, 2, 3, 4, 5, 6)
 
 #: Case categories this build can restore. Mirrors
 #: ``presenters.model_builder.SUPPORTED_CASE_TYPES`` and is asserted equal there.
@@ -116,12 +117,17 @@ PARTY_TEXT_LIMITS = {
     "ethnicity": 30,
     "ethnicity_other": 30,
     "occupation": 100,
+    "service_address_source": 40,
 }
 PARTY_KEYS = tuple(PARTY_TEXT_LIMITS) + ("is_company",)
 
 #: Party record keys that schema version 4 introduced; migration fills them
 #: blank instead of guessing any value.
 _PARTY_KEYS_ADDED_IN_V4 = ("gender", "birth_date", "ethnicity", "ethnicity_other", "occupation")
+
+#: Party record key introduced in version 7; old drafts never asked for it and
+#: are migrated to the safe "unconfirmed" source.
+_PARTY_KEY_ADDED_IN_V7 = "service_address_source"
 
 EVIDENCE_TEXT_LIMITS = {"name": 500, "target": 1000}
 
@@ -452,6 +458,11 @@ def _validate_party_record(record, label):
     validated = {}
     for key, limit in PARTY_TEXT_LIMITS.items():
         validated[key] = _require_text(mapping[key], f"{label}.{key}", limit)
+    source = validated["service_address_source"]
+    if source not in SERVICE_ADDRESS_SOURCES:
+        raise DraftValidationError(
+            f"{label}.service_address_source 不是受支持的取值。"
+        )
     is_company = mapping["is_company"]
     if not isinstance(is_company, bool):
         raise DraftValidationError(f"{label}.is_company 必须是布尔值。")
@@ -584,6 +595,9 @@ def _migrate(mapping):
     Version 5 -> 6: rental drafts gained the payment-status classification
     (``None`` = unconfirmed) and the multi-defendant obligation description
     (blank), because a v5 draft never asked for either.
+
+    Version 6 -> 7: every party record gained the service-address source,
+    filled ``unconfirmed`` because a v6 draft never asked for it.
     """
     upgraded = dict(mapping)
     if upgraded.get("schema_version") == 1:
@@ -596,6 +610,8 @@ def _migrate(mapping):
         upgraded = _migrate_v4_to_v5(upgraded)
     if upgraded.get("schema_version") == 5:
         upgraded = _migrate_v5_to_v6(upgraded)
+    if upgraded.get("schema_version") == 6:
+        upgraded = _migrate_v6_to_v7(upgraded)
     upgraded["schema_version"] = SCHEMA_VERSION
     return upgraded
 
@@ -738,6 +754,32 @@ def _migrate_v5_to_v6(mapping):
     return upgraded
 
 
+def _migrate_v6_to_v7(mapping):
+    """Version 6 -> 7 shape: every party gains its service-address source."""
+    upgraded = dict(mapping)
+    parties = upgraded.get("parties")
+    if isinstance(parties, dict):
+        upgraded["parties"] = {
+            group: [
+                _complete_party_record_v7(record)
+                if isinstance(record, dict) else record
+                for record in rows
+            ] if isinstance(rows, list) else rows
+            for group, rows in parties.items()
+        }
+    upgraded["schema_version"] = 7
+    return upgraded
+
+
+def _complete_party_record_v7(record):
+    """Return a copy of *record* with the v7 source filled safely."""
+    completed = dict(record)
+    if _PARTY_KEY_ADDED_IN_V7 in completed:
+        raise DraftValidationError("parties 的当事人记录不符合草稿格式。")
+    completed[_PARTY_KEY_ADDED_IN_V7] = "unconfirmed"
+    return completed
+
+
 def validate_document(payload):
     """Validate *payload* and return a :class:`DraftDocument`.
 
@@ -752,7 +794,7 @@ def validate_document(payload):
     if isinstance(version, bool) or not isinstance(version, int):
         raise DraftValidationError("schema_version 必须是整数。")
     if version in MIGRATABLE_VERSIONS:
-        # v1-v3 documents predate ``agent``; v4/v5 carry it. The strict check
+        # v1-v3 documents predate ``agent``; v4-v6 carry it. The strict check
         # runs against the document's own version so legacy drafts reach
         # migration instead of being rejected for the wrong key set.
         expected_keys = _DOCUMENT_KEYS_V3 if version <= 3 else _DOCUMENT_KEYS

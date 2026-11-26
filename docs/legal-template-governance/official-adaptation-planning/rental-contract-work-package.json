@@ -212,7 +212,7 @@
           "linked_questions": ["LRQ-17"],
           "linked_gaps": ["RCS-35"],
           "status": "FIXED_PENDING_RECHECK",
-          "fix_evidence": "The address form now emits an independent '确认人（本人或有权代收人）' and date block after each party's table, and the single global signature block was removed. The intro states that a plaintiff-provided defendant address is only a service lead. Tests: test_address_form_has_one_confirmation_block_per_party, test_address_form_confirmation_blocks_match_multiple_parties."
+          "fix_evidence": "The address form now emits an independent '确认人（本人或有权代收人）' and date block after each party's table, and the single global signature block was removed. Each party also records a service-address source (当事人确认 / 他人提供线索 / 未确认), so a plaintiff-provided defendant address is not presented as party-confirmed. Tests: test_address_form_has_one_confirmation_block_per_party, test_address_form_confirmation_blocks_match_multiple_parties, test_address_form_records_the_service_address_source."
         }
       ],
       "non_claims": [
@@ -266,14 +266,35 @@
       "Preparing this packet does not complete the LEGAL_CONTENT_REVIEW stage."
     ]
   },
+  "ai_legal_content_review": {
+    "status": "AI_REVIEW_COMPLETE",
+    "reviewer_type": "AI",
+    "model": "DeepSeek-V4.1-Flash",
+    "reviewed_at": "2026-11-27",
+    "scope": ["lessee_scenario", "official_element_table"],
+    "document": "rental-ai-legal-review-lessee-element-table.md",
+    "human_reviewer_required": false,
+    "human_reviewer_signature": null,
+    "legal_advice": false,
+    "approval_status": "NOT_REQUESTED",
+    "implementation_authorization": "NOT_AUTHORIZED",
+    "summary": "AI legal-content review of the lessee plaintiff scenario and official element-table adoption. It recommends a separate lessee template or role branch; a minimal lessee claim set covering delivery of the premises, deposit return, termination, litigation costs and total amount; and a narrative-plus-element-checklist approach instead of copying the official table. It is not legal advice or a human legal review.",
+    "non_claims": [
+      "This is an AI legal-content analysis, not a licensed lawyer's legal opinion or legal advice.",
+      "No human reviewer identity, qualification, signature or date is recorded.",
+      "It does not approve a mapping, authorize implementation or approve release.",
+      "Target court and filing-channel requirements were not obtained.",
+      "The official text is not copied or redistributed."
+    ]
+  },
   "scoped_engineering_authorization": {
     "status": "IMPLEMENTED_PENDING_RECHECK",
     "authorized_date": "2026-11-26",
     "scope": ["PF-01", "PF-02"],
     "excluded_findings": ["PF-03", "PF-04"],
     "overall_implementation_authorization": "NOT_AUTHORIZED",
-    "recheck_samples_path": "test_samples/rental-pf01-pf02-recheck-2026-11-26",
-    "recheck_samples_status": "GENERATED_TEXT_VERIFIED_VISUAL_PENDING",
+    "recheck_samples_path": "test_samples/rental-visual-recheck-2026-11-27",
+    "recheck_samples_status": "VISUAL_VERIFIED",
     "files_changed": [
       "models/case_model.py",
       "views/pages/rental.py",
@@ -316,24 +337,32 @@
     "scope": ["PF-03", "PF-04"],
     "excluded_findings": ["PF-01", "PF-02"],
     "overall_implementation_authorization": "NOT_AUTHORIZED",
-    "recheck_samples_path": "test_samples/rental-pf03-pf04-recheck-2026-11-26",
-    "recheck_samples_status": "GENERATED_TEXT_VERIFIED_VISUAL_PENDING",
+    "recheck_samples_path": "test_samples/rental-visual-recheck-2026-11-27",
+    "recheck_samples_status": "VISUAL_VERIFIED",
     "files_changed": [
       "views/pages/evidence.py",
+      "views/pages/party.py",
+      "views/draft_io.py",
       "presenters/model_builder.py",
       "models/case_model.py",
+      "drafts/schema.py",
       "utils/doc_generator.py",
       "tests/test_evidence_state.py",
       "tests/test_word_acceptance.py",
       "tests/test_field_model_integrity.py",
-      "tests/test_case_type_fail_closed.py"
+      "tests/test_case_type_fail_closed.py",
+      "tests/test_party_data.py",
+      "tests/test_draft_schema.py",
+      "tests/helpers.py"
     ],
     "tests": [
       "test_suggested_evidence_is_not_exported_until_confirmed",
       "test_evidence_list_remark_is_blank_by_default",
       "test_evidence_selection_reaches_the_model",
       "test_address_form_has_one_confirmation_block_per_party",
-      "test_address_form_confirmation_blocks_match_multiple_parties"
+      "test_address_form_confirmation_blocks_match_multiple_parties",
+      "test_address_form_records_the_service_address_source",
+      "test_version_six_party_records_gain_the_service_address_source"
     ],
     "recheck_requirements": [
       "Re-export fictional evidence lists with unconfirmed, confirmed and empty suggestions.",
