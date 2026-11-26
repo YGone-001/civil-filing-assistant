@@ -84,6 +84,7 @@ INITIAL_FLAG_VALUES = {
     "is_no_contract": None,
     "lease_status": None,
     "property_returned": None,
+    "payment_status": None,
 }
 
 #: Party-card widget keys that hold user-editable text. ``is_company`` is the
@@ -322,6 +323,7 @@ def _capture_flags(page, case_type):
         return {
             "lease_status": page.get_lease_status(),
             "property_returned": page.get_property_returned(),
+            "payment_status": page.get_payment_status(),
         }
     raise AssertionError(f"未登记的事实确认项：{case_type}")
 
@@ -494,6 +496,12 @@ def _apply_flags(page, document):
         _set_tri_state(
             page.returned_yes, page.returned_no, page.returned_unknown,
             flags["property_returned"],
+        )
+        payment_index = page.payment_status_combo.findData(flags["payment_status"])
+        if flags["payment_status"] is not None and payment_index < 0:
+            raise AssertionError("草稿中的租金支付情况不在当前支持范围内。")
+        page.payment_status_combo.setCurrentIndex(
+            payment_index if payment_index >= 0 else 0
         )
 
     # Re-evaluate the page's conditional requirement for the restored state so

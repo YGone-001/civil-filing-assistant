@@ -95,6 +95,7 @@ FIELD_MODEL_MAP = {
         ("r_arrears_amount", "arrears_amount"),
         ("r_late_fee", "late_fee"),
         ("r_demand_record", "demand_record"),
+        ("r_defendant_obligations", "defendant_obligations"),
         ("r_termination_date", "termination_date"),
         ("r_court_name", "court_name"),
     ],
@@ -136,6 +137,7 @@ def test_registered_field_reaches_model_attribute(qapp, case_type, field, attr):
         ("divorce", "d_asset_description", "asset_description"),
         ("rental", "r_late_fee", "late_fee"),
         ("rental", "r_demand_record", "demand_record"),
+        ("rental", "r_defendant_obligations", "defendant_obligations"),
         ("rental", "r_termination_date", "termination_date"),
     ],
 )

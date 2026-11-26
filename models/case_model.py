@@ -60,6 +60,15 @@ RENTAL_LEASE_LABELS = {
     "request_termination": "请求解除",
 }
 
+#: Rental payment-status vocabulary shared by the claim page, model and draft
+#: schema. ``None`` means the user has not classified the payment state.
+RENTAL_PAYMENT_STATUSES = ("unpaid", "partial", "unknown")
+RENTAL_PAYMENT_LABELS = {
+    "unpaid": "未支付任何租金",
+    "partial": "已部分支付，尚欠上述金额",
+    "unknown": "支付情况未确认",
+}
+
 class AgentInfo:
     """Case-level optional litigation agent standing on the plaintiff's side."""
 
@@ -354,10 +363,16 @@ class RentalCaseModel(CaseTemplate):
         self.arrears_amount = ""
         self.late_fee = ""
         self.demand_record = ""
+        self.payment_status = None
+        self.defendant_obligations = ""
         # ``None`` means the user has not classified the contract status.
         self.lease_status = None
         self.termination_date = ""
         self.property_returned = None
+
+    def _multiple_defendants(self):
+        """True when more than one named defendant is present in the model."""
+        return len(self.party_manager.defendants) > 1
 
     def _return_claim_allowed(self):
         return (
@@ -365,11 +380,32 @@ class RentalCaseModel(CaseTemplate):
             and self.property_returned is False
         )
 
+    def _payment_status_sentence(self, subject):
+        """Describe the user-confirmed payment state without a blanket default.
+
+        ``None`` and ``unknown`` deliberately fall back to a neutral
+        reconciliation sentence.  This is the PF-01 contract: a partial payment
+        recorded by the user must never be followed by "至今未支付".
+        """
+        if self.payment_status == "unpaid":
+            return f"{subject}至今未支付。"
+        if self.payment_status == "partial":
+            return f"{subject}已支付部分租金，尚欠上述金额。"
+        return "上述欠租金额及支付情况以双方对账和证据为准。"
+
+    def _defendant_obligation_text(self):
+        text = (self.defendant_obligations or "").strip()
+        if text and text[-1] not in "。！？.!?":
+            text += "。"
+        return text
+
     def render_claims(self):
         claims = []
+        multiple = self._multiple_defendants()
         if self.lease_status == "request_termination":
+            counterpart = "各被告" if multiple else "被告"
             claims.append(
-                f"判令解除原告与被告之间关于{self.property_address}的房屋租赁合同；"
+                f"判令解除原告与{counterpart}之间关于{self.property_address}的房屋租赁合同；"
             )
 
         period = ""
@@ -377,43 +413,82 @@ class RentalCaseModel(CaseTemplate):
             period = f"（欠租期间自 {self.arrears_start} 起至 {self.arrears_end} 止）"
         elif self.arrears_start:
             period = f"（自 {self.arrears_start} 起）"
-        claims.append(
-            f"判令被告向原告支付欠付租金人民币 {self.arrears_amount} 元{period}；"
-        )
+        if multiple:
+            claims.append(
+                f"判令各被告按照其在租赁合同项下的义务向原告支付欠付租金人民币 "
+                f"{self.arrears_amount} 元{period}；"
+            )
+        else:
+            claims.append(
+                f"判令被告向原告支付欠付租金人民币 {self.arrears_amount} 元{period}；"
+            )
 
         if self.late_fee:
-            claims.append(f"判令被告支付违约金（滞纳金）人民币 {self.late_fee} 元；")
+            if multiple:
+                claims.append(
+                    f"判令负有付款义务的被告支付违约金（滞纳金）人民币 {self.late_fee} 元；"
+                )
+            else:
+                claims.append(
+                    f"判令被告支付违约金（滞纳金）人民币 {self.late_fee} 元；"
+                )
 
         if self._return_claim_allowed():
-            claims.append(f"判令被告腾退并返还位于{self.property_address}的房屋；")
+            if multiple:
+                claims.append(
+                    f"判令负有返还义务的被告腾退并返还位于{self.property_address}的房屋；"
+                )
+            else:
+                claims.append(
+                    f"判令被告腾退并返还位于{self.property_address}的房屋；"
+                )
 
-        claims.append("本案诉讼费由被告承担。")
+        claims.append(
+            "本案诉讼费由被告方承担。" if multiple else "本案诉讼费由被告承担。"
+        )
         return claims
 
     def render_facts(self):
-        fact_str = (
-            f"原告与被告于{self.contract_date}签订《房屋租赁合同》，"
-            f"约定原告将位于{self.property_address}的房屋出租给被告，"
-            f"租赁期限自{self.lease_start}至{self.lease_end}，"
-            f"月租金{self.monthly_rent}元，租金支付方式为{self.payment_cycle}。"
-        )
+        multiple = self._multiple_defendants()
+        if multiple:
+            fact_str = (
+                f"原告主张与各被告于{self.contract_date}签订《房屋租赁合同》，"
+                f"约定原告将位于{self.property_address}的房屋出租，"
+                f"租赁期限自{self.lease_start}至{self.lease_end}，"
+                f"月租金{self.monthly_rent}元，租金支付方式为{self.payment_cycle}。"
+            )
+            obligation = self._defendant_obligation_text()
+            if obligation:
+                fact_str += f"各被告的签约身份及付款义务如下：{obligation}"
+            else:
+                fact_str += "各被告的具体签约身份及付款义务以租赁合同和证据为准。"
+        else:
+            fact_str = (
+                f"原告与被告于{self.contract_date}签订《房屋租赁合同》，"
+                f"约定原告将位于{self.property_address}的房屋出租给被告，"
+                f"租赁期限自{self.lease_start}至{self.lease_end}，"
+                f"月租金{self.monthly_rent}元，租金支付方式为{self.payment_cycle}。"
+            )
 
+        payer = "负有付款义务的被告" if multiple else "被告"
         if self.arrears_start:
             period = f"自{self.arrears_start}起"
             if self.arrears_end:
                 period += f"至{self.arrears_end}"
-            fact_str += f"被告{period}未按约支付租金，尚欠租金{self.arrears_amount}元。"
+            fact_str += f"{payer}{period}未按约支付租金，尚欠租金{self.arrears_amount}元。"
         else:
-            fact_str += f"被告尚欠原告租金{self.arrears_amount}元。"
+            fact_str += f"{payer}尚欠原告租金{self.arrears_amount}元。"
 
+        subject = "被告方" if multiple else "被告"
         demand = (self.demand_record or "").strip()
         if demand:
             if demand[-1] not in "。！？.!?":
                 demand += "。"
-            fact_str += f"原告曾向被告催缴，催缴情况如下：{demand}但被告至今未支付。"
+            fact_str += f"原告曾向{subject}催缴，催缴情况如下：{demand}"
+        fact_str += self._payment_status_sentence(subject)
 
         if self.lease_status == "request_termination":
-            fact_str += "原告因被告欠付租金，请求解除双方租赁合同。"
+            fact_str += f"原告因{subject}欠付租金，请求解除双方租赁合同。"
         elif self.lease_status == "terminated":
             if self.termination_date:
                 fact_str += f"双方租赁合同已于{self.termination_date}解除。"
@@ -423,10 +498,11 @@ class RentalCaseModel(CaseTemplate):
             fact_str += "双方租赁合同仍在履行中。"
 
         if self.lease_status in ("terminated", "request_termination"):
+            returner = "负有返还义务的被告" if multiple else "被告"
             if self.property_returned is True:
-                fact_str += "被告已腾退并返还房屋。"
+                fact_str += f"{returner}已腾退并返还房屋。"
             elif self.property_returned is False:
-                fact_str += "被告尚未腾退返还房屋。"
+                fact_str += f"{returner}尚未腾退返还房屋。"
 
         fact_str += "为维护原告合法权益，特诉至贵院。"
         return fact_str

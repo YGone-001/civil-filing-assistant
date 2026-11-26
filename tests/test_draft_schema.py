@@ -49,12 +49,30 @@ def _loan_payload(**overrides):
     return payload
 
 
+def _rental_payload(**overrides):
+    payload = _blank_payload("rental")
+    payload["fields"]["r_property_address"] = "示例市示例区示例路1号"
+    payload["fields"]["r_arrears_amount"] = "1000"
+    payload["factual_flags"]["lease_status"] = "active"
+    payload["factual_flags"]["payment_status"] = "unknown"
+    payload.update(overrides)
+    return payload
+
+
 def _strip_v5_fields(payload):
     """Remove the optional supplement fields so a payload matches pre-v5 shape."""
     case_type = payload.get("case_type")
     for spec in schema.TEXT_FIELDS.get(case_type, ()):
         if spec.widget in ("extra_claims", "extra_facts"):
             payload["fields"].pop(spec.key, None)
+    return payload
+
+
+def _strip_v6_fields(payload):
+    """Remove the PF-01/PF-02 fields so a rental payload matches v5 shape."""
+    if payload.get("case_type") == "rental":
+        payload["fields"].pop("r_defendant_obligations", None)
+        payload["factual_flags"].pop("payment_status", None)
     return payload
 
 
@@ -550,6 +568,36 @@ def test_version_four_draft_already_carrying_supplement_fields_is_rejected():
     payload["schema_version"] = 4
     with pytest.raises(DraftValidationError):
         schema.validate_document(payload)
+
+
+# --------------------------------------------------------------------------- #
+# Version 5 -> 6: rental payment status and multi-defendant notes
+# --------------------------------------------------------------------------- #
+
+
+def test_version_five_rental_draft_gains_pf01_and_pf02_fields():
+    payload = _rental_payload()
+    payload["schema_version"] = 5
+    _strip_v6_fields(payload)
+    document = schema.validate_document(payload)
+    assert document.schema_version == schema.SCHEMA_VERSION
+    assert document.fields["r_defendant_obligations"] == ""
+    assert document.factual_flags["payment_status"] is None
+
+
+def test_version_five_rental_draft_already_carrying_v6_fields_is_rejected():
+    payload = _rental_payload()
+    payload["schema_version"] = 5
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
+
+
+def test_version_five_loan_draft_only_bumps_the_version():
+    payload = _loan_payload()
+    payload["schema_version"] = 5
+    document = schema.validate_document(payload)
+    assert document.schema_version == schema.SCHEMA_VERSION
+    assert document.factual_flags == {"has_iou": True}
 
 
 def test_agent_record_survives_validation_and_round_trip():

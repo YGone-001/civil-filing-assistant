@@ -16,7 +16,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from models.case_model import RENTAL_LEASE_LABELS, RENTAL_LEASE_STATUSES
+from models.case_model import (
+    RENTAL_LEASE_LABELS,
+    RENTAL_LEASE_STATUSES,
+    RENTAL_PAYMENT_LABELS,
+    RENTAL_PAYMENT_STATUSES,
+)
 from models.validation import DateStatus, parse_full_date
 from views.pages.base import _TitledPage
 from views.pages.common import (
@@ -100,6 +105,22 @@ class RentalClaimPage(_TitledPage):
         _decimal_validator(self.late_fee)
         self.late_fee.setPlaceholderText("单位：元（留空表示不主张）")
 
+        self.payment_status_combo = QComboBox()
+        self.payment_status_combo.setAccessibleName("租金支付情况")
+        self.payment_status_combo.setAccessibleDescription(
+            "选择未支付任何租金、已部分支付或支付情况未确认"
+        )
+        self.payment_status_combo.addItem("— 请选择支付情况 —", None)
+        for value in RENTAL_PAYMENT_STATUSES:
+            self.payment_status_combo.addItem(RENTAL_PAYMENT_LABELS[value], value)
+
+        self.payment_status_hint = QLabel(
+            "如已部分付款，请选择“已部分支付”，并在催缴情况中说明付款时间和金额；"
+            "欠租金额请填写扣除已付款后的余额。"
+        )
+        self.payment_status_hint.setObjectName(INFO_LABEL)
+        self.payment_status_hint.setWordWrap(True)
+
         self.demand_record = QPlainTextEdit()
         self.demand_record.setMaximumHeight(80)
         self.demand_record.setPlaceholderText(
@@ -109,6 +130,8 @@ class RentalClaimPage(_TitledPage):
         arrears.addRow("欠租起始日期:", self.arrears_start)
         arrears.addRow("欠租截止日期:", self.arrears_end)
         arrears.addRow("欠租金额(元):", self.arrears_amount)
+        arrears.addRow("租金支付情况:", self.payment_status_combo)
+        arrears.addRow("", self.payment_status_hint)
         arrears.addRow("违约金/滞纳金(元):", self.late_fee)
         arrears.addRow("催缴情况:", self.demand_record)
         add_facts_examples_button(self, arrears)
@@ -159,10 +182,28 @@ class RentalClaimPage(_TitledPage):
         self.cond_hint.setVisible(False)
         status.addRow("", self.cond_hint)
 
+        # --- 四、多被告身份与付款义务 ----------------------------------------
+        multiple = _section(root, "四、多被告身份与付款义务（仅多名被告时填写）")
+
+        self.defendant_obligations = QPlainTextEdit()
+        self.defendant_obligations.setMaximumHeight(90)
+        self.defendant_obligations.setPlaceholderText(
+            "请分别说明每名被告的签约身份和付款义务，例如："
+            "被告1为承租人，承担租金支付义务；被告2为共同承租人或保证人，承担……"
+        )
+        multiple.addRow("多被告说明:", self.defendant_obligations)
+
+        multiple_hint = QLabel(
+            "存在多名被告时，本项为必填；只有一名被告时可留空。"
+        )
+        multiple_hint.setObjectName(INFO_LABEL)
+        multiple_hint.setWordWrap(True)
+        multiple.addRow("", multiple_hint)
+
         add_supplement_section(self, root, "r")
 
-        # --- 四、建议管辖法院 ------------------------------------------------
-        court = _section(root, "四、建议管辖法院")
+        # --- 五、建议管辖法院 ------------------------------------------------
+        court = _section(root, "五、建议管辖法院")
 
         self.court_name = QLineEdit()
         self.court_name.setPlaceholderText("如: 上海市徐汇区人民法院")
@@ -183,10 +224,17 @@ class RentalClaimPage(_TitledPage):
         self.registerField("r_arrears_amount*", self.arrears_amount)
         self.registerField("r_late_fee", self.late_fee)
         self.registerField("r_demand_record", self.demand_record, "plainText")
+        self.registerField(
+            "r_defendant_obligations", self.defendant_obligations, "plainText"
+        )
         self.registerField("r_termination_date", self.termination_date)
         self.registerField("r_court_name*", self.court_name)
 
         self.lease_status_combo.currentIndexChanged.connect(self._refresh_conditional)
+        self.payment_status_combo.currentIndexChanged.connect(self._refresh_conditional)
+        self.defendant_obligations.textChanged.connect(
+            lambda *_: self._refresh_conditional()
+        )
         for widget in (
             self.contract_date, self.lease_start, self.lease_end,
             self.arrears_start, self.arrears_end, self.termination_date,
@@ -230,6 +278,9 @@ class RentalClaimPage(_TitledPage):
         programmatic ``wizard.next()`` keeps the same behavior as the other
         claim pages (their required-text checks are also button-level).
         """
+        if self.get_payment_status() is None:
+            return "请选择租金支付情况。", self.payment_status_combo
+
         status = self.get_lease_status()
         if status == "terminated" and not self.termination_date.text().strip():
             return "选择“已解除”时，请填写解除日期。", self.termination_date
@@ -266,6 +317,15 @@ class RentalClaimPage(_TitledPage):
         ):
             return "欠租截止日期早于起始日期，请核对。", self.arrears_end
 
+        if (
+            self._named_defendant_count() > 1
+            and not self.defendant_obligations.toPlainText().strip()
+        ):
+            return (
+                "存在多名被告时，请分别说明每名被告的签约身份和付款义务。",
+                self.defendant_obligations,
+            )
+
         return "", None
 
     def _refresh_conditional(self):
@@ -295,6 +355,22 @@ class RentalClaimPage(_TitledPage):
 
     def get_lease_status(self):
         return self.lease_status_combo.currentData()
+
+    def get_payment_status(self):
+        return self.payment_status_combo.currentData()
+
+    def _named_defendant_count(self):
+        """Count named defendant cards without depending on page order."""
+        try:
+            page = self.wizard().party_page
+        except Exception:
+            return 1
+        widgets = getattr(page, "defendant_widgets", [])
+        return sum(
+            1
+            for widget in widgets
+            if widget.get("name") is not None and widget["name"].text().strip()
+        )
 
     def get_property_returned(self):
         checked = self.returned_group.checkedId()

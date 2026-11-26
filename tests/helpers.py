@@ -200,6 +200,9 @@ def fill_case_facts(wizard, case_type, confirm_flags=True):
         p.arrears_end.setText("2024-03-31")
         p.arrears_amount.setText("9000")
         p.late_fee.setText("500")
+        p.payment_status_combo.setCurrentIndex(
+            p.payment_status_combo.findData("unpaid")
+        )
         p.demand_record.setPlainText("2024年4月通过微信和短信催缴。")
         status_index = p.lease_status_combo.findData("request_termination")
         p.lease_status_combo.setCurrentIndex(status_index)
@@ -281,6 +284,9 @@ def fill_minimal_case(wizard, case_type, plaintiffs=None, defendants=None):
         p.arrears_start.setText("2024-01-01")
         p.arrears_end.setText("2024-03-31")
         p.arrears_amount.setText("9000")
+        p.payment_status_combo.setCurrentIndex(
+            p.payment_status_combo.findData("unknown")
+        )
         status_index = p.lease_status_combo.findData("active")
         p.lease_status_combo.setCurrentIndex(status_index)
         p.court_name.setText("示例人民法院")

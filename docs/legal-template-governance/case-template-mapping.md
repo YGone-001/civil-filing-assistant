@@ -9,11 +9,12 @@
 > **Post-baseline rental case:** `rental` is now registered as a post-baseline addendum with three
 > unapproved entries. Its governance work package is
 > `official-adaptation-planning/rental-contract-work-package.md` / `.json`
-> (`OPEN` / `LEGAL_REVIEW_PACKET_PREPARED` / `NO-GO`). A candidate official rental complaint has
-> been located at PDF pages 171–176 (instance 181–186), and the documentary comparison records 35
-> open gaps. A legal review packet is prepared, but no reviewer is assigned and no rental mapping is
-> legally reviewed or approved. Do not mark any rental entry `APPROVED` without the required review
-> evidence.
+> (`OPEN` / `SCOPED_FIX_IMPLEMENTED` / `NO-GO`). A candidate official rental complaint has been
+> located at PDF pages 171–176 (instance 181–186), and the documentary comparison records 35 open
+> gaps. A non-signatory preflight recorded four output findings; a scoped fix addressed PF-01 and
+> PF-02 pending recheck, while PF-03 and PF-04 remain open. No reviewer is assigned and no rental
+> mapping is legally reviewed or approved. Do not mark any rental entry `APPROVED` without the
+> required review evidence.
 
 - Repository: `YGone-001/civil-filing-assistant`
 - Audited revision: `eb23e3e8c8ae080d7185309bf69b3e41681a904e`

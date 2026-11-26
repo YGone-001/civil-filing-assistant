@@ -42,7 +42,11 @@ from typing import Optional
 
 from drafts.errors import DraftFileTooLargeError, DraftValidationError
 from drafts.storage import MAX_PLAINTEXT_BYTES
-from models.case_model import AGENT_TYPES, RENTAL_LEASE_STATUSES
+from models.case_model import (
+    AGENT_TYPES,
+    RENTAL_LEASE_STATUSES,
+    RENTAL_PAYMENT_STATUSES,
+)
 from utils.labor_security import (
     LABOR_PROCEDURES,
     LABOR_REFUSAL_GROUNDS,
@@ -50,10 +54,10 @@ from utils.labor_security import (
 )
 
 #: Version of the *inner* JSON document (independent of the envelope version).
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 
 #: Older inner-document versions that :func:`_migrate` can upgrade.
-MIGRATABLE_VERSIONS = (1, 2, 3, 4)
+MIGRATABLE_VERSIONS = (1, 2, 3, 4, 5)
 
 #: Case categories this build can restore. Mirrors
 #: ``presenters.model_builder.SUPPORTED_CASE_TYPES`` and is asserted equal there.
@@ -157,7 +161,13 @@ TRI_STATE_FLAGS = (
 #: Classification fields stored as ``None`` (unconfirmed) or one of the
 #: vocabulary strings owned by :mod:`utils.labor_security` (imported, so the
 #: two can never drift).
-STRING_FLAGS = ("labor_procedure", "labor_refusal_ground", "labor_role", "lease_status")
+STRING_FLAGS = (
+    "labor_procedure",
+    "labor_refusal_ground",
+    "labor_role",
+    "lease_status",
+    "payment_status",
+)
 
 #: Allowed values per string classification flag.
 STRING_FLAG_VALUES = {
@@ -165,6 +175,7 @@ STRING_FLAG_VALUES = {
     "labor_refusal_ground": LABOR_REFUSAL_GROUNDS,
     "labor_role": LABOR_ROLES,
     "lease_status": RENTAL_LEASE_STATUSES,
+    "payment_status": RENTAL_PAYMENT_STATUSES,
 }
 
 #: Case type -> the page name that owns its claim inputs.
@@ -306,6 +317,7 @@ TEXT_FIELDS = {
         ("r_arrears_amount", "arrears_amount", NUMERIC_LIMIT, True),
         ("r_late_fee", "late_fee", NUMERIC_LIMIT, True),
         ("r_demand_record", "demand_record", LONG_TEXT_LIMIT, False),
+        ("r_defendant_obligations", "defendant_obligations", LONG_TEXT_LIMIT, False),
         ("r_termination_date", "termination_date", TEXT_LIMIT, False),
         ("r_extra_claims", "extra_claims", LONG_TEXT_LIMIT, False),
         ("r_extra_facts", "extra_facts", LONG_TEXT_LIMIT, False),
@@ -328,7 +340,7 @@ FLAG_FIELDS = {
         "is_no_contract",
     ),
     "divorce": (),
-    "rental": ("lease_status", "property_returned"),
+    "rental": ("lease_status", "property_returned", "payment_status"),
 }
 
 
@@ -568,6 +580,10 @@ def _migrate(mapping):
 
     Version 4 -> 5: every case gained the optional user-supplied claim/fact
     fields, filled blank because a v4 draft never asked for them.
+
+    Version 5 -> 6: rental drafts gained the payment-status classification
+    (``None`` = unconfirmed) and the multi-defendant obligation description
+    (blank), because a v5 draft never asked for either.
     """
     upgraded = dict(mapping)
     if upgraded.get("schema_version") == 1:
@@ -578,6 +594,8 @@ def _migrate(mapping):
         upgraded = _migrate_v3_to_v4(upgraded)
     if upgraded.get("schema_version") == 4:
         upgraded = _migrate_v4_to_v5(upgraded)
+    if upgraded.get("schema_version") == 5:
+        upgraded = _migrate_v5_to_v6(upgraded)
     upgraded["schema_version"] = SCHEMA_VERSION
     return upgraded
 
@@ -695,6 +713,28 @@ def _migrate_v4_to_v5(mapping):
             fields[key] = ""
         upgraded["fields"] = fields
     upgraded["schema_version"] = 5
+    return upgraded
+
+
+def _migrate_v5_to_v6(mapping):
+    """Version 5 -> 6 shape: rental payment status and multi-defendant notes."""
+    upgraded = dict(mapping)
+    if upgraded.get("case_type") == "rental":
+        fields = upgraded.get("fields")
+        if isinstance(fields, dict):
+            fields = dict(fields)
+            if "r_defendant_obligations" in fields:
+                raise DraftValidationError("fields 的字段集合不符合草稿格式。")
+            fields["r_defendant_obligations"] = ""
+            upgraded["fields"] = fields
+        flags = upgraded.get("factual_flags")
+        if isinstance(flags, dict):
+            if "payment_status" in flags:
+                raise DraftValidationError("factual_flags 的字段集合不符合草稿格式。")
+            flags = dict(flags)
+            flags["payment_status"] = None
+            upgraded["factual_flags"] = flags
+    upgraded["schema_version"] = 6
     return upgraded
 
 

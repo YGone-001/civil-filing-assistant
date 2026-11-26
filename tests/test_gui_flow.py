@@ -110,6 +110,8 @@ def test_wizard_routes_and_initializes(qapp, case_type):
     wizard.next()  # -> party
     assert wizard.currentId() == wizard.PAGE_PARTY
     set_parties(wizard)
+    if case_type == "rental":
+        fill_case_facts(wizard, "rental")
 
     claim_page_id = getattr(wizard, EXPECTED_ROUTE_PAGE[case_type])
     assert wizard.nextId() == claim_page_id

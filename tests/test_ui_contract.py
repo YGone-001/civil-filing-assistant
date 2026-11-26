@@ -31,6 +31,7 @@ from PySide6.QtWidgets import (
 
 from helpers import (
     CASE_TYPES,
+    fill_case_facts,
     make_wizard,
     navigate_to_export,
     prepare_case,
@@ -200,6 +201,8 @@ def test_step_indicators_update_through_full_navigation(qapp, case_type):
         assert ind.current() == 2
 
     set_parties(wizard)
+    if case_type == "rental":
+        fill_case_facts(wizard, "rental")
     wizard.next()  # -> claim (step 3)
     qapp.processEvents()
     for ind in _all_indicators(wizard):

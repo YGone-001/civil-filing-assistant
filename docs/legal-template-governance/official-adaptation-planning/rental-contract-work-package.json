@@ -145,11 +145,94 @@
     "status": "PACKET_PREPARED",
     "prepared_date": "2026-11-26",
     "packet_document": "rental-legal-content-review-packet.md",
+    "agenda_document": "rental-legal-review-agenda.md",
+    "preflight": {
+      "status": "PREFLIGHT_COMPLETE",
+      "document": "rental-legal-content-preflight.md",
+      "completed_date": "2026-11-26",
+      "prepared_by": "Codex (non-signatory preflight)",
+      "coverage": "ALL_21_QUESTIONS",
+      "overall_recommendation": "MODIFY_AND_RECHECK",
+      "court_specific_applicability": "UNDETERMINED_TARGET_COURT_AND_CHANNEL_NOT_SPECIFIED",
+      "formal_review_status": "NOT_PERFORMED",
+      "reviewer_signed": false,
+      "samples_path": "test_samples/rental-content-preflight-2026-11-26",
+      "samples_git_status": "IGNORED",
+      "verification": {
+        "wps_page_check": "COMPLETE",
+        "microsoft_word_check": "NOT_PERFORMED",
+        "court_platform_check": "NOT_PERFORMED"
+      },
+      "finding_ids": [
+        "PF-01",
+        "PF-02",
+        "PF-03",
+        "PF-04"
+      ],
+      "findings": [
+        {
+          "finding_id": "PF-01",
+          "title": "Partial payment is followed by a blanket non-payment statement",
+          "affected_documents": ["civil_complaint"],
+          "evidence": "Sample A records a partial payment of 1500 on 2026-04-20 and then states '但被告至今未支付' in the same fact paragraph.",
+          "recommended_action": "Generate the non-payment statement from a user-confirmed as-of date and outstanding balance; allow partial payment, settlement and set-off; do not append a blanket non-payment assertion.",
+          "linked_questions": ["LRQ-05"],
+          "linked_gaps": ["RCS-29"],
+          "status": "FIXED_PENDING_RECHECK",
+          "fix_evidence": "RentalCaseModel now derives the payment sentence from the required payment-status classification. Partial payment emits '已支付部分租金，尚欠上述金额' and never '至今未支付'; unknown emits a neutral reconciliation sentence. Tests: test_partial_payment_does_not_append_blanket_non_payment, test_unpaid_payment_status_adds_an_explicit_statement, test_unknown_payment_status_defers_to_reconciliation."
+        },
+        {
+          "finding_id": "PF-02",
+          "title": "Multiple defendants' signing capacity and payment obligations are not separated",
+          "affected_documents": ["civil_complaint"],
+          "evidence": "Sample A lists a company defendant and a natural-person defendant, but the facts state that the plaintiff and '被告' signed the contract and the claims direct payment by '被告' without identifying which defendant signed or owes which amount.",
+          "recommended_action": "Capture each defendant's role, signing capacity and obligation; render them separately or consolidate only after user confirmation.",
+          "linked_questions": ["LRQ-01", "LRQ-03", "LRQ-05", "LRQ-18"],
+          "linked_gaps": ["RCS-06", "RCS-18"],
+          "status": "FIXED_PENDING_RECHECK",
+          "fix_evidence": "RentalCaseModel now detects multiple named defendants and renders claims/facts against each defendant's contractual obligation. The rental page requires a multi-defendant identity and payment-obligation description before completion. Tests: test_multiple_defendants_use_obligation_based_wording, test_multiple_defendants_require_obligation_description."
+        },
+        {
+          "finding_id": "PF-03",
+          "title": "Default evidence suggestions are exported as confirmed evidence with an '原件核对' note",
+          "affected_documents": ["evidence_list"],
+          "evidence": "Sample A's evidence list contains five default suggestions and adds '原件核对' to every row, including a termination/return evidence item that may not exist.",
+          "recommended_action": "Distinguish suggested rows from user-confirmed evidence; export only confirmed items; do not add '原件核对' by default.",
+          "linked_questions": ["LRQ-16"],
+          "linked_gaps": ["RCS-31", "RCS-34"],
+          "status": "OPEN"
+        },
+        {
+          "finding_id": "PF-04",
+          "title": "Service-address form covers multiple parties but has a single signature block",
+          "affected_documents": ["service_address_confirmation"],
+          "evidence": "Sample A lists the plaintiff and two defendants, but the form has one '确认人：' signature block; the second defendant has no address.",
+          "recommended_action": "Provide per-party confirmation/signature blocks or separate forms; do not treat one party's address as another's; record the source of each service address.",
+          "linked_questions": ["LRQ-17"],
+          "linked_gaps": ["RCS-35"],
+          "status": "OPEN"
+        }
+      ],
+      "non_claims": [
+        "This preflight is not a formal legal review, legal opinion or approval.",
+        "No reviewer has signed; formal review status remains NOT_PERFORMED.",
+        "The findings are triage records; the separate scoped engineering authorization covers only PF-01 and PF-02 and does not authorize template adaptation or release.",
+        "Court-specific applicability remains undetermined because the target court and filing channel are not specified."
+      ]
+    },
     "review_performed": false,
     "reviewer_required": "A qualified legal professional with civil litigation and lease-dispute experience, independent of the project.",
+    "reviewer_candidate": {
+      "name": "YGone",
+      "status": "PENDING_QUALIFICATION_AND_INDEPENDENCE",
+      "qualification": null,
+      "independent_of_project": null,
+      "consent_confirmed": null,
+      "notes": "Name supplied by the project owner on 2026-11-26. Qualification, independence and consent are not confirmed; this is not an assignment and does not authorize a legal review record."
+    },
     "reviewer_assigned": false,
     "review_date": null,
-    "blocking_reason": "No qualified legal reviewer has been assigned. The project cannot self-certify legal content, and tests, documentation or commits are not legal review.",
+    "blocking_reason": "Preflight is complete, but no qualified legal reviewer has been assigned for the formal review. The project cannot self-certify legal content, and tests, documentation or commits are not legal review.",
     "question_ids": [
       "LRQ-01",
       "LRQ-02",
@@ -181,6 +264,50 @@
       "Preparing this packet does not complete the LEGAL_CONTENT_REVIEW stage."
     ]
   },
+  "scoped_engineering_authorization": {
+    "status": "IMPLEMENTED_PENDING_RECHECK",
+    "authorized_date": "2026-11-26",
+    "scope": ["PF-01", "PF-02"],
+    "excluded_findings": ["PF-03", "PF-04"],
+    "overall_implementation_authorization": "NOT_AUTHORIZED",
+    "recheck_samples_path": "test_samples/rental-pf01-pf02-recheck-2026-11-26",
+    "recheck_samples_status": "GENERATED_TEXT_VERIFIED_VISUAL_PENDING",
+    "files_changed": [
+      "models/case_model.py",
+      "views/pages/rental.py",
+      "presenters/model_builder.py",
+      "drafts/schema.py",
+      "views/draft_io.py",
+      "tests/test_rental_case.py",
+      "tests/test_draft_schema.py",
+      "tests/test_field_model_integrity.py",
+      "tests/helpers.py",
+      "tests/test_case_type_fail_closed.py",
+      "tests/test_gui_flow.py",
+      "tests/test_ui_contract.py",
+      "AGENTS.md"
+    ],
+    "tests": [
+      "test_partial_payment_does_not_append_blanket_non_payment",
+      "test_unpaid_payment_status_adds_an_explicit_statement",
+      "test_unknown_payment_status_defers_to_reconciliation",
+      "test_multiple_defendants_use_obligation_based_wording",
+      "test_multiple_defendants_require_obligation_description",
+      "test_version_five_rental_draft_gains_pf01_and_pf02_fields"
+    ],
+    "recheck_requirements": [
+      "Re-export fictional single-defendant and multi-defendant rental complaints with partial-payment and no-payment scenarios.",
+      "Inspect the actual DOCX text and repeat the WPS/Word pagination and layout check.",
+      "Keep PF-03 and PF-04 open; they are outside this authorization.",
+      "Formal legal review, rights review and release approval remain separate and are not granted by this authorization."
+    ],
+    "non_claims": [
+      "This authorization covers only PF-01 and PF-02.",
+      "It does not authorize any template adaptation, mapping approval or release.",
+      "It does not change the overall NOT_AUTHORIZED implementation status.",
+      "PF-03 and PF-04 remain open."
+    ]
+  },
   "legal_review_status": "NOT_REQUESTED",
   "rights_review_status": "NOT_REVIEWED",
   "implementation_authorization": "NOT_AUTHORIZED",
@@ -193,7 +320,7 @@
     "release_approver"
   ],
   "assigned_reviewers": [],
-  "scope_note": "Post-baseline addendum only. It does not alter the frozen five-case planning counts (15 routes, 131 gaps, 199 crosswalks). It adds three unapproved rental entries to the central case-template mapping and does not authorize any runtime change. The existing rental output is a project-authored software baseline, not an official template or legal authority.",
+  "scope_note": "Post-baseline addendum only. It does not alter the frozen five-case planning counts (15 routes, 131 gaps, 199 crosswalks). It adds three unapproved rental entries to the central case-template mapping. A separate scoped authorization covers only PF-01 and PF-02; the overall implementation remains unauthorized. The existing rental output is a project-authored software baseline, not an official template or legal authority.",
   "current_application": {
     "case_type_name": "租赁合同纠纷",
     "user_fields": [
@@ -207,7 +334,9 @@
       "arrears_end",
       "arrears_amount",
       "late_fee",
+      "payment_status",
       "demand_record",
+      "defendant_obligations",
       "lease_status",
       "termination_date",
       "property_returned",
@@ -217,9 +346,9 @@
     ],
     "claims": [
       "request termination when the user selects that status",
-      "arrears amount with an optional arrears period",
-      "late fee when supplied",
-      "vacate and return the premises when the contract is terminated or termination is requested and the premises are not returned",
+      "arrears amount with an optional arrears period; multiple defendants are addressed through their contractual obligations",
+      "late fee when supplied, against the payment-obligated defendant(s)",
+      "vacate and return the premises when the contract is terminated or termination is requested and the premises are not returned, against the return-obligated defendant(s)",
       "litigation costs"
     ],
     "documents": [
@@ -311,8 +440,9 @@
         "A documented legal/content decision exists with reviewer role and date.",
         "Automated tests are not treated as legal approval."
       ],
-      "preparation_evidence": "rental-legal-content-review-packet.md prepared with 21 questions (LRQ-01 to LRQ-21); no reviewer assigned and no legal conclusion reached.",
-      "blocking_reason": "No qualified legal reviewer has been assigned; the stage cannot be completed by the project itself."
+      "preparation_evidence": "rental-legal-content-review-packet.md prepared with 21 questions (LRQ-01 to LRQ-21); rental-legal-content-preflight.md records recommendations for all 21 and four open output findings (PF-01 to PF-04). No reviewer assigned and no legal conclusion reached.",
+      "preflight_evidence": "Non-signatory preflight complete on 2026-11-26; overall recommendation MODIFY_AND_RECHECK; target court and filing channel not specified, so court-specific applicability is undetermined.",
+      "blocking_reason": "No qualified legal reviewer has been assigned for the formal review; the stage cannot be completed by the project itself."
     },
     {
       "task_id": "rights-and-redistribution-review",
@@ -384,7 +514,9 @@
     "The mapping review records candidate and no-counterpart decisions only; it is not a legal applicability review or approval.",
     "No official text has been copied into the repository; only section labels, page references and gap identifiers are recorded.",
     "A legal review packet has been prepared, but no reviewer has been assigned and no legal conclusion has been reached.",
-    "No legal review has been performed.",
+    "A non-signatory preflight is complete and recommends modification and recheck; it is not a formal legal review or approval.",
+    "A scoped engineering authorization covers only PF-01 and PF-02; PF-03 and PF-04 remain open, and the overall implementation remains NOT_AUTHORIZED.",
+    "No formal legal review has been performed.",
     "No mapping is approved.",
     "No rights or redistribution decision has been made.",
     "No implementation or release is authorized.",

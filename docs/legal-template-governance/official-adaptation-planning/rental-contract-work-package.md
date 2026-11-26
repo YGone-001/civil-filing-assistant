@@ -1,11 +1,14 @@
 # 租赁合同纠纷 — Governance Work Package
 
-> **Status: OPEN / LEGAL_REVIEW_PACKET_PREPARED / NO-GO.** This is a post-baseline governance
-> addendum only. A candidate official rental complaint has been identified, its file verified, and
-> a documentary comparison with 35 open gaps recorded. The mapping review is complete: three
-> unapproved rental entries were added to the central mapping registry. A legal review packet is
-> prepared, but no reviewer has been assigned and no legal review has occurred. No mapping is
-> legally reviewed or approved. No implementation or release is authorized.
+> **Status: OPEN / SCOPED_FIX_IMPLEMENTED / NO-GO.** This is a post-baseline governance addendum
+> only. A candidate official rental complaint has been identified, its file verified, and a
+> documentary comparison with 35 open gaps recorded. The mapping review is complete: three
+> unapproved rental entries were added to the central mapping registry. A non-signatory preflight
+> covering all 21 questions is complete and recommends modification and recheck. A scoped
+> engineering authorization fixed only PF-01 (payment-status wording) and PF-02 (multiple-defendant
+> attribution); both await recheck. PF-03 and PF-04 remain open. No reviewer has been assigned and
+> no formal legal review has occurred. No mapping is legally reviewed or approved, and the overall
+> implementation remains unauthorized. No release is authorized.
 > The existing rental output is a project-authored software baseline, not an official template.
 
 - Work package: `wp-rental-source-discovery`
@@ -164,20 +167,63 @@ frozen five-case planning counts remain 15.
 
 The legal/content review has **not** been performed. A review packet was prepared at
 [`rental-legal-content-review-packet.md`](rental-legal-content-review-packet.md) with 21 questions
-(LRQ-01 to LRQ-21). No reviewer has been assigned; reviewer identity, qualification, review date
-and per-question decisions remain blank.
+(LRQ-01 to LRQ-21), and a session agenda is at
+[`rental-legal-review-agenda.md`](rental-legal-review-agenda.md). No reviewer has been assigned;
+reviewer identity, qualification, review date and per-question decisions remain blank.
+
+The [non-signatory preflight](rental-legal-content-preflight.md) records recommendations for all
+21 questions, the applicable national sources, and findings from two fictional export sets. Its
+overall recommendation is **MODIFY_AND_RECHECK**. Court-specific applicability is **undetermined**
+because the target court and filing channel have not been specified.
+
+| Finding | Issue | Affected document |
+|---|---|---|
+| PF-01 | Partial payment is followed by a blanket "至今未支付" statement | Civil complaint |
+| PF-02 | Multiple defendants' signing capacity and payment obligations are not separated | Civil complaint |
+| PF-03 | Default evidence suggestions are exported as confirmed evidence with "原件核对" | Evidence list |
+| PF-04 | Service-address form covers multiple parties but has one signature block | Service-address confirmation |
 
 ```text
-status:              PACKET_PREPARED
+preflight_status:    PREFLIGHT_COMPLETE
+overall_recommendation: MODIFY_AND_RECHECK
+court_specific:      UNDETERMINED_TARGET_COURT_AND_CHANNEL_NOT_SPECIFIED
+formal_review_status: NOT_PERFORMED
 review_performed:    false
 reviewer_assigned:   false
 review_date:         null
 legal_review_status: NOT_REQUESTED
 ```
 
+The preflight is not a formal legal review and has no reviewer signature. The four findings are
+triage records; PF-01 and PF-02 are covered by the separate scoped authorization below, while
+PF-03 and PF-04 remain open and do not authorize implementation.
+
+Candidate reviewer: **YGone** (name supplied by the project owner on 2026-11-26). Qualification,
+independence and consent to review are not confirmed, so this is **not** an assignment. If YGone is
+the project author, the governance policy prohibits self-review as the independent legal reviewer.
+
 Blocking reason: no qualified legal reviewer has been assigned. The project cannot self-certify
 legal content, and tests, documentation or commits are not legal review. The stage remains
 `NOT_STARTED`; no legal conclusion or approval exists.
+
+### 4.4 Scoped engineering authorization result
+
+A scoped authorization covers **only** PF-01 and PF-02. It does not authorize template
+adaptation, mapping approval, rights review or release.
+
+| Finding | Status | Change summary |
+|---|---|---|
+| PF-01 | `FIXED_PENDING_RECHECK` | Rental payment status is now required; partial payment emits "已支付部分租金，尚欠上述金额" and never "至今未支付"; unknown uses a neutral reconciliation sentence. |
+| PF-02 | `FIXED_PENDING_RECHECK` | Multiple defendants use obligation-based claims and facts; the rental page requires a per-defendant signing-role and payment-obligation description. |
+| PF-03 | `OPEN` | Evidence-suggestion and "原件核对" issue remains out of scope. |
+| PF-04 | `OPEN` | Service-address signature-block issue remains out of scope. |
+
+The fix updates `models/case_model.py`, `views/pages/rental.py`,
+`presenters/model_builder.py`, `drafts/schema.py` (schema v6 with a v5 migration) and
+`views/draft_io.py`, with regression tests. The overall `implementation_authorization` remains
+`NOT_AUTHORIZED`. Recheck samples are generated in
+`test_samples/rental-pf01-pf02-recheck-2026-11-26/` (git-ignored); text-level verification passes,
+while WPS/Word inspection and formal reviewer recheck remain pending.
 
 ---
 
@@ -210,7 +256,7 @@ These questions are inputs to future legal/content review; they are not answered
 | `CASE_MAPPING_REVIEW` | Decide counterpart mapping | `COMPLETE` | Mapping entries added only after source evidence |
 | `LEGAL_CONTENT_REVIEW` | Review claims, facts and procedure (packet prepared) | `NOT_STARTED` | Documented legal/content decision |
 | `RIGHTS_AND_REDISTRIBUTION_REVIEW` | Decide adaptation/redistribution rights | `BLOCKED` | Separate rights decision |
-| `ENGINEERING_IMPLEMENTATION` | Implement scoped changes only | `NOT_AUTHORIZED` | Scoped engineering authorization |
+| `ENGINEERING_IMPLEMENTATION` | Implement scoped changes only (PF-01/PF-02 scoped fix implemented; overall implementation not authorized) | `NOT_AUTHORIZED` | Scoped engineering authorization |
 | `DOCX_REGRESSION_VALIDATION` | Regression and visual inspection | `NOT_ASSESSED` | Automated DOCX tests plus pagination/table check |
 | `RELEASE_APPROVAL` | Release decision | `NOT_ASSESSED` | Separate release approval |
 
@@ -230,7 +276,8 @@ SOURCE_AUTHENTICITY
 
 The current stage is `LEGAL_CONTENT_REVIEW`. Three unapproved rental mapping entries exist; a legal
 review packet is prepared, but no reviewer is assigned and no legal/content or rights review has
-been performed.
+been performed. A scoped PF-01/PF-02 fix is implemented pending recheck; it does not complete the
+legal review, approve a mapping or authorize further changes.
 
 Missing information never implies permission. A passing test suite never overrides a missing
 legal, rights or source review.
@@ -268,6 +315,10 @@ Until these criteria are met, the rental release gate remains `NO-GO`.
 9. Record reviewer roles only when actual reviewers are assigned; do not invent names or dates.
 10. Do not fill reviewer identity, qualification, date or per-question decisions in the legal review
     packet without an assigned qualified reviewer.
+11. Preflight findings PF-01 to PF-04 are triage records, not legal review; do not implement them
+    without scoped engineering authorization.
+12. The scoped authorization covers only PF-01 and PF-02; do not extend it to PF-03, PF-04 or any
+    other template change.
 
 ---
 
@@ -275,13 +326,17 @@ Until these criteria are met, the rental release gate remains `NO-GO`.
 
 - `models/case_model.py` — `RentalCaseModel`
 - `views/pages/rental.py` — rental wizard page
-- `drafts/schema.py` — rental draft fields and flags
+- `presenters/model_builder.py` — rental model assembly
+- `drafts/schema.py` — rental draft fields and flags (schema v6)
+- `views/draft_io.py` — draft capture/restore
 - `utils/doc_generator.py` — shared DOCX renderer
 - `utils/evidence_library.py` — rental evidence suggestions
 - `utils/facts_examples.py` — rental fact exemplars
 - `tests/test_rental_case.py` — rental engineering tests
 - `rental-text-and-structure-comparison.md` — official/current element comparison and gap register
 - `rental-legal-content-review-packet.md` — legal/content review packet (no reviewer assigned)
+- `rental-legal-review-agenda.md` — reviewer agenda and blank decision checklist (no reviewer assigned)
+- `rental-legal-content-preflight.md` — non-signatory preflight over 21 questions and four output findings
 - `docs/legal-template-governance/case-template-mapping.json` — central registry (15 original + 3 unapproved rental entries)
 - `docs/legal-template-governance/governance.md` — change-control lifecycle and approval rules
 - `docs/legal-template-governance/official-adaptation-planning/approval-gates.md` — gate sequence

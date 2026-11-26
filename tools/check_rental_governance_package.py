@@ -122,6 +122,7 @@ _REQUIRED_TOP_LEVEL = (
     "text_and_structure_comparison",
     "case_mapping_review",
     "legal_content_review",
+    "scoped_engineering_authorization",
     "legal_review_status",
     "rights_review_status",
     "implementation_authorization",
@@ -141,6 +142,7 @@ _HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
 _HEX64_RE = re.compile(r"^[0-9a-f]{64}$")
 _GAP_ID_RE = re.compile(r"^RCS-\d{2}$")
 _LRQ_ID_RE = re.compile(r"^LRQ-\d{2}$")
+_PF_ID_RE = re.compile(r"^PF-\d{2}$")
 
 
 def _date_is_iso(value: Any) -> bool:
@@ -493,9 +495,48 @@ def _check_legal_content_review(data: Dict[str, Any], issues: List[str]) -> None
             "legal_content_review.packet_document must be "
             "'rental-legal-content-review-packet.md'"
         )
+    if review.get("agenda_document") != "rental-legal-review-agenda.md":
+        issues.append(
+            "legal_content_review.agenda_document must be "
+            "'rental-legal-review-agenda.md'"
+        )
     if review.get("review_performed") is not False:
         issues.append("legal_content_review.review_performed must remain false")
     _require_string(review, "reviewer_required", issues)
+    candidate = review.get("reviewer_candidate")
+    if candidate is not None:
+        if not isinstance(candidate, dict):
+            issues.append("legal_content_review.reviewer_candidate must be an object")
+        else:
+            name = candidate.get("name")
+            if not isinstance(name, str) or not name.strip():
+                issues.append(
+                    "legal_content_review.reviewer_candidate.name must be a "
+                    "non-empty string"
+                )
+            if candidate.get("status") != (
+                "PENDING_QUALIFICATION_AND_INDEPENDENCE"
+            ):
+                issues.append(
+                    "legal_content_review.reviewer_candidate.status must remain "
+                    "'PENDING_QUALIFICATION_AND_INDEPENDENCE'"
+                )
+            for key in (
+                "qualification",
+                "independent_of_project",
+                "consent_confirmed",
+            ):
+                if candidate.get(key) is not None:
+                    issues.append(
+                        f"legal_content_review.reviewer_candidate.{key} must "
+                        "remain null until confirmed"
+                    )
+            notes = candidate.get("notes")
+            if not isinstance(notes, str) or not notes.strip():
+                issues.append(
+                    "legal_content_review.reviewer_candidate.notes must be a "
+                    "non-empty string"
+                )
     if review.get("reviewer_assigned") is not False:
         issues.append("legal_content_review.reviewer_assigned must remain false")
     if review.get("review_date") is not None:
@@ -537,6 +578,221 @@ def _check_legal_content_review(data: Dict[str, Any], issues: List[str]) -> None
         issues.append(
             "legal_content_review.non_claims must be a non-empty list of strings"
         )
+
+    _check_preflight(review, issues)
+
+
+def _check_preflight(review: Dict[str, Any], issues: List[str]) -> None:
+    preflight = review.get("preflight")
+    if not isinstance(preflight, dict):
+        issues.append("legal_content_review.preflight must be an object")
+        return
+
+    if preflight.get("status") != "PREFLIGHT_COMPLETE":
+        issues.append(
+            "legal_content_review.preflight.status must be 'PREFLIGHT_COMPLETE'"
+        )
+    if preflight.get("document") != "rental-legal-content-preflight.md":
+        issues.append(
+            "legal_content_review.preflight.document must be "
+            "'rental-legal-content-preflight.md'"
+        )
+    if not _date_is_iso(preflight.get("completed_date")):
+        issues.append(
+            "legal_content_review.preflight.completed_date must be an ISO calendar date"
+        )
+    _require_string(preflight, "prepared_by", issues)
+
+    if preflight.get("coverage") != "ALL_21_QUESTIONS":
+        issues.append(
+            "legal_content_review.preflight.coverage must be 'ALL_21_QUESTIONS'"
+        )
+    if preflight.get("overall_recommendation") != "MODIFY_AND_RECHECK":
+        issues.append(
+            "legal_content_review.preflight.overall_recommendation must be "
+            "'MODIFY_AND_RECHECK'"
+        )
+    if preflight.get("court_specific_applicability") != (
+        "UNDETERMINED_TARGET_COURT_AND_CHANNEL_NOT_SPECIFIED"
+    ):
+        issues.append(
+            "legal_content_review.preflight.court_specific_applicability must "
+            "remain 'UNDETERMINED_TARGET_COURT_AND_CHANNEL_NOT_SPECIFIED'"
+        )
+    if preflight.get("formal_review_status") != "NOT_PERFORMED":
+        issues.append(
+            "legal_content_review.preflight.formal_review_status must be "
+            "'NOT_PERFORMED'"
+        )
+    if preflight.get("reviewer_signed") is not False:
+        issues.append(
+            "legal_content_review.preflight.reviewer_signed must remain false"
+        )
+
+    samples_path = preflight.get("samples_path")
+    if not isinstance(samples_path, str) or not samples_path.startswith(
+        "test_samples/"
+    ):
+        issues.append(
+            "legal_content_review.preflight.samples_path must be under test_samples/"
+        )
+    if preflight.get("samples_git_status") != "IGNORED":
+        issues.append(
+            "legal_content_review.preflight.samples_git_status must be 'IGNORED'"
+        )
+
+    verification = preflight.get("verification")
+    if not isinstance(verification, dict):
+        issues.append("legal_content_review.preflight.verification must be an object")
+    else:
+        for key, expected in (
+            ("wps_page_check", "COMPLETE"),
+            ("microsoft_word_check", "NOT_PERFORMED"),
+            ("court_platform_check", "NOT_PERFORMED"),
+        ):
+            if verification.get(key) != expected:
+                issues.append(
+                    f"legal_content_review.preflight.verification.{key} must be "
+                    f"{expected!r}"
+                )
+
+    findings = preflight.get("findings")
+    if not isinstance(findings, list) or len(findings) != 4:
+        issues.append(
+            "legal_content_review.preflight.findings must contain four findings"
+        )
+        findings = []
+
+    seen_ids = []
+    for index, finding in enumerate(findings):
+        label = f"legal_content_review.preflight.findings[{index}]"
+        if not isinstance(finding, dict):
+            issues.append(f"{label} must be an object")
+            continue
+        finding_id = finding.get("finding_id")
+        if not isinstance(finding_id, str) or not _PF_ID_RE.match(finding_id):
+            issues.append(f"{label}.finding_id must use PF-NN identifiers")
+        else:
+            seen_ids.append(finding_id)
+        for key in ("title", "evidence", "recommended_action"):
+            value = finding.get(key)
+            if not isinstance(value, str) or not value.strip():
+                issues.append(f"{label}.{key} must be a non-empty string")
+
+        allowed_statuses = {
+            "PF-01": {"OPEN", "FIXED_PENDING_RECHECK"},
+            "PF-02": {"OPEN", "FIXED_PENDING_RECHECK"},
+            "PF-03": {"OPEN"},
+            "PF-04": {"OPEN"},
+        }
+        status = finding.get("status")
+        if status not in allowed_statuses.get(finding_id, {"OPEN"}):
+            issues.append(
+                f"{label}.status is not allowed for {finding_id!r}"
+            )
+        if status == "FIXED_PENDING_RECHECK":
+            fix_evidence = finding.get("fix_evidence")
+            if not isinstance(fix_evidence, str) or not fix_evidence.strip():
+                issues.append(
+                    f"{label}.fix_evidence is required for FIXED_PENDING_RECHECK"
+                )
+
+        affected = finding.get("affected_documents")
+        if (
+            not isinstance(affected, list)
+            or not affected
+            or any(document not in DOCUMENT_TYPES for document in affected)
+        ):
+            issues.append(
+                f"{label}.affected_documents must be a non-empty list of known "
+                "document types"
+            )
+
+        for key, pattern in (
+            ("linked_questions", _LRQ_ID_RE),
+            ("linked_gaps", _GAP_ID_RE),
+        ):
+            values = finding.get(key)
+            if (
+                not isinstance(values, list)
+                or not values
+                or any(
+                    not isinstance(value, str) or not pattern.match(value)
+                    for value in values
+                )
+            ):
+                issues.append(f"{label}.{key} contains invalid identifiers")
+
+    if preflight.get("finding_ids") != seen_ids:
+        issues.append(
+            "legal_content_review.preflight.finding_ids must match the findings "
+            "in order"
+        )
+
+    non_claims = preflight.get("non_claims")
+    if not isinstance(non_claims, list) or not non_claims or not all(
+        isinstance(item, str) and item.strip() for item in non_claims
+    ):
+        issues.append(
+            "legal_content_review.preflight.non_claims must be a non-empty list "
+            "of strings"
+        )
+
+
+def _check_scoped_engineering_authorization(
+    data: Dict[str, Any], issues: List[str]
+) -> None:
+    auth = data.get("scoped_engineering_authorization")
+    if not isinstance(auth, dict):
+        issues.append("scoped_engineering_authorization must be an object")
+        return
+
+    if auth.get("status") != "IMPLEMENTED_PENDING_RECHECK":
+        issues.append(
+            "scoped_engineering_authorization.status must be "
+            "'IMPLEMENTED_PENDING_RECHECK'"
+        )
+    if not _date_is_iso(auth.get("authorized_date")):
+        issues.append(
+            "scoped_engineering_authorization.authorized_date must be an ISO date"
+        )
+    if auth.get("scope") != ["PF-01", "PF-02"]:
+        issues.append(
+            "scoped_engineering_authorization.scope must be exactly PF-01 and PF-02"
+        )
+    if auth.get("excluded_findings") != ["PF-03", "PF-04"]:
+        issues.append(
+            "scoped_engineering_authorization.excluded_findings must be exactly "
+            "PF-03 and PF-04"
+        )
+    if auth.get("overall_implementation_authorization") != "NOT_AUTHORIZED":
+        issues.append(
+            "scoped_engineering_authorization.overall_implementation_authorization "
+            "must remain 'NOT_AUTHORIZED'"
+        )
+    samples_path = auth.get("recheck_samples_path")
+    if not isinstance(samples_path, str) or not samples_path.startswith(
+        "test_samples/"
+    ):
+        issues.append(
+            "scoped_engineering_authorization.recheck_samples_path must be under "
+            "test_samples/"
+        )
+    if auth.get("recheck_samples_status") not in {
+        "GENERATED_TEXT_VERIFIED_VISUAL_PENDING",
+        "VISUAL_VERIFIED",
+    }:
+        issues.append(
+            "scoped_engineering_authorization.recheck_samples_status is not "
+            "a supported state"
+        )
+    for key in (
+        "files_changed",
+        "tests",
+        "recheck_requirements",
+        "non_claims",
+    ):
+        _require_string_list(auth, key, issues)
 
 
 def _check_mapping_registry_consistency(
@@ -748,6 +1004,7 @@ def validate_package(
     _check_text_and_structure_comparison(data, candidate_ids, issues)
     _check_case_mapping_review(data, issues)
     _check_legal_content_review(data, issues)
+    _check_scoped_engineering_authorization(data, issues)
     _check_registry_consistency(data, candidate_ids, source_registry, issues)
     _check_mapping_registry_consistency(data, mapping_registry, issues)
 
@@ -843,7 +1100,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 1
     print(
         "OK   rental governance work package is valid "
-        "(legal review packet prepared, review not performed, NO-GO)"
+        "(PF-01/PF-02 fixed pending recheck, formal review not performed, NO-GO)"
     )
     return 0
 

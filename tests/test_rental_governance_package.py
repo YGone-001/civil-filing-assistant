@@ -192,6 +192,83 @@ def test_package_rejects_a_legal_question_count_mismatch():
     )
 
 
+def test_package_rejects_a_missing_review_agenda():
+    data = _load()
+    data["legal_content_review"]["agenda_document"] = "other.md"
+    assert any(
+        "agenda_document" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_confirmed_reviewer_candidate():
+    data = _load()
+    data["legal_content_review"]["reviewer_candidate"]["status"] = "ASSIGNED"
+    assert any(
+        "reviewer_candidate" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_missing_preflight():
+    data = _load()
+    del data["legal_content_review"]["preflight"]
+    assert any(
+        "preflight" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_non_complete_preflight():
+    data = _load()
+    data["legal_content_review"]["preflight"]["status"] = "NOT_STARTED"
+    assert any(
+        "preflight.status" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_closed_preflight_finding():
+    data = _load()
+    data["legal_content_review"]["preflight"]["findings"][0]["status"] = "APPROVED"
+    assert any(
+        "findings[0].status" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_preflight_finding_count_mismatch():
+    data = _load()
+    data["legal_content_review"]["preflight"]["findings"].pop()
+    assert any(
+        "four findings" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_pf03_fix():
+    data = _load()
+    data["legal_content_review"]["preflight"]["findings"][2][
+        "status"
+    ] = "FIXED_PENDING_RECHECK"
+    assert any(
+        "findings[2]" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_a_scoped_authorization_outside_pf01_pf02():
+    data = _load()
+    data["scoped_engineering_authorization"]["scope"].append("PF-03")
+    assert any(
+        "scope" in issue for issue in crgp.validate_package(data)
+    )
+
+
+def test_package_rejects_scoped_authorization_as_overall_authorization():
+    data = _load()
+    data["scoped_engineering_authorization"][
+        "overall_implementation_authorization"
+    ] = "AUTHORIZED"
+    assert any(
+        "overall_implementation_authorization" in issue
+        for issue in crgp.validate_package(data)
+    )
+
+
 def test_package_rejects_an_incomplete_document_set():
     data = _load()
     data["document_types"] = ["civil_complaint", "evidence_list"]
@@ -271,7 +348,8 @@ def test_package_rejects_a_completed_later_task():
                                    "counterpart_assessment",
                                    "text_and_structure_comparison",
                                    "case_mapping_review",
-                                   "legal_content_review"])
+                                   "legal_content_review",
+                                   "scoped_engineering_authorization"])
 def test_package_rejects_missing_evidence_sections(field):
     data = _load()
     del data[field]

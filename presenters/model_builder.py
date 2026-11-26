@@ -232,6 +232,8 @@ def _fill_rental(view, model):
     model.arrears_amount = view.field("r_arrears_amount")
     model.late_fee = view.field("r_late_fee")
     model.demand_record = view.field("r_demand_record")
+    model.payment_status = view.rental_claim_page.get_payment_status()
+    model.defendant_obligations = view.field("r_defendant_obligations")
     model.termination_date = view.field("r_termination_date")
     model.court_name = view.field("r_court_name")
     model.lease_status = view.rental_claim_page.get_lease_status()

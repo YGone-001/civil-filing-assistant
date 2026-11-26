@@ -38,6 +38,7 @@ decide?** — without changing anything:
 | Pilot selection | `pilot-selection.md` |
 | Final decision request | `decision-request.md` |
 | 租赁合同治理工作包（后置增补） | `rental-contract-work-package.md` / `rental-contract-work-package.json` / `rental-text-and-structure-comparison.md` |
+| 租赁合同法律审阅材料（未执行） | `rental-legal-content-review-packet.md` / `rental-legal-review-agenda.md` |
 
 Machine-readable planning records are validated offline by
 `tools/check_template_adaptation_plan.py` with regression tests in
@@ -79,14 +80,16 @@ By document: civil complaint 121 · evidence list 5 · service address 5.
 By frozen severity: HIGH 4 · MEDIUM 65 · LOW 59 · INFORMATIONAL 3.
 
 > The counts above describe the frozen five-case baseline. The separate rental addendum
-> (`rental-contract-work-package.md` / `.json`) is `OPEN` / `LEGAL_REVIEW_PACKET_PREPARED` / `NO-GO`:
+> (`rental-contract-work-package.md` / `.json`) is `OPEN` / `SCOPED_FIX_IMPLEMENTED` / `NO-GO`:
 > a candidate official rental complaint has been identified, its file verified, a documentary
 > comparison recorded 35 open gaps, and the mapping review added three unapproved rental entries to
-> the central registry. A legal/content review packet with 21 questions is prepared, but no reviewer
-> is assigned and no legal review has been performed. The central registry now has 18 entries
-> (15 original + 3 rental), while the frozen planning counts stay 15. No mapping, legal review or
-> rights decision is approved. The rental package is validated by
-> `tools/check_rental_governance_package.py`.
+> the central registry. A non-signatory preflight covers all 21 review questions and recorded four
+> output findings. A scoped engineering authorization fixed only PF-01 (payment-status wording) and
+> PF-02 (multi-defendant attribution); both await recheck. PF-03 and PF-04 remain open. Formal legal
+> review is still pending: no reviewer is assigned and no legal conclusion has been reached. The
+> central registry now has 18 entries (15 original + 3 rental), while the frozen planning counts
+> stay 15. No mapping, legal review or rights decision is approved. The rental package is validated
+> by `tools/check_rental_governance_package.py`.
 
 ---
 

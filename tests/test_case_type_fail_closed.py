@@ -54,6 +54,7 @@ def _fake_view(case_type):
         rental_claim_page=SimpleNamespace(
             get_lease_status=lambda: None,
             get_property_returned=lambda: None,
+            get_payment_status=lambda: None,
         ),
     )
 
