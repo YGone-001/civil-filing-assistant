@@ -40,6 +40,13 @@ class EvidencePage(_TitledPage):
         self.edit_hint.setWordWrap(True)
         layout.addWidget(self.edit_hint)
 
+        self.confirm_hint = QLabel(
+            "带底色的行是建议证据；点击“确认建议证据”或自行添加证据后，才会写入导出清单。"
+        )
+        self.confirm_hint.setObjectName(INFO_LABEL)
+        self.confirm_hint.setWordWrap(True)
+        layout.addWidget(self.confirm_hint)
+
         btn_layout = QHBoxLayout()
         self.add_row_btn = QPushButton("添加证据")
         self.add_row_btn.setObjectName(SECONDARY_BUTTON)
@@ -49,8 +56,16 @@ class EvidencePage(_TitledPage):
         self.remove_row_btn.setObjectName(DANGER_BUTTON)
         self.remove_row_btn.setAccessibleName("删除选中的证据行")
         self.remove_row_btn.clicked.connect(self.remove_selected_rows)
+        self.confirm_suggested_btn = QPushButton("确认建议证据")
+        self.confirm_suggested_btn.setObjectName(SECONDARY_BUTTON)
+        self.confirm_suggested_btn.setAccessibleName("确认全部建议证据")
+        self.confirm_suggested_btn.setAccessibleDescription(
+            "将带底色的建议证据转为已确认，确认后才会写入导出清单"
+        )
+        self.confirm_suggested_btn.clicked.connect(self.confirm_all_suggestions)
         btn_layout.addWidget(self.add_row_btn)
         btn_layout.addWidget(self.remove_row_btn)
+        btn_layout.addWidget(self.confirm_suggested_btn)
         btn_layout.addStretch(1)
         btn_widget = QWidget()
         btn_widget.setLayout(btn_layout)
@@ -162,6 +177,26 @@ class EvidencePage(_TitledPage):
         item = self.table.item(row, 0)
         return bool(item is not None and item.data(Qt.ItemDataRole.UserRole))
 
+    def _confirm_row(self, row):
+        """Promote one suggested row to user-confirmed evidence."""
+        if not self._is_suggested_row(row):
+            return
+        for column in (0, 1):
+            item = self.table.item(row, column)
+            if item is not None:
+                item.setData(Qt.ItemDataRole.UserRole, None)
+                item.setData(Qt.ItemDataRole.BackgroundRole, None)
+        self._suggested_count = max(0, self._suggested_count - 1)
+
+    def confirm_all_suggestions(self):
+        """Promote every suggested row so it is included in the export."""
+        if self._suggested_count <= 0:
+            return
+        for row in range(self.table.rowCount()):
+            self._confirm_row(row)
+        if self._loaded_case_type is not None:
+            self._case_state[self._loaded_case_type] = self.USER_MODIFIED
+
     def _collect_rows(self):
         """Snapshot the table as ``(name, target, suggested)`` tuples."""
         rows = []
@@ -263,6 +298,20 @@ class EvidencePage(_TitledPage):
     def get_evidence_items(self):
         items = []
         for r in range(self.table.rowCount()):
+            name_item = self.table.item(r, 0)
+            target_item = self.table.item(r, 1)
+            name = name_item.text().strip() if name_item else ""
+            target = target_item.text().strip() if target_item else ""
+            if name or target:
+                items.append((name, target))
+        return items
+
+    def get_exportable_evidence_items(self):
+        """Return only user-confirmed rows; untouched suggestions stay out."""
+        items = []
+        for r in range(self.table.rowCount()):
+            if self._is_suggested_row(r):
+                continue
             name_item = self.table.item(r, 0)
             target_item = self.table.item(r, 1)
             name = name_item.text().strip() if name_item else ""

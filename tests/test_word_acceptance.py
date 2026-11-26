@@ -52,6 +52,7 @@ def _export_all(tmp_path, monkeypatch, case_type, plaintiffs=None, defendants=No
 
     wizard, presenter = make_wizard()
     prepare_case(wizard, case_type, plaintiffs=plaintiffs, defendants=defendants)
+    wizard.evidence_page.confirm_all_suggestions()
     presenter.on_wizard_accepted()
 
     docs = sorted((home / "Desktop").rglob("*.docx"))
@@ -181,15 +182,16 @@ def test_evidence_list_table_has_at_least_one_data_row(qapp, tmp_path, monkeypat
         f"evidence table should have header + data rows, got {len(table.rows)}"
 
 
-def test_evidence_list_remark_never_claims_an_absent_formula(qapp, tmp_path, monkeypatch):
-    """The complaint states no calculation formula, so the remark must not claim one."""
+def test_evidence_list_remark_is_blank_by_default(qapp, tmp_path, monkeypatch):
+    """No unverified '原件核对' or calculation formula may be invented."""
     for case_type in ("property", "labor"):
         sub = tmp_path / case_type
         docs = _export_all(sub, monkeypatch, case_type)
         doc = Document(str(docs["evidence"]))
         table = doc.tables[0]
         remark = table.rows[1].cells[3].text
-        assert remark == "原件核对", f"{case_type} remark changed unexpectedly: {remark!r}"
+        assert remark == "", f"{case_type} remark should be blank, got {remark!r}"
+        assert "原件核对" not in remark
         assert "公式" not in remark
 
 
@@ -210,6 +212,54 @@ def test_address_form_has_one_table_per_party(qapp, tmp_path, monkeypatch, case_
     for table in doc.tables:
         assert len(table.rows) == 6, f"each address table should have 6 rows, got {len(table.rows)}"
         assert len(table.columns) == 2, f"each address table should have 2 columns, got {len(table.columns)}"
+
+
+@pytest.mark.parametrize("case_type", CASE_TYPES)
+def test_address_form_has_one_confirmation_block_per_party(qapp, tmp_path, monkeypatch, case_type):
+    docs = _export_all(tmp_path, monkeypatch, case_type)
+    doc = Document(str(docs["address"]))
+
+    blocks = [
+        p.text for p in doc.paragraphs
+        if p.text.strip().startswith("确认人")
+    ]
+    dates = [
+        p.text for p in doc.paragraphs
+        if p.text.strip().startswith("日期：")
+    ]
+    assert len(blocks) == 2, f"expected one confirmation block per party, got {blocks}"
+    assert len(dates) == 2, f"expected one date block per party, got {dates}"
+    assert all("本人或有权代收人" in block for block in blocks)
+
+
+def test_address_form_confirmation_blocks_match_multiple_parties(qapp, tmp_path, monkeypatch):
+    plaintiffs = [
+        {
+            "name": f"原告{label}（测试）",
+            "id_number": f"示例证件-原告{label}",
+            "address": f"示例市原告路{label}号",
+            "phone": "13800000000",
+        }
+        for label in "甲乙"
+    ]
+    defendants = [
+        {
+            "name": "被告丙（测试）",
+            "id_number": "示例证件-被告丙",
+            "address": "示例市被告路丙号",
+            "phone": "13900000000",
+        }
+    ]
+    docs = _export_all(
+        tmp_path, monkeypatch, "loan", plaintiffs=plaintiffs, defendants=defendants
+    )
+    doc = Document(str(docs["address"]))
+
+    blocks = [
+        p.text for p in doc.paragraphs
+        if p.text.strip().startswith("确认人")
+    ]
+    assert len(blocks) == 3, f"expected three confirmation blocks, got {blocks}"
 
 
 @pytest.mark.parametrize("case_type", CASE_TYPES)

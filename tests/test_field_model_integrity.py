@@ -244,7 +244,12 @@ def test_evidence_selection_reaches_the_model(qapp):
 
     items = [(ev.name, ev.target) for ev in model.evidences]
     assert ("补充证据（测试）", "证明目的（测试）") in items
-    assert any("借条" in name for name, _ in items)  # suggested rows included
+    assert not any("借条" in name for name, _ in items)  # suggestions await confirmation
+
+    wizard.evidence_page.confirm_all_suggestions()
+    model = build_case_model(wizard)
+    items = [(ev.name, ev.target) for ev in model.evidences]
+    assert any("借条" in name for name, _ in items)
 
 
 def test_enterprise_party_fields_reach_the_model(qapp):

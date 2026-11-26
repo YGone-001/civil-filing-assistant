@@ -4,11 +4,12 @@
 > only. A candidate official rental complaint has been identified, its file verified, and a
 > documentary comparison with 35 open gaps recorded. The mapping review is complete: three
 > unapproved rental entries were added to the central mapping registry. A non-signatory preflight
-> covering all 21 questions is complete and recommends modification and recheck. A scoped
-> engineering authorization fixed only PF-01 (payment-status wording) and PF-02 (multiple-defendant
-> attribution); both await recheck. PF-03 and PF-04 remain open. No reviewer has been assigned and
-> no formal legal review has occurred. No mapping is legally reviewed or approved, and the overall
-> implementation remains unauthorized. No release is authorized.
+> covering all 21 questions is complete and recommends modification and recheck. Two scoped
+> engineering authorizations fixed PF-01/PF-02 (payment-status wording and multiple-defendant
+> attribution) and PF-03/PF-04 (evidence-suggestion export and per-party address confirmation);
+> all four await recheck. No reviewer has been assigned and no formal legal review has occurred.
+> No mapping is legally reviewed or approved, and the overall implementation remains unauthorized.
+> No release is authorized.
 > The existing rental output is a project-authored software baseline, not an official template.
 
 - Work package: `wp-rental-source-discovery`
@@ -206,24 +207,37 @@ Blocking reason: no qualified legal reviewer has been assigned. The project cann
 legal content, and tests, documentation or commits are not legal review. The stage remains
 `NOT_STARTED`; no legal conclusion or approval exists.
 
-### 4.4 Scoped engineering authorization result
+### 4.4 Scoped PF-01/PF-02 engineering result
 
-A scoped authorization covers **only** PF-01 and PF-02. It does not authorize template
+The first scoped authorization covers **only** PF-01 and PF-02. It does not authorize template
 adaptation, mapping approval, rights review or release.
 
 | Finding | Status | Change summary |
 |---|---|---|
 | PF-01 | `FIXED_PENDING_RECHECK` | Rental payment status is now required; partial payment emits "已支付部分租金，尚欠上述金额" and never "至今未支付"; unknown uses a neutral reconciliation sentence. |
 | PF-02 | `FIXED_PENDING_RECHECK` | Multiple defendants use obligation-based claims and facts; the rental page requires a per-defendant signing-role and payment-obligation description. |
-| PF-03 | `OPEN` | Evidence-suggestion and "原件核对" issue remains out of scope. |
-| PF-04 | `OPEN` | Service-address signature-block issue remains out of scope. |
 
 The fix updates `models/case_model.py`, `views/pages/rental.py`,
 `presenters/model_builder.py`, `drafts/schema.py` (schema v6 with a v5 migration) and
-`views/draft_io.py`, with regression tests. The overall `implementation_authorization` remains
-`NOT_AUTHORIZED`. Recheck samples are generated in
+`views/draft_io.py`, with regression tests. Recheck samples are generated in
 `test_samples/rental-pf01-pf02-recheck-2026-11-26/` (git-ignored); text-level verification passes,
 while WPS/Word inspection and formal reviewer recheck remain pending.
+
+### 4.5 Scoped PF-03/PF-04 engineering result
+
+The second scoped authorization covers **only** PF-03 and PF-04.
+
+| Finding | Status | Change summary |
+|---|---|---|
+| PF-03 | `FIXED_PENDING_RECHECK` | Library suggestions stay out of the export until the user clicks "确认建议证据" or adds a row; the evidence-list remark is blank and no longer writes "原件核对". |
+| PF-04 | `FIXED_PENDING_RECHECK` | Each party's address table is followed by its own "确认人（本人或有权代收人）" and date block; the single global signature block was removed. |
+
+The fix updates `views/pages/evidence.py`, `presenters/model_builder.py`,
+`models/case_model.py` and `utils/doc_generator.py`, with regression tests. Recheck samples are
+generated in `test_samples/rental-pf03-pf04-recheck-2026-11-26/` (git-ignored); text-level
+verification passes, while WPS/Word inspection and formal reviewer recheck remain pending.
+
+The overall `implementation_authorization` remains `NOT_AUTHORIZED` for both scoped fixes.
 
 ---
 
@@ -256,7 +270,7 @@ These questions are inputs to future legal/content review; they are not answered
 | `CASE_MAPPING_REVIEW` | Decide counterpart mapping | `COMPLETE` | Mapping entries added only after source evidence |
 | `LEGAL_CONTENT_REVIEW` | Review claims, facts and procedure (packet prepared) | `NOT_STARTED` | Documented legal/content decision |
 | `RIGHTS_AND_REDISTRIBUTION_REVIEW` | Decide adaptation/redistribution rights | `BLOCKED` | Separate rights decision |
-| `ENGINEERING_IMPLEMENTATION` | Implement scoped changes only (PF-01/PF-02 scoped fix implemented; overall implementation not authorized) | `NOT_AUTHORIZED` | Scoped engineering authorization |
+| `ENGINEERING_IMPLEMENTATION` | Implement scoped changes only (PF-01 to PF-04 scoped fixes implemented; overall implementation not authorized) | `NOT_AUTHORIZED` | Scoped engineering authorization |
 | `DOCX_REGRESSION_VALIDATION` | Regression and visual inspection | `NOT_ASSESSED` | Automated DOCX tests plus pagination/table check |
 | `RELEASE_APPROVAL` | Release decision | `NOT_ASSESSED` | Separate release approval |
 
@@ -276,8 +290,8 @@ SOURCE_AUTHENTICITY
 
 The current stage is `LEGAL_CONTENT_REVIEW`. Three unapproved rental mapping entries exist; a legal
 review packet is prepared, but no reviewer is assigned and no legal/content or rights review has
-been performed. A scoped PF-01/PF-02 fix is implemented pending recheck; it does not complete the
-legal review, approve a mapping or authorize further changes.
+been performed. Two scoped fixes (PF-01/PF-02 and PF-03/PF-04) are implemented pending recheck; they do not
+complete the legal review, approve a mapping or authorize further changes.
 
 Missing information never implies permission. A passing test suite never overrides a missing
 legal, rights or source review.
@@ -317,7 +331,7 @@ Until these criteria are met, the rental release gate remains `NO-GO`.
     packet without an assigned qualified reviewer.
 11. Preflight findings PF-01 to PF-04 are triage records, not legal review; do not implement them
     without scoped engineering authorization.
-12. The scoped authorization covers only PF-01 and PF-02; do not extend it to PF-03, PF-04 or any
+12. The two scoped authorizations cover only PF-01/PF-02 and PF-03/PF-04; do not extend them to any
     other template change.
 
 ---
@@ -326,10 +340,11 @@ Until these criteria are met, the rental release gate remains `NO-GO`.
 
 - `models/case_model.py` — `RentalCaseModel`
 - `views/pages/rental.py` — rental wizard page
-- `presenters/model_builder.py` — rental model assembly
+- `presenters/model_builder.py` — rental model assembly and exportable-evidence selection
 - `drafts/schema.py` — rental draft fields and flags (schema v6)
 - `views/draft_io.py` — draft capture/restore
-- `utils/doc_generator.py` — shared DOCX renderer
+- `views/pages/evidence.py` — evidence-suggestion confirmation and export filtering
+- `utils/doc_generator.py` — shared DOCX renderer and per-party address confirmation blocks
 - `utils/evidence_library.py` — rental evidence suggestions
 - `utils/facts_examples.py` — rental fact exemplars
 - `tests/test_rental_case.py` — rental engineering tests

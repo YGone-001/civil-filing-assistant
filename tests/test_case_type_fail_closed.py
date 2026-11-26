@@ -38,7 +38,10 @@ def _fake_view(case_type):
             get_party_data=lambda: {"plaintiffs": [], "defendants": []},
             get_agent_data=lambda: None,
         ),
-        evidence_page=SimpleNamespace(get_evidence_items=lambda: []),
+        evidence_page=SimpleNamespace(
+            get_evidence_items=lambda: [],
+            get_exportable_evidence_items=lambda: [],
+        ),
         loan_claim_page=SimpleNamespace(get_has_iou=lambda: None),
         contract_claim_page=SimpleNamespace(
             get_flags=lambda: {"is_delivered": None, "is_signed": None},

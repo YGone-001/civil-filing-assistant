@@ -13,6 +13,7 @@ row index. All data is fictional.
 import os
 
 from helpers import docx_all_text, make_wizard, prepare_case, select_case, set_parties
+from presenters.model_builder import build_case_model
 
 EXPECTED_SUGGESTIONS = {
     "loan": ("借条/借款协议", "银行转账凭证/现金收据", "催款聊天记录/通话录音/催告函"),
@@ -140,6 +141,25 @@ def test_suggested_identity_survives_arbitrary_deletions(qapp):
     page.remove_selected_rows()
     assert page._suggested_count == 1
     assert not page._is_suggested_row(1)
+
+
+def test_suggested_evidence_is_not_exported_until_confirmed(qapp):
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "loan")
+    page = wizard.evidence_page
+
+    assert page.get_exportable_evidence_items() == []
+    model = build_case_model(wizard)
+    assert all("借条" not in ev.name for ev in model.evidences)
+
+    page.add_row("用户补充证据（测试）", "证明目的（测试）", auto_edit=False)
+    assert ("用户补充证据（测试）", "证明目的（测试）") in page.get_exportable_evidence_items()
+
+    page.confirm_all_suggestions()
+    assert page._suggested_count == 0
+    assert len(page.get_exportable_evidence_items()) == len(EXPECTED_SUGGESTIONS["loan"]) + 1
+    model = build_case_model(wizard)
+    assert any("借条" in ev.name for ev in model.evidences)
 
 
 def test_intentionally_empty_evidence_list_exports_empty(qapp, monkeypatch, tmp_path, dialog_recorder):

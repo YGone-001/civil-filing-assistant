@@ -200,7 +200,8 @@
           "recommended_action": "Distinguish suggested rows from user-confirmed evidence; export only confirmed items; do not add '原件核对' by default.",
           "linked_questions": ["LRQ-16"],
           "linked_gaps": ["RCS-31", "RCS-34"],
-          "status": "OPEN"
+          "status": "FIXED_PENDING_RECHECK",
+          "fix_evidence": "Evidence-library suggestions remain non-exportable until the user clicks '确认建议证据' or adds a row; model building now uses get_exportable_evidence_items(). The evidence-list remark column is blank by default and no longer writes '原件核对'. Tests: test_suggested_evidence_is_not_exported_until_confirmed, test_evidence_list_remark_is_blank_by_default."
         },
         {
           "finding_id": "PF-04",
@@ -210,7 +211,8 @@
           "recommended_action": "Provide per-party confirmation/signature blocks or separate forms; do not treat one party's address as another's; record the source of each service address.",
           "linked_questions": ["LRQ-17"],
           "linked_gaps": ["RCS-35"],
-          "status": "OPEN"
+          "status": "FIXED_PENDING_RECHECK",
+          "fix_evidence": "The address form now emits an independent '确认人（本人或有权代收人）' and date block after each party's table, and the single global signature block was removed. The intro states that a plaintiff-provided defendant address is only a service lead. Tests: test_address_form_has_one_confirmation_block_per_party, test_address_form_confirmation_blocks_match_multiple_parties."
         }
       ],
       "non_claims": [
@@ -305,7 +307,45 @@
       "This authorization covers only PF-01 and PF-02.",
       "It does not authorize any template adaptation, mapping approval or release.",
       "It does not change the overall NOT_AUTHORIZED implementation status.",
-      "PF-03 and PF-04 remain open."
+      "PF-03 and PF-04 were addressed by a separate scoped authorization and remain pending recheck."
+    ]
+  },
+  "scoped_engineering_authorization_pf03_pf04": {
+    "status": "IMPLEMENTED_PENDING_RECHECK",
+    "authorized_date": "2026-11-26",
+    "scope": ["PF-03", "PF-04"],
+    "excluded_findings": ["PF-01", "PF-02"],
+    "overall_implementation_authorization": "NOT_AUTHORIZED",
+    "recheck_samples_path": "test_samples/rental-pf03-pf04-recheck-2026-11-26",
+    "recheck_samples_status": "GENERATED_TEXT_VERIFIED_VISUAL_PENDING",
+    "files_changed": [
+      "views/pages/evidence.py",
+      "presenters/model_builder.py",
+      "models/case_model.py",
+      "utils/doc_generator.py",
+      "tests/test_evidence_state.py",
+      "tests/test_word_acceptance.py",
+      "tests/test_field_model_integrity.py",
+      "tests/test_case_type_fail_closed.py"
+    ],
+    "tests": [
+      "test_suggested_evidence_is_not_exported_until_confirmed",
+      "test_evidence_list_remark_is_blank_by_default",
+      "test_evidence_selection_reaches_the_model",
+      "test_address_form_has_one_confirmation_block_per_party",
+      "test_address_form_confirmation_blocks_match_multiple_parties"
+    ],
+    "recheck_requirements": [
+      "Re-export fictional evidence lists with unconfirmed, confirmed and empty suggestions.",
+      "Inspect the actual DOCX evidence-list remarks and per-party address confirmation blocks.",
+      "Repeat the WPS/Word pagination and layout check.",
+      "Formal legal review, rights review and release approval remain separate and are not granted by this authorization."
+    ],
+    "non_claims": [
+      "This authorization covers only PF-03 and PF-04.",
+      "It does not authorize any template adaptation, mapping approval or release.",
+      "It does not change the overall NOT_AUTHORIZED implementation status.",
+      "PF-01 and PF-02 were addressed by a separate scoped authorization."
     ]
   },
   "legal_review_status": "NOT_REQUESTED",
@@ -320,7 +360,7 @@
     "release_approver"
   ],
   "assigned_reviewers": [],
-  "scope_note": "Post-baseline addendum only. It does not alter the frozen five-case planning counts (15 routes, 131 gaps, 199 crosswalks). It adds three unapproved rental entries to the central case-template mapping. A separate scoped authorization covers only PF-01 and PF-02; the overall implementation remains unauthorized. The existing rental output is a project-authored software baseline, not an official template or legal authority.",
+  "scope_note": "Post-baseline addendum only. It does not alter the frozen five-case planning counts (15 routes, 131 gaps, 199 crosswalks). It adds three unapproved rental entries to the central case-template mapping. Two separate scoped authorizations cover PF-01/PF-02 and PF-03/PF-04; the overall implementation remains unauthorized. The existing rental output is a project-authored software baseline, not an official template or legal authority.",
   "current_application": {
     "case_type_name": "租赁合同纠纷",
     "user_fields": [
@@ -515,7 +555,7 @@
     "No official text has been copied into the repository; only section labels, page references and gap identifiers are recorded.",
     "A legal review packet has been prepared, but no reviewer has been assigned and no legal conclusion has been reached.",
     "A non-signatory preflight is complete and recommends modification and recheck; it is not a formal legal review or approval.",
-    "A scoped engineering authorization covers only PF-01 and PF-02; PF-03 and PF-04 remain open, and the overall implementation remains NOT_AUTHORIZED.",
+    "Two separate scoped engineering authorizations cover PF-01/PF-02 and PF-03/PF-04; all four findings await recheck, and the overall implementation remains NOT_AUTHORIZED.",
     "No formal legal review has been performed.",
     "No mapping is approved.",
     "No rights or redistribution decision has been made.",

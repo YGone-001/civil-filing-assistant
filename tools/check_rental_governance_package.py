@@ -123,6 +123,7 @@ _REQUIRED_TOP_LEVEL = (
     "case_mapping_review",
     "legal_content_review",
     "scoped_engineering_authorization",
+    "scoped_engineering_authorization_pf03_pf04",
     "legal_review_status",
     "rights_review_status",
     "implementation_authorization",
@@ -682,8 +683,8 @@ def _check_preflight(review: Dict[str, Any], issues: List[str]) -> None:
         allowed_statuses = {
             "PF-01": {"OPEN", "FIXED_PENDING_RECHECK"},
             "PF-02": {"OPEN", "FIXED_PENDING_RECHECK"},
-            "PF-03": {"OPEN"},
-            "PF-04": {"OPEN"},
+            "PF-03": {"OPEN", "FIXED_PENDING_RECHECK"},
+            "PF-04": {"OPEN", "FIXED_PENDING_RECHECK"},
         }
         status = finding.get("status")
         if status not in allowed_statuses.get(finding_id, {"OPEN"}):
@@ -785,6 +786,66 @@ def _check_scoped_engineering_authorization(
         issues.append(
             "scoped_engineering_authorization.recheck_samples_status is not "
             "a supported state"
+        )
+    for key in (
+        "files_changed",
+        "tests",
+        "recheck_requirements",
+        "non_claims",
+    ):
+        _require_string_list(auth, key, issues)
+
+
+def _check_pf03_pf04_authorization(
+    data: Dict[str, Any], issues: List[str]
+) -> None:
+    auth = data.get("scoped_engineering_authorization_pf03_pf04")
+    if not isinstance(auth, dict):
+        issues.append(
+            "scoped_engineering_authorization_pf03_pf04 must be an object"
+        )
+        return
+
+    if auth.get("status") != "IMPLEMENTED_PENDING_RECHECK":
+        issues.append(
+            "scoped_engineering_authorization_pf03_pf04.status must be "
+            "'IMPLEMENTED_PENDING_RECHECK'"
+        )
+    if not _date_is_iso(auth.get("authorized_date")):
+        issues.append(
+            "scoped_engineering_authorization_pf03_pf04.authorized_date must be "
+            "an ISO date"
+        )
+    if auth.get("scope") != ["PF-03", "PF-04"]:
+        issues.append(
+            "scoped_engineering_authorization_pf03_pf04.scope must be exactly "
+            "PF-03 and PF-04"
+        )
+    if auth.get("excluded_findings") != ["PF-01", "PF-02"]:
+        issues.append(
+            "scoped_engineering_authorization_pf03_pf04.excluded_findings must "
+            "be exactly PF-01 and PF-02"
+        )
+    if auth.get("overall_implementation_authorization") != "NOT_AUTHORIZED":
+        issues.append(
+            "scoped_engineering_authorization_pf03_pf04."
+            "overall_implementation_authorization must remain 'NOT_AUTHORIZED'"
+        )
+    samples_path = auth.get("recheck_samples_path")
+    if not isinstance(samples_path, str) or not samples_path.startswith(
+        "test_samples/"
+    ):
+        issues.append(
+            "scoped_engineering_authorization_pf03_pf04.recheck_samples_path "
+            "must be under test_samples/"
+        )
+    if auth.get("recheck_samples_status") not in {
+        "GENERATED_TEXT_VERIFIED_VISUAL_PENDING",
+        "VISUAL_VERIFIED",
+    }:
+        issues.append(
+            "scoped_engineering_authorization_pf03_pf04.recheck_samples_status "
+            "is not a supported state"
         )
     for key in (
         "files_changed",
@@ -1005,6 +1066,7 @@ def validate_package(
     _check_case_mapping_review(data, issues)
     _check_legal_content_review(data, issues)
     _check_scoped_engineering_authorization(data, issues)
+    _check_pf03_pf04_authorization(data, issues)
     _check_registry_consistency(data, candidate_ids, source_registry, issues)
     _check_mapping_registry_consistency(data, mapping_registry, issues)
 
@@ -1100,7 +1162,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 1
     print(
         "OK   rental governance work package is valid "
-        "(PF-01/PF-02 fixed pending recheck, formal review not performed, NO-GO)"
+        "(PF-01 to PF-04 fixed pending recheck, formal review not performed, NO-GO)"
     )
     return 0
 

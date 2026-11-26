@@ -307,7 +307,9 @@ class DocumentGenerator:
             self._set_cell_text(row[1], str(ev.name or ""), "FangSong_GB2312", 16, False)
             self._set_cell_text(row[2], str(ev.target or ""), "FangSong_GB2312", 16, False)
 
-            self._set_cell_text(row[3], "原件核对", "FangSong_GB2312", 16, False)
+            self._set_cell_text(
+                row[3], str(getattr(ev, "note", "") or ""), "FangSong_GB2312", 16, False
+            )
 
         self.save(file_path)
 
@@ -323,8 +325,9 @@ class DocumentGenerator:
 
         self.add_body(
             "为便于人民法院依法送达诉讼文书，当事人现确认以下送达地址信息真实、准确。"
-            "下列表格逐一列示向导中已填写的当事人；如有多名当事人，请分别确认各自的送达地址，"
-            "不能以其中一名当事人的地址代表其他当事人。",
+            "下列表格逐一列示向导中已填写的当事人；每一名当事人应分别确认自己的送达地址，"
+            "不能以其中一名当事人的地址代表其他当事人。原告提供的被告地址仅作为送达线索，"
+            "不能代替被告确认。",
             align=WD_PARAGRAPH_ALIGNMENT.JUSTIFY, first_line_indent=32,
         )
         self.doc.add_paragraph()
@@ -386,8 +389,14 @@ class DocumentGenerator:
                     table_line_spacing,
                 )
 
-        self._add_text("确认人：", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
-        self._add_text("年   月   日", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.RIGHT, 0)
+            self._add_text(
+                "确认人（本人或有权代收人）：", "FangSong_GB2312", 16, False,
+                WD_PARAGRAPH_ALIGNMENT.LEFT, 0,
+            )
+            self._add_text(
+                "日期：", "FangSong_GB2312", 16, False,
+                WD_PARAGRAPH_ALIGNMENT.LEFT, 0,
+            )
 
         self._add_pagination(self.doc)
         self.save(file_path)

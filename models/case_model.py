@@ -94,9 +94,10 @@ class PartyManager:
             self.defendants.append(data)
 
 class EvidenceItem:
-    def __init__(self, name="", target=""):
+    def __init__(self, name="", target="", note=""):
         self.name = name
         self.target = target
+        self.note = note
 
 class CaseTemplate:
     """Base class for all case types."""

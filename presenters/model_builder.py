@@ -296,7 +296,7 @@ def build_case_model(view):
     _FILLERS[case_type](view, model)
     _fill_extras(view, model, case_type)
 
-    for name, target in view.evidence_page.get_evidence_items():
+    for name, target in view.evidence_page.get_exportable_evidence_items():
         model.evidences.append(EvidenceItem(name, target))
 
     return model
