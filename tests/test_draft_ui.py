@@ -814,6 +814,9 @@ def _open_source_page(wizard, case_type):
     """Select *case_type* and stand on its claim page, as a user would."""
     select_case(wizard, case_type)
     wizard.setCurrentId(page_id(wizard, f"{case_type}_claim"))
+    if case_type == "loan":
+        # Leaving the loan page requires an explicit repayment confirmation.
+        wizard.loan_claim_page.repayment_no.setChecked(True)
 
 
 def _switch_to_case(wizard, case_type):

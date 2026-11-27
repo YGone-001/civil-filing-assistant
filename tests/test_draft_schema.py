@@ -46,6 +46,8 @@ def _loan_payload(**overrides):
     payload["fields"]["loan_date"] = "2023年1月1日"
     payload["factual_flags"]["has_iou"] = True
     payload.update(overrides)
+    if payload["schema_version"] <= 7:
+        payload["factual_flags"].pop("has_repayment", None)
     return payload
 
 
@@ -508,7 +510,7 @@ def test_version_one_non_labor_draft_is_migrated_unchanged():
     document = schema.validate_document(payload)
     assert document.schema_version == schema.SCHEMA_VERSION
     assert document.fields["loan_date"] == "2023年1月1日"
-    assert document.factual_flags == {"has_iou": True}
+    assert document.factual_flags == {"has_iou": True, "has_repayment": None}
 
 
 # --------------------------------------------------------------------------- #
@@ -521,6 +523,7 @@ def test_version_three_draft_gains_party_details_and_blank_agent():
     the agent record starts as ``None`` (section closed). No value is guessed."""
     payload = _blank_payload("loan")
     payload["schema_version"] = 3
+    payload["factual_flags"].pop("has_repayment")
     del payload["agent"]
     _strip_v5_fields(payload)
     payload["parties"]["plaintiffs"] = [
@@ -560,8 +563,7 @@ def test_version_three_document_already_carrying_agent_is_rejected():
 
 
 def test_version_four_draft_gains_blank_supplement_fields():
-    payload = _loan_payload()
-    payload["schema_version"] = 4
+    payload = _loan_payload(schema_version=4)
     _strip_v5_fields(payload)
     document = schema.validate_document(payload)
     assert document.schema_version == schema.SCHEMA_VERSION
@@ -570,8 +572,7 @@ def test_version_four_draft_gains_blank_supplement_fields():
 
 
 def test_version_four_draft_already_carrying_supplement_fields_is_rejected():
-    payload = _loan_payload()
-    payload["schema_version"] = 4
+    payload = _loan_payload(schema_version=4)
     with pytest.raises(DraftValidationError):
         schema.validate_document(payload)
 
@@ -598,12 +599,11 @@ def test_version_five_rental_draft_already_carrying_v6_fields_is_rejected():
         schema.validate_document(payload)
 
 
-def test_version_five_loan_draft_only_bumps_the_version():
-    payload = _loan_payload()
-    payload["schema_version"] = 5
+def test_version_five_loan_draft_leaves_repayment_unconfirmed():
+    payload = _loan_payload(schema_version=5)
     document = schema.validate_document(payload)
     assert document.schema_version == schema.SCHEMA_VERSION
-    assert document.factual_flags == {"has_iou": True}
+    assert document.factual_flags == {"has_iou": True, "has_repayment": None}
 
 
 # --------------------------------------------------------------------------- #
@@ -612,14 +612,45 @@ def test_version_five_loan_draft_only_bumps_the_version():
 
 
 def test_version_six_party_records_gain_the_service_address_source():
-    payload = _loan_payload()
-    payload["schema_version"] = 6
+    payload = _loan_payload(schema_version=6)
     record = _party_record()
     record.pop("service_address_source")
     payload["parties"]["plaintiffs"] = [record]
     document = schema.validate_document(payload)
     assert document.schema_version == schema.SCHEMA_VERSION
     assert document.plaintiffs[0]["service_address_source"] == "unconfirmed"
+
+
+def test_version_seven_loan_draft_leaves_repayment_unconfirmed():
+    payload = _loan_payload(schema_version=7)
+    payload["fields"]["principal"] = "50000"
+    document = schema.validate_document(payload)
+    assert document.schema_version == 8
+    assert document.factual_flags == {"has_iou": True, "has_repayment": None}
+    assert document.fields["principal"] == "50000"
+    assert "has_repayment" not in payload["factual_flags"]
+
+
+def test_version_seven_loan_draft_rejects_a_repayment_flag():
+    payload = _loan_payload(schema_version=7)
+    payload["factual_flags"]["has_repayment"] = False
+    with pytest.raises(DraftValidationError, match="旧版借贷草稿"):
+        schema.validate_document(payload)
+
+
+def test_version_eight_loan_draft_requires_the_repayment_flag():
+    payload = _loan_payload()
+    payload["factual_flags"].pop("has_repayment")
+    with pytest.raises(DraftValidationError):
+        schema.validate_document(payload)
+
+
+def test_version_eight_repayment_flag_accepts_true_false_and_null():
+    for value in (True, False, None):
+        payload = _loan_payload()
+        payload["factual_flags"]["has_repayment"] = value
+        document = schema.validate_document(payload)
+        assert document.factual_flags["has_repayment"] is value
 
 
 def test_version_six_party_record_already_carrying_the_source_is_rejected():

@@ -130,6 +130,7 @@ def fill_case_facts(wizard, case_type, confirm_flags=True):
     """
     if case_type == "loan":
         p = wizard.loan_claim_page
+        p.repayment_no.setChecked(True)
         p.loan_date.setText("2023年1月1日")
         p.loan_reason.setText("资金周转")
         p.principal.setText("50000")
@@ -239,6 +240,7 @@ def fill_minimal_case(wizard, case_type, plaintiffs=None, defendants=None):
 
     if case_type == "loan":
         p = wizard.loan_claim_page
+        p.repayment_no.setChecked(True)
         p.loan_date.setText("2023年1月1日")
         p.loan_reason.setText("资金周转")
         p.principal.setText("10000")

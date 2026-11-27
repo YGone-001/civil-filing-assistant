@@ -126,6 +126,7 @@ def _fill_contract(wizard, delivery="unknown", date=""):
 
 def _fill_loan(wizard, demand_date="", demand_method="", iou=None):
     p = wizard.loan_claim_page
+    p.repayment_no.setChecked(True)
     p.loan_date.setText("2023年1月1日")
     p.loan_reason.setText("资金周转")
     p.principal.setText("10000")
@@ -327,7 +328,27 @@ def test_g_t05_contract_calc_buttons_are_auxiliary(qapp):
 
 def test_g_t05_tri_state_defaults_are_unconfirmed(qapp):
     assert _loan_page(qapp).get_has_iou() is None
+    assert _loan_page(qapp).get_has_repayment() is None
     assert _contract_page(qapp).get_flags() == {"is_delivered": None, "is_signed": None}
+
+
+def test_loan_repayment_confirmation_gates_next(qapp, monkeypatch, tmp_path, dialog_recorder):
+    wizard, presenter, desktop = _start(tmp_path, monkeypatch, "loan", qapp)
+    page = _fill_loan(wizard, "", "")
+    assert _next(wizard).isEnabled()
+
+    page.repayment_unknown.setChecked(True)
+    qapp.processEvents()
+    assert not _next(wizard).isEnabled()
+
+    page.repayment_yes.setChecked(True)
+    qapp.processEvents()
+    assert not _next(wizard).isEnabled()
+    assert "从未还款" in page.repayment_hint.text()
+
+    page.repayment_no.setChecked(True)
+    qapp.processEvents()
+    assert _next(wizard).isEnabled()
 
 
 def test_c2_t04_only_demand_method_blocks(qapp, monkeypatch, tmp_path, dialog_recorder):

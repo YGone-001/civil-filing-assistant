@@ -128,6 +128,7 @@ def _fill_loan(view, model):
     model.interest_start_date = view.field("start_date")
     model.payment_method = view.field("payment_method")
     model.has_iou = view.loan_claim_page.get_has_iou()
+    model.has_repayment = view.loan_claim_page.get_has_repayment()
     model.demand_date = view.field("demand_date")
     model.demand_method = view.field("demand_method")
     model.court_name = view.field("court_name")

@@ -1,14 +1,14 @@
 # File: views/pages/loan.py
-# Purpose: Private-lending claim page (rate validation, IOU tri-state).
+# Purpose: Private-lending claim page (rate validation, IOU and repayment tri-state).
 # Encoding: UTF-8
 """Private-lending claim page: interest-rate validation through the shared
-Decimal contract, IOU tri-state, optional demand pairing and the neutral
-repayment-history limitation notice."""
+Decimal contract, IOU and repayment confirmations, and optional demand pairing."""
 
 from PySide6.QtWidgets import QButtonGroup, QHBoxLayout, QLabel, QLineEdit, QRadioButton, QVBoxLayout
 from models.calculations import validate_rate_text
+from models.case_model import loan_repayment_issue
 from models.validation import ValidationStatus
-from views.theme import INFO_LABEL, REMINDER_LABEL, WARNING_LABEL
+from views.theme import REMINDER_LABEL, WARNING_LABEL
 from views.pages.base import _TitledPage
 from views.pages.common import (
     _decimal_validator,
@@ -86,14 +86,23 @@ class LoanClaimPage(_TitledPage):
         amounts.addRow("", self.rate_warning)
         amounts.addRow("利息起算日:", self.start_date)
 
-        # Neutral limitation note (no legal conclusion): the current model
-        # claims the full principal and has no repayment-history fields, so
-        # users with partial repayments must adjust the amount themselves.
-        self.repayment_hint = QLabel(
-            "说明：当前版本按出借本金全额主张，暂不支持登记已还款记录；"
-            "如存在部分还款，请自行调整本金金额并在诉讼中如实说明。"
-        )
-        self.repayment_hint.setObjectName(INFO_LABEL)
+        self.repayment_group = QButtonGroup(self)
+        self.repayment_yes = QRadioButton("已还款（部分或全部）")
+        self.repayment_no = QRadioButton("从未还款")
+        self.repayment_unknown = QRadioButton("未确认还款情况")
+        repayment_layout = QVBoxLayout()
+        for button, identifier in (
+            (self.repayment_yes, 1),
+            (self.repayment_no, 0),
+            (self.repayment_unknown, 2),
+        ):
+            self.repayment_group.addButton(button, identifier)
+            repayment_layout.addWidget(button)
+        self.repayment_unknown.setChecked(True)
+        amounts.addRow("还款情况:", repayment_layout)
+
+        self.repayment_hint = QLabel(loan_repayment_issue(self.get_has_repayment()))
+        self.repayment_hint.setObjectName(WARNING_LABEL)
         self.repayment_hint.setWordWrap(True)
         amounts.addRow("", self.repayment_hint)
 
@@ -146,6 +155,16 @@ class LoanClaimPage(_TitledPage):
         # Keep the Next-button state in sync with the conditional requirement.
         self.demand_date.textChanged.connect(lambda *_: self._refresh_conditional())
         self.demand_method.textChanged.connect(lambda *_: self._refresh_conditional())
+        self.repayment_group.idToggled.connect(self._refresh_repayment)
+
+    def get_has_repayment(self):
+        """Return whether any repayment occurred, or None if unconfirmed."""
+        return {0: False, 1: True}.get(self.repayment_group.checkedId())
+
+    def _refresh_repayment(self, _identifier, checked):
+        if checked:
+            _set_status(self.repayment_hint, loan_repayment_issue(self.get_has_repayment()))
+            self.completeChanged.emit()
 
     def _conditional_issue(self):
         """Demand information must be either fully supplied or fully omitted."""
@@ -162,9 +181,14 @@ class LoanClaimPage(_TitledPage):
     def isComplete(self):
         if not super().isComplete():
             return False
-        return not self._conditional_issue()
+        return not self._conditional_issue() and not loan_repayment_issue(self.get_has_repayment())
 
     def validatePage(self):
+        issue = loan_repayment_issue(self.get_has_repayment())
+        if issue:
+            _set_status(self.repayment_hint, issue)
+            (self.repayment_group.checkedButton() or self.repayment_unknown).setFocus()
+            return False
         issue = self._conditional_issue()
         if issue:
             _set_status(self.cond_hint, issue)

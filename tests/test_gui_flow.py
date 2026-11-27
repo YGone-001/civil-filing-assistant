@@ -119,6 +119,8 @@ def test_wizard_routes_and_initializes(qapp, case_type):
     assert wizard.currentId() == claim_page_id
     if case_type == "labor":
         set_labor_arbitrated(wizard.labor_claim_page)
+    if case_type == "loan":
+        wizard.loan_claim_page.repayment_no.setChecked(True)
 
     wizard.next()  # -> evidence
     assert wizard.currentId() == wizard.PAGE_EVIDENCE
@@ -679,4 +681,24 @@ def test_presenter_refuses_labor_export_for_blocked_states(qapp, monkeypatch, tm
     page.procedure_combo.setCurrentIndex(index)
     page.arb_commission.setText("示例劳动人事争议仲裁委员会")
     page.arb_receipt_date.setText("2024-06-01")
+    assert presenter.attempt_finish() == presenter.FINISH_SUCCESS
+
+
+def test_presenter_refuses_loan_export_until_repayment_is_confirmed(
+    qapp, monkeypatch, tmp_path, dialog_recorder
+):
+    desktop = _redirect_desktop(monkeypatch, tmp_path / "home")
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    page = wizard.loan_claim_page
+
+    # A restored or manually altered draft may claim repayment; the
+    # full-principal template must refuse instead of guessing.
+    page.repayment_yes.setChecked(True)
+    assert presenter.attempt_finish() == presenter.FINISH_VALIDATION_FAILED
+    warnings = [entry for entry in dialog_recorder if entry["kind"] == "warning"]
+    assert warnings and "还款" in warnings[-1]["args"][2]
+    assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+
+    page.repayment_no.setChecked(True)
     assert presenter.attempt_finish() == presenter.FINISH_SUCCESS

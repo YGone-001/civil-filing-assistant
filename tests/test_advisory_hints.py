@@ -6,13 +6,12 @@
 ``social_sec_info`` is collected for the labor case and stored on the model as
 an advisory-only field (rendering it in the complaint would be a legal-content
 change requiring review), so the mapping must at least never silently lose it.
-The loan page carries a neutral limitation note about the missing
-repayment-history support. All data is fictional.
+The loan page requires an explicit repayment confirmation before the
+full-principal template may be used. All data is fictional.
 """
 
 from helpers import fill_case_facts, make_wizard, prepare_case, select_case, set_parties
 from presenters.model_builder import build_case_model
-from views.theme import INFO_LABEL
 
 
 def test_social_sec_info_reaches_the_model_without_loss(qapp):
@@ -38,15 +37,19 @@ def test_social_sec_info_is_documented_as_advisory_only():
     assert "social_sec_info" in builder_source
 
 
-def test_loan_page_carries_neutral_repayment_limitation_hint(qapp):
-    """The loan page must state that repayment history is not supported (D-04)."""
+def test_loan_page_requires_an_explicit_repayment_confirmation(qapp):
+    """The full-principal template needs a confirmed "never repaid" answer."""
     wizard, _ = make_wizard()
-    hint = wizard.loan_claim_page.repayment_hint
+    page = wizard.loan_claim_page
 
-    text = hint.text()
-    assert "不支持" in text
-    assert "已还款" in text
-    assert hint.objectName() == INFO_LABEL
+    assert page.get_has_repayment() is None
+    assert "确认" in page.repayment_hint.text()
+
+    page.repayment_yes.setChecked(True)
+    assert "从未还款" in page.repayment_hint.text()
+
+    page.repayment_no.setChecked(True)
+    assert page.repayment_hint.isHidden()
 
 
 def test_legacy_contract_formula_attribute_stays_unused():

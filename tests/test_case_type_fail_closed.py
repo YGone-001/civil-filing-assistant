@@ -42,7 +42,9 @@ def _fake_view(case_type):
             get_evidence_items=lambda: [],
             get_exportable_evidence_items=lambda: [],
         ),
-        loan_claim_page=SimpleNamespace(get_has_iou=lambda: None),
+        loan_claim_page=SimpleNamespace(
+            get_has_iou=lambda: None, get_has_repayment=lambda: None
+        ),
         contract_claim_page=SimpleNamespace(
             get_flags=lambda: {"is_delivered": None, "is_signed": None},
             get_penalty_calc_basis=lambda: None,

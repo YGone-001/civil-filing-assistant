@@ -8,7 +8,7 @@ Every mapping below is exercised through the real wizard (``prepare_case`` /
 registration or mapping drift fails here instead of silently losing data.
 Classification decisions preserved from earlier phases:
 ``social_sec_info`` = ADVISORY_ONLY, ``liquidated_damages_formula`` =
-LEGACY_COMPATIBILITY, loan repayment history = DEFERRED. All data is fictional.
+LEGACY_COMPATIBILITY. All data is fictional.
 """
 
 import pytest
@@ -225,13 +225,17 @@ def test_legacy_contract_formula_attribute_is_untouched(qapp):
     assert model.liquidated_damages_formula == ""
 
 
-def test_loan_repayment_history_remains_unsupported(qapp):
-    """DEFERRED: the model carries no repayment-history attributes at all."""
+def test_loan_repayment_tri_state_reaches_model(qapp):
+    """The repayment confirmation must survive UI -> model in every state."""
     wizard, _ = make_wizard()
     prepare_case(wizard, "loan")
-    model = build_case_model(wizard)
+    assert build_case_model(wizard).has_repayment is False
 
-    assert not any("repay" in attr or "repayment" in attr for attr in vars(model))
+    wizard.loan_claim_page.repayment_unknown.setChecked(True)
+    assert build_case_model(wizard).has_repayment is None
+
+    wizard.loan_claim_page.repayment_yes.setChecked(True)
+    assert build_case_model(wizard).has_repayment is True
 
 
 def test_evidence_selection_reaches_the_model(qapp):

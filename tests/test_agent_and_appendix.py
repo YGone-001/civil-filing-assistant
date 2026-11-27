@@ -26,6 +26,7 @@ def _complaint_paragraphs(path):
 
 def _minimal_model(defendants=1, agent=None):
     model = LoanCaseModel()
+    model.has_repayment = False
     model.party_manager.add_party(0, PartyInfo("张三（测试）", "", "北京市示例区原告路1号", ""))
     for i in range(defendants):
         model.party_manager.add_party(

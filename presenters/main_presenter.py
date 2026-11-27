@@ -2,6 +2,7 @@
 # Purpose: Bridge between View (QWizard) and Model/Utils
 # Encoding: UTF-8
 
+from models.case_model import loan_repayment_issue
 from presenters.model_builder import (
     UnsupportedCaseTypeError,
     build_case_model,
@@ -120,6 +121,16 @@ class MainPresenter:
                 "请返回修改交货状态或签收状态后再生成文书；本次未导出任何文件。",
             )
             return self.FINISH_VALIDATION_FAILED
+
+        if case_type == "loan":
+            issue = loan_repayment_issue(model.has_repayment)
+            if issue:
+                dialogs.warning(
+                    self.view,
+                    "尚不能生成起诉状",
+                    f"{issue}\n本次未导出任何文件。",
+                )
+                return self.FINISH_VALIDATION_FAILED
 
         if case_type == "labor":
             # Fail-closed procedural gate: the same evaluator the wizard page

@@ -27,6 +27,7 @@ def run_test():
 
     try:
         model = LoanCaseModel()
+        model.has_repayment = False
 
         # Clearly fictional placeholders; not valid real identifiers.
         model.party_manager.add_party(

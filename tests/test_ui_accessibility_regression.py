@@ -81,6 +81,7 @@ def test_validation_focus_recovery_contract_preserved(qapp):
     wizard.show()
     qapp.processEvents()
     page = wizard.loan_claim_page
+    page.repayment_no.setChecked(True)
     page.demand_date.setText("2023年10月")
     page.demand_method.setText("")
 

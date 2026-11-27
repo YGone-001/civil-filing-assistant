@@ -209,6 +209,8 @@ def test_step_indicators_update_through_full_navigation(qapp, case_type):
         assert ind.current() == 3
     if case_type == "labor":
         set_labor_arbitrated(wizard.labor_claim_page)
+    if case_type == "loan":
+        wizard.loan_claim_page.repayment_no.setChecked(True)
 
     wizard.next()  # -> evidence (step 4)
     qapp.processEvents()
@@ -312,6 +314,7 @@ def test_loan_validate_page_moves_focus_to_demand_date_on_error(qapp):
     """Partial demand info must block Next and focus the demand_date field."""
     wizard, _ = make_wizard()
     page = _show_claim_page(wizard, "loan")
+    page.repayment_no.setChecked(True)
     # Fill demand_date but leave demand_method empty → conditional issue.
     page.demand_date.setText("2023年10月")
     page.demand_method.setText("")
@@ -353,6 +356,7 @@ def test_validate_page_passes_when_no_conditional_issue(qapp):
     wizard, _ = make_wizard()
     select_case(wizard, "loan")
     page = wizard.loan_claim_page
+    page.repayment_no.setChecked(True)
     # Both demand fields filled → no issue.
     page.demand_date.setText("2023年10月")
     page.demand_method.setText("微信")

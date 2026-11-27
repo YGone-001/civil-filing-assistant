@@ -450,6 +450,7 @@ class LawsuitWizard(QWizard):
 
         # Page 2: Claim Info - Fill based on case type
         if case_type == "loan":
+            self.loan_claim_page.repayment_no.setChecked(True)
             self.loan_claim_page.loan_date.setText("2023年1月1日")
             self.loan_claim_page.loan_reason.setText("资金周转")
             self.loan_claim_page.principal.setText("50000")

@@ -75,6 +75,7 @@ INITIAL_FIELD_VALUES = {
 #: "未确认" default of every control (and the unselected classification combo).
 INITIAL_FLAG_VALUES = {
     "has_iou": None,
+    "has_repayment": None,
     "is_delivered": None,
     "is_signed": None,
     "labor_procedure": None,
@@ -315,7 +316,7 @@ def _capture_flags(page, case_type):
     if not names:
         return {}
     if case_type == "loan":
-        return {"has_iou": page.get_has_iou()}
+        return {"has_iou": page.get_has_iou(), "has_repayment": page.get_has_repayment()}
     if case_type == "contract":
         flags = page.get_flags()
         return {"is_delivered": flags["is_delivered"], "is_signed": flags["is_signed"]}
@@ -484,6 +485,9 @@ def _apply_flags(page, document):
 
     if case_type == "loan":
         _set_tri_state(page.iou_yes, page.iou_no, page.iou_unknown, flags["has_iou"])
+        _set_tri_state(
+            page.repayment_yes, page.repayment_no, page.repayment_unknown, flags["has_repayment"]
+        )
     elif case_type == "contract":
         _set_tri_state(page.del_yes, page.del_no, page.del_unknown, flags["is_delivered"])
         _set_tri_state(page.sign_yes, page.sign_no, page.sign_unknown, flags["is_signed"])

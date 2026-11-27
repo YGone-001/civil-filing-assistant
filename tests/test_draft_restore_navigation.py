@@ -437,7 +437,7 @@ def test_unconfirmed_tri_state_survives_restore_navigation(qapp, tmp_path, monke
     prepare_case(wizard, "loan", confirm_flags=False)
     assert wizard.loan_claim_page.get_has_iou() is None
     before = _session_snapshot(wizard, "loan")
-    assert before["flags"] == {"has_iou": None}
+    assert before["flags"] == {"has_iou": None, "has_repayment": False}
 
     path = _navigate_and_save(wizard, draft, tmp_path, monkeypatch, "loan", 3, prepare=False)
     restored = _open_draft_file(draft, path, monkeypatch)

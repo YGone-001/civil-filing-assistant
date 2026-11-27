@@ -37,6 +37,7 @@ def test_every_claim_page_exposes_supplement_fields(qapp, page_attr, prefix):
 
 def test_model_inserts_extra_claims_before_the_cost_claim_and_appends_facts():
     model = LoanCaseModel()
+    model.has_repayment = False
     model.extra_claims = [
         "判令被告支付律师费人民币1000元；",
         "   ",
@@ -56,6 +57,7 @@ def test_model_inserts_extra_claims_before_the_cost_claim_and_appends_facts():
 
 def test_empty_supplements_leave_generated_content_unchanged():
     model = LoanCaseModel()
+    model.has_repayment = False
     model.principal_amount = "1000"
     assert model.all_claims() == model.render_claims()
     assert model.all_facts() == model.render_facts()

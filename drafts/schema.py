@@ -55,10 +55,10 @@ from utils.labor_security import (
 )
 
 #: Version of the *inner* JSON document (independent of the envelope version).
-SCHEMA_VERSION = 7
+SCHEMA_VERSION = 8
 
 #: Older inner-document versions that :func:`_migrate` can upgrade.
-MIGRATABLE_VERSIONS = (1, 2, 3, 4, 5, 6)
+MIGRATABLE_VERSIONS = (1, 2, 3, 4, 5, 6, 7)
 
 #: Case categories this build can restore. Mirrors
 #: ``presenters.model_builder.SUPPORTED_CASE_TYPES`` and is asserted equal there.
@@ -157,6 +157,7 @@ _EVIDENCE_KEYS = ("state", "rows")
 #: Confirmations whose third state (``None`` = 未确认) is meaningful.
 TRI_STATE_FLAGS = (
     "has_iou",
+    "has_repayment",
     "is_delivered",
     "is_signed",
     "labor_delay_exception",
@@ -335,7 +336,7 @@ TEXT_FIELDS = {
 #: the procedural classification (state, refusal ground, party role, delay
 #: exception) alongside the ordinary no-contract confirmation.
 FLAG_FIELDS = {
-    "loan": ("has_iou",),
+    "loan": ("has_iou", "has_repayment"),
     "contract": ("is_delivered", "is_signed"),
     "property": (),
     "labor": (
@@ -598,6 +599,9 @@ def _migrate(mapping):
 
     Version 6 -> 7: every party record gained the service-address source,
     filled ``unconfirmed`` because a v6 draft never asked for it.
+
+    Version 7 -> 8: loan drafts gained a repayment confirmation. Earlier
+    drafts did not record repayment, so the new flag starts unconfirmed.
     """
     upgraded = dict(mapping)
     if upgraded.get("schema_version") == 1:
@@ -612,6 +616,12 @@ def _migrate(mapping):
         upgraded = _migrate_v5_to_v6(upgraded)
     if upgraded.get("schema_version") == 6:
         upgraded = _migrate_v6_to_v7(upgraded)
+    if upgraded.get("schema_version") == 7 and upgraded.get("case_type") == "loan":
+        flags = upgraded.get("factual_flags")
+        if isinstance(flags, dict):
+            if "has_repayment" in flags:
+                raise DraftValidationError("旧版借贷草稿不应包含还款情况。")
+            upgraded["factual_flags"] = {**flags, "has_repayment": None}
     upgraded["schema_version"] = SCHEMA_VERSION
     return upgraded
 
@@ -794,7 +804,7 @@ def validate_document(payload):
     if isinstance(version, bool) or not isinstance(version, int):
         raise DraftValidationError("schema_version 必须是整数。")
     if version in MIGRATABLE_VERSIONS:
-        # v1-v3 documents predate ``agent``; v4-v6 carry it. The strict check
+        # v1-v3 documents predate ``agent``; v4 and later carry it. The strict check
         # runs against the document's own version so legacy drafts reach
         # migration instead of being rejected for the wrong key set.
         expected_keys = _DOCUMENT_KEYS_V3 if version <= 3 else _DOCUMENT_KEYS

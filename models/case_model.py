@@ -172,6 +172,18 @@ class CaseTemplate:
             return f"补充说明：{extra}"
         return f"{facts}\n\n补充说明：{extra}"
 
+def loan_repayment_issue(has_repayment):
+    """Explain when the full-principal template cannot represent the case."""
+    if has_repayment is False:
+        return ""
+    if has_repayment is True:
+        return (
+            "当前借贷模板仅支持确认从未还款的案件。已发生部分或全部还款，"
+            "请核对剩余本金和利息后另行准备文书。"
+        )
+    return "请先核对并确认是否发生过还款，再生成文书。"
+
+
 class LoanCaseModel(CaseTemplate):
     def __init__(self):
         super().__init__()
@@ -185,6 +197,7 @@ class LoanCaseModel(CaseTemplate):
         self.interest_rate = ""
         self.interest_start_date = ""
         self.has_iou = None
+        self.has_repayment = None
         self.demand_date = ""
         self.demand_method = ""
 
@@ -193,6 +206,9 @@ class LoanCaseModel(CaseTemplate):
         return datetime.date.today()
 
     def render_claims(self):
+        issue = loan_repayment_issue(self.has_repayment)
+        if issue:
+            raise ValueError(issue)
         claims = []
         claims.append(f"判令被告向原告偿还借款本金人民币 {self.principal_amount} 元；")
         if self.interest_rate and self.interest_start_date:
@@ -230,6 +246,9 @@ class LoanCaseModel(CaseTemplate):
         return claims
 
     def render_facts(self):
+        issue = loan_repayment_issue(self.has_repayment)
+        if issue:
+            raise ValueError(issue)
         # The opening is drawn only from supplied facts; no party relationship
         # (such as "friends") is asserted.
         fact_str = (

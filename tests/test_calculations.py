@@ -100,6 +100,7 @@ def test_labor_negative_salary_does_not_invent_amount():
 
 def test_loan_principal_claim_and_interest():
     model = LoanCaseModel()
+    model.has_repayment = False
     model.principal_amount = "50000"
     model.interest_rate = "14.6"
     model.interest_start_date = "2023-05-01"
@@ -110,6 +111,7 @@ def test_loan_principal_claim_and_interest():
 
 def test_loan_no_interest_when_fields_missing():
     model = LoanCaseModel()
+    model.has_repayment = False
     model.principal_amount = "50000"
     claims = model.render_claims()
     assert not any("利息" in c for c in claims)
@@ -117,6 +119,7 @@ def test_loan_no_interest_when_fields_missing():
 
 def test_loan_no_hardcoded_rate_ceiling():
     model = LoanCaseModel()
+    model.has_repayment = False
     model.principal_amount = "50000"
     model.interest_rate = "36"
     model.interest_start_date = "2023-05-01"
@@ -128,12 +131,24 @@ def test_loan_no_hardcoded_rate_ceiling():
 
 def test_loan_negative_principal_uses_neutral_claim():
     model = LoanCaseModel()
+    model.has_repayment = False
     model.principal_amount = "-100"
     model.interest_rate = "10"
     model.interest_start_date = "2023-05-01"
     claims = model.render_claims()
     # Only the principal claim plus a neutral interest statement, no bogus figure.
     assert any("以实际清偿日结算为准" in c for c in claims), claims
+
+
+@pytest.mark.parametrize("has_repayment", [True, None])
+def test_loan_full_principal_template_refuses_unconfirmed_or_repaid(has_repayment):
+    model = LoanCaseModel()
+    model.has_repayment = has_repayment
+    model.principal_amount = "50000"
+    with pytest.raises(ValueError, match="还款"):
+        model.render_claims()
+    with pytest.raises(ValueError, match="还款"):
+        model.render_facts()
 
 
 # --- PropertyCaseModel -----------------------------------------------------
