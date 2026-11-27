@@ -191,6 +191,14 @@ python test_generator.py
 python -m pytest -q
 ```
 
+构建完成后，可在本机交互式桌面会话中运行 EXE 冒烟检查：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\exe_ui_smoke.ps1
+```
+
+脚本通过 Windows UI Automation 启动 `dist/` 中的 EXE，在演示模式下生成 3 份文书并校验文件数量与类型；输出写入临时目录，不会写入真实桌面。该检查依赖交互式桌面，不进入 CI，也不能替代 pytest 与人工受限验收。
+
 冒烟测试会在项目根目录生成 `测试_起诉状.docx`。该文件包含模拟案件信息，仅供本地检查，已被 `.gitignore` 排除。项目已建立自动化测试与 CI：`tests/` 目录下为 pytest 测试套件，GitHub Actions 工作流 `.github/workflows/ci.yml` 在 Windows 上执行编译检查、提交信息校验、重复测试检查、完整 pytest 套件与文档冒烟测试；法律模板治理元数据由 `tools/check_template_governance.py` 校验；租赁合同后置治理包的治理状态由 `tools/check_rental_governance_package.py` 校验。
 
 ## 输出与隐私
@@ -265,7 +273,7 @@ civil-filing-assistant/
 │   ├── labor_security.py       # 劳动争议程序状态、准入决策与提示
 │   └── security_check.py       # 网络提示与敏感字段清理
 ├── tests/                      # pytest 套件（conftest.py、helpers.py 与各模块测试）
-├── tools/                      # 提交信息、重复测试与模板治理校验脚本
+├── tools/                      # 提交信息、重复测试、模板治理校验与 EXE UI 冒烟脚本
 ├── docs/legal-template-governance/  # 模板治理、映射、租赁工作包与审阅记录
 ├── .github/workflows/ci.yml    # Windows CI
 ├── test_generator.py           # 文书生成冒烟测试
