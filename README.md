@@ -221,34 +221,56 @@ python -m pytest -q
 
 ```text
 civil-filing-assistant/
-├── main.py                    # 桌面应用入口
-├── drafts/
-│   ├── schema.py              # 草稿字段注册表与严格校验（无 Qt）
-│   ├── storage.py             # 版本化加密信封与原子写入
-│   └── windows_protection.py  # Windows DPAPI（当前用户）绑定
+├── main.py                     # 桌面应用入口
 ├── models/
-│   └── case_model.py          # 当事人、证据和案件模型
+│   ├── case_model.py           # 当事人、证据与六类案件模型
+│   ├── calculations.py         # 金额、月份与日期计算规则
+│   └── validation.py           # 共享字段校验契约
 ├── presenters/
-│   ├── main_presenter.py      # 界面与模型/导出流程的协调层
-│   └── draft_presenter.py     # 保存/打开草稿的编排与确认流程
+│   ├── main_presenter.py       # 校验、导出门槛与批量导出编排
+│   ├── model_builder.py        # 从向导字段构建案件模型
+│   └── draft_presenter.py      # 保存/打开草稿的编排与确认流程
+├── drafts/
+│   ├── schema.py               # 草稿字段注册表、严格校验与 v1–v7 迁移
+│   ├── storage.py              # 版本化加密信封与原子写入
+│   ├── windows_protection.py   # Windows DPAPI（当前用户）绑定
+│   └── errors.py               # 草稿校验与保护异常
 ├── views/
-│   ├── main_window.py         # 主向导、页面路由和测试填充
-│   ├── draft_io.py            # 草稿与向导控件之间的唯一适配层
+│   ├── main_window.py          # 主向导、页面路由和测试填充
+│   ├── draft_io.py             # 草稿与向导控件之间的唯一适配层
+│   ├── dialogs.py              # 中文按钮的标准消息对话框封装
+│   ├── theme.py                # 颜色、字号与控件样式常量
+│   ├── widgets.py              # 日期输入、步骤指示器等共享控件
 │   ├── facts_examples_dialog.py # 事实理由范例参考弹窗
-│   ├── help_dialog.py         # 内置使用说明与免责声明
-│   └── wizard_pages.py        # 各向导页面与表单字段
+│   ├── help_dialog.py          # 内置使用说明与免责声明
+│   ├── wizard_pages.py         # 兼容导入门面（页面已模块化到 pages/）
+│   └── pages/
+│       ├── base.py             # 向导页基类
+│       ├── common.py           # 表单、状态与无障碍共享助手
+│       ├── welcome.py          # 欢迎页
+│       ├── case_selection.py   # 案由选择
+│       ├── party.py            # 当事人
+│       ├── loan.py / contract.py / property.py / labor.py / divorce.py / rental.py
+│       ├── evidence.py         # 证据页
+│       └── export.py           # 核对、预览与导出
 ├── utils/
-│   ├── batch_manager.py       # 批量导出目录与文件命名
-│   ├── doc_generator.py       # Word 文书排版与保存
-│   ├── document_preview.py    # 起诉状／仲裁申请书文书式预览（HTML/纯文本）
-│   ├── evidence_library.py    # 各案由常见证据建议
-│   ├── facts_examples.py      # 各案由事实理由范例参考
-│   ├── labor_security.py      # 劳动争议程序状态词表、准入决策表与程序提示
-│   └── security_check.py      # 网络提示与敏感字段清理
-├── test_generator.py          # 文书生成冒烟测试
-├── requirements.txt           # Python 依赖下限
-├── build.bat                  # Windows PyInstaller 构建入口
-└── AGENTS.md                  # 项目约定与维护规则
+│   ├── batch_manager.py        # 输出目录、文件名清理与批量导出
+│   ├── doc_generator.py        # Word 文书排版与保存
+│   ├── document_preview.py     # 起诉状／仲裁申请书文书式预览
+│   ├── evidence_library.py     # 各案由常见证据建议
+│   ├── facts_examples.py       # 各案由事实理由范例参考
+│   ├── labor_security.py       # 劳动争议程序状态、准入决策与提示
+│   └── security_check.py       # 网络提示与敏感字段清理
+├── tests/                      # pytest 套件（conftest.py、helpers.py 与各模块测试）
+├── tools/                      # 提交信息、重复测试与模板治理校验脚本
+├── docs/legal-template-governance/  # 模板治理、映射、租赁工作包与审阅记录
+├── .github/workflows/ci.yml    # Windows CI
+├── test_generator.py           # 文书生成冒烟测试
+├── requirements.txt            # 运行时依赖下限
+├── requirements-dev.txt        # 测试依赖
+├── pytest.ini                  # pytest 配置
+├── build.bat                   # Windows PyInstaller 构建入口
+└── AGENTS.md                   # 项目约定与维护规则
 ```
 
 ## 当前边界
