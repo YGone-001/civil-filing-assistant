@@ -109,7 +109,7 @@ git diff --check
 
 ## 9. 当前已知边界
 
-- Python 次版本尚未在项目中固定；修改依赖或构建配置时应补充兼容性验证。
+- Python 与依赖版本已固定：Python 3.12.10（`.python-version`）、PySide6 6.12.0、python-docx 1.2.0、PyInstaller 6.22.3、pytest 9.1.1；升级任一版本时必须同步 `.python-version`、`requirements*.txt` 与 CI，并重新执行全量测试和构建验证。
 - 当前仅提供 Windows `build.bat`，不要宣称其他平台已有可发布安装包。
 - 项目已具备 CI（GitHub Actions：Windows 主任务，产品仅面向 Windows）与 pytest 自动化测试套件（`tests/`），并包含提交信息校验、重复测试检查与法律模板治理元数据校验；仍无数据库、持久化草稿或自动更新机制。
 - 输出目录默认为当前用户桌面；改变该行为时需同时更新 README、界面文案和测试。

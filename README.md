@@ -118,10 +118,11 @@ DPAPI 的密钥来自当前 Windows 用户的配置文件，因此：
 
 | 组件 | 用途 | 项目约束 |
 | --- | --- | --- |
-| Python | 应用运行时 | 项目尚未固定 Python 次版本；当前仓库已用 Python 3.12.10 完成语法检查 |
-| PySide6 | Qt 桌面界面 | `>=6.5.0` |
-| python-docx | Word 文书生成 | `>=0.8.11` |
-| PyInstaller | Windows 可执行程序打包 | `>=6.0.0` |
+| Python | 应用运行时 | 固定为 `3.12.10`（根目录 `.python-version`，CI 同版本） |
+| PySide6 | Qt 桌面界面 | `==6.12.0` |
+| python-docx | Word 文书生成 | `==1.2.0` |
+| PyInstaller | Windows 可执行程序打包 | `==6.22.3` |
+| pytest | 自动化测试 | `==9.1.1` |
 
 当前主要面向 Windows 桌面环境。源码包含其他桌面系统的网络路由检测分支，但仓库只提供了 Windows 构建脚本，其他平台尚未完成打包验证。
 
@@ -135,6 +136,8 @@ Set-Location civil-filing-assistant
 ```
 
 ### 2. 创建虚拟环境并安装依赖
+
+项目固定使用 Python 3.12.10（见根目录 `.python-version`），依赖版本也已固定。
 
 ```powershell
 python -m venv .venv
@@ -266,8 +269,9 @@ civil-filing-assistant/
 ├── docs/legal-template-governance/  # 模板治理、映射、租赁工作包与审阅记录
 ├── .github/workflows/ci.yml    # Windows CI
 ├── test_generator.py           # 文书生成冒烟测试
-├── requirements.txt            # 运行时依赖下限
-├── requirements-dev.txt        # 测试依赖
+├── requirements.txt            # 运行时依赖（版本固定）
+├── requirements-dev.txt        # 测试依赖（版本固定）
+├── .python-version             # Python 3.12.10
 ├── pytest.ini                  # pytest 配置
 ├── build.bat                   # Windows PyInstaller 构建入口
 └── AGENTS.md                   # 项目约定与维护规则

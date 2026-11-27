@@ -2,4 +2,4 @@
 -r requirements.txt
 
 # Test-only dependencies.
-pytest>=7.0
+pytest==9.1.1
