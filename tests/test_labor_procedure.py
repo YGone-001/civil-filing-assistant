@@ -87,10 +87,26 @@ def test_unselected_state_blocks():
     assert "请先选择" in eligibility.reason
 
 
-def test_not_applied_blocks_with_arbitration_guidance():
-    eligibility = _block(PROCEDURE_NOT_APPLIED)
-    assert "申请仲裁" in eligibility.reason
-    assert "不能为本阶段生成文书" in eligibility.reason
+def test_not_applied_generates_the_arbitration_application():
+    eligibility = _allow(PROCEDURE_NOT_APPLIED)
+    assert "劳动仲裁申请书" in eligibility.warning
+    assert "第五十三条" in eligibility.warning
+
+
+def test_not_applied_still_requires_the_employee_role():
+    blocked = _block(PROCEDURE_NOT_APPLIED, role=None)
+    assert "身份" in blocked.reason
+    assert "劳动者" in blocked.reason
+
+    employer = _block(PROCEDURE_NOT_APPLIED, role=ROLE_EMPLOYER)
+    assert "用人单位" in employer.reason
+    assert "仲裁申请书" in employer.reason
+
+
+def test_not_applied_blocks_a_company_form_applicant():
+    blocked = _block(PROCEDURE_NOT_APPLIED, plaintiff_is_company=True)
+    assert "单位／公司" in blocked.reason
+    assert "仲裁申请书" in blocked.reason
 
 
 def test_application_pending_blocks_until_procedure_concludes():
@@ -314,9 +330,12 @@ def test_conditional_rows_follow_the_selected_state(qapp):
     page = wizard.labor_claim_page
 
     _select(page, PROCEDURE_NOT_APPLIED)
-    assert page.arb_commission.isHidden()
+    # Pre-filing still needs the commission and the applicant's role, but no
+    # case number / receipt date and no complaint-only procedural inputs.
+    assert not page.arb_commission.isHidden()
+    assert page.arb_case_no.isHidden()
     assert page.arb_receipt_date.isHidden()
-    assert page._role_row.isHidden()
+    assert not page._role_row.isHidden()
     assert page._delay_row.isHidden()
     assert page._refusal_row.isHidden()
 
@@ -359,7 +378,7 @@ def test_switching_states_preserves_entered_values(qapp):
     assert page.get_has_no_contract() is True
 
 
-def test_next_button_disabled_for_blocked_states(qapp):
+def test_next_button_follows_the_selected_stage(qapp):
     wizard, _ = make_wizard()
     prepare_case(wizard, "labor")
     wizard.show()
@@ -368,7 +387,12 @@ def test_next_button_disabled_for_blocked_states(qapp):
         wizard.next()  # welcome -> case selection -> party -> labour claim
     page = wizard.labor_claim_page
     _select(page, PROCEDURE_NOT_APPLIED)
+    # The fixture already confirmed the employee role and commission.
+    assert wizard.button(QWizard.NextButton).isEnabled()
+
+    _select(page, PROCEDURE_APPLICATION_PENDING)
     assert not wizard.button(QWizard.NextButton).isEnabled()
+
     _select(page, PROCEDURE_NON_FINAL_AWARD)
     page.arb_commission.setText(COMMISSION)
     page.arb_receipt_date.setText("2024-06-01")
@@ -775,17 +799,17 @@ def test_company_form_plaintiff_blocks_the_employee_template():
     assert "两者不一致" in blocked.reason
 
 
-def test_page_role_row_follows_all_complaint_paths(qapp):
+def test_page_role_row_follows_all_document_paths(qapp):
     wizard, _ = make_wizard()
     prepare_case(wizard, "labor")
     page = wizard.labor_claim_page
-    for state in (PROCEDURE_NOT_APPLIED, PROCEDURE_APPLICATION_PENDING,
+    for state in (PROCEDURE_APPLICATION_PENDING,
                   PROCEDURE_MEDIATION_EFFECTIVE, PROCEDURE_OTHER_OR_UNCERTAIN):
         _select(page, state)
         assert page._role_row.isHidden(), state
-    for state in (PROCEDURE_ACCEPTANCE_OVERDUE, PROCEDURE_NOT_ACCEPTED,
-                  PROCEDURE_AWARD_OVERDUE, PROCEDURE_NON_FINAL_AWARD,
-                  PROCEDURE_FINAL_AWARD):
+    for state in (PROCEDURE_NOT_APPLIED, PROCEDURE_ACCEPTANCE_OVERDUE,
+                  PROCEDURE_NOT_ACCEPTED, PROCEDURE_AWARD_OVERDUE,
+                  PROCEDURE_NON_FINAL_AWARD, PROCEDURE_FINAL_AWARD):
         _select(page, state)
         assert not page._role_row.isHidden(), state
 
@@ -879,11 +903,11 @@ def test_unconfirmed_role_blocks_the_real_export_path(qapp, monkeypatch, tmp_pat
     assert presenter.attempt_finish() == presenter.FINISH_VALIDATION_FAILED
     assert not (desktop.exists() and list(desktop.rglob("*.docx")))
 
-    # Confirming the role on the restored wizard (without retyping anything)
-    # resolves the procedural block and restores the ordinary export path.
-    # (The draft intentionally carries no claim fields, so the page's own
-    # mandatory-field completeness stays off; the role block itself is gone.)
+    # Confirming the role on the restored wizard resolves the procedural
+    # block; the complaint path still needs a court, which the draft never
+    # carried. Once both are supplied the ordinary export path is restored.
     restored_page._role_buttons[ROLE_EMPLOYEE].setChecked(True)
+    restored_page.court_name.setText("示例人民法院")
     assert restored_page._conditional_issue() == ""
     assert presenter.attempt_finish() == presenter.FINISH_SUCCESS
     assert len(list(desktop.rglob("*.docx"))) == 3
@@ -1019,3 +1043,47 @@ def test_future_date_never_reaches_the_published_complaint(
     assert "晚于今天" in page.arbitration_hint.text()
     assert presenter.attempt_finish() == presenter.FINISH_VALIDATION_FAILED
     assert not (desktop.exists() and list(desktop.rglob("*.docx")))
+
+
+# --------------------------------------------------------------------------- #
+# Pre-filing arbitration application (H-01)
+# --------------------------------------------------------------------------- #
+
+
+def test_not_applied_model_produces_arbitration_wording(qapp):
+    from presenters.model_builder import build_case_model
+
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "labor")
+    page = wizard.labor_claim_page
+    _select(page, PROCEDURE_NOT_APPLIED)
+    page.arb_commission.setText(COMMISSION)
+    page._role_buttons[ROLE_EMPLOYEE].setChecked(True)
+
+    model = build_case_model(wizard)
+    assert model.is_arbitration_application()
+
+    claims = model.all_arbitration_claims()
+    assert claims
+    assert all(claim.startswith("裁决被申请人向申请人") for claim in claims)
+    assert not any("诉讼费" in claim for claim in claims)
+
+    facts = model.all_arbitration_facts()
+    assert "申请人" in facts and "被申请人" in facts
+    assert "特向贵会申请仲裁" in facts
+    assert "原告" not in facts and "被告" not in facts
+
+
+def test_not_applied_requires_the_commission_and_role(qapp):
+    wizard, _ = make_wizard()
+    select_case(wizard, "labor")
+    page = wizard.labor_claim_page
+    _select(page, PROCEDURE_NOT_APPLIED)
+
+    assert "身份" in page._conditional_issue()
+
+    page._role_buttons[ROLE_EMPLOYEE].setChecked(True)
+    assert "仲裁机构" in page._conditional_issue()
+
+    page.arb_commission.setText(COMMISSION)
+    assert page._conditional_issue() == ""

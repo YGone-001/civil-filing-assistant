@@ -824,27 +824,69 @@ class LaborCaseModel(CaseTemplate):
         self.total_unpaid_amount = f"{total}"
         return months, is_partial
 
-    def render_claims(self):
+    def _render_claims_with(self, applicant, respondent, verb, include_cost):
+        """Build the wage claims with the given party labels and verb.
+
+        Arbitration applications use ``申请人`` / ``被申请人`` and ``裁决`` and
+        omit the litigation-cost claim (labour arbitration is fee-free under
+        Article 53 of the Labour Dispute Mediation and Arbitration Law).
+        """
         claims = []
         summary = self._ensure_unpaid_total()
         if summary is not None:
             months, is_partial = summary
             suffix = "（该区间含不完整或推断月份，具体金额请人工核对）" if is_partial else ""
             claims.append(
-                f"判令被告向原告支付欠付工资共计人民币 {self.total_unpaid_amount} 元{suffix}；"
+                f"{verb}{respondent}向{applicant}支付欠付工资共计人民币 "
+                f"{self.total_unpaid_amount} 元{suffix}；"
             )
         else:
             # Do not guess an entitlement amount; keep an explicit placeholder.
-            claims.append("判令被告向原告支付欠付工资（具体欠薪月份及金额请依据工资条、银行流水等证据人工确认后填写）；")
+            claims.append(
+                f"{verb}{respondent}向{applicant}支付欠付工资"
+                "（具体欠薪月份及金额请依据工资条、银行流水等证据人工确认后填写）；"
+            )
 
         if self.overtime_pay:
-            claims.append(f"判令被告向原告支付加班费人民币 {self.overtime_pay} 元；")
+            claims.append(
+                f"{verb}{respondent}向{applicant}支付加班费人民币 {self.overtime_pay} 元；"
+            )
 
         if self.is_no_contract is True:
-            claims.append("判令被告向原告支付未签订书面劳动合同的二倍工资差额；")
+            claims.append(
+                f"{verb}{respondent}向{applicant}支付未签订书面劳动合同的二倍工资差额；"
+            )
 
-        claims.append("本案诉讼费由被告承担。")
+        if include_cost:
+            claims.append("本案诉讼费由被告承担。")
         return claims
+
+    def render_claims(self):
+        return self._render_claims_with("原告", "被告", "判令", True)
+
+    def render_arbitration_claims(self):
+        """Return the same substantive requests phrased for arbitration."""
+        return self._render_claims_with("申请人", "被申请人", "裁决", False)
+
+    def all_arbitration_claims(self):
+        """Generated arbitration requests plus user-supplied additions."""
+        return list(self.render_arbitration_claims()) + self._normalized_extra_claims()
+
+    def all_arbitration_facts(self):
+        """Generated arbitration facts plus the optional user-supplied note."""
+        facts = (self.render_arbitration_facts() or "").strip()
+        extra = (self.extra_facts or "").strip()
+        if not extra:
+            return facts
+        if not facts:
+            return f"补充说明：{extra}"
+        return f"{facts}\n\n补充说明：{extra}"
+
+    def is_arbitration_application(self):
+        """True when the selected stage needs an arbitration application."""
+        from utils.labor_security import PROCEDURE_NOT_APPLIED
+
+        return self.labor_procedure == PROCEDURE_NOT_APPLIED
 
     def _arbitration_sentence(self):
         """State the prior arbitration exactly as the user classified it.
@@ -920,33 +962,48 @@ class LaborCaseModel(CaseTemplate):
         # Unreachable while the evaluator and the state set agree.
         return ""
 
-    def render_facts(self):
+    def _render_facts_core(self, applicant, respondent):
+        """Substantive employment facts shared by both document types."""
         summary = self._ensure_unpaid_total()
         if summary is not None:
-            amount_text = f"共计欠付原告工资{self.total_unpaid_amount}元"
+            amount_text = f"共计欠付{applicant}工资{self.total_unpaid_amount}元"
         else:
             amount_text = "存在欠付工资情形，具体金额以工资条、银行流水等证据为准"
 
         fact_str = (
-            f"原告于{self.emp_join_date}入职被告处，岗位为{self.job_title}，"
+            f"{applicant}于{self.emp_join_date}入职{respondent}处，岗位为{self.job_title}，"
             f"双方约定月工资标准为{self.monthly_salary}元。"
-            f"被告未按时足额支付原告{self.unpaid_months}期间的工资。"
+            f"{respondent}未按时足额支付{applicant}{self.unpaid_months}期间的工资。"
         )
         term = (self.emp_term_date or "").strip()
         if term:
-            fact_str += f"截至{term}，被告{amount_text}。"
+            fact_str += f"截至{term}，{respondent}{amount_text}。"
         else:
-            fact_str += f"被告{amount_text}。"
+            fact_str += f"{respondent}{amount_text}。"
 
         if self.overtime_pay and self.overtime_hours:
-            fact_str += f"此外，原告在职期间存在{self.overtime_hours}小时的加班，被告亦未支付加班费{self.overtime_pay}元。"
+            fact_str += (
+                f"此外，{applicant}在职期间存在{self.overtime_hours}小时的加班，"
+                f"{respondent}亦未支付加班费{self.overtime_pay}元。"
+            )
 
         if self.is_no_contract is True:
             fact_str += (
-                "原告入职后，被告未与原告订立书面劳动合同。原告依据《中华人民共和国劳动合同法》"
-                "第八十二条的规定，主张被告支付未订立书面劳动合同的二倍工资差额。"
+                f"{applicant}入职后，{respondent}未与{applicant}订立书面劳动合同。"
+                f"{applicant}依据《中华人民共和国劳动合同法》第八十二条的规定，"
+                f"主张{respondent}支付未订立书面劳动合同的二倍工资差额。"
             )
+        return fact_str
 
+    def render_facts(self):
+        fact_str = self._render_facts_core("原告", "被告")
         fact_str += self._arbitration_sentence()
         fact_str += "为维护原告合法权益，特诉至贵院，请依法支持原告的诉讼请求。"
         return fact_str
+
+    def render_arbitration_facts(self):
+        """Facts phrased for an arbitration application (no prior arbitration)."""
+        return (
+            self._render_facts_core("申请人", "被申请人")
+            + "为维护申请人合法权益，特向贵会申请仲裁，请依法支持申请人的仲裁请求。"
+        )

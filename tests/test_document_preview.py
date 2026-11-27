@@ -76,3 +76,24 @@ def test_export_page_stashes_the_full_preview(qapp):
     assert "民 事 起 诉 状" in text
     assert "物业费" in text
     assert "<html>" in html
+
+
+def test_arbitration_application_preview_uses_applicant_terms(qapp):
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "labor")
+    page = wizard.labor_claim_page
+    page.procedure_combo.setCurrentIndex(
+        page.procedure_combo.findData("not_applied")
+    )
+    page._role_buttons["employee"].setChecked(True)
+    page.arb_commission.setText("示例劳动人事争议仲裁委员会")
+
+    wizard.export_page.show_preview()
+
+    text = getattr(wizard.export_page, "_last_preview_text", "")
+    assert "劳 动 仲 裁 申 请 书" in text
+    assert "仲裁请求：" in text
+    assert "申请人：" in text
+    assert "示例劳动人事争议仲裁委员会" in text
+    assert "诉讼请求：" not in text
+    assert "人民法院" not in text

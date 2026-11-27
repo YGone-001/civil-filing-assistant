@@ -14,7 +14,7 @@ def test_wizard_navigation_is_localized_and_primary(qapp):
 
     assert wizard.button(QWizard.BackButton).text() == "上一步"
     assert wizard.button(QWizard.NextButton).text() == "下一步"
-    assert wizard.button(QWizard.FinishButton).text() == "生成三份 Word 初稿"
+    assert wizard.button(QWizard.FinishButton).text() == "生成 Word 初稿"
     assert wizard.button(QWizard.CancelButton).text() == "退出"
     assert wizard.button(QWizard.NextButton).objectName() == PRIMARY_BUTTON
     assert wizard.button(QWizard.FinishButton).objectName() == PRIMARY_BUTTON

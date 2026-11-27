@@ -134,11 +134,15 @@ class MainPresenter:
 
         if case_type == "labor":
             # Fail-closed procedural gate: the same evaluator the wizard page
-            # uses decides whether this classification may produce a
-            # complaint. The plaintiff's company/natural-person form comes
-            # from the party cards; the role itself is never inferred. Blocked
-            # states keep every input and export nothing.
-            from utils.labor_security import evaluate_labor_eligibility
+            # uses decides whether this classification may produce a document
+            # (arbitration application before filing, complaint afterwards).
+            # The plaintiff's company/natural-person form comes from the party
+            # cards; the role itself is never inferred. Blocked states keep
+            # every input and export nothing.
+            from utils.labor_security import (
+                PROCEDURE_NOT_APPLIED,
+                evaluate_labor_eligibility,
+            )
 
             plaintiff_is_company = any(
                 card["is_company"].isChecked()
@@ -158,8 +162,22 @@ class MainPresenter:
             if not eligibility.eligible:
                 dialogs.warning(
                     self.view,
-                    "尚不能生成起诉状",
+                    "尚不能生成文书",
                     f"{eligibility.reason}\n本次未导出任何文件。",
+                )
+                return self.FINISH_VALIDATION_FAILED
+
+            # The arbitration application is addressed to the commission; the
+            # complaint still requires the court selected on the claim page.
+            if (
+                model.labor_procedure != PROCEDURE_NOT_APPLIED
+                and not (model.court_name or "").strip()
+            ):
+                dialogs.warning(
+                    self.view,
+                    "尚不能生成起诉状",
+                    "请填写建议管辖法院（民事起诉状需要载明受诉法院）。\n"
+                    "本次未导出任何文件。",
                 )
                 return self.FINISH_VALIDATION_FAILED
 
@@ -188,10 +206,14 @@ class MainPresenter:
         SecurityGuard.wipe_memory(model)
 
         self.view.export_page.show_export_result(target_dir, files)
+        if getattr(model, "is_arbitration_application", None) and model.is_arbitration_application():
+            document_summary = "劳动仲裁申请书 / 证据清单"
+        else:
+            document_summary = "起诉状 / 证据清单 / 送达地址确认书"
         dialogs.information(
             self.view,
             "生成成功",
-            "立案材料已生成完成（起诉状 / 证据清单 / 送达地址确认书）。\n\n"
+            f"文书已生成完成（{document_summary}）。\n\n"
             f"文件夹位置：\n{target_dir}\n\n"
             f"本次共生成 {len(files)} 份文件。窗口保持打开，可修改后再次生成。\n\n"
             "说明：程序仅对内存中的字段做了尽力清理，不会自动删除已生成的文件，"

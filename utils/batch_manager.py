@@ -59,7 +59,11 @@ class BatchExportManager:
                 raise IOError(f"docx 包损坏（条目 {broken}）：{path}")
 
     def run_batch_export(self, model, base_path):
-        """Generate the three documents and return ``(target_dir, files)``.
+        """Generate the document set and return ``(target_dir, files)``.
+
+        Labour cases split by procedural stage: before any arbitration the set
+        is the arbitration application plus the evidence list; after
+        arbitration it remains the complaint, evidence list and address form.
 
         The whole set is built inside a private temporary directory located on
         the *target* filesystem, and only published with a single same-filesystem
@@ -87,19 +91,35 @@ class BatchExportManager:
         now = datetime.datetime.now()
         date_str = now.strftime("%Y%m%d")
 
-        folder_name = f"{p_safe}诉{d_safe}_{date_str}"
+        arbitration_mode = bool(
+            getattr(model, "is_arbitration_application", None)
+            and model.is_arbitration_application()
+        )
+        # An arbitration application is filed by the applicant against the
+        # respondent; "诉" would misstate the proceeding.
+        relation = "与" if arbitration_mode else "诉"
+        folder_name = f"{p_safe}{relation}{d_safe}_{date_str}"
         os.makedirs(base_path, exist_ok=True)
 
         # Resolve a unique final directory up front; a numeric suffix is used
         # only when a previous export already occupies the name.
         target_dir = self._unique_path(base_path, folder_name)
 
-        prefix = f"{p_safe}诉{d_safe}{case_label}"
-        specs = [
-            (self.generator.export_complaint, f"{prefix}_民事起诉状.docx"),
-            (self.generator.export_evidence_list, f"{prefix}_证据清单.docx"),
-            (self.generator.export_address_form, f"{prefix}_送达地址确认书.docx"),
-        ]
+        prefix = f"{p_safe}{relation}{d_safe}{case_label}"
+        if arbitration_mode:
+            specs = [
+                (
+                    self.generator.export_arbitration_application,
+                    f"{prefix}_劳动仲裁申请书.docx",
+                ),
+                (self.generator.export_evidence_list, f"{prefix}_证据清单.docx"),
+            ]
+        else:
+            specs = [
+                (self.generator.export_complaint, f"{prefix}_民事起诉状.docx"),
+                (self.generator.export_evidence_list, f"{prefix}_证据清单.docx"),
+                (self.generator.export_address_form, f"{prefix}_送达地址确认书.docx"),
+            ]
         filenames = [filename for _export_fn, filename in specs]
 
         # Stage in a private directory on the destination filesystem so the

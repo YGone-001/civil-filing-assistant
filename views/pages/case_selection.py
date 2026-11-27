@@ -55,7 +55,7 @@ class CaseSelectionPage(_TitledPage):
         # bound to the form via registerField below.
         self.case_combo = QComboBox()
         self.case_combo.setAccessibleName("案由选择")
-        self.case_combo.setAccessibleDescription("选择起诉状的案件类型")
+        self.case_combo.setAccessibleDescription("选择案件类型")
         self.case_combo.addItem("民间借贷纠纷", "loan")
         self.case_combo.addItem("买卖合同纠纷", "contract")
         self.case_combo.addItem("物业服务合同纠纷", "property")

@@ -209,6 +209,7 @@ def test_step_indicators_update_through_full_navigation(qapp, case_type):
         assert ind.current() == 3
     if case_type == "labor":
         set_labor_arbitrated(wizard.labor_claim_page)
+        wizard.labor_claim_page.court_name.setText("示例人民法院")
     if case_type == "loan":
         wizard.loan_claim_page.repayment_no.setChecked(True)
 
@@ -450,7 +451,7 @@ def test_case_combo_has_accessible_name(qapp):
     wizard, _ = make_wizard()
     combo = wizard.case_selection_page.case_combo
     assert combo.accessibleName() == "案由选择"
-    assert combo.accessibleDescription() == "选择起诉状的案件类型"
+    assert combo.accessibleDescription() == "选择案件类型"
 
 
 def test_party_buttons_have_accessible_names(qapp):

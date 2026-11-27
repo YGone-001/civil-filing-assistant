@@ -28,7 +28,7 @@ class WelcomePage(_TitledPage):
         layout.setSpacing(12)
 
         # A single concise lead line describing what the tool does in one breath.
-        lead = QLabel("引导填写案情，一键生成民事立案所需的三份可编辑 Word 初稿。")
+        lead = QLabel("引导填写案情，生成对应阶段的可编辑 Word 初稿：民事立案文书，或劳动争议仲裁申请书。")
         lead.setObjectName(PAGE_LEAD)
         lead.setWordWrap(True)
         layout.addWidget(lead)

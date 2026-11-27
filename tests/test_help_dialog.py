@@ -23,7 +23,7 @@ def test_help_content_covers_the_required_sections(qapp):
         assert phrase in text, phrase
     assert "不构成法律意见" in text
     assert "六类案由" in text
-    assert "三份" in text
+    assert "劳动仲裁申请书" in text
 
 
 def test_help_dialog_never_exceeds_the_available_screen(qapp):

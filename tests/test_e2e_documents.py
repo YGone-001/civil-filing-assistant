@@ -85,6 +85,40 @@ def _complaint_text(docs):
     return docx_all_text(_find(docs, "民事起诉状"))
 
 
+def test_labor_pre_filing_exports_the_arbitration_application(qapp, monkeypatch, tmp_path):
+    """The "not yet filed" stage produces the application, not a complaint."""
+
+    def _pre_filing(wizard):
+        page = wizard.labor_claim_page
+        index = page.procedure_combo.findData("not_applied")
+        page.procedure_combo.setCurrentIndex(index)
+
+    docs = _export(tmp_path, monkeypatch, "labor", mutate=_pre_filing)
+
+    assert len(docs) == 2, [doc.name for doc in docs]
+    names = [doc.name for doc in docs]
+    assert any("劳动仲裁申请书" in name for name in names)
+    assert any("证据清单" in name for name in names)
+    assert not any("民事起诉状" in name for name in names)
+    assert not any("送达地址确认书" in name for name in names)
+
+    text = docx_all_text(_find(docs, "劳动仲裁申请书"))
+    for phrase in (
+        "劳 动 仲 裁 申 请 书",
+        "申请人：",
+        "被申请人：",
+        "仲裁请求：",
+        "裁决被申请人向申请人支付欠付工资",
+        "此致",
+        "示例劳动人事争议仲裁委员会",
+        "附：本申请书副本1份",
+    ):
+        assert phrase in text, phrase
+    assert "诉讼请求" not in text
+    assert "本案诉讼费" not in text
+    assert "人民法院" not in text
+
+
 @pytest.mark.parametrize("case_type", CASE_TYPES)
 def test_e2e_three_documents_per_case(qapp, monkeypatch, tmp_path, case_type):
     docs = _export(tmp_path, monkeypatch, case_type)

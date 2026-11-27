@@ -119,6 +119,7 @@ def test_wizard_routes_and_initializes(qapp, case_type):
     assert wizard.currentId() == claim_page_id
     if case_type == "labor":
         set_labor_arbitrated(wizard.labor_claim_page)
+        wizard.labor_claim_page.court_name.setText("示例人民法院")
     if case_type == "loan":
         wizard.loan_claim_page.repayment_no.setChecked(True)
 
@@ -645,8 +646,16 @@ def test_labor_page_blocks_until_procedure_is_classified(qapp):
 
     index = page.procedure_combo.findData("not_applied")
     page.procedure_combo.setCurrentIndex(index)
+    # The fixture already confirmed the employee role and the commission, so
+    # the pre-filing application path is complete without a court.
+    assert page.isComplete()
+    assert page.validatePage() is True
+    assert "劳动仲裁申请书" in page.procedure_description.text()
+
+    index = page.procedure_combo.findData("application_pending")
+    page.procedure_combo.setCurrentIndex(index)
     assert not page.isComplete()
-    assert "尚未申请劳动仲裁" in page.arbitration_hint.text()
+    assert "程序进行中" in page.arbitration_hint.text()
     assert page.validatePage() is False
 
     index = page.procedure_combo.findData("non_final_award")
@@ -662,6 +671,28 @@ def test_labor_page_blocks_until_procedure_is_classified(qapp):
     page.arb_receipt_date.setText("2024-06-01")
     assert page.isComplete()
     assert page.arbitration_hint.isHidden()
+
+
+def test_export_page_switches_document_cards_by_stage(qapp):
+    wizard, _ = make_wizard()
+    prepare_case(wizard, "labor")
+    page = wizard.labor_claim_page
+    export = wizard.export_page
+
+    export.initializePage()
+    assert export._doc_cards[0][2].text() == "民事起诉状"
+    assert not export._doc_cards[2][0].isHidden()
+
+    page.procedure_combo.setCurrentIndex(
+        page.procedure_combo.findData("not_applied")
+    )
+    page._role_buttons["employee"].setChecked(True)
+    page.arb_commission.setText("示例劳动人事争议仲裁委员会")
+    export.initializePage()
+
+    assert export._doc_cards[0][2].text() == "劳动仲裁申请书"
+    assert export._doc_cards[2][0].isHidden()
+    assert export.preview_btn.text() == "预览仲裁申请书"
 
 
 def test_presenter_refuses_labor_export_for_blocked_states(qapp, monkeypatch, tmp_path, dialog_recorder):

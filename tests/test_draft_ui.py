@@ -238,7 +238,7 @@ def test_standard_navigation_buttons_are_unchanged(qapp):
     wizard, _ = make_wizard()
     assert wizard.button(QWizard.BackButton).text() == "上一步"
     assert wizard.button(QWizard.NextButton).text() == "下一步"
-    assert wizard.button(QWizard.FinishButton).text() == "生成三份 Word 初稿"
+    assert wizard.button(QWizard.FinishButton).text() == "生成 Word 初稿"
     assert wizard.button(QWizard.CancelButton).text() == "退出"
 
 

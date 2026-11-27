@@ -51,6 +51,7 @@ from utils.labor_security import (
     PROCEDURE_LABELS,
     PROCEDURE_NON_FINAL_AWARD,
     PROCEDURE_NOT_ACCEPTED,
+    PROCEDURE_NOT_APPLIED,
     REFUSAL_GROUND_LABELS,
     ROLE_LABELS,
     LaborProcedureGuard,
@@ -303,7 +304,9 @@ class LaborClaimPage(_TitledPage):
         self.registerField("l_overtime_hours", self.overtime_hours)
         self.registerField("l_overtime_pay", self.overtime_pay)
         self.registerField("l_social_sec_info", self.social_sec_info)
-        self.registerField("l_court_name*", self.court_name)
+        # Required only for the post-arbitration complaint; the arbitration
+        # application is addressed to the commission, not a court.
+        self.registerField("l_court_name", self.court_name)
         # Conditional procedure inputs; requiredness is enforced per state by
         # the shared evaluator, not by the asterisk mechanism.
         self.registerField("l_arb_commission", self.arb_commission)
@@ -317,7 +320,8 @@ class LaborClaimPage(_TitledPage):
         self.role_group.buttonToggled.connect(lambda *_: self._refresh_conditional())
         self.delay_group.buttonToggled.connect(lambda *_: self._refresh_conditional())
         for widget in (self.arb_commission, self.arb_case_no, self.arb_receipt_date,
-                       self.arb_application_date, self.arb_acceptance_date):
+                       self.arb_application_date, self.arb_acceptance_date,
+                       self.court_name):
             widget.textChanged.connect(lambda *_: self._refresh_conditional())
         self._refresh_conditional()
 
@@ -326,6 +330,15 @@ class LaborClaimPage(_TitledPage):
     # ------------------------------------------------------------------ #
 
     _COMMISSION_STATES = frozenset({
+        PROCEDURE_NOT_APPLIED,
+        PROCEDURE_ACCEPTANCE_OVERDUE,
+        PROCEDURE_NOT_ACCEPTED,
+        PROCEDURE_AWARD_OVERDUE,
+        PROCEDURE_NON_FINAL_AWARD,
+        PROCEDURE_FINAL_AWARD,
+    })
+    #: A case number only exists once an arbitration application was filed.
+    _CASE_NO_STATES = frozenset({
         PROCEDURE_ACCEPTANCE_OVERDUE,
         PROCEDURE_NOT_ACCEPTED,
         PROCEDURE_AWARD_OVERDUE,
@@ -337,9 +350,10 @@ class LaborClaimPage(_TitledPage):
         PROCEDURE_NON_FINAL_AWARD,
         PROCEDURE_FINAL_AWARD,
     })
-    #: States that can reach the employee wage-recovery complaint and must
-    #: therefore confirm the plaintiff role (mirrors the evaluator contract).
+    #: States that can reach an employee-side document and must therefore
+    #: confirm the applicant/plaintiff role (mirrors the evaluator contract).
     _ROLE_REQUIRED_STATES = frozenset({
+        PROCEDURE_NOT_APPLIED,
         PROCEDURE_ACCEPTANCE_OVERDUE,
         PROCEDURE_NOT_ACCEPTED,
         PROCEDURE_AWARD_OVERDUE,
@@ -351,11 +365,12 @@ class LaborClaimPage(_TitledPage):
         """Reveal the rows the selected state needs; hidden rows keep values."""
         state = self.get_labor_procedure()
         show_commission = state in self._COMMISSION_STATES
+        show_case_no = state in self._CASE_NO_STATES
         show_receipt = state in self._RECEIPT_STATES
         self._commission_label.setVisible(show_commission)
         self.arb_commission.setVisible(show_commission)
-        self._case_no_label.setVisible(show_commission)
-        self.arb_case_no.setVisible(show_commission)
+        self._case_no_label.setVisible(show_case_no)
+        self.arb_case_no.setVisible(show_case_no)
 
         self._receipt_label.setVisible(show_receipt)
         self.arb_receipt_date.setVisible(show_receipt)
@@ -432,12 +447,20 @@ class LaborClaimPage(_TitledPage):
             wizard.party_page.completeChanged.connect(self._refresh_conditional)
         self._refresh_conditional()
 
+    def _destination_issue(self):
+        """A court is required only when the complaint is the target document."""
+        if self.get_labor_procedure() == PROCEDURE_NOT_APPLIED:
+            return ""
+        if not self.court_name.text().strip():
+            return "请填写建议管辖法院（民事起诉状需要载明受诉法院）。"
+        return ""
+
     def _conditional_issue(self):
         """The blocking explanation for the current selection, or ``""``."""
         eligibility = self.evaluate_current()
-        if eligibility.eligible:
-            return ""
-        return eligibility.reason
+        if not eligibility.eligible:
+            return eligibility.reason
+        return self._destination_issue()
 
     def _refresh_conditional(self):
         state = self.get_labor_procedure()
@@ -446,25 +469,29 @@ class LaborClaimPage(_TitledPage):
         )
         self._update_conditional_rows()
         eligibility = self.evaluate_current()
-        if eligibility.eligible:
+        issue = eligibility.reason if not eligibility.eligible else self._destination_issue()
+        if issue:
+            _set_status(self.arbitration_hint, issue)
+            self.procedure_warning.setVisible(False)
+        else:
             _set_status(self.arbitration_hint, "")
             self.procedure_warning.setText(eligibility.warning)
             self.procedure_warning.setVisible(bool(eligibility.warning))
-        else:
-            _set_status(self.arbitration_hint, eligibility.reason)
-            self.procedure_warning.setVisible(False)
         self.completeChanged.emit()
 
     def isComplete(self):
         if not super().isComplete():
             return False
-        return self.evaluate_current().eligible
+        return self.evaluate_current().eligible and not self._destination_issue()
 
     def validatePage(self):
         issue = self._conditional_issue()
         if issue:
             _set_status(self.arbitration_hint, issue)
-            self.procedure_combo.setFocus()
+            if self.evaluate_current().eligible:
+                self.court_name.setFocus()
+            else:
+                self.procedure_combo.setFocus()
             return False
         return True
 

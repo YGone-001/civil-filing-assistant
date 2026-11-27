@@ -69,7 +69,7 @@ class LawsuitWizard(QWizard):
         for role, text, object_name in (
             (QWizard.BackButton, "上一步", SECONDARY_BUTTON),
             (QWizard.NextButton, "下一步", PRIMARY_BUTTON),
-            (QWizard.FinishButton, "生成三份 Word 初稿", PRIMARY_BUTTON),
+            (QWizard.FinishButton, "生成 Word 初稿", PRIMARY_BUTTON),
             (QWizard.CancelButton, "退出", SECONDARY_BUTTON),
         ):
             button = QPushButton(text)

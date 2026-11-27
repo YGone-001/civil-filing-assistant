@@ -1,9 +1,10 @@
 # File: views/pages/export.py
-# Purpose: Export page (three-document cards, output directory, text preview).
+# Purpose: Export page (document cards, output directory, text preview).
 # Encoding: UTF-8
-"""Export and preview: the three-document card strip, output-directory
-selection, the read-only text preview (built from the shared
-``build_case_model`` path) and the result of the latest export."""
+"""Export and preview: the document card strip, output-directory selection,
+the read-only text preview (built from the shared ``build_case_model`` path)
+and the result of the latest export. Labour cases show the arbitration
+application before filing and the complaint afterwards."""
 
 import os
 from PySide6.QtCore import Qt
@@ -58,8 +59,8 @@ class _PreviewDialog(QDialog):
         self.viewer = QTextBrowser()
         self.viewer.setReadOnly(True)
         self.viewer.setOpenExternalLinks(False)
-        self.viewer.setAccessibleName("起诉状预览内容")
-        self.viewer.setAccessibleDescription("按当前填写内容生成的起诉状近似预览")
+        self.viewer.setAccessibleName("文书预览内容")
+        self.viewer.setAccessibleDescription("按当前填写内容生成的文书近似预览")
         if html:
             self.viewer.setHtml(html)
         else:
@@ -97,9 +98,9 @@ class ExportPage(_TitledPage):
         layout = QVBoxLayout()
 
         intro_row = QHBoxLayout()
-        intro = QLabel("信息收集完毕，建议先预览完整起诉状，核对无误后再生成文书。")
-        intro.setWordWrap(True)
-        intro_row.addWidget(intro, 1)
+        self.intro_label = QLabel("信息收集完毕，建议先预览完整起诉状，核对无误后再生成文书。")
+        self.intro_label.setWordWrap(True)
+        intro_row.addWidget(self.intro_label, 1)
         self.preview_btn = QPushButton("预览起诉状")
         self.preview_btn.setObjectName(SECONDARY_BUTTON)
         self.preview_btn.setAccessibleName("预览起诉状")
@@ -113,6 +114,7 @@ class ExportPage(_TitledPage):
         doc_outer.setSpacing(SPACING_MD)
         doc_cards = QHBoxLayout()
         doc_cards.setSpacing(SPACING_MD)
+        self._doc_cards = []
         for icon, title, desc in (
             ("诉", "民事起诉状", "当事人、请求与理由"),
             ("证", "证据清单", "证据与证明目的"),
@@ -142,6 +144,7 @@ class ExportPage(_TitledPage):
             card_layout.addStretch()
 
             doc_cards.addWidget(card, 1)
+            self._doc_cards.append((card, icon_label, title_label, desc_label))
 
         doc_outer.addLayout(doc_cards)
         doc_note = QLabel("以上文书均为辅助生成的可编辑初稿，请人工核对后再行使用。")
@@ -205,6 +208,53 @@ class ExportPage(_TitledPage):
         self.setLayout(_wrap_in_scroll(layout))
 
     # ------------------------------------------------------------------ #
+    # Document set follows the labour procedural stage
+    # ------------------------------------------------------------------ #
+
+    def _arbitration_mode(self):
+        """True when the labour case has not yet filed for arbitration."""
+        wizard = self.wizard()
+        if wizard is None or wizard.field("case_type") != "labor":
+            return False
+        from utils.labor_security import PROCEDURE_NOT_APPLIED
+
+        return wizard.labor_claim_page.get_labor_procedure() == PROCEDURE_NOT_APPLIED
+
+    def _configure_document_cards(self, arbitration_mode):
+        specs = (
+            ("仲", "劳动仲裁申请书", "申请人、仲裁请求与理由")
+            if arbitration_mode
+            else ("诉", "民事起诉状", "当事人、请求与理由")
+        )
+        for spec, (card, icon_label, title_label, desc_label) in zip(
+            (specs,
+             ("证", "证据清单", "证据与证明目的"),
+             ("送", "送达地址确认书", "法院送达地址确认")),
+            self._doc_cards,
+        ):
+            icon_label.setText(spec[0])
+            title_label.setText(spec[1])
+            desc_label.setText(spec[2])
+
+        # The court-addressed form is not part of the arbitration set.
+        self._doc_cards[2][0].setVisible(not arbitration_mode)
+        if arbitration_mode:
+            self.intro_label.setText(
+                "信息收集完毕，建议先预览完整劳动仲裁申请书，核对无误后再生成文书。"
+            )
+            self.preview_btn.setText("预览仲裁申请书")
+            self.preview_btn.setAccessibleName("预览劳动仲裁申请书")
+        else:
+            self.intro_label.setText(
+                "信息收集完毕，建议先预览完整起诉状，核对无误后再生成文书。"
+            )
+            self.preview_btn.setText("预览起诉状")
+            self.preview_btn.setAccessibleName("预览起诉状")
+
+    def initializePage(self):
+        self._configure_document_cards(self._arbitration_mode())
+
+    # ------------------------------------------------------------------ #
     # Output directory
     # ------------------------------------------------------------------ #
 
@@ -226,8 +276,9 @@ class ExportPage(_TitledPage):
     def show_export_result(self, target_dir, files):
         """Show where the latest successful export was written."""
         self.last_export_dir = target_dir
+        file_lines = "\n".join(os.path.basename(path) for path in files)
         self.result_label.setText(
-            f"已生成 {len(files)} 份文件（起诉状、证据清单、送达地址确认书）。\n"
+            f"已生成 {len(files)} 份文件：\n{file_lines}\n"
             f"文件夹：{target_dir}\n"
             "如需修改，可返回前面的步骤调整后再次生成；新结果另存为新文件夹，不覆盖本次文件。"
         )
@@ -274,13 +325,27 @@ class ExportPage(_TitledPage):
             if isinstance(case_type, str) else "未知案由"
         )
 
+        arbitration_mode = self._arbitration_mode()
         try:
             from presenters.model_builder import build_case_model
-            from utils.document_preview import build_complaint_html, build_complaint_text
 
             model = build_case_model(wizard)
-            preview_text = build_complaint_text(model)
-            preview_html = build_complaint_html(model)
+            if arbitration_mode:
+                from utils.document_preview import (
+                    build_arbitration_html,
+                    build_arbitration_text,
+                )
+
+                preview_text = build_arbitration_text(model)
+                preview_html = build_arbitration_html(model)
+            else:
+                from utils.document_preview import (
+                    build_complaint_html,
+                    build_complaint_text,
+                )
+
+                preview_text = build_complaint_text(model)
+                preview_html = build_complaint_html(model)
         except Exception as exc:  # a preview failure must never crash the wizard
             dialogs.warning(self, "预览不可用", f"暂时无法生成“{label}”预览：\n{exc}")
             return
@@ -289,6 +354,7 @@ class ExportPage(_TitledPage):
         self._last_preview_text = preview_text
         self._last_preview_html = preview_html
 
-        dialog = _PreviewDialog("民事起诉状预览", preview_text, self, html=preview_html)
+        dialog_title = "劳动仲裁申请书预览" if arbitration_mode else "民事起诉状预览"
+        dialog = _PreviewDialog(dialog_title, preview_text, self, html=preview_html)
         dialog.exec()
         dialog.deleteLater()

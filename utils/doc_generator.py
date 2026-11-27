@@ -23,7 +23,7 @@ class DocumentGenerator:
     def _set_global_style(self):
         # A4 纸 + GB/T 9704-2012 公文版式页边距（上 3.7 / 下 3.5 / 左 2.8 /
         # 右 2.6 cm，版心 15.6×24.7cm）。纸型必须与边距所引用的同一版式配套，
-        # 不能停留在 python-docx 的默认 Letter；三份文书共用同一版式设置。
+        # 不能停留在 python-docx 的默认 Letter；各类文书共用同一版式设置。
         for section in self.doc.sections:
             section.page_width = Cm(21.0)
             section.page_height = Cm(29.7)
@@ -167,8 +167,8 @@ class DocumentGenerator:
             parts += [f"{label}：{value}" for label, value in segments if value]
         return "，".join(part for part in parts if part) + "。"
 
-    def add_agent_block(self, agent):
-        """Add the optional litigation-agent paragraph after the plaintiff block."""
+    def add_agent_block(self, agent, label="诉讼代理人"):
+        """Add the optional agent paragraph after the plaintiff/applicant block."""
         content = self.format_agent_text(agent)
         if not content:
             return
@@ -177,7 +177,7 @@ class DocumentGenerator:
         p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
         p.paragraph_format.line_spacing = Pt(28)
 
-        run1 = p.add_run("诉讼代理人：")
+        run1 = p.add_run(f"{label}：")
         run1.font.name = "SimHei"
         run1._element.rPr.rFonts.set(qn('w:eastAsia'), "SimHei")
         run1.font.size = Pt(16)
@@ -188,8 +188,8 @@ class DocumentGenerator:
         run2._element.rPr.rFonts.set(qn('w:eastAsia'), "FangSong_GB2312")
         run2.font.size = Pt(16)
 
-    def add_claims(self, claims):
-        self.add_heading("诉讼请求：")
+    def add_claims(self, claims, heading="诉讼请求："):
+        self.add_heading(heading)
         for idx, claim in enumerate(claims, 1):
             self.add_body(f"{idx}. {claim}", align=WD_PARAGRAPH_ALIGNMENT.JUSTIFY, first_line_indent=32)
 
@@ -207,9 +207,9 @@ class DocumentGenerator:
                 first_line_indent=32,
             )
 
-    def add_footer(self, court_name):
-        # Keep "此致", the court and the signature block on the same page. A
-        # long multi-party complaint must not leave "此致" orphaned at the
+    def add_footer(self, court_name, signer_label="具状人"):
+        # Keep "此致", the recipient and the signature block on the same page.
+        # A long multi-party complaint must not leave "此致" orphaned at the
         # bottom of one page while the court name starts the next.
         p = self._add_text("此致", "FangSong_GB2312", 16, False, WD_PARAGRAPH_ALIGNMENT.LEFT, 0)
         p.paragraph_format.keep_with_next = True
@@ -219,7 +219,7 @@ class DocumentGenerator:
         )
         p.paragraph_format.keep_with_next = True
         p = self._add_text(
-            "具状人：", "FangSong_GB2312", 16, False,
+            f"{signer_label}：", "FangSong_GB2312", 16, False,
             WD_PARAGRAPH_ALIGNMENT.RIGHT, 0,
         )
         p.paragraph_format.space_before = Pt(28)
@@ -332,8 +332,26 @@ class DocumentGenerator:
         self._add_pagination(self.doc)
         self.save(file_path)
 
-    def _add_appendix(self, model):
-        """Add the attachment note: one copy of the complaint per defendant.
+    def export_arbitration_application(self, model, file_path):
+        """Write the employee-side labour arbitration application (pre-filing)."""
+        self.reset()
+        self.add_title("劳 动 仲 裁 申 请 书")
+        self.doc.add_paragraph()
+        self.add_party_block("申请人", model.party_manager.plaintiffs)
+        self.add_agent_block(getattr(model, "agent", None), label="委托代理人")
+        self.add_party_block("被申请人", model.party_manager.defendants)
+        self.doc.add_paragraph()
+        self.add_claims(model.all_arbitration_claims(), heading="仲裁请求：")
+        self.doc.add_paragraph()
+        self.add_facts(model.all_arbitration_facts())
+        self.doc.add_paragraph()
+        self._add_appendix(model, copy_label="本申请书")
+        self.add_footer(getattr(model, "arb_commission", ""), signer_label="申请人")
+        self._add_pagination(self.doc)
+        self.save(file_path)
+
+    def _add_appendix(self, model, copy_label="本状"):
+        """Add the attachment note: one copy per respondent/defendant.
 
         The count follows the defendant list actually present in the model, so
         an unusual party setup can never print a wrong number. Users edit the
@@ -342,7 +360,7 @@ class DocumentGenerator:
         defendant_count = len(model.party_manager.defendants)
         if defendant_count <= 0:
             return
-        self.add_body(f"附：本状副本{defendant_count}份。")
+        self.add_body(f"附：{copy_label}副本{defendant_count}份。")
 
     def export_evidence_list(self, model, file_path):
         self.reset()

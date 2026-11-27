@@ -78,7 +78,7 @@ PROCEDURE_LABELS = {
 
 #: One-line description shown under the procedure selector.
 PROCEDURE_DESCRIPTIONS = {
-    PROCEDURE_NOT_APPLIED: "仲裁前置程序尚未启动；本工具不能生成起诉状。",
+    PROCEDURE_NOT_APPLIED: "仲裁前置程序尚未启动；本工具可生成劳动者一方的劳动仲裁申请书初稿。",
     PROCEDURE_APPLICATION_PENDING: "仲裁机构已受理但尚未结案；一般应等待仲裁程序。",
     PROCEDURE_ACCEPTANCE_OVERDUE: "申请后超过法定期限仍未作出受理或不予受理决定。",
     PROCEDURE_NOT_ACCEPTED: "已收到书面不予受理决定；按载明的理由分流处理。",
@@ -144,8 +144,9 @@ class LaborProcedureGuard:
             "2. 例外情形：劳动者仅以用人单位出具的工资欠条为证据直接起诉，且诉讼请求不涉及劳动关系"
             "其他争议的，法院可按普通民事纠纷受理（参见最高人民法院劳动争议司法解释（一）第十五条）；"
             "本工具不为此情形生成劳动争议起诉状。\n\n"
-            "3. 本工具按您如实选择的仲裁程序状态分流：仅对符合法定起诉条件的情形生成起诉状，"
-            "对程序尚不具备或法律上不宜起诉的情形会明确说明原因。"
+            "3. 本工具按您如实选择的仲裁程序状态分流：尚未申请仲裁时生成劳动者一方的"
+            "劳动仲裁申请书；仅对符合法定起诉条件的情形生成起诉状，对程序尚不具备或"
+            "法律上不宜起诉的情形会明确说明原因。"
         )
 
     def get_persistent_notice(self):
@@ -263,15 +264,7 @@ def evaluate_labor_eligibility(
         )
 
     if procedure == PROCEDURE_NOT_APPLIED:
-        return LaborEligibility(
-            False,
-            "您选择了“尚未申请劳动仲裁”。本工具当前只能生成仲裁之后向法院起诉所用的起诉状，"
-            "不能为本阶段生成文书。请先向用人单位所在地或劳动合同履行地的劳动人事争议仲裁委员会"
-            "申请仲裁；劳动仲裁申请书的生成将在后续版本提供。"
-            "（如您仅持有用人单位出具的工资欠条且不涉及其他劳动关系争议，"
-            "可依据劳动争议司法解释（一）第十五条按普通民事纠纷直接起诉，"
-            "请咨询法律专业人士选择合适的途径。）",
-        )
+        return _evaluate_arbitration_application(role, plaintiff_is_company, commission)
 
     if procedure == PROCEDURE_APPLICATION_PENDING:
         return LaborEligibility(
@@ -344,6 +337,45 @@ _ROLE_REQUIRED_STATES = frozenset({
     PROCEDURE_NON_FINAL_AWARD,
     PROCEDURE_FINAL_AWARD,
 })
+
+
+def _evaluate_arbitration_application(role, plaintiff_is_company, commission):
+    """Gate the employee-side arbitration application template.
+
+    The template is a worker-side wage-recovery application (Article 2 scope);
+    the applicant's role is never inferred, and an employer applicant or a
+    company-form applicant must not receive this template.
+    """
+    if role not in LABOR_ROLES:
+        return LaborEligibility(
+            False,
+            "请先确认您在本案中的身份（劳动者／员工一方，或用人单位／雇主一方）："
+            "本工具当前只生成劳动者一方的劳动仲裁申请书初稿，不会根据当事人卡片推断身份。",
+        )
+    if role == ROLE_EMPLOYER:
+        return LaborEligibility(
+            False,
+            "您确认申请人一方为用人单位（雇主）。本工具只生成劳动者（员工一方）追索工资等"
+            "请求的劳动仲裁申请书；用人单位作为申请人的情形，请另行准备文书或咨询法律专业人士。"
+            "本阶段不生成仲裁申请书。",
+        )
+    if plaintiff_is_company:
+        return LaborEligibility(
+            False,
+            "申请人一方被标记为单位／公司，而本工具的仲裁申请书模板面向劳动者（员工一方）。"
+            "请核对申请人身份后修改，或就单位一方的主张咨询法律专业人士并另行准备文书。"
+            "本阶段不生成仲裁申请书。",
+        )
+    blocker = _require_commission(commission)
+    if blocker is not None:
+        return blocker
+    return LaborEligibility(
+        True,
+        warning=(
+            "提醒：本工具生成的是劳动者一方的劳动仲裁申请书初稿，仲裁请求、事实与证据"
+            "需人工核对后提交；劳动争议仲裁不收费（《劳动争议调解仲裁法》第五十三条）。"
+        ),
+    )
 
 
 def _require_employee_role(role, procedure):
