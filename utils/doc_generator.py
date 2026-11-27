@@ -230,6 +230,23 @@ class DocumentGenerator:
         )
 
     @staticmethod
+    def _repeat_table_header(table):
+        """Mark the first row as a repeating header for multi-page tables."""
+        from docx.oxml import OxmlElement
+
+        tr_pr = table.rows[0]._tr.get_or_add_trPr()
+        tr_pr.append(OxmlElement("w:tblHeader"))
+
+    @staticmethod
+    def _keep_rows_from_splitting(table):
+        """Prevent a single table row from breaking across pages."""
+        from docx.oxml import OxmlElement
+
+        for row in table.rows:
+            tr_pr = row._tr.get_or_add_trPr()
+            tr_pr.append(OxmlElement("w:cantSplit"))
+
+    @staticmethod
     def _keep_table_together(table):
         """Prevent a party's address table from splitting across pages."""
         from docx.oxml import OxmlElement
@@ -389,6 +406,12 @@ class DocumentGenerator:
         # Fixed widths keep the long "证明对象/目的" header on one line and
         # leave the remark column readable without inventing content.
         self._set_table_widths(table, (Cm(1.8), Cm(4.4), Cm(7.2), Cm(2.2)))
+        # A long evidence list spans pages; repeat the header row so pages 2+
+        # remain readable, and never split a single evidence row across pages.
+        # Order matters for the OOXML row-properties sequence: cantSplit before
+        # tblHeader.
+        self._keep_rows_from_splitting(table)
+        self._repeat_table_header(table)
 
         self.save(file_path)
 

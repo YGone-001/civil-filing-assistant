@@ -17,6 +17,7 @@ import os
 
 import pytest
 from docx import Document
+from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
 
 from helpers import (
@@ -180,6 +181,32 @@ def test_evidence_list_table_has_at_least_one_data_row(qapp, tmp_path, monkeypat
     # Header + at least one evidence row (default evidence is loaded by prepare_case).
     assert len(table.rows) >= 2, \
         f"evidence table should have header + data rows, got {len(table.rows)}"
+
+
+def test_evidence_list_repeats_the_header_and_keeps_rows_intact(qapp, tmp_path, monkeypatch):
+    """A multi-page evidence list must repeat its header and not split rows."""
+    home = tmp_path / "home"
+    home.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(os.path, "expanduser", lambda *a, **k: str(home))
+
+    wizard, presenter = make_wizard()
+    prepare_case(wizard, "loan")
+    wizard.evidence_page.confirm_all_suggestions()
+    for index in range(20):
+        wizard.evidence_page.add_row(
+            f"补充证据{index}（测试）", f"证明目的{index}（测试）", auto_edit=False
+        )
+    presenter.on_wizard_accepted()
+
+    evidence = next(d for d in (home / "Desktop").rglob("*.docx") if "证据清单" in d.name)
+    table = Document(str(evidence)).tables[0]
+
+    header_pr = table.rows[0]._tr.trPr
+    assert header_pr is not None
+    assert header_pr.find(qn("w:tblHeader")) is not None, "header row must repeat"
+    for row in table.rows:
+        assert row._tr.trPr is not None
+        assert row._tr.trPr.find(qn("w:cantSplit")) is not None, "rows must not split"
 
 
 def test_evidence_list_remark_is_blank_by_default(qapp, tmp_path, monkeypatch):
