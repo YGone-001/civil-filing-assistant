@@ -38,7 +38,6 @@ $ErrorActionPreference = "Stop"
 
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
-Add-Type -AssemblyName System.Windows.Forms
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -169,7 +168,16 @@ try {
                     [IntPtr]$window.Current.NativeWindowHandle) | Out-Null
             }
             Start-Sleep -Milliseconds 400
-            [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+            $continueButton = Find-Button $window "继续运行"
+            if ($null -eq $continueButton) {
+                # UNKNOWN network status uses a single 确定 acknowledgement.
+                $continueButton = Find-Button $window "确定"
+            }
+            if ($null -eq $continueButton -or -not $continueButton.Current.IsEnabled) {
+                throw "无法继续启动：离线提示中未找到可用的继续按钮。"
+            }
+            $continueButton.GetCurrentPattern(
+                [System.Windows.Automation.InvokePattern]::Pattern).Invoke()
             Start-Sleep -Seconds 1
         }
     }
